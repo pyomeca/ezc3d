@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cmath>
 #include <string.h>
+#include <vector>
 
 int hex2int(const char * val){
     int ret(0);
@@ -156,20 +157,32 @@ int main()
         // Parameters group
         for (int i = 0; i < 20; ++i)
         {
-            int nbCharInGroup       (readInt(file, 1*BYTE));                // Byte 1 ==> Nb of char in the group name, locked if negative
-            int nbGroupID           (readInt(file, 1*BYTE));                // Byte 2 ==> Groupe ID always negative
-            std::string groupName   (readString(file, nbCharInGroup*BYTE)); // Byte 3 ==> Name of the group
-            int offSetNextGroup     (readInt(file, 2*BYTE));                // Byte 3+nbCharInGroup ==> number of byte to the next group
-            int nbCharInGroupDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInGroup ==> Number of characters in group description
-            std::string groupDesc   (readString(file, nbCharInGroupDesc));  // Byte 6+nbCharInGroup ==> Group description
+            int nbCharInName       (readInt(file, 1*BYTE));                // Nb of char in the group name, locked if negative
+            int id           (readInt(file, 1*BYTE));                       // Groupe ID always negative
+            std::string name   (readString(file, nbCharInName*BYTE));      // Name of the group
+            int offSetNext          (readInt(file, 2*BYTE));                // number of byte to the next group
+            if (id < 0){
+                std::cout << "Parameters group " << i << std::endl;
+            } else {
+                int lengthInByte        (readInt(file, 1*BYTE));    // -1 sizeof(char), 1 byte, 2 int, 4 float
+                int nDimensions         (readInt(file, 1*BYTE));    // number of dimension of parameter (0 for scalar)
+                std::vector<int> dimension;
+                for (int j=0; j<nDimensions; ++j){
+                    dimension.push_back (readInt(file, 1*BYTE));    // Read the dimension size
+                }
 
-            std::cout << "Parameters group " << i << std::endl;
-            std::cout << "nbCharInGroup = " << nbCharInGroup << std::endl;
-            std::cout << "nbGroupID = " << nbGroupID << std::endl;
-            std::cout << "groupName = " << groupName << std::endl;
-            std::cout << "offSetNextGroup = " << offSetNextGroup << std::endl;
-            std::cout << "nbCharInGroupDesc = " << nbCharInGroupDesc << std::endl;
-            std::cout << "groupDesc = " << groupDesc << std::endl;
+                std::cout << "Parameter " << i << std::endl;
+            }
+            int nbCharInDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInName ==> Number of characters in group description
+            std::string desc   (readString(file, nbCharInDesc));  // Byte 6+nbCharInName ==> Group description
+
+            std::cout << "nbCharInName = " << nbCharInName << std::endl;
+            std::cout << "nbGroupID = " << id << std::endl;
+            std::cout << "groupName = " << name << std::endl;
+            std::cout << "offSetNextGroup = " << offSetNext << std::endl;
+            std::cout << "nbCharInDesc = " << nbCharInDesc << std::endl;
+            std::cout << "desc = " << desc << std::endl;
+
             std::cout << std::endl;
         }
         // Terminate
