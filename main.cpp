@@ -4,11 +4,33 @@
 #include <string.h>
 #include <vector>
 
-int hex2int(const char * val){
+int BYTE(1);
+int WORD(2*BYTE);
+
+unsigned int hex2uint(const char * val){
     int ret(0);
     for (int i=0; i<strlen(val); i++)
         ret |= int((unsigned char)val[i]) * int(pow(0x100, i));
     return ret;
+}
+
+int hex2int(const char * val){
+    unsigned int tp(hex2uint(val));
+
+    // convert to signed int
+    // Find max int value
+    unsigned int max(0);
+    for (int i=0; i<strlen(val); ++i)
+        max |= 0xFF * int(pow(0x100, i));
+
+    // If the value is over uint_max / 2 then it is a negative number
+    int out;
+    if (tp > max / 2)
+        out = (int)(tp - max - 1);
+    else
+        out = tp;
+
+    return out;
 }
 
 int hex2long(const char * val){
@@ -56,6 +78,8 @@ int readInt(std::fstream &file,
 {
     char c[nByteToRead + 1];
     readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+
+    // make sure it is an int and not an unsigned int
     return hex2int(c);
 }
 
@@ -80,6 +104,15 @@ long readLong(std::fstream &file,
     return hex2long(c);
 }
 
+void readMatrix(std::fstream &file, int dataLenghtInBytes, std::vector<int> dimension, std::vector<int> &param_data, int currentIdx = 0){
+    for (int j=0; j<dimension[currentIdx]; ++j){
+        if (currentIdx == dimension.size()-1)
+            param_data.push_back (readInt(file, dataLenghtInBytes*BYTE));
+        else
+            readMatrix(file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
+    }
+}
+
 int main()
 {
 
@@ -89,9 +122,6 @@ int main()
     {
         // Find file size
         std::streampos fileSize = file.tellg();
-
-        int BYTE(1);
-        int WORD(2*BYTE);
 
         // Read the Header
         int parametersAddress  (readInt(file, 1*BYTE, 0, std::ios::beg));   // Byte 1.1
@@ -154,34 +184,53 @@ int main()
         std::cout << "processorType = " << processorType << std::endl;
         std::cout << std::endl;
 
-        // Parameters group
+        // Parameters or group
         for (int i = 0; i < 20; ++i)
         {
             int nbCharInName       (readInt(file, 1*BYTE));                // Nb of char in the group name, locked if negative
+            bool isLocked(false);
+            if (nbCharInName < 0){
+                nbCharInName = -nbCharInName;
+                isLocked = true;
+            }
             int id           (readInt(file, 1*BYTE));                       // Groupe ID always negative
             std::string name   (readString(file, nbCharInName*BYTE));      // Name of the group
-            int offSetNext          (readInt(file, 2*BYTE));                // number of byte to the next group
-            if (id < 0){
-                std::cout << "Parameters group " << i << std::endl;
-            } else {
-                int lengthInByte        (readInt(file, 1*BYTE));    // -1 sizeof(char), 1 byte, 2 int, 4 float
-                int nDimensions         (readInt(file, 1*BYTE));    // number of dimension of parameter (0 for scalar)
-                std::vector<int> dimension;
-                for (int j=0; j<nDimensions; ++j){
-                    dimension.push_back (readInt(file, 1*BYTE));    // Read the dimension size
-                }
-
-                std::cout << "Parameter " << i << std::endl;
-            }
-            int nbCharInDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInName ==> Number of characters in group description
-            std::string desc   (readString(file, nbCharInDesc));  // Byte 6+nbCharInName ==> Group description
+            int offsetNext          (readInt(file, 2*BYTE));                // number of byte to the next group
 
             std::cout << "nbCharInName = " << nbCharInName << std::endl;
+            std::cout << "isLocked = " << isLocked << std::endl;
             std::cout << "nbGroupID = " << id << std::endl;
             std::cout << "groupName = " << name << std::endl;
-            std::cout << "offSetNextGroup = " << offSetNext << std::endl;
-            std::cout << "nbCharInDesc = " << nbCharInDesc << std::endl;
-            std::cout << "desc = " << desc << std::endl;
+            std::cout << "offSetNextGroup = " << offsetNext << std::endl;
+
+            if (id < 0){
+                int nbCharInDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInName ==> Number of characters in group description
+                std::string desc   (readString(file, nbCharInDesc));  // Byte 6+nbCharInName ==> Group description
+
+                std::cout << "Group " << i << std::endl;
+                std::cout << "nbCharInDesc = " << nbCharInDesc << std::endl;
+                std::cout << "desc = " << desc << std::endl;
+
+            } else {
+                int lengthInByte        (readInt(file, 1*BYTE));    // -1 sizeof(char), 1 byte, 2 int, 4 float
+                int nDimensions         (readInt(file, 1*BYTE) + 1);    // number of dimension of parameter (0 for scalar)
+                std::vector<int> dimension;
+                for (int j=0; j<nDimensions; ++j){
+                    dimension.push_back (readInt(file, 1*BYTE));    // Read the dimension size of the matrix
+                }
+                std::vector<int> param_data;
+                readMatrix(file, lengthInByte, dimension, param_data);
+
+
+                std::cout << "Parameter " << i << std::endl;
+                std::cout << "lengthInByte = " << lengthInByte << std::endl;
+                std::cout << "nDimensions = " << nDimensions << std::endl;
+                for (int i = 0; i< dimension.size(); ++i)
+                    std::cout << "dimension[" << i << "] = " << dimension[i] << std::endl;
+                for (int i = 0; i< param_data.size(); ++i)
+                    std::cout << "param_data[" << i << "] = " << param_data[i] << std::endl;
+            }
+
 
             std::cout << std::endl;
         }
