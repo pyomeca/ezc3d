@@ -3,6 +3,7 @@
 #include <cmath>
 #include <string.h>
 #include <vector>
+#include <stdexcept>
 
 int BYTE(1);
 int WORD(2*BYTE);
@@ -105,12 +106,19 @@ long readLong(std::fstream &file,
 }
 
 void readMatrix(std::fstream &file, int dataLenghtInBytes, std::vector<int> dimension, std::vector<int> &param_data, int currentIdx = 0){
-    for (int j=0; j<dimension[currentIdx]; ++j){
+    for (int i=0; i<dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back (readInt(file, dataLenghtInBytes*BYTE));
         else
             readMatrix(file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
-    }
+}
+
+void readMatrix(std::fstream &file, std::vector<int> dimension, std::vector<std::string> &param_data, int currentIdx = 0){
+    for (int i=0; i<dimension[currentIdx]; ++i)
+        if (currentIdx == dimension.size()-1)
+            param_data.push_back(readString(file, BYTE));
+        else
+            readMatrix(file, dimension, param_data, currentIdx + 1);
 }
 
 int main()
@@ -185,17 +193,22 @@ int main()
         std::cout << std::endl;
 
         // Parameters or group
-        for (int i = 0; i < 20; ++i)
+        bool finishedReading(false);
+        int nextParamByteInFile(parametersStart);
+        // TODO check also if we got to the next section (that mean something went thought..)
+        while (!finishedReading)
         {
+            if (file.tellg() != nextParamByteInFile)
             int nbCharInName       (readInt(file, 1*BYTE));                // Nb of char in the group name, locked if negative
             bool isLocked(false);
             if (nbCharInName < 0){
                 nbCharInName = -nbCharInName;
                 isLocked = true;
             }
-            int id           (readInt(file, 1*BYTE));                       // Groupe ID always negative
+            int id           (readInt(file, 1*BYTE));                       // Group ID always negative otherwise it is a parameter of group ID
             std::string name   (readString(file, nbCharInName*BYTE));      // Name of the group
             int offsetNext          (readInt(file, 2*BYTE));                // number of byte to the next group
+            nextParamByteInFile = file.tellg() + offsetNext;
 
             std::cout << "nbCharInName = " << nbCharInName << std::endl;
             std::cout << "isLocked = " << isLocked << std::endl;
@@ -204,33 +217,65 @@ int main()
             std::cout << "offSetNextGroup = " << offsetNext << std::endl;
 
             if (id < 0){
-                int nbCharInDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInName ==> Number of characters in group description
-                std::string desc   (readString(file, nbCharInDesc));  // Byte 6+nbCharInName ==> Group description
-
-                std::cout << "Group " << i << std::endl;
-                std::cout << "nbCharInDesc = " << nbCharInDesc << std::endl;
-                std::cout << "desc = " << desc << std::endl;
-
+                std::cout << "Group " << id << std::endl;
             } else {
                 int lengthInByte        (readInt(file, 1*BYTE));    // -1 sizeof(char), 1 byte, 2 int, 4 float
-                int nDimensions         (readInt(file, 1*BYTE) + 1);    // number of dimension of parameter (0 for scalar)
+                int nDimensions         (readInt(file, 1*BYTE));    // number of dimension of parameter (0 for scalar)
                 std::vector<int> dimension;
-                for (int j=0; j<nDimensions; ++j){
-                    dimension.push_back (readInt(file, 1*BYTE));    // Read the dimension size of the matrix
+
+                // In the special case of a scalar
+                if (nDimensions == 0)
+                    dimension.push_back(1);
+                else // otherwise it's a matrix
+                    for (int i=0; i<nDimensions; ++i)
+                        dimension.push_back (readInt(file, 1*BYTE));    // Read the dimension size of the matrix
+
+                std::vector<int> param_data_int;
+                std::vector<std::string> param_data_string;
+                if (lengthInByte > 0)
+                    readMatrix(file, lengthInByte, dimension, param_data_int);
+                else {
+                    std::vector<std::string> param_data_string_tp;
+                    readMatrix(file, dimension, param_data_string_tp);
+                    // Vicon c3d organize its text in column-wise format, I am not sure if this is a standard or a custom made stuff
+                    if (dimension.size() == 1){
+                        std::string tp;
+                        for (int i = 0; i < dimension[0]; ++i)
+                            tp += param_data_string_tp[i];
+                        param_data_string.push_back(tp);
+                    }
+                    else if (dimension.size() == 2){
+                        int idx(0);
+                        for (int i = 0; i < dimension[1]; ++i){
+                            std::string tp;
+                            for (int j = 0; j < dimension[0]; ++j){
+                                tp += param_data_string_tp[idx];
+                                ++idx;
+                            }
+                            param_data_string.push_back(tp);
+                        }
+                    }
+                    else{
+                        throw std::out_of_range("Parsing char on matrix other than 2d or 1d matrix is not implemented yet");
+                    }
+
                 }
-                std::vector<int> param_data;
-                readMatrix(file, lengthInByte, dimension, param_data);
 
-
-                std::cout << "Parameter " << i << std::endl;
+                std::cout << "Parameter " << id << std::endl;
                 std::cout << "lengthInByte = " << lengthInByte << std::endl;
                 std::cout << "nDimensions = " << nDimensions << std::endl;
                 for (int i = 0; i< dimension.size(); ++i)
                     std::cout << "dimension[" << i << "] = " << dimension[i] << std::endl;
-                for (int i = 0; i< param_data.size(); ++i)
-                    std::cout << "param_data[" << i << "] = " << param_data[i] << std::endl;
+                for (int i = 0; i< param_data_int.size(); ++i)
+                    std::cout << "param_data_int[" << i << "] = " << param_data_int[i] << std::endl;
+                for (int i = 0; i< param_data_string.size(); ++i)
+                    std::cout << "param_data_string[" << i << "] = " << param_data_string[i] << std::endl;
             }
+            int nbCharInDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInName ==> Number of characters in group description
+            std::string desc   (readString(file, nbCharInDesc));  // Byte 6+nbCharInName ==> Group description
 
+            std::cout << "nbCharInDesc = " << nbCharInDesc << std::endl;
+            std::cout << "desc = " << desc << std::endl;
 
             std::cout << std::endl;
         }
