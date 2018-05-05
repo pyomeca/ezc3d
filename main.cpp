@@ -84,6 +84,18 @@ int readInt(std::fstream &file,
     return hex2int(c);
 }
 
+int readUint(std::fstream &file,
+            int nByteToRead,
+            int nByteFromPrevious = 0,
+            const std::ios_base::seekdir &pos = std::ios::cur)
+{
+    char c[nByteToRead + 1];
+    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+
+    // make sure it is an int and not an unsigned int
+    return hex2uint(c);
+}
+
 double readDouble(std::fstream &file,
                   int nByteToRead,
                   int nByteFromPrevious = 0,
@@ -194,21 +206,35 @@ int main()
 
         // Parameters or group
         bool finishedReading(false);
-        int nextParamByteInFile(parametersStart);
-        // TODO check also if we got to the next section (that mean something went thought..)
+        int nextParamByteInFile((int)file.tellg() + parametersStart - BYTE);
         while (!finishedReading)
         {
+            // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
+            int coucou(file.tellg());
             if (file.tellg() != nextParamByteInFile)
-            int nbCharInName       (readInt(file, 1*BYTE));                // Nb of char in the group name, locked if negative
+                throw std::ios_base::failure("Bad c3d formatting");
+
+            // Nb of char in the group name, locked if negative, 0 if we finished the section
+            int nbCharInName       (readInt(file, 1*BYTE));
+            if (nbCharInName == 0)
+                break;
             bool isLocked(false);
             if (nbCharInName < 0){
                 nbCharInName = -nbCharInName;
                 isLocked = true;
             }
-            int id           (readInt(file, 1*BYTE));                       // Group ID always negative otherwise it is a parameter of group ID
-            std::string name   (readString(file, nbCharInName*BYTE));      // Name of the group
-            int offsetNext          (readInt(file, 2*BYTE));                // number of byte to the next group
-            nextParamByteInFile = file.tellg() + offsetNext;
+
+            // Group ID always negative for groups and positive parameter of group ID
+            int id(readInt(file, 1*BYTE));
+            std::string name(readString(file, nbCharInName*BYTE));
+            if (!name.compare("SCALE"))
+                std::cout << "coucou" << std::endl;
+
+            // number of byte to the next group from here
+            int offsetNext((int)readUint(file, 2*BYTE));
+            if (offsetNext == 0)
+                finishedReading = true;
+            nextParamByteInFile = (int)file.tellg() + offsetNext - WORD;
 
             std::cout << "nbCharInName = " << nbCharInName << std::endl;
             std::cout << "isLocked = " << isLocked << std::endl;
@@ -219,17 +245,19 @@ int main()
             if (id < 0){
                 std::cout << "Group " << id << std::endl;
             } else {
-                int lengthInByte        (readInt(file, 1*BYTE));    // -1 sizeof(char), 1 byte, 2 int, 4 float
-                int nDimensions         (readInt(file, 1*BYTE));    // number of dimension of parameter (0 for scalar)
-                std::vector<int> dimension;
+                // -1 sizeof(char), 1 byte, 2 int, 4 float
+                int lengthInByte        (readInt(file, 1*BYTE));
 
-                // In the special case of a scalar
-                if (nDimensions == 0)
+                // number of dimension of parameter (0 for scalar)
+                int nDimensions         (readInt(file, 1*BYTE));
+                std::vector<int> dimension;
+                if (nDimensions == 0) // In the special case of a scalar
                     dimension.push_back(1);
                 else // otherwise it's a matrix
                     for (int i=0; i<nDimensions; ++i)
                         dimension.push_back (readInt(file, 1*BYTE));    // Read the dimension size of the matrix
 
+                // Read the data for the parameters
                 std::vector<int> param_data_int;
                 std::vector<std::string> param_data_string;
                 if (lengthInByte > 0)
@@ -237,7 +265,8 @@ int main()
                 else {
                     std::vector<std::string> param_data_string_tp;
                     readMatrix(file, dimension, param_data_string_tp);
-                    // Vicon c3d organize its text in column-wise format, I am not sure if this is a standard or a custom made stuff
+                    // Vicon c3d organize its text in column-wise format, I am not sure if
+                    // this is a standard or a custom made stuff
                     if (dimension.size() == 1){
                         std::string tp;
                         for (int i = 0; i < dimension[0]; ++i)
@@ -255,10 +284,8 @@ int main()
                             param_data_string.push_back(tp);
                         }
                     }
-                    else{
-                        throw std::out_of_range("Parsing char on matrix other than 2d or 1d matrix is not implemented yet");
-                    }
-
+                    else
+                        throw std::ios_base::failure("Parsing char on matrix other than 2d or 1d matrix is not implemented yet");
                 }
 
                 std::cout << "Parameter " << id << std::endl;
@@ -271,12 +298,14 @@ int main()
                 for (int i = 0; i< param_data_string.size(); ++i)
                     std::cout << "param_data_string[" << i << "] = " << param_data_string[i] << std::endl;
             }
-            int nbCharInDesc   (readInt(file, 1*BYTE));                // Byte 5+nbCharInName ==> Number of characters in group description
-            std::string desc   (readString(file, nbCharInDesc));  // Byte 6+nbCharInName ==> Group description
+
+            // Byte 5+nbCharInName ==> Number of characters in group description
+            int nbCharInDesc(readInt(file, 1*BYTE));
+            // Byte 6+nbCharInName ==> Group description
+            std::string desc(readString(file, nbCharInDesc));
 
             std::cout << "nbCharInDesc = " << nbCharInDesc << std::endl;
             std::cout << "desc = " << desc << std::endl;
-
             std::cout << std::endl;
         }
         // Terminate
