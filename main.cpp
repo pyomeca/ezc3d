@@ -97,14 +97,25 @@ int readUint(std::fstream &file,
 }
 
 double readDouble(std::fstream &file,
-                  int nByteToRead,
                   int nByteFromPrevious = 0,
                   const std::ios_base::seekdir &pos = std::ios::cur)
 {
-    std::cout << "READ DOUBLE IS WRONG" << std::endl;
+    int nByteToRead(16*BYTE);
     char c[nByteToRead + 1];
     readFile(file, nByteToRead, c, nByteFromPrevious, pos);
-    return hex2int(c);
+    double coucou = *reinterpret_cast<double*>(c);
+    return coucou;
+}
+
+float readFloat(std::fstream &file,
+                  int nByteFromPrevious = 0,
+                  const std::ios_base::seekdir &pos = std::ios::cur)
+{
+    int nByteToRead(4*BYTE);
+    char c[nByteToRead + 1];
+    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+    float coucou = *reinterpret_cast<float*>(c);
+    return coucou;
 }
 
 long readLong(std::fstream &file,
@@ -154,14 +165,16 @@ int main()
         int scaleFactor         (readInt(file, 2*WORD));                    // Byte 7-8 ==> convert int to 3d reference frame, floating point if negative
         int dataStartAnalog     (readInt(file, 1*WORD));                    // Byte 9 ==> Number of first block for 3D and analog data
         int nbAnalogByFrame     (readInt(file, 1*WORD));                    // Byte 10 ==> Number of analog by frame
-        double frameRate        (readDouble(file, 2*WORD));                 // Byte 11-12 ==> 3d frame rate in Hz (floating point)
+        double frameRate        (readFloat(file));                 // Byte 11-12 ==> 3d frame rate in Hz (floating point)
         int emptyBlock1         (readInt(file, 135*WORD));                  // Byte 13-147
         int keyLabelPresent     (readInt(file, 1*WORD));                    // Byte 148 ==> 12345 if Label and range are present
         int firstBlockKeyLabel  (readInt(file, 1*WORD));                    // Byte 149 ==> First block of key labels (if present)
         int fourCharPresent     (readInt(file, 1*WORD));                    // Byte 150 ==> 12345 if 4 char event labels are supported (otherwise 2 char)
         int nbEvents            (readInt(file, 1*WORD));                    // Byte 151 ==> Number of defined time events (0 to 18)
         int emptyBlock2         (readInt(file, 1*WORD));                    // Byte 152
-        double eventsTime       (readDouble(file, 36*WORD));                // Byte 153-188 ==> Event times (floating-point) in seconds
+        std::vector<float> eventsTime;
+        for (int i = 0; i < 18; ++i)                                        // Byte 153-188 ==> Event times (floating-point) in seconds
+            eventsTime.push_back(readFloat(file));
         int eventsDisplay       (readInt(file, 9*WORD));                    // Byte 189-197 ==> Event display (0x00 = ON, 0x01 = OFF)
         int emptyBlock3         (readInt(file, 1*WORD));                    // Byte 198
         std::string eventsLabel (readString(file, 36*WORD));                // Byte 199-234 ==> Event labels (4 char by label)
@@ -183,7 +196,8 @@ int main()
         std::cout << "fourCharPresent = " << fourCharPresent << std::endl;
         std::cout << "nbEvents = " << nbEvents << std::endl;
         std::cout << "emptyBlock2 = " << emptyBlock2 << std::endl;
-        std::cout << "eventsTime = " << eventsTime << std::endl;
+        for (int i=0; i<eventsTime.size(); ++i)
+            std::cout << "eventsTime[" << i << "] = " << eventsTime[i] << std::endl;
         std::cout << "eventsDisplay = " << eventsDisplay << std::endl;
         std::cout << "emptyBlock3 = " << emptyBlock3 << std::endl;
         std::cout << "eventsLabel = " << eventsLabel << std::endl;
@@ -210,7 +224,6 @@ int main()
         while (!finishedReading)
         {
             // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
-            int coucou(file.tellg());
             if (file.tellg() != nextParamByteInFile)
                 throw std::ios_base::failure("Bad c3d formatting");
 
@@ -227,8 +240,6 @@ int main()
             // Group ID always negative for groups and positive parameter of group ID
             int id(readInt(file, 1*BYTE));
             std::string name(readString(file, nbCharInName*BYTE));
-            if (!name.compare("SCALE"))
-                std::cout << "coucou" << std::endl;
 
             // number of byte to the next group from here
             int offsetNext((int)readUint(file, 2*BYTE));
@@ -308,6 +319,15 @@ int main()
             std::cout << "desc = " << desc << std::endl;
             std::cout << std::endl;
         }
+
+        // Read the 3dPoints data
+        std::cout << "Points reading" << std::endl;
+        if (scaleFactor < 0)
+            double coucou(readDouble(file, 256*WORD*(parametersAddress-1) + 256*WORD*nbParamBlock, std::ios::beg));   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
+        else
+            int coucou(readInt(file, 1*BYTE, 256*WORD*(parametersAddress-1) + 256*WORD*nbParamBlock, std::ios::beg));   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
+
+
         // Terminate
         file.close();
 
