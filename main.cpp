@@ -8,6 +8,23 @@
 int BYTE(1);
 int WORD(2*BYTE);
 
+
+struct Analog{
+    float data;
+};
+
+struct Point3d{
+    float x;
+    float y;
+    float z;
+    float residual;
+};
+struct Frame{
+    std::vector<std::vector<Analog> > analogs; // All subframe for all analogs
+    std::vector<Point3d> points; // All points for this frame
+};
+
+
 unsigned int hex2uint(const char * val){
     int ret(0);
     for (int i=0; i<strlen(val); i++)
@@ -140,14 +157,13 @@ int main()
                       std::ios::in | std::ios::binary);
     if (file.is_open())
     {
-        // Find file size
-        std::streampos fileSize = file.tellg();
-
         // Read the Header
         int parametersAddress  (readInt(file, 1*BYTE, 0, std::ios::beg));   // Byte 1.1
         int iChecksum           (readInt(file, 1*BYTE));                    // Byte 1.2 ==> 80 if it is a C3D
+        if (iChecksum != 80)
+            throw std::ios_base::failure("File must be a valid c3d file");
         int nb3dPoints          (readInt(file, 1*WORD));                    // Byte 2 ==> number of stored trajectories
-        int nbAnalogs           (readInt(file, 1*WORD));                    // Byte 3 ==> number of analog data
+        int nbAnalogsMeasurement(readInt(file, 1*WORD));                    // Byte 3 ==> number of analog data
         int firstFrame          (readInt(file, 1*WORD) - 1); // 1-based!    // Byte 4 ==> first frame in the file
         int lastFrame           (readInt(file, 1*WORD));                    // Byte 5 ==> last frame in the file
         int nbFrames(lastFrame - firstFrame);
@@ -155,6 +171,7 @@ int main()
         int scaleFactor         (readInt(file, 2*WORD));                    // Byte 7-8 ==> convert int to 3d reference frame, floating point if negative
         int dataStartAnalog     (readInt(file, 1*WORD));                    // Byte 9 ==> Number of first block for 3D and analog data
         int nbAnalogByFrame     (readInt(file, 1*WORD));                    // Byte 10 ==> Number of analog by frame
+        int nbAnalogs(nbAnalogsMeasurement / nbAnalogByFrame);
         double frameRate        (readFloat(file));                 // Byte 11-12 ==> 3d frame rate in Hz (floating point)
         int emptyBlock1         (readInt(file, 135*WORD));                  // Byte 13-147
         int keyLabelPresent     (readInt(file, 1*WORD));                    // Byte 148 ==> 12345 if Label and range are present
@@ -172,6 +189,7 @@ int main()
 
         std::cout << "HEADER" << std::endl;
         std::cout << "nb3dPoints = " << nb3dPoints << std::endl;
+        std::cout << "nbAnalogsMeasurement = " << nbAnalogsMeasurement << std::endl;
         std::cout << "nbAnalogs = " << nbAnalogs << std::endl;
         std::cout << "firstFrame = " << firstFrame << std::endl;
         std::cout << "lastFrame = " << lastFrame << std::endl;
@@ -314,23 +332,43 @@ int main()
         std::cout << "Points reading" << std::endl;
         // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
         readInt(file, BYTE, 256*WORD*(parametersAddress-1) + 256*WORD*nbParamBlock - BYTE, std::ios::beg); // "- BYTE" so it is just prior
-        for (int j = 0; j < 2; ++j){// nbFrames; ++j){
+        std::vector<Frame> allFrames;
+        for (int j = 0; j < nbFrames; ++j){
+            Frame f;
             std::cout << "Frame " << j << ":" << std::endl;
-            for (int i = 0; i < nb3dPoints; ++i){
-                std::cout << "Point " << i << " = [";
-                if (scaleFactor < 0){
-                    std::cout << readFloat(file) << ", ";   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
-                    std::cout << readFloat(file) << ", ";   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
-                    std::cout << readFloat(file) << "] extra WORD = ";   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
-                    std::cout << readFloat(file) << std::endl;   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
+            if (scaleFactor < 0){
+                Point3d p;
+                for (int i = 0; i < nb3dPoints; ++i){
+                    std::cout << "Point " << i << " = [";
+                    p.x = readFloat(file);
+                    p.y = readFloat(file);
+                    p.z = readFloat(file);
+                    p.residual = readFloat(file);
+                    f.points.push_back(p);
+                    std::cout << p.x << ", " << p.y << ", " << p.z << "]; ";
+                    std::cout << "Residual = " << p.residual << std::endl;
                 }
-                else
-                    throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
+
+                for (int k = 0; k < nbAnalogByFrame; ++k){
+                    std::vector<Analog> a;
+                    std::cout << "Frame " << j << "." << k << std::endl;
+                    for (int i = 0; i < nbAnalogs; ++i){
+                        Analog a2;
+                        a2.data = readFloat(file);
+                        a.push_back(a2);
+                        std::cout << "Analog [" << i << "] = " << a2.data << std::endl;
+                    }
+                    f.analogs.push_back(a);
+                }
             }
+            else
+                throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
+            allFrames.push_back(f);
             std::cout << std::endl;
         }
 
         // Terminate
+        std::cout << "Successfully read the c3d file" << std::endl;
         file.close();
 
     }
