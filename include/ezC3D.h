@@ -41,6 +41,7 @@ public:
                     int currentIdx = 0);
 
     class Header;
+    class Parameter;
 
     class Point3d;
     class Analog;
@@ -51,6 +52,7 @@ public:
         WORD = 2
     };
     const std::shared_ptr<Header>& header() const;
+    const std::shared_ptr<Parameter>& parameters() const;
     const std::vector<Frame>& frames() const;
 
 protected:
@@ -58,6 +60,7 @@ protected:
 
     // Holder of data
     std::shared_ptr<Header> _header;
+    std::shared_ptr<Parameter> _parameters;
     std::vector<Frame> _frames;
 
     // Internal reading function

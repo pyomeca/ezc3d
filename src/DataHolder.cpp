@@ -2,33 +2,40 @@
 // Implementation of data class
 
 // Point3d data
-void ezC3D::Point3d::print()
+void ezC3D::Point3d::print() const
 {
     std::cout << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
 }
 
-float ezC3D::Point3d::x(){
+float ezC3D::Point3d::x() const
+{
     return _x;
 }
-void ezC3D::Point3d::x(float x){
+void ezC3D::Point3d::x(float x)
+{
     _x = x;
 }
 
-float ezC3D::Point3d::y(){
+float ezC3D::Point3d::y() const
+{
     return _y;
 }
-void ezC3D::Point3d::y(float y){
+void ezC3D::Point3d::y(float y)
+{
     _y = y;
 }
 
-float ezC3D::Point3d::z(){
+float ezC3D::Point3d::z() const
+{
     return _z;
 }
-void ezC3D::Point3d::z(float z){
+void ezC3D::Point3d::z(float z)
+{
     _z = z;
 }
 
-float ezC3D::Point3d::residual(){
+float ezC3D::Point3d::residual() const
+{
     return _residual;
 }
 void ezC3D::Point3d::residual(float residual){
@@ -37,7 +44,7 @@ void ezC3D::Point3d::residual(float residual){
 
 
 // Analog data
-void ezC3D::Analog::print()
+void ezC3D::Analog::print() const
 {
     for (int i = 0; i < _channels.size(); ++i){
         std::cout << "Analog [" << i << "] = " << data(i) << std::endl;
@@ -68,7 +75,7 @@ float ezC3D::Analog::data(int channel) const
 
 
 // Frame data
-void ezC3D::Frame::print()
+void ezC3D::Frame::print() const
 {
     _points.print();
     _analogs.print();
