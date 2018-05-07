@@ -45,9 +45,6 @@ public:
 
     class Header;
     class Parameters;
-
-    class Point3d;
-    class Analog;
     class Frame;
     // Size of some constant (in Byte)
     enum READ_SIZE{
@@ -77,7 +74,8 @@ protected:
     int hex2int(const char * val);
     int hex2long(const char * val);
 };
-#include <DataHolder.h>
-#include <SectionReader.h>
+#include "Parameters.h"
+#include "Header.h"
+#include "Data.h"
 
 #endif
