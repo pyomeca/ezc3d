@@ -44,6 +44,10 @@ int main()
             std::cout << std::endl;
         }
 
+        // Print the read C3D
+        file.header()->print();
+        file.parameters()->print();
+
         // Terminate
         std::cout << "Successfully read the c3d file" << std::endl;
         file.close();

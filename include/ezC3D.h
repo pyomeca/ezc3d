@@ -32,16 +32,19 @@ public:
     long readLong(int nByteToRead,
                   int nByteFromPrevious = 0,
                   const  std::ios_base::seekdir &pos = std::ios::cur);
+    void readMatrix(std::vector<int> dimension,
+                    std::vector<std::string> &param_data,
+                    int currentIdx = 0);
     void readMatrix(int dataLenghtInBytes,
                     std::vector<int> dimension,
                     std::vector<int> &param_data,
                     int currentIdx = 0);
     void readMatrix(std::vector<int> dimension,
-                    std::vector<std::string> &param_data,
+                    std::vector<float> &param_data,
                     int currentIdx = 0);
 
     class Header;
-    class Parameter;
+    class Parameters;
 
     class Point3d;
     class Analog;
@@ -52,7 +55,7 @@ public:
         WORD = 2
     };
     const std::shared_ptr<Header>& header() const;
-    const std::shared_ptr<Parameter>& parameters() const;
+    const std::shared_ptr<Parameters>& parameters() const;
     const std::vector<Frame>& frames() const;
 
 protected:
@@ -60,7 +63,7 @@ protected:
 
     // Holder of data
     std::shared_ptr<Header> _header;
-    std::shared_ptr<Parameter> _parameters;
+    std::shared_ptr<Parameters> _parameters;
     std::vector<Frame> _frames;
 
     // Internal reading function
