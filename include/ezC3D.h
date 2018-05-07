@@ -45,7 +45,7 @@ public:
 
     class Header;
     class Parameters;
-    class Frame;
+    class Data;
     // Size of some constant (in Byte)
     enum READ_SIZE{
         BYTE = 1,
@@ -53,7 +53,7 @@ public:
     };
     const std::shared_ptr<Header>& header() const;
     const std::shared_ptr<Parameters>& parameters() const;
-    const std::vector<Frame>& frames() const;
+    const std::shared_ptr<Data>& data() const;
 
 protected:
     std::string _filePath; // Remember the file path
@@ -61,7 +61,7 @@ protected:
     // Holder of data
     std::shared_ptr<Header> _header;
     std::shared_ptr<Parameters> _parameters;
-    std::vector<Frame> _frames;
+    std::shared_ptr<Data> _data;
 
     // Internal reading function
     void readFile(int nByteToRead,

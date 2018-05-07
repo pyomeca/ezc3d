@@ -6,6 +6,7 @@ ezC3D::ezC3D(const std::string &filePath):
 {
     _header = std::shared_ptr<Header>(new Header(*this));
     _parameters = std::shared_ptr<Parameters>(new Parameters(*this));
+    _data = std::shared_ptr<Data>(new Data(*this));
 }
 
 
@@ -146,7 +147,7 @@ const std::shared_ptr<ezC3D::Parameters>& ezC3D::parameters() const
     return _parameters;
 }
 
-const std::vector<ezC3D::Frame>& ezC3D::frames() const
+const std::shared_ptr<ezC3D::Data>& ezC3D::data() const
 {
-    return _frames;
+    return _data;
 }
