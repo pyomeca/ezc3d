@@ -66,11 +66,16 @@ public:
 
     float residual() const;
     void residual(float residual);
+    const std::string& name() const;
+    void name(const std::string &name);
+
 protected:
     float _x;
     float _y;
     float _z;
     float _residual;
+
+    std::string _name;
 };
 
 class ezC3D::Data::Analogs{
@@ -89,11 +94,16 @@ protected:
 
 class ezC3D::Data::Analogs::Channel{
 public:
+    void print() const;
+
     float value() const;
     void value(float v);
 
-    void print() const;
+    const std::string& name() const;
+    void name(const std::string &name);
+
 protected:
+    std::string _name;
     float _value;
 };
 

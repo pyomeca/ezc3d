@@ -20,6 +20,7 @@ ezC3D::Data::Data(ezC3D &file)
                 p.y(file.readFloat());
                 p.z(file.readFloat());
                 p.residual(file.readFloat());
+                p.name("GENERIC NAME");
                 pts.add(p);
             }
             frame.add(pts);
@@ -29,6 +30,7 @@ ezC3D::Data::Data(ezC3D &file)
                 for (int i = 0; i < file.header()->nbAnalogs(); ++i){
                     ezC3D::Data::Analogs::Channel c;
                     c.value(file.readFloat());
+                    c.name("GENERIC NAME");
                     a.addChannel(c);
                 }
                 frame.add(a);
@@ -87,7 +89,7 @@ const ezC3D::Data::Points3d::Point& ezC3D::Data::Points3d::point(int idx) const
 
 void ezC3D::Data::Points3d::Point::print() const
 {
-    std::cout << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
+    std::cout << name() << " = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
 }
 
 float ezC3D::Data::Points3d::Point::x() const
@@ -123,6 +125,16 @@ float ezC3D::Data::Points3d::Point::residual() const
 }
 void ezC3D::Data::Points3d::Point::residual(float residual){
     _residual = residual;
+}
+
+const std::string& ezC3D::Data::Points3d::Point::name() const
+{
+    return _name;
+}
+
+void ezC3D::Data::Points3d::Point::name(const std::string &name)
+{
+    _name = name;
 }
 
 
@@ -162,7 +174,17 @@ void ezC3D::Data::Analogs::Channel::value(float v)
 }
 void ezC3D::Data::Analogs::Channel::print() const
 {
-    std::cout << value() << std::endl;
+    std::cout << "Analog[" << name() << "] = " << value() << std::endl;
+}
+
+const std::string& ezC3D::Data::Analogs::Channel::name() const
+{
+    return _name;
+}
+
+void ezC3D::Data::Analogs::Channel::name(const std::string &name)
+{
+    _name = name;
 }
 
 
