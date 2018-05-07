@@ -5,7 +5,7 @@ ezC3D::ezC3D(const std::string &filePath):
     _filePath(filePath)
 {
     _header = std::shared_ptr<Header>(new Header(*this));
-    _parameters = std::shared_ptr<Parameter>(new Parameter(*this));
+    _parameters = std::shared_ptr<Parameters>(new Parameters(*this));
 }
 
 
@@ -117,6 +117,16 @@ void ezC3D::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
 }
 
 void ezC3D::readMatrix(std::vector<int> dimension,
+                       std::vector<float> &param_data, int currentIdx)
+{
+    for (int i=0; i<dimension[currentIdx]; ++i)
+        if (currentIdx == dimension.size()-1)
+            param_data.push_back (readFloat());
+        else
+            readMatrix(dimension, param_data, currentIdx + 1);
+}
+
+void ezC3D::readMatrix(std::vector<int> dimension,
                        std::vector<std::string> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -131,7 +141,7 @@ const std::shared_ptr<ezC3D::Header>& ezC3D::header() const
     return _header;
 }
 
-const std::shared_ptr<ezC3D::Parameter>& ezC3D::parameters() const
+const std::shared_ptr<ezC3D::Parameters>& ezC3D::parameters() const
 {
     return _parameters;
 }
