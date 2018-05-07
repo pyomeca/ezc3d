@@ -1,11 +1,30 @@
-#ifndef __DATA_HOLDER_H__
-#define __DATA_HOLDER_H__
+#ifndef __DATA_H__
+#define __DATA_H__
 
 #include "ezC3D.h"
 #include <stdexcept>
 #include <iostream>
 
-class ezC3D::Point3d{
+
+class ezC3D::Frame{
+public:
+    void print() const;
+
+
+    class Point3d;
+    class Analog;
+
+    void add(Analog analog_frame);
+    void add(Point3d point3d_frame);
+    void add(Point3d point3d_frame, Analog analog_frame);
+
+protected:
+
+    std::shared_ptr<Point3d> _points; // All points for this frame
+    std::shared_ptr<Analog> _analogs; // All subframe for all analogs
+};
+
+class ezC3D::Frame::Point3d{
 public:
     void print() const;
 
@@ -27,7 +46,7 @@ protected:
     float _residual;
 };
 
-class ezC3D::Analog{
+class ezC3D::Frame::Analog{
 public:
     void print() const;
 
@@ -41,18 +60,6 @@ protected:
 
 
 
-class ezC3D::Frame{
-public:
-    void print() const;
-
-    void add(ezC3D::Analog analog_frame);
-    void add(ezC3D::Point3d point3d_frame);
-    void add(ezC3D::Point3d point3d_frame, ezC3D::Analog analog_frame);
-
-protected:
-    ezC3D::Analog _analogs; // All subframe for all analogs
-    ezC3D::Point3d _points; // All points for this frame
-};
 
 
 #endif

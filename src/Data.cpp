@@ -1,69 +1,69 @@
-#include "DataHolder.h"
+#include "Data.h"
 // Implementation of data class
 
 // Point3d data
-void ezC3D::Point3d::print() const
+void ezC3D::Frame::Point3d::print() const
 {
     std::cout << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
 }
 
-float ezC3D::Point3d::x() const
+float ezC3D::Frame::Point3d::x() const
 {
     return _x;
 }
-void ezC3D::Point3d::x(float x)
+void ezC3D::Frame::Point3d::x(float x)
 {
     _x = x;
 }
 
-float ezC3D::Point3d::y() const
+float ezC3D::Frame::Point3d::y() const
 {
     return _y;
 }
-void ezC3D::Point3d::y(float y)
+void ezC3D::Frame::Point3d::y(float y)
 {
     _y = y;
 }
 
-float ezC3D::Point3d::z() const
+float ezC3D::Frame::Point3d::z() const
 {
     return _z;
 }
-void ezC3D::Point3d::z(float z)
+void ezC3D::Frame::Point3d::z(float z)
 {
     _z = z;
 }
 
-float ezC3D::Point3d::residual() const
+float ezC3D::Frame::Point3d::residual() const
 {
     return _residual;
 }
-void ezC3D::Point3d::residual(float residual){
+void ezC3D::Frame::Point3d::residual(float residual){
     _residual = residual;
 }
 
 
 // Analog data
-void ezC3D::Analog::print() const
+void ezC3D::Frame::Analog::print() const
 {
     for (int i = 0; i < _channels.size(); ++i){
         std::cout << "Analog [" << i << "] = " << data(i) << std::endl;
     }
 }
 
-void ezC3D::Analog::addChannel(float oneChannelData)
+void ezC3D::Frame::Analog::addChannel(float oneChannelData)
 {
     _channels.push_back(oneChannelData);
 }
-void ezC3D::Analog::addChannels(const std::vector<float>& allChannelsData)
+void ezC3D::Frame::Analog::addChannels(const std::vector<float>& allChannelsData)
 {
     _channels = allChannelsData;
 }
-const std::vector<float>& ezC3D::Analog::data() const
+const std::vector<float>& ezC3D::Frame::Analog::data() const
 {
     return _channels;
 }
-float ezC3D::Analog::data(int channel) const
+float ezC3D::Frame::Analog::data(int channel) const
 {
     if (channel < 0 || channel >= _channels.size())
         throw std::out_of_range("Tried to access wrong index for analog data");
@@ -77,17 +77,18 @@ float ezC3D::Analog::data(int channel) const
 // Frame data
 void ezC3D::Frame::print() const
 {
-    _points.print();
-    _analogs.print();
+    _points->print();
+    _analogs->print();
 }
-void ezC3D::Frame::add(ezC3D::Analog analog_frame){
-    _analogs = analog_frame;
-}
-void ezC3D::Frame::add(ezC3D::Point3d point3d_frame)
+void ezC3D::Frame::add(Analog analog_frame)
 {
-    _points = point3d_frame;
+    _analogs = std::shared_ptr<Analog>(new Analog(analog_frame));
 }
-void ezC3D::Frame::add(ezC3D::Point3d point3d_frame, ezC3D::Analog analog_frame)
+void ezC3D::Frame::add(Point3d point3d_frame)
+{
+    _points = std::shared_ptr<Point3d>(new Point3d(point3d_frame));
+}
+void ezC3D::Frame::add(Point3d point3d_frame, Analog analog_frame)
 {
     add(point3d_frame);
     add(analog_frame);
