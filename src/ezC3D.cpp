@@ -5,6 +5,7 @@ ezC3D::ezC3D(const std::string &filePath):
     _filePath(filePath)
 {
     _header = std::shared_ptr<Header>(new Header(*this));
+    _parameters = std::shared_ptr<Parameter>(new Parameter(*this));
 }
 
 
@@ -128,6 +129,11 @@ void ezC3D::readMatrix(std::vector<int> dimension,
 const std::shared_ptr<ezC3D::Header>& ezC3D::header() const
 {
     return _header;
+}
+
+const std::shared_ptr<ezC3D::Parameter>& ezC3D::parameters() const
+{
+    return _parameters;
 }
 
 const std::vector<ezC3D::Frame>& ezC3D::frames() const
