@@ -187,29 +187,3 @@ void ezC3D::Data::Frame::add(ezC3D::Data::Points3d point3d_frame, ezC3D::Data::A
     add(point3d_frame);
     add(analog_frame);
 }
-
-//// Frame data
-//void ezC3D::Frame::print()
-//{
-//    _points.print();
-//}
-//void ezC3D::Frame::add(ezC3D::Analog analog_frame){
-//    if (_points.size() != 0)
-//        throw std::range_error("Analogs and Points can't be added separately, unless they are the only available data");
-//    _analogs.push_back(analog_frame);
-//}
-
-//void ezC3D::Frame::add(ezC3D::Point3d point3d_frame)
-//{
-//    if (_analogs.size() != 0)
-//        throw std::range_error("Analogs and Points can't be added separately, unless they are the only available data");
-//    _points.push_back(point3d_frame);
-//}
-
-//void ezC3D::Frame::add(ezC3D::Point3d point3d_frame, ezC3D::Analog analog_frame)
-//{
-//    _points.push_back(point3d_frame);
-//    _analogs.push_back(analog_frame);
-//}
-
-
