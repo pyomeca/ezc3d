@@ -63,4 +63,53 @@ protected:
     int _emptyBlock4;               // Byte 235-256
 };
 
+
+class ezC3D::Parameter{
+public:
+    Parameter(ezC3D &file);
+    void read(ezC3D &file);
+    void print() const;
+
+protected:
+    class Group;
+
+public:
+    const std::vector<ezC3D::Parameter::Group>& groups() const;
+    const ezC3D::Parameter::Group& group(int group) const;
+    ezC3D::Parameter::Group& group_nonConst(int group);
+
+    int parametersStart() const;
+    int iChecksum() const;
+    int nbParamBlock() const;
+    int processorType() const;
+    //class Group::Parameter;
+
+protected:
+    std::vector<Group> _groups; // Holder for the group of parameters
+
+    // Read the Parameters Header
+    int _parametersStart;   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
+    int _iChecksum;         // Byte 2 ==> should be 80 if it is a c3d
+    int _nbParamBlock;      // Byte 3 ==> Number of parameter blocks to follow
+    int _processorType;     // Byte 4 ==> Processor type (83 + [1 Inter, 2 DEC, 3 MIPS])
+};
+
+
+class ezC3D::Parameter::Group{
+public:
+    Group();
+
+    int readGroup(ezC3D &file, int nbCharInName);
+    void print() const;
+
+    // Getter for the group
+    void lock();
+    void unlock();
+
+protected:
+    bool _isLocked; // If the group should not be modified
+
+    std::string _name;
+    std::string _description;
+};
 #endif
