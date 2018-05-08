@@ -11,6 +11,10 @@ ezC3D::Data::Data(ezC3D &file)
     for (int j = 0; j < file.header()->nbFrames(); ++j){
         ezC3D::Data::Frame frame;
 
+        // Get names of the data
+        std::vector<std::string> pointNames(file.parameters()->group("POINT").parameter("LABELS").stringValues());
+        std::vector<std::string> analogNames(file.parameters()->group("ANALOG").parameter("LABELS").stringValues());
+
         // Read point 3d
         if (file.header()->scaleFactor() < 0){
             ezC3D::Data::Points3d pts;
@@ -20,31 +24,37 @@ ezC3D::Data::Data(ezC3D &file)
                 p.y(file.readFloat());
                 p.z(file.readFloat());
                 p.residual(file.readFloat());
-                p.name("GENERIC NAME");
+                if (i < pointNames.size())
+                    p.name(pointNames[i]);
+                else
+                    p.name("unlabeled_point_" + i);
                 pts.add(p);
             }
             frame.add(pts);
 
-            ezC3D::Data::Analogs a;
+            ezC3D::Data::Analogs analog;
             for (int k = 0; k < file.header()->nbAnalogByFrame(); ++k){
+                ezC3D::Data::Analogs::SubFrame sub;
                 for (int i = 0; i < file.header()->nbAnalogs(); ++i){
-                    ezC3D::Data::Analogs::Channel c;
+                    ezC3D::Data::Analogs::SubFrame::Channel c;
                     c.value(file.readFloat());
-                    c.name("GENERIC NAME");
-                    a.addChannel(c);
+                    if (i < pointNames.size())
+                        c.name(analogNames[i]);
+                    else
+                        c.name("unlabeled_analog_" + i);
+                    sub.addChannel(c);
                 }
-                frame.add(a);
+                analog.addSubframe(sub);
             }
+            frame.add(analog);
         }
         else
             throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
 
         _frames.push_back(frame);
-        std::cout << std::endl;
     }
 
 }
-
 const std::vector<ezC3D::Data::Frame>& ezC3D::Data::frames() const
 {
     return _frames;
@@ -58,7 +68,9 @@ const ezC3D::Data::Frame& ezC3D::Data::frame(int idx) const
 void ezC3D::Data::print() const
 {
     for (int i = 0; i < frames().size(); ++i){
+        std::cout << "Frame " << i << std::endl;
         frame(i).print();
+        std::cout << std::endl;
     }
 }
 
@@ -86,12 +98,26 @@ const ezC3D::Data::Points3d::Point& ezC3D::Data::Points3d::point(int idx) const
         throw std::out_of_range("Tried to access wrong index for points data");
     return _points[idx];
 }
-
+const ezC3D::Data::Points3d::Point &ezC3D::Data::Points3d::point(const std::string &pointName) const
+{
+    for (int i = 0; i<points().size(); ++i)
+        if (!point(i).name().compare(pointName))
+            return point(i);
+    throw std::invalid_argument("Point name was not found within the points");
+}
 void ezC3D::Data::Points3d::Point::print() const
 {
     std::cout << name() << " = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
 }
 
+
+
+ezC3D::Data::Points3d::Point::Point() :
+    _name(""),
+    _idxInData(-1)
+{
+
+}
 float ezC3D::Data::Points3d::Point::x() const
 {
     return _x;
@@ -118,7 +144,6 @@ void ezC3D::Data::Points3d::Point::z(float z)
 {
     _z = z;
 }
-
 float ezC3D::Data::Points3d::Point::residual() const
 {
     return _residual;
@@ -126,63 +151,78 @@ float ezC3D::Data::Points3d::Point::residual() const
 void ezC3D::Data::Points3d::Point::residual(float residual){
     _residual = residual;
 }
-
 const std::string& ezC3D::Data::Points3d::Point::name() const
 {
     return _name;
 }
-
 void ezC3D::Data::Points3d::Point::name(const std::string &name)
 {
     _name = name;
 }
+int ezC3D::Data::Points3d::Point::idxInData() const
+{
+    return _idxInData;
+}
+void ezC3D::Data::Points3d::Point::idxInData(int idxInData)
+{
+    _idxInData = idxInData;
+}
+
+
 
 
 // Analog data
-void ezC3D::Data::Analogs::print() const
+void ezC3D::Data::Analogs::SubFrame::print() const
 {
     for (int i = 0; i < channels().size(); ++i){
         channel(i).print();
     }
 }
 
-void ezC3D::Data::Analogs::addChannel(ezC3D::Data::Analogs::Channel channel)
+void ezC3D::Data::Analogs::SubFrame::addChannel(ezC3D::Data::Analogs::SubFrame::Channel channel)
 {
     _channels.push_back(channel);
 }
-void ezC3D::Data::Analogs::addChannels(const std::vector<ezC3D::Data::Analogs::Channel>& allChannelsData)
+void ezC3D::Data::Analogs::SubFrame::addChannels(const std::vector<ezC3D::Data::Analogs::SubFrame::Channel>& allChannelsData)
 {
     _channels = allChannelsData;
 }
-const std::vector<ezC3D::Data::Analogs::Channel>& ezC3D::Data::Analogs::channels() const
+const std::vector<ezC3D::Data::Analogs::SubFrame::Channel>& ezC3D::Data::Analogs::SubFrame::channels() const
 {
     return _channels;
 }
-ezC3D::Data::Analogs::Channel ezC3D::Data::Analogs::channel(int channel) const
+const ezC3D::Data::Analogs::SubFrame::Channel &ezC3D::Data::Analogs::SubFrame::channel(int idx) const
 {
-    if (channel < 0 || channel >= _channels.size())
+    if (idx < 0 || idx >= _channels.size())
         throw std::out_of_range("Tried to access wrong index for analog data");
-    return _channels[channel];
+    return _channels[idx];
 }
-float ezC3D::Data::Analogs::Channel::value() const
+const ezC3D::Data::Analogs::SubFrame::Channel &ezC3D::Data::Analogs::SubFrame::channel(std::string channelName) const
+{
+    for (int i = 0; i < channels().size(); ++i)
+        if (!channel(i).name().compare(channelName))
+            return channel(i);
+    throw std::invalid_argument("Analog name was not found within the analogs");
+}
+float ezC3D::Data::Analogs::SubFrame::Channel::value() const
 {
     return _value;
 }
-void ezC3D::Data::Analogs::Channel::value(float v)
+void ezC3D::Data::Analogs::SubFrame::Channel::value(float v)
 {
     _value = v;
 }
-void ezC3D::Data::Analogs::Channel::print() const
+void ezC3D::Data::Analogs::SubFrame::Channel::print() const
 {
     std::cout << "Analog[" << name() << "] = " << value() << std::endl;
 }
 
-const std::string& ezC3D::Data::Analogs::Channel::name() const
+const std::string& ezC3D::Data::Analogs::SubFrame::Channel::name() const
 {
     return _name;
 }
 
-void ezC3D::Data::Analogs::Channel::name(const std::string &name)
+void ezC3D::Data::Analogs::SubFrame::Channel::name(const std::string &name)
 {
     _name = name;
 }
@@ -193,8 +233,16 @@ void ezC3D::Data::Analogs::Channel::name(const std::string &name)
 // Frame data
 void ezC3D::Data::Frame::print() const
 {
-    _points->print();
-    _analogs->print();
+    points()->print();
+    analogs()->print();
+}
+const std::shared_ptr<ezC3D::Data::Points3d>& ezC3D::Data::Frame::points() const
+{
+    return _points;
+}
+const std::shared_ptr<ezC3D::Data::Analogs>& ezC3D::Data::Frame::analogs() const
+{
+    return _analogs;
 }
 void ezC3D::Data::Frame::add(ezC3D::Data::Analogs analogs_frame)
 {
@@ -208,4 +256,26 @@ void ezC3D::Data::Frame::add(ezC3D::Data::Points3d point3d_frame, ezC3D::Data::A
 {
     add(point3d_frame);
     add(analog_frame);
+}
+const std::vector<ezC3D::Data::Analogs::SubFrame>& ezC3D::Data::Analogs::subframes() const
+{
+    return _subframe;
+}
+const ezC3D::Data::Analogs::SubFrame& ezC3D::Data::Analogs::subframe(int idx) const
+{
+    if (idx < 0 || idx >= _subframe.size())
+        throw std::out_of_range("Tried to access wrong subframe index for analog data");
+    return _subframe[idx];
+}
+void ezC3D::Data::Analogs::print()
+{
+    for (int i = 0; i < subframes().size(); ++i){
+        std::cout << "Subframe = " << i << std::endl;
+        subframe(i).print();
+        std::cout << std::endl;
+    }
+}
+void ezC3D::Data::Analogs::addSubframe(const ezC3D::Data::Analogs::SubFrame& subframe)
+{
+    _subframe.push_back(subframe);
 }

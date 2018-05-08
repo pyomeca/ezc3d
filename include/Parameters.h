@@ -10,13 +10,11 @@ public:
     void read(ezC3D &file);
     void print() const;
 
-protected:
     class Group;
-
-public:
-    const std::vector<ezC3D::Parameters::Group>& groups() const;
-    const ezC3D::Parameters::Group& group(int group) const;
-    ezC3D::Parameters::Group& group_nonConst(int group);
+    const std::vector<Group>& groups() const;
+    const Group& group(int group) const;
+    const Group& group(const std::string& groupName) const;
+    Group& group_nonConst(int group);
 
     int parametersStart() const;
     int checksum() const;
@@ -43,10 +41,7 @@ public:
     int addParameter(ezC3D &file, int nbCharInName);
     void print() const;
 
-protected:
     class Parameter;
-
-public:
     // Getter for the group
     void lock();
     void unlock();
@@ -56,6 +51,7 @@ public:
     const std::vector<Parameter>& parameters() const;
     const Parameter& parameter(int idx) const;
     std::vector<Parameter>& parameters_nonConst();
+    const Parameter& parameter(std::string parameterName) const;
 
 protected:
     bool _isLocked; // If the group should not be modified
@@ -63,7 +59,6 @@ protected:
     std::string _name;
     std::string _description;
 
-    class Parameter;
     std::vector<Parameter> _parameters; // Holder for the parameters of the group
 };
 class ezC3D::Parameters::Group::Parameter{
@@ -80,6 +75,7 @@ public:
     const std::string& name() const;
     const std::string& description() const;
 
+    const std::vector<std::string>& stringValues() const;
 protected:
     enum DATA_TYPE{
         CHAR = -1,
