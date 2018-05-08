@@ -78,12 +78,21 @@ const std::vector<ezC3D::Parameters::Group>& ezC3D::Parameters::groups() const
 {
     return _groups;
 }
-ezC3D::Parameters::Group &ezC3D::Parameters::group_nonConst(int group){
+ezC3D::Parameters::Group &ezC3D::Parameters::group_nonConst(int group)
+{
     return _groups[group];
 }
 const ezC3D::Parameters::Group &ezC3D::Parameters::group(int group) const
 {
     return _groups[group];
+}
+const ezC3D::Parameters::Group &ezC3D::Parameters::group(const std::string &groupName) const
+{
+    for (int i = 0; i < groups().size(); ++i){
+        if (!group(i).name().compare(groupName))
+            return group(i);
+    }
+    throw std::invalid_argument("Group name was not found in parameters");
 }
 void ezC3D::Parameters::Group::lock()
 {
@@ -165,6 +174,15 @@ const ezC3D::Parameters::Group::Parameter &ezC3D::Parameters::Group::parameter(i
 std::vector<ezC3D::Parameters::Group::Parameter>& ezC3D::Parameters::Group::parameters_nonConst()
 {
     return _parameters;
+}
+
+const ezC3D::Parameters::Group::Parameter &ezC3D::Parameters::Group::parameter(std::string parameterName) const
+{
+    for (int i = 0; i < parameters().size(); ++i){
+        if (!parameter(i).name().compare(parameterName))
+            return parameter(i);
+    }
+    throw std::invalid_argument("Parameter name was not found within the group");
 }
 
 
@@ -300,3 +318,10 @@ void ezC3D::Parameters::Group::Parameter::print() const
     std::cout << "description = " << _description << std::endl;
 }
 
+
+const std::vector<std::string>& ezC3D::Parameters::Group::Parameter::stringValues() const
+{
+    if (_data_type != DATA_TYPE::CHAR)
+        throw std::invalid_argument("This parameter is not string");
+    return _param_data_string;
+}

@@ -4,9 +4,18 @@ ezC3D::ezC3D(const std::string &filePath):
     std::fstream(filePath, std::ios::in | std::ios::binary),
     _filePath(filePath)
 {
+    if (!is_open())
+        throw std::ios_base::failure("Could not open the C3D file");
+
+    // Read all the section
     _header = std::shared_ptr<Header>(new Header(*this));
     _parameters = std::shared_ptr<Parameters>(new Parameters(*this));
     _data = std::shared_ptr<Data>(new Data(*this));
+}
+
+ezC3D::~ezC3D()
+{
+    close();
 }
 
 

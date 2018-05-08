@@ -12,6 +12,7 @@
 class ezC3D : public std::fstream{
 public:
     ezC3D(const std::string &filePath);
+    ~ezC3D();
 
 
     // Byte reading functions

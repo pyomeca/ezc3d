@@ -32,6 +32,9 @@ public:
     void add(ezC3D::Data::Points3d point3d_frame);
     void add(ezC3D::Data::Points3d point3d_frame, ezC3D::Data::Analogs analog_frame);
 
+    const std::shared_ptr<ezC3D::Data::Points3d>& points() const;
+    const std::shared_ptr<ezC3D::Data::Analogs>& analogs() const;
+
 protected:
 
     std::shared_ptr<ezC3D::Data::Points3d> _points; // All points for this frame
@@ -46,6 +49,7 @@ public:
 
     const std::vector<Point>& points() const;
     const Point& point(int idx) const;
+    const Point& point(const std::string& pointName) const;
 
 protected:
     std::vector<Point> _points;
@@ -54,6 +58,7 @@ protected:
 class ezC3D::Data::Points3d::Point{
 public:
     void print() const;
+    Point();
 
     float x() const;
     void x(float x);
@@ -69,6 +74,9 @@ public:
     const std::string& name() const;
     void name(const std::string &name);
 
+    int idxInData() const;
+    void idxInData(int idxInData);
+
 protected:
     float _x;
     float _y;
@@ -76,9 +84,24 @@ protected:
     float _residual;
 
     std::string _name;
+    int _idxInData;
 };
 
 class ezC3D::Data::Analogs{
+public:
+    class SubFrame;
+
+    void print();
+
+    const std::vector<SubFrame>& subframes() const;
+    const SubFrame& subframe(int idx) const;
+    void addSubframe(const SubFrame& subframe);
+
+protected:
+    std::vector<SubFrame> _subframe;
+};
+
+class ezC3D::Data::Analogs::SubFrame{
 public:
     class Channel;
 
@@ -87,12 +110,13 @@ public:
     void addChannel(Channel allChannelsData);
     void addChannels(const std::vector<Channel>& allChannelsData);
     const std::vector<Channel>& channels() const;
-    Channel channel(int channel) const;
+    const Channel& channel(int idx) const;
+    const Channel& channel(std::string channelName) const;
 protected:
     std::vector<Channel> _channels;
 };
 
-class ezC3D::Data::Analogs::Channel{
+class ezC3D::Data::Analogs::SubFrame::Channel{
 public:
     void print() const;
 
