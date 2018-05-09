@@ -5,10 +5,10 @@
 ezC3D::Data::Data(ezC3D &file)
 {
     // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
-    file.readInt(ezC3D::READ_SIZE::BYTE, 256*ezC3D::READ_SIZE::WORD*(file.header()->parametersAddress()-1) + 256*ezC3D::READ_SIZE::WORD*file.parameters()->nbParamBlock() - ezC3D::READ_SIZE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
+    file.readInt(ezC3D::READ_SIZE::BYTE, 256*ezC3D::READ_SIZE::WORD*(file.header().parametersAddress()-1) + 256*ezC3D::READ_SIZE::WORD*file.parameters()->nbParamBlock() - ezC3D::READ_SIZE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
 
     // Read the actual data
-    for (int j = 0; j < file.header()->nbFrames(); ++j){
+    for (int j = 0; j < file.header().nbFrames(); ++j){
         ezC3D::Data::Frame frame;
 
         // Get names of the data
@@ -16,9 +16,9 @@ ezC3D::Data::Data(ezC3D &file)
         std::vector<std::string> analogNames(file.parameters()->group("ANALOG").parameter("LABELS").stringValues());
 
         // Read point 3d
-        if (file.header()->scaleFactor() < 0){
+        if (file.header().scaleFactor() < 0){
             ezC3D::Data::Points3d pts;
-            for (int i = 0; i < file.header()->nb3dPoints(); ++i){
+            for (int i = 0; i < file.header().nb3dPoints(); ++i){
                 ezC3D::Data::Points3d::Point p;
                 p.x(file.readFloat());
                 p.y(file.readFloat());
@@ -33,9 +33,9 @@ ezC3D::Data::Data(ezC3D &file)
             frame.add(pts);
 
             ezC3D::Data::Analogs analog;
-            for (int k = 0; k < file.header()->nbAnalogByFrame(); ++k){
+            for (int k = 0; k < file.header().nbAnalogByFrame(); ++k){
                 ezC3D::Data::Analogs::SubFrame sub;
-                for (int i = 0; i < file.header()->nbAnalogs(); ++i){
+                for (int i = 0; i < file.header().nbAnalogs(); ++i){
                     ezC3D::Data::Analogs::SubFrame::Channel c;
                     c.value(file.readFloat());
                     if (i < pointNames.size())
