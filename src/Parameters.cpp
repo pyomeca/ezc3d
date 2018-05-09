@@ -6,7 +6,7 @@ ezC3D::Parameters::Parameters(ezC3D &file) :
     _processorType(0)
 {
     // Read the Parameters Header
-    _parametersStart = file.readInt(1*ezC3D::READ_SIZE::BYTE, 256*ezC3D::READ_SIZE::WORD*(file.header()->parametersAddress()-1), std::ios::beg);
+    _parametersStart = file.readInt(1*ezC3D::READ_SIZE::BYTE, 256*ezC3D::READ_SIZE::WORD*(file.header().parametersAddress()-1), std::ios::beg);
     _checksum = file.readInt(1*ezC3D::READ_SIZE::BYTE);
     _nbParamBlock = file.readInt(1*ezC3D::READ_SIZE::BYTE);
     _processorType = file.readInt(1*ezC3D::READ_SIZE::BYTE);

@@ -12,6 +12,7 @@
 class ezC3D : public std::fstream{
 public:
     ezC3D(const std::string &filePath);
+    ezC3D(const char* filePath);
     ~ezC3D();
 
 
@@ -52,7 +53,7 @@ public:
         BYTE = 1,
         WORD = 2
     };
-    const std::shared_ptr<Header>& header() const;
+    const Header& header() const;
     const std::shared_ptr<Parameters>& parameters() const;
     const std::shared_ptr<Data>& data() const;
 
