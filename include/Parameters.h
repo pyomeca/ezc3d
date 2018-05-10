@@ -6,8 +6,8 @@
 
 class ezC3D::Parameters{
 public:
-    Parameters(ezC3D::Reader &file);
-    void read(ezC3D::Reader &file);
+    Parameters(ezC3D::C3D &file);
+    void read(ezC3D::C3D &file);
     void print() const;
 
     class Group;
@@ -20,7 +20,6 @@ public:
     int checksum() const;
     int nbParamBlock() const;
     int processorType() const;
-    //class Group::Parameter;
 
 protected:
     std::vector<Group> _groups; // Holder for the group of parameters
@@ -37,8 +36,8 @@ class ezC3D::Parameters::Group{
 public:
     Group();
 
-    int read(ezC3D::Reader &file, int nbCharInName);
-    int addParameter(ezC3D::Reader &file, int nbCharInName);
+    int read(ezC3D::C3D &file, int nbCharInName);
+    int addParameter(ezC3D::C3D &file, int nbCharInName);
     void print() const;
 
     class Parameter;
@@ -65,7 +64,7 @@ class ezC3D::Parameters::Group::Parameter{
 public:
     Parameter();
 
-    int read(ezC3D::Reader &file, int nbCharInName);
+    int read(ezC3D::C3D &file, int nbCharInName);
     void print() const;
 
     // Getter for the group
