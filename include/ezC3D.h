@@ -30,6 +30,10 @@ namespace ezC3D {
 
     namespace DataNS {
         class Data;
+
+        class Frame;
+        class Points3d;
+        class Analogs;
     }
 }
 
