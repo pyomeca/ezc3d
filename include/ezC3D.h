@@ -39,6 +39,7 @@ namespace ezC3D {
         namespace AnalogsNS {
             class Analogs;
             class SubFrame;
+            class Channel;
         }
     }
 }
