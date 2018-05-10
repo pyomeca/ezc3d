@@ -108,43 +108,43 @@ int ezC3D_NAMESPACE::Header::parametersAddress() const
 void ezC3D_NAMESPACE::Header::read(ezC3D &file)
 {
     // Parameter address
-    _parametersAddress = file.readInt(1*ezC3D::READ_SIZE::BYTE, 0, std::ios::beg);
-    _checksum = file.readInt(1*ezC3D::READ_SIZE::BYTE);
+    _parametersAddress = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE, 0, std::ios::beg);
+    _checksum = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE);
     if (_checksum != 80) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
     // Number of data
-    _nb3dPoints = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _nbAnalogsMeasurement = file.readInt(1*ezC3D::READ_SIZE::WORD);
+    _nb3dPoints = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _nbAnalogsMeasurement = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
 
     // Idx of first and last frame
-    _firstFrame = file.readInt(1*ezC3D::READ_SIZE::WORD) - 1; // 1-based!
-    _lastFrame = file.readInt(1*ezC3D::READ_SIZE::WORD);
+    _firstFrame = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD) - 1; // 1-based!
+    _lastFrame = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
 
     // Some info
-    _nbMaxInterpGap = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _scaleFactor = file.readInt(2*ezC3D::READ_SIZE::WORD);
+    _nbMaxInterpGap = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _scaleFactor = file.readInt(2*ezC3D_NAMESPACE::READ_SIZE::WORD);
 
     // Parameters of analog data
-    _dataStartAnalog = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _nbAnalogByFrame = file.readInt(1*ezC3D::READ_SIZE::WORD);
+    _dataStartAnalog = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _nbAnalogByFrame = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
     _frameRate = file.readFloat();
-    _emptyBlock1 = file.readInt(135*ezC3D::READ_SIZE::WORD);
+    _emptyBlock1 = file.readInt(135*ezC3D_NAMESPACE::READ_SIZE::WORD);
 
     // Parameters of keys
-    _keyLabelPresent = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _firstBlockKeyLabel = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _fourCharPresent = file.readInt(1*ezC3D::READ_SIZE::WORD);
+    _keyLabelPresent = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _firstBlockKeyLabel = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _fourCharPresent = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
 
     // Parameters of events
-    _nbEvents = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _emptyBlock2 = file.readInt(1*ezC3D::READ_SIZE::WORD);
+    _nbEvents = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _emptyBlock2 = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
     for (int i = 0; i < 18; ++i)
         _eventsTime.push_back(file.readFloat());
-    _eventsDisplay = file.readInt(9*ezC3D::READ_SIZE::WORD);
-    _emptyBlock3 = file.readInt(1*ezC3D::READ_SIZE::WORD);
-    _eventsLabel = file.readString(36*ezC3D::READ_SIZE::WORD);
-    _emptyBlock4 = file.readInt(22*ezC3D::READ_SIZE::WORD);
+    _eventsDisplay = file.readInt(9*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _emptyBlock3 = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _eventsLabel = file.readString(36*ezC3D_NAMESPACE::READ_SIZE::WORD);
+    _emptyBlock4 = file.readInt(22*ezC3D_NAMESPACE::READ_SIZE::WORD);
 }
 void ezC3D_NAMESPACE::Header::print() const{
     std::cout << "HEADER" << std::endl;

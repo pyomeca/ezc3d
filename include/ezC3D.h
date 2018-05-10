@@ -10,6 +10,12 @@
 #include <memory>
 
 namespace ezC3D_NAMESPACE {
+    // Size of some constant (in Byte)
+    enum READ_SIZE{
+        BYTE = 1,
+        WORD = 2
+    };
+
     class Header;
 }
 
@@ -51,11 +57,7 @@ public:
 
     class Parameters;
     class Data;
-    // Size of some constant (in Byte)
-    enum READ_SIZE{
-        BYTE = 1,
-        WORD = 2
-    };
+
     const ezC3D_NAMESPACE::Header& header() const;
     const std::shared_ptr<Parameters>& parameters() const;
     const std::shared_ptr<Data>& data() const;
