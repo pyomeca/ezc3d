@@ -36,7 +36,7 @@ ezC3D::DataNS::Data::Data(ezC3D::C3D &file)
             for (int k = 0; k < file.header().nbAnalogByFrame(); ++k){
                 ezC3D::DataNS::AnalogsNS::SubFrame sub;
                 for (int i = 0; i < file.header().nbAnalogs(); ++i){
-                    ezC3D::DataNS::AnalogsNS::SubFrame::Channel c;
+                    ezC3D::DataNS::AnalogsNS::Channel c;
                     c.value(file.readFloat());
                     if (i < pointNames.size())
                         c.name(analogNames[i]);
@@ -179,50 +179,50 @@ void ezC3D::DataNS::AnalogsNS::SubFrame::print() const
     }
 }
 
-void ezC3D::DataNS::AnalogsNS::SubFrame::addChannel(ezC3D::DataNS::AnalogsNS::SubFrame::Channel channel)
+void ezC3D::DataNS::AnalogsNS::SubFrame::addChannel(ezC3D::DataNS::AnalogsNS::Channel channel)
 {
     _channels.push_back(channel);
 }
-void ezC3D::DataNS::AnalogsNS::SubFrame::addChannels(const std::vector<ezC3D::DataNS::AnalogsNS::SubFrame::Channel>& allChannelsData)
+void ezC3D::DataNS::AnalogsNS::SubFrame::addChannels(const std::vector<ezC3D::DataNS::AnalogsNS::Channel>& allChannelsData)
 {
     _channels = allChannelsData;
 }
-const std::vector<ezC3D::DataNS::AnalogsNS::SubFrame::Channel>& ezC3D::DataNS::AnalogsNS::SubFrame::channels() const
+const std::vector<ezC3D::DataNS::AnalogsNS::Channel>& ezC3D::DataNS::AnalogsNS::SubFrame::channels() const
 {
     return _channels;
 }
-const ezC3D::DataNS::AnalogsNS::SubFrame::Channel &ezC3D::DataNS::AnalogsNS::SubFrame::channel(int idx) const
+const ezC3D::DataNS::AnalogsNS::Channel &ezC3D::DataNS::AnalogsNS::SubFrame::channel(int idx) const
 {
     if (idx < 0 || idx >= _channels.size())
         throw std::out_of_range("Tried to access wrong index for analog data");
     return _channels[idx];
 }
-const ezC3D::DataNS::AnalogsNS::SubFrame::Channel &ezC3D::DataNS::AnalogsNS::SubFrame::channel(std::string channelName) const
+const ezC3D::DataNS::AnalogsNS::Channel &ezC3D::DataNS::AnalogsNS::SubFrame::channel(std::string channelName) const
 {
     for (int i = 0; i < channels().size(); ++i)
         if (!channel(i).name().compare(channelName))
             return channel(i);
     throw std::invalid_argument("Analog name was not found within the analogs");
 }
-float ezC3D::DataNS::AnalogsNS::SubFrame::Channel::value() const
+float ezC3D::DataNS::AnalogsNS::Channel::value() const
 {
     return _value;
 }
-void ezC3D::DataNS::AnalogsNS::SubFrame::Channel::value(float v)
+void ezC3D::DataNS::AnalogsNS::Channel::value(float v)
 {
     _value = v;
 }
-void ezC3D::DataNS::AnalogsNS::SubFrame::Channel::print() const
+void ezC3D::DataNS::AnalogsNS::Channel::print() const
 {
     std::cout << "Analog[" << name() << "] = " << value() << std::endl;
 }
 
-const std::string& ezC3D::DataNS::AnalogsNS::SubFrame::Channel::name() const
+const std::string& ezC3D::DataNS::AnalogsNS::Channel::name() const
 {
     return _name;
 }
 
-void ezC3D::DataNS::AnalogsNS::SubFrame::Channel::name(const std::string &name)
+void ezC3D::DataNS::AnalogsNS::Channel::name(const std::string &name)
 {
     _name = name;
 }

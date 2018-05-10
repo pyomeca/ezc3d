@@ -95,8 +95,6 @@ protected:
 
 class ezC3D::DataNS::AnalogsNS::SubFrame{
 public:
-    class Channel;
-
     void print() const;
 
     void addChannel(Channel allChannelsData);
@@ -108,7 +106,7 @@ protected:
     std::vector<Channel> _channels;
 };
 
-class ezC3D::DataNS::AnalogsNS::SubFrame::Channel{
+class ezC3D::DataNS::AnalogsNS::Channel{
 public:
     void print() const;
 
