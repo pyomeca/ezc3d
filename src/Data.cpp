@@ -233,16 +233,16 @@ void ezC3D::DataNS::AnalogsNS::Channel::name(const std::string &name)
 // Frame data
 void ezC3D::DataNS::Frame::print() const
 {
-    points()->print();
-    analogs()->print();
+    points().print();
+    analogs().print();
 }
-const std::shared_ptr<ezC3D::DataNS::Points3dNS::Points3d>& ezC3D::DataNS::Frame::points() const
+const ezC3D::DataNS::Points3dNS::Points3d& ezC3D::DataNS::Frame::points() const
 {
-    return _points;
+    return *_points;
 }
-const std::shared_ptr<ezC3D::DataNS::AnalogsNS::Analogs>& ezC3D::DataNS::Frame::analogs() const
+const ezC3D::DataNS::AnalogsNS::Analogs& ezC3D::DataNS::Frame::analogs() const
 {
-    return _analogs;
+    return *_analogs;
 }
 void ezC3D::DataNS::Frame::add(ezC3D::DataNS::AnalogsNS::Analogs analogs_frame)
 {
@@ -267,7 +267,7 @@ const ezC3D::DataNS::AnalogsNS::SubFrame& ezC3D::DataNS::AnalogsNS::Analogs::sub
         throw std::out_of_range("Tried to access wrong subframe index for analog data");
     return _subframe[idx];
 }
-void ezC3D::DataNS::AnalogsNS::Analogs::print()
+void ezC3D::DataNS::AnalogsNS::Analogs::print() const
 {
     for (int i = 0; i < subframes().size(); ++i){
         std::cout << "Subframe = " << i << std::endl;

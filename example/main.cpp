@@ -14,15 +14,15 @@ int main()
 
 
     // Test for specific frame Point
-    std::string namePoint(c3d.data().frame(10).points()->point(0).name());
-    ezC3D::DataNS::Points3dNS::Point p(c3d.data().frame(10).points()->point(namePoint));
+    std::string namePoint(c3d.data().frame(10).points().point(0).name());
+    ezC3D::DataNS::Points3dNS::Point p(c3d.data().frame(10).points().point(namePoint));
     p.print();
 
     // Test for specific subframe Analog
-    std::string nameAnalog(c3d.data().frame(10).analogs()->subframe(2).channel(2).name());
-    ezC3D::DataNS::AnalogsNS::Channel c(c3d.data().frame(10).analogs()->subframe(2).channel(nameAnalog));
+    std::string nameAnalog(c3d.data().frame(10).analogs().subframe(2).channel(2).name());
+    ezC3D::DataNS::AnalogsNS::Channel c(c3d.data().frame(10).analogs().subframe(2).channel(nameAnalog));
     c.print();
-    c = c3d.data().frame(10).analogs()->subframe(2).channel(3);
+    c = c3d.data().frame(10).analogs().subframe(2).channel(3);
     c.print();
 
     // Terminate
