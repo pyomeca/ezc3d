@@ -57,6 +57,8 @@ protected:
 
     std::vector<Parameter> _parameters; // Holder for the parameters of the group
 };
+
+
 class ezC3D::Parameters::Group::Parameter{
 public:
     Parameter();
