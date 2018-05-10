@@ -19,7 +19,6 @@ namespace ezC3D {
 
     class C3D;
     class Header;
-    class Data;
 
     namespace Parameters {
         class Parameters;
@@ -27,6 +26,10 @@ namespace ezC3D {
             class Group;
             class Parameter;
         }
+    }
+
+    namespace Data {
+        class Data;
     }
 }
 
@@ -68,7 +71,7 @@ public:
 
     const ezC3D::Header& header() const;
     const ezC3D::Parameters::Parameters& parameters() const;
-    const ezC3D::Data& data() const;
+    const ezC3D::Data::Data& data() const;
 
 protected:
     std::string _filePath; // Remember the file path
@@ -76,7 +79,7 @@ protected:
     // Holder of data
     std::shared_ptr<ezC3D::Header> _header;
     std::shared_ptr<ezC3D::Parameters::Parameters> _parameters;
-    std::shared_ptr<ezC3D::Data> _data;
+    std::shared_ptr<ezC3D::Data::Data> _data;
 
     // Internal reading function
     void readFile(int nByteToRead,
