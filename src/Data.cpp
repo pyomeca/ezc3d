@@ -5,15 +5,15 @@
 ezC3D::Data::Data(ezC3D &file)
 {
     // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
-    file.readInt(ezC3D_NAMESPACE::READ_SIZE::BYTE, 256*ezC3D_NAMESPACE::READ_SIZE::WORD*(file.header().parametersAddress()-1) + 256*ezC3D_NAMESPACE::READ_SIZE::WORD*file.parameters()->nbParamBlock() - ezC3D_NAMESPACE::READ_SIZE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
+    file.readInt(ezC3D_NAMESPACE::READ_SIZE::BYTE, 256*ezC3D_NAMESPACE::READ_SIZE::WORD*(file.header().parametersAddress()-1) + 256*ezC3D_NAMESPACE::READ_SIZE::WORD*file.parameters().nbParamBlock() - ezC3D_NAMESPACE::READ_SIZE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
 
     // Read the actual data
     for (int j = 0; j < file.header().nbFrames(); ++j){
         ezC3D::Data::Frame frame;
 
         // Get names of the data
-        std::vector<std::string> pointNames(file.parameters()->group("POINT").parameter("LABELS").stringValues());
-        std::vector<std::string> analogNames(file.parameters()->group("ANALOG").parameter("LABELS").stringValues());
+        std::vector<std::string> pointNames(file.parameters().group("POINT").parameter("LABELS").stringValues());
+        std::vector<std::string> analogNames(file.parameters().group("ANALOG").parameter("LABELS").stringValues());
 
         // Read point 3d
         if (file.header().scaleFactor() < 0){
