@@ -8,7 +8,7 @@ ezC3D::ezC3D(const std::string &filePath):
         throw std::ios_base::failure("Could not open the C3D file");
 
     // Read all the section
-    _header = std::shared_ptr<Header>(new Header(*this));
+    _header = std::shared_ptr<ezC3D_NAMESPACE::Header>(new ezC3D_NAMESPACE::Header(*this));
     _parameters = std::shared_ptr<Parameters>(new Parameters(*this));
     _data = std::shared_ptr<Data>(new Data(*this));
 }
@@ -21,7 +21,7 @@ ezC3D::ezC3D(const char* filePath):
         throw std::ios_base::failure("Could not open the C3D file");
 
     // Read all the section
-    _header = std::shared_ptr<Header>(new Header(*this));
+    _header = std::shared_ptr<ezC3D_NAMESPACE::Header>(new ezC3D_NAMESPACE::Header(*this));
     _parameters = std::shared_ptr<Parameters>(new Parameters(*this));
     _data = std::shared_ptr<Data>(new Data(*this));
 }
@@ -160,7 +160,7 @@ void ezC3D::readMatrix(std::vector<int> dimension,
             readMatrix(dimension, param_data, currentIdx + 1);
 }
 
-const ezC3D::Header& ezC3D::header() const
+const ezC3D_NAMESPACE::Header& ezC3D::header() const
 {
     return *_header;
 }

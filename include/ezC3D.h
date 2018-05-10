@@ -9,6 +9,10 @@
 #include <stdexcept>
 #include <memory>
 
+namespace ezC3D_NAMESPACE {
+    class Header;
+}
+
 class ezC3D : public std::fstream{
 public:
     ezC3D(const std::string &filePath);
@@ -45,7 +49,6 @@ public:
                     std::vector<float> &param_data,
                     int currentIdx = 0);
 
-    class Header;
     class Parameters;
     class Data;
     // Size of some constant (in Byte)
@@ -53,7 +56,7 @@ public:
         BYTE = 1,
         WORD = 2
     };
-    const Header& header() const;
+    const ezC3D_NAMESPACE::Header& header() const;
     const std::shared_ptr<Parameters>& parameters() const;
     const std::shared_ptr<Data>& data() const;
 
@@ -61,7 +64,7 @@ protected:
     std::string _filePath; // Remember the file path
 
     // Holder of data
-    std::shared_ptr<Header> _header;
+    std::shared_ptr<ezC3D_NAMESPACE::Header> _header;
     std::shared_ptr<Parameters> _parameters;
     std::shared_ptr<Data> _data;
 
