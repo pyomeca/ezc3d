@@ -6,13 +6,13 @@ ezC3D::Parameters::Parameters(ezC3D &file) :
     _processorType(0)
 {
     // Read the Parameters Header
-    _parametersStart = file.readInt(1*ezC3D::READ_SIZE::BYTE, 256*ezC3D::READ_SIZE::WORD*(file.header().parametersAddress()-1), std::ios::beg);
-    _checksum = file.readInt(1*ezC3D::READ_SIZE::BYTE);
-    _nbParamBlock = file.readInt(1*ezC3D::READ_SIZE::BYTE);
-    _processorType = file.readInt(1*ezC3D::READ_SIZE::BYTE);
+    _parametersStart = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE, 256*ezC3D_NAMESPACE::READ_SIZE::WORD*(file.header().parametersAddress()-1), std::ios::beg);
+    _checksum = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE);
+    _nbParamBlock = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE);
+    _processorType = file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE);
 
     // Read parameter or group
-    int nextParamByteInFile((int)file.tellg() + _parametersStart - ezC3D::READ_SIZE::BYTE);
+    int nextParamByteInFile((int)file.tellg() + _parametersStart - ezC3D_NAMESPACE::READ_SIZE::BYTE);
     while (nextParamByteInFile)
     {
         // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
@@ -20,10 +20,10 @@ ezC3D::Parameters::Parameters(ezC3D &file) :
             throw std::ios_base::failure("Bad c3d formatting");
 
         // Nb of char in the group name, locked if negative, 0 if we finished the section
-        int nbCharInName(file.readInt(1*ezC3D::READ_SIZE::BYTE));
+        int nbCharInName(file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));
         if (nbCharInName == 0)
             break;
-        int id(file.readInt(1*ezC3D::READ_SIZE::BYTE));
+        int id(file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));
 
         // Make sure there at least enough group
         for (int i = _groups.size(); i < abs(id); ++i)
@@ -122,19 +122,19 @@ int ezC3D::Parameters::Group::read(ezC3D &file, int nbCharInName)
         _isLocked = false;
 
     // Read name of the group
-    _name.assign(file.readString(abs(nbCharInName) * ezC3D::READ_SIZE::BYTE));
+    _name.assign(file.readString(abs(nbCharInName) * ezC3D_NAMESPACE::READ_SIZE::BYTE));
 
     // number of byte to the next group from here
-    int offsetNext((int)file.readUint(2*ezC3D::READ_SIZE::BYTE));
+    int offsetNext((int)file.readUint(2*ezC3D_NAMESPACE::READ_SIZE::BYTE));
     // Compute the position of the element in the file
     int nextParamByteInFile;
     if (offsetNext == 0)
         nextParamByteInFile = 0;
     else
-        nextParamByteInFile = (int)file.tellg() + offsetNext - ezC3D::READ_SIZE::WORD;
+        nextParamByteInFile = (int)file.tellg() + offsetNext - ezC3D_NAMESPACE::READ_SIZE::WORD;
 
     // Byte 5+nbCharInName ==> Number of characters in group description
-    int nbCharInDesc(file.readInt(1*ezC3D::READ_SIZE::BYTE));
+    int nbCharInDesc(file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));
     // Byte 6+nbCharInName ==> Group description
     if (nbCharInDesc)
         _description = file.readString(nbCharInDesc);
@@ -220,19 +220,19 @@ int ezC3D::Parameters::Group::Parameter::read(ezC3D &file, int nbCharInName)
         _isLocked = false;
 
     // Read name of the group
-    _name = file.readString(abs(nbCharInName) * ezC3D::READ_SIZE::BYTE);
+    _name = file.readString(abs(nbCharInName) * ezC3D_NAMESPACE::READ_SIZE::BYTE);
 
     // number of byte to the next group from here
-    int offsetNext((int)file.readUint(2*ezC3D::READ_SIZE::BYTE));
+    int offsetNext((int)file.readUint(2*ezC3D_NAMESPACE::READ_SIZE::BYTE));
     // Compute the position of the element in the file
     int nextParamByteInFile;
     if (offsetNext == 0)
         nextParamByteInFile = 0;
     else
-        nextParamByteInFile = (int)file.tellg() + offsetNext - ezC3D::READ_SIZE::WORD;
+        nextParamByteInFile = (int)file.tellg() + offsetNext - ezC3D_NAMESPACE::READ_SIZE::WORD;
 
     // -1 sizeof(char), 1 byte, 2 int, 4 float
-    int lengthInByte(file.readInt(1*ezC3D::READ_SIZE::BYTE));
+    int lengthInByte(file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));
     if (lengthInByte == -1)
         _data_type = DATA_TYPE::CHAR;
     else if (lengthInByte == 1)
@@ -245,12 +245,12 @@ int ezC3D::Parameters::Group::Parameter::read(ezC3D &file, int nbCharInName)
         throw std::ios_base::failure ("Parameter type unrecognized");
 
     // number of dimension of parameter (0 for scalar)
-    int nDimensions(file.readInt(1*ezC3D::READ_SIZE::BYTE));
+    int nDimensions(file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));
     if (nDimensions == 0) // In the special case of a scalar
         _dimension.push_back(1);
     else // otherwise it's a matrix
         for (int i=0; i<nDimensions; ++i)
-            _dimension.push_back (file.readInt(1*ezC3D::READ_SIZE::BYTE));    // Read the dimension size of the matrix
+            _dimension.push_back (file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));    // Read the dimension size of the matrix
 
     // Read the data for the parameters
     if (_data_type == DATA_TYPE::CHAR){
@@ -287,7 +287,7 @@ int ezC3D::Parameters::Group::Parameter::read(ezC3D &file, int nbCharInName)
 
 
     // Byte 5+nbCharInName ==> Number of characters in group description
-    int nbCharInDesc(file.readInt(1*ezC3D::READ_SIZE::BYTE));
+    int nbCharInDesc(file.readInt(1*ezC3D_NAMESPACE::READ_SIZE::BYTE));
     // Byte 6+nbCharInName ==> Group description
     if (nbCharInDesc)
         _description = file.readString(nbCharInDesc);

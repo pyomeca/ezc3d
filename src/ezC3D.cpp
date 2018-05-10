@@ -114,7 +114,7 @@ int ezC3D::readUint(int nByteToRead, int nByteFromPrevious,
 float ezC3D::readFloat(int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
-    int nByteToRead(4*READ_SIZE::BYTE);
+    int nByteToRead(4*ezC3D_NAMESPACE::READ_SIZE::BYTE);
     char c[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
     float coucou = *reinterpret_cast<float*>(c);
@@ -135,7 +135,7 @@ void ezC3D::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readInt(dataLenghtInBytes*READ_SIZE::BYTE));
+            param_data.push_back (readInt(dataLenghtInBytes*ezC3D_NAMESPACE::READ_SIZE::BYTE));
         else
             readMatrix(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
@@ -155,7 +155,7 @@ void ezC3D::readMatrix(std::vector<int> dimension,
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back(readString(READ_SIZE::BYTE));
+            param_data.push_back(readString(ezC3D_NAMESPACE::READ_SIZE::BYTE));
         else
             readMatrix(dimension, param_data, currentIdx + 1);
 }
