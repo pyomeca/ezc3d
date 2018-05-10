@@ -24,22 +24,21 @@ public:
     void print() const;
 
     void add(ezC3D::DataNS::Analogs analog_frame);
-    void add(ezC3D::DataNS::Points3d point3d_frame);
-    void add(ezC3D::DataNS::Points3d point3d_frame, ezC3D::DataNS::Analogs analog_frame);
+    void add(ezC3D::DataNS::Points3dNS::Points3d point3d_frame);
+    void add(ezC3D::DataNS::Points3dNS::Points3d point3d_frame, ezC3D::DataNS::Analogs analog_frame);
 
-    const std::shared_ptr<ezC3D::DataNS::Points3d>& points() const;
+    const std::shared_ptr<ezC3D::DataNS::Points3dNS::Points3d>& points() const;
     const std::shared_ptr<ezC3D::DataNS::Analogs>& analogs() const;
 
 protected:
 
-    std::shared_ptr<ezC3D::DataNS::Points3d> _points; // All points for this frame
+    std::shared_ptr<ezC3D::DataNS::Points3dNS::Points3d> _points; // All points for this frame
     std::shared_ptr<ezC3D::DataNS::Analogs> _analogs; // All subframe for all analogs
 };
 
-class ezC3D::DataNS::Points3d{
+class ezC3D::DataNS::Points3dNS::Points3d{
 public:
-    class Point;
-    void add(ezC3D::DataNS::Points3d::Point p);
+    void add(ezC3D::DataNS::Points3dNS::Point p);
     void print() const;
 
     const std::vector<Point>& points() const;
@@ -50,7 +49,7 @@ protected:
     std::vector<Point> _points;
 };
 
-class ezC3D::DataNS::Points3d::Point{
+class ezC3D::DataNS::Points3dNS::Point{
 public:
     void print() const;
     Point();
