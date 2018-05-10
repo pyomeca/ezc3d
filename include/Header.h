@@ -4,10 +4,10 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D_NAMESPACE::Header{
+class ezC3D::Header{
 public:
-    Header(ezC3D &file);
-    void read(ezC3D &file);
+    Header(ezC3D::Reader &file);
+    void read(ezC3D::Reader &file);
     void print() const;
 
     // Getter on the parameters
