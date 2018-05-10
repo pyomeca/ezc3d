@@ -32,7 +32,10 @@ namespace ezC3D {
         class Data;
 
         class Frame;
-        class Points3d;
+        namespace Points3dNS {
+            class Points3d;
+            class Point;
+        }
         class Analogs;
     }
 }

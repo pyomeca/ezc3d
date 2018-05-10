@@ -17,9 +17,9 @@ ezC3D::DataNS::Data::Data(ezC3D::C3D &file)
 
         // Read point 3d
         if (file.header().scaleFactor() < 0){
-            ezC3D::DataNS::Points3d pts;
+            ezC3D::DataNS::Points3dNS::Points3d pts;
             for (int i = 0; i < file.header().nb3dPoints(); ++i){
-                ezC3D::DataNS::Points3d::Point p;
+                ezC3D::DataNS::Points3dNS::Point p;
                 p.x(file.readFloat());
                 p.y(file.readFloat());
                 p.z(file.readFloat());
@@ -77,93 +77,93 @@ void ezC3D::DataNS::Data::print() const
 
 
 // Point3d data
-void ezC3D::DataNS::Points3d::add(ezC3D::DataNS::Points3d::Point p)
+void ezC3D::DataNS::Points3dNS::Points3d::add(ezC3D::DataNS::Points3dNS::Point p)
 {
     _points.push_back(p);
 }
-void ezC3D::DataNS::Points3d::print() const
+void ezC3D::DataNS::Points3dNS::Points3d::print() const
 {
     for (int i = 0; i < points().size(); ++i)
         point(i).print();
 }
 
-const std::vector<ezC3D::DataNS::Points3d::Point>& ezC3D::DataNS::Points3d::points() const
+const std::vector<ezC3D::DataNS::Points3dNS::Point>& ezC3D::DataNS::Points3dNS::Points3d::points() const
 {
     return _points;
 }
 
-const ezC3D::DataNS::Points3d::Point& ezC3D::DataNS::Points3d::point(int idx) const
+const ezC3D::DataNS::Points3dNS::Point& ezC3D::DataNS::Points3dNS::Points3d::point(int idx) const
 {
     if (idx < 0 || idx >= points().size())
         throw std::out_of_range("Tried to access wrong index for points data");
     return _points[idx];
 }
-const ezC3D::DataNS::Points3d::Point &ezC3D::DataNS::Points3d::point(const std::string &pointName) const
+const ezC3D::DataNS::Points3dNS::Point &ezC3D::DataNS::Points3dNS::Points3d::point(const std::string &pointName) const
 {
     for (int i = 0; i<points().size(); ++i)
         if (!point(i).name().compare(pointName))
             return point(i);
     throw std::invalid_argument("Point name was not found within the points");
 }
-void ezC3D::DataNS::Points3d::Point::print() const
+void ezC3D::DataNS::Points3dNS::Point::print() const
 {
     std::cout << name() << " = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
 }
 
 
 
-ezC3D::DataNS::Points3d::Point::Point() :
+ezC3D::DataNS::Points3dNS::Point::Point() :
     _name(""),
     _idxInData(-1)
 {
 
 }
-float ezC3D::DataNS::Points3d::Point::x() const
+float ezC3D::DataNS::Points3dNS::Point::x() const
 {
     return _x;
 }
-void ezC3D::DataNS::Points3d::Point::x(float x)
+void ezC3D::DataNS::Points3dNS::Point::x(float x)
 {
     _x = x;
 }
 
-float ezC3D::DataNS::Points3d::Point::y() const
+float ezC3D::DataNS::Points3dNS::Point::y() const
 {
     return _y;
 }
-void ezC3D::DataNS::Points3d::Point::y(float y)
+void ezC3D::DataNS::Points3dNS::Point::y(float y)
 {
     _y = y;
 }
 
-float ezC3D::DataNS::Points3d::Point::z() const
+float ezC3D::DataNS::Points3dNS::Point::z() const
 {
     return _z;
 }
-void ezC3D::DataNS::Points3d::Point::z(float z)
+void ezC3D::DataNS::Points3dNS::Point::z(float z)
 {
     _z = z;
 }
-float ezC3D::DataNS::Points3d::Point::residual() const
+float ezC3D::DataNS::Points3dNS::Point::residual() const
 {
     return _residual;
 }
-void ezC3D::DataNS::Points3d::Point::residual(float residual){
+void ezC3D::DataNS::Points3dNS::Point::residual(float residual){
     _residual = residual;
 }
-const std::string& ezC3D::DataNS::Points3d::Point::name() const
+const std::string& ezC3D::DataNS::Points3dNS::Point::name() const
 {
     return _name;
 }
-void ezC3D::DataNS::Points3d::Point::name(const std::string &name)
+void ezC3D::DataNS::Points3dNS::Point::name(const std::string &name)
 {
     _name = name;
 }
-int ezC3D::DataNS::Points3d::Point::idxInData() const
+int ezC3D::DataNS::Points3dNS::Point::idxInData() const
 {
     return _idxInData;
 }
-void ezC3D::DataNS::Points3d::Point::idxInData(int idxInData)
+void ezC3D::DataNS::Points3dNS::Point::idxInData(int idxInData)
 {
     _idxInData = idxInData;
 }
@@ -236,7 +236,7 @@ void ezC3D::DataNS::Frame::print() const
     points()->print();
     analogs()->print();
 }
-const std::shared_ptr<ezC3D::DataNS::Points3d>& ezC3D::DataNS::Frame::points() const
+const std::shared_ptr<ezC3D::DataNS::Points3dNS::Points3d>& ezC3D::DataNS::Frame::points() const
 {
     return _points;
 }
@@ -248,11 +248,11 @@ void ezC3D::DataNS::Frame::add(ezC3D::DataNS::Analogs analogs_frame)
 {
     _analogs = std::shared_ptr<ezC3D::DataNS::Analogs>(new ezC3D::DataNS::Analogs(analogs_frame));
 }
-void ezC3D::DataNS::Frame::add(ezC3D::DataNS::Points3d point3d_frame)
+void ezC3D::DataNS::Frame::add(ezC3D::DataNS::Points3dNS::Points3d point3d_frame)
 {
-    _points = std::shared_ptr<ezC3D::DataNS::Points3d>(new ezC3D::DataNS::Points3d(point3d_frame));
+    _points = std::shared_ptr<ezC3D::DataNS::Points3dNS::Points3d>(new ezC3D::DataNS::Points3dNS::Points3d(point3d_frame));
 }
-void ezC3D::DataNS::Frame::add(ezC3D::DataNS::Points3d point3d_frame, ezC3D::DataNS::Analogs analog_frame)
+void ezC3D::DataNS::Frame::add(ezC3D::DataNS::Points3dNS::Points3d point3d_frame, ezC3D::DataNS::Analogs analog_frame)
 {
     add(point3d_frame);
     add(analog_frame);
