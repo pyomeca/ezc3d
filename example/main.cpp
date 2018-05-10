@@ -4,7 +4,7 @@
 
 int main()
 {
-    ezC3D c3d("../markers_analogs.c3d");
+    ezC3D_NAMESPACE::ezC3D c3d("../markers_analogs.c3d");
 
 
     // Print the read C3D

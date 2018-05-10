@@ -16,12 +16,13 @@ namespace ezC3D_NAMESPACE {
         WORD = 2
     };
 
+    class ezC3D;
     class Header;
     class Parameters;
     class Data;
 }
 
-class ezC3D : public std::fstream{
+class ezC3D_NAMESPACE::ezC3D : public std::fstream{
 public:
     ezC3D(const std::string &filePath);
     ezC3D(const char* filePath);
