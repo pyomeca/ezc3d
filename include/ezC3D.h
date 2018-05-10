@@ -23,7 +23,10 @@ namespace ezC3D {
 
     namespace Parameters {
         class Parameters;
-        class Group;
+        namespace Group {
+            class Group;
+            class Parameter;
+        }
     }
 }
 
