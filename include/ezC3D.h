@@ -21,7 +21,7 @@ namespace ezC3D {
     class Header;
     class Data;
 
-    namespace Tata {
+    namespace Parameters {
         class Parameters;
         class Group;
     }
@@ -64,7 +64,7 @@ public:
                     int currentIdx = 0);
 
     const ezC3D::Header& header() const;
-    const ezC3D::Tata::Parameters& parameters() const;
+    const ezC3D::Parameters::Parameters& parameters() const;
     const ezC3D::Data& data() const;
 
 protected:
@@ -72,7 +72,7 @@ protected:
 
     // Holder of data
     std::shared_ptr<ezC3D::Header> _header;
-    std::shared_ptr<ezC3D::Tata::Parameters> _parameters;
+    std::shared_ptr<ezC3D::Parameters::Parameters> _parameters;
     std::shared_ptr<ezC3D::Data> _data;
 
     // Internal reading function

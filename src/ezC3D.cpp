@@ -9,7 +9,7 @@ ezC3D::C3D::C3D(const std::string &filePath):
 
     // Read all the section
     _header = std::shared_ptr<ezC3D::Header>(new ezC3D::Header(*this));
-    _parameters = std::shared_ptr<ezC3D::Tata::Parameters>(new ezC3D::Tata::Parameters(*this));
+    _parameters = std::shared_ptr<ezC3D::Parameters::Parameters>(new ezC3D::Parameters::Parameters(*this));
     _data = std::shared_ptr<ezC3D::Data>(new ezC3D::Data(*this));
 }
 
@@ -22,7 +22,7 @@ ezC3D::C3D::C3D(const char* filePath):
 
     // Read all the section
     _header = std::shared_ptr<ezC3D::Header>(new ezC3D::Header(*this));
-    _parameters = std::shared_ptr<ezC3D::Tata::Parameters>(new ezC3D::Tata::Parameters(*this));
+    _parameters = std::shared_ptr<ezC3D::Parameters::Parameters>(new ezC3D::Parameters::Parameters(*this));
     _data = std::shared_ptr<ezC3D::Data>(new ezC3D::Data(*this));
 }
 
@@ -165,7 +165,7 @@ const ezC3D::Header& ezC3D::C3D::header() const
     return *_header;
 }
 
-const ezC3D::Tata::Parameters& ezC3D::C3D::parameters() const
+const ezC3D::Parameters::Parameters& ezC3D::C3D::parameters() const
 {
     return *_parameters;
 }
