@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <memory>
 
+
 namespace ezC3D {
     // Size of some constant (in Byte)
     enum READ_SIZE{
@@ -18,8 +19,12 @@ namespace ezC3D {
 
     class C3D;
     class Header;
-    class Parameters;
     class Data;
+
+    namespace Tata {
+        class Parameters;
+        class Group;
+    }
 }
 
 class ezC3D::C3D : public std::fstream{
@@ -59,7 +64,7 @@ public:
                     int currentIdx = 0);
 
     const ezC3D::Header& header() const;
-    const ezC3D::Parameters& parameters() const;
+    const ezC3D::Tata::Parameters& parameters() const;
     const ezC3D::Data& data() const;
 
 protected:
@@ -67,7 +72,7 @@ protected:
 
     // Holder of data
     std::shared_ptr<ezC3D::Header> _header;
-    std::shared_ptr<ezC3D::Parameters> _parameters;
+    std::shared_ptr<ezC3D::Tata::Parameters> _parameters;
     std::shared_ptr<ezC3D::Data> _data;
 
     // Internal reading function
@@ -81,8 +86,8 @@ protected:
     int hex2int(const char * val);
     int hex2long(const char * val);
 };
-#include "Parameters.h"
 #include "Header.h"
 #include "Data.h"
+#include "Parameters.h"
 
 #endif
