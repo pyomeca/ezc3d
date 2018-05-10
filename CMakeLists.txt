@@ -9,6 +9,5 @@ add_library(${PROJECT_NAME} SHARED)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # Sources files
-file(GLOB SOURCE_FILES "src/*.cpp")
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES})
+add_subdirectory(src include)
 
