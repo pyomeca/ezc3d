@@ -7,7 +7,6 @@
 class ezC3D::Tata::Parameters{
 public:
     Parameters(ezC3D::C3D &file);
-    void read(ezC3D::C3D &file);
     void print() const;
 
     const std::vector<Group>& groups() const;
