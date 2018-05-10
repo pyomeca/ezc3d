@@ -9,10 +9,10 @@ public:
     Parameters(ezC3D::C3D &file);
     void print() const;
 
-    const std::vector<Group>& groups() const;
-    const Group& group(int group) const;
-    const Group& group(const std::string& groupName) const;
-    Group& group_nonConst(int group);
+    const std::vector<ezC3D::Parameters::Group::Group>& groups() const;
+    const ezC3D::Parameters::Group::Group& group(int group) const;
+    const ezC3D::Parameters::Group::Group& group(const std::string& groupName) const;
+    ezC3D::Parameters::Group::Group& group_nonConst(int group);
 
     int parametersStart() const;
     int checksum() const;
@@ -20,7 +20,7 @@ public:
     int processorType() const;
 
 protected:
-    std::vector<Group> _groups; // Holder for the group of parameters
+    std::vector<ezC3D::Parameters::Group::Group> _groups; // Holder for the group of parameters
 
     // Read the Parameters Header
     int _parametersStart;   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
@@ -30,7 +30,7 @@ protected:
 };
 
 
-class ezC3D::Parameters::Group{
+class ezC3D::Parameters::Group::Group{
 public:
     Group();
 
@@ -38,7 +38,6 @@ public:
     int addParameter(ezC3D::C3D &file, int nbCharInName);
     void print() const;
 
-    class Parameter;
     // Getter for the group
     void lock();
     void unlock();
