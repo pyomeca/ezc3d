@@ -47,7 +47,6 @@ namespace ezC3D {
 class ezC3D::C3D : public std::fstream{
 public:
     C3D(const std::string &filePath);
-    C3D(const char* filePath);
     ~C3D();
 
 
