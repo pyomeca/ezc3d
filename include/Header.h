@@ -4,7 +4,7 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D::Header{
+class ezC3D_NAMESPACE::Header{
 public:
     Header(ezC3D &file);
     void read(ezC3D &file);
