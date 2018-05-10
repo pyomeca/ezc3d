@@ -4,7 +4,7 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D::Tata::Parameters{
+class ezC3D::Parameters::Parameters{
 public:
     Parameters(ezC3D::C3D &file);
     void print() const;
@@ -30,7 +30,7 @@ protected:
 };
 
 
-class ezC3D::Tata::Group{
+class ezC3D::Parameters::Group{
 public:
     Group();
 
@@ -58,7 +58,7 @@ protected:
 
     std::vector<Parameter> _parameters; // Holder for the parameters of the group
 };
-class ezC3D::Tata::Group::Parameter{
+class ezC3D::Parameters::Group::Parameter{
 public:
     Parameter();
 
