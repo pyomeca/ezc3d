@@ -4,13 +4,13 @@
 
 int main()
 {
-    ezC3D::Reader c3d("../markers_analogs.c3d");
+    ezC3D::C3D c3d("../markers_analogs.c3d");
 
 
     // Print the read C3D
-    c3d.header().print();
+    //c3d.header().print();
     c3d.parameters().print();
-    c3d.data().print();
+    //c3d.data().print();
 
 
     // Test for specific frame Point
