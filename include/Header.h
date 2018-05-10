@@ -6,8 +6,8 @@
 
 class ezC3D::Header{
 public:
-    Header(ezC3D::Reader &file);
-    void read(ezC3D::Reader &file);
+    Header(ezC3D::C3D &file);
+    void read(ezC3D::C3D &file);
     void print() const;
 
     // Getter on the parameters
