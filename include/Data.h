@@ -27,8 +27,8 @@ public:
     void add(ezC3D::DataNS::Points3dNS::Points3d point3d_frame);
     void add(ezC3D::DataNS::Points3dNS::Points3d point3d_frame, ezC3D::DataNS::AnalogsNS::Analogs analog_frame);
 
-    const std::shared_ptr<ezC3D::DataNS::Points3dNS::Points3d>& points() const;
-    const std::shared_ptr<ezC3D::DataNS::AnalogsNS::Analogs>& analogs() const;
+    const ezC3D::DataNS::Points3dNS::Points3d& points() const;
+    const ezC3D::DataNS::AnalogsNS::Analogs& analogs() const;
 
 protected:
 
@@ -83,7 +83,7 @@ protected:
 
 class ezC3D::DataNS::AnalogsNS::Analogs{
 public:
-    void print();
+    void print() const;
 
     const std::vector<SubFrame>& subframes() const;
     const SubFrame& subframe(int idx) const;
