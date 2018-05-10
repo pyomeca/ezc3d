@@ -1,6 +1,6 @@
 #include "Header.h"
 
-ezC3D::Header::Header(ezC3D::Reader &file)
+ezC3D::Header::Header(ezC3D::C3D &file)
 {
     read(file);
 }
@@ -105,7 +105,7 @@ int ezC3D::Header::parametersAddress() const
     return _parametersAddress;
 }
 // Read the Header
-void ezC3D::Header::read(ezC3D::Reader &file)
+void ezC3D::Header::read(ezC3D::C3D &file)
 {
     // Parameter address
     _parametersAddress = file.readInt(1*ezC3D::READ_SIZE::BYTE, 0, std::ios::beg);

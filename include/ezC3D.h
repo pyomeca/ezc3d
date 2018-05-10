@@ -16,17 +16,17 @@ namespace ezC3D {
         WORD = 2
     };
 
-    class Reader;
+    class C3D;
     class Header;
     class Parameters;
     class Data;
 }
 
-class ezC3D::Reader : public std::fstream{
+class ezC3D::C3D : public std::fstream{
 public:
-    Reader(const std::string &filePath);
-    Reader(const char* filePath);
-    ~Reader();
+    C3D(const std::string &filePath);
+    C3D(const char* filePath);
+    ~C3D();
 
 
     // Byte reading functions

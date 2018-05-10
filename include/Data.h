@@ -7,7 +7,7 @@
 
 class ezC3D::Data{
 public:
-    Data(ezC3D::Reader &file);
+    Data(ezC3D::C3D &file);
 
     class Frame;
     class Points3d;
