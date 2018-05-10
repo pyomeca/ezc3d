@@ -4,15 +4,15 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D::Parameters::Parameters{
+class ezC3D::ParametersNS::Parameters{
 public:
     Parameters(ezC3D::C3D &file);
     void print() const;
 
-    const std::vector<ezC3D::Parameters::Group::Group>& groups() const;
-    const ezC3D::Parameters::Group::Group& group(int group) const;
-    const ezC3D::Parameters::Group::Group& group(const std::string& groupName) const;
-    ezC3D::Parameters::Group::Group& group_nonConst(int group);
+    const std::vector<ezC3D::ParametersNS::GroupNS::Group>& groups() const;
+    const ezC3D::ParametersNS::GroupNS::Group& group(int group) const;
+    const ezC3D::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
+    ezC3D::ParametersNS::GroupNS::Group& group_nonConst(int group);
 
     int parametersStart() const;
     int checksum() const;
@@ -20,7 +20,7 @@ public:
     int processorType() const;
 
 protected:
-    std::vector<ezC3D::Parameters::Group::Group> _groups; // Holder for the group of parameters
+    std::vector<ezC3D::ParametersNS::GroupNS::Group> _groups; // Holder for the group of parameters
 
     // Read the Parameters Header
     int _parametersStart;   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
@@ -30,7 +30,7 @@ protected:
 };
 
 
-class ezC3D::Parameters::Group::Group{
+class ezC3D::ParametersNS::GroupNS::Group{
 public:
     Group();
 
@@ -59,7 +59,7 @@ protected:
 };
 
 
-class ezC3D::Parameters::Group::Parameter{
+class ezC3D::ParametersNS::GroupNS::Parameter{
 public:
     Parameter();
 
