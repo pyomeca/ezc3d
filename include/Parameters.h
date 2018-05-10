@@ -4,13 +4,12 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D::Parameters{
+class ezC3D::Tata::Parameters{
 public:
     Parameters(ezC3D::C3D &file);
     void read(ezC3D::C3D &file);
     void print() const;
 
-    class Group;
     const std::vector<Group>& groups() const;
     const Group& group(int group) const;
     const Group& group(const std::string& groupName) const;
@@ -32,7 +31,7 @@ protected:
 };
 
 
-class ezC3D::Parameters::Group{
+class ezC3D::Tata::Group{
 public:
     Group();
 
@@ -60,7 +59,7 @@ protected:
 
     std::vector<Parameter> _parameters; // Holder for the parameters of the group
 };
-class ezC3D::Parameters::Group::Parameter{
+class ezC3D::Tata::Group::Parameter{
 public:
     Parameter();
 
