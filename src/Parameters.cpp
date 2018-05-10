@@ -1,5 +1,5 @@
 #include "Parameters.h"
-ezC3D::Parameters::Parameters::Parameters(ezC3D::C3D &file) :
+ezC3D::ParametersNS::Parameters::Parameters(ezC3D::C3D &file) :
     _parametersStart(0),
     _checksum(0),
     _nbParamBlock(0),
@@ -27,7 +27,7 @@ ezC3D::Parameters::Parameters::Parameters(ezC3D::C3D &file) :
 
         // Make sure there at least enough group
         for (int i = _groups.size(); i < abs(id); ++i)
-            _groups.push_back(ezC3D::Parameters::Group::Group());
+            _groups.push_back(ezC3D::ParametersNS::GroupNS::Group());
 
         // Group ID always negative for groups and positive parameter of group ID
         if (id < 0)
@@ -36,23 +36,23 @@ ezC3D::Parameters::Parameters::Parameters(ezC3D::C3D &file) :
             nextParamByteInFile = group_nonConst(id-1).addParameter(file, nbCharInName);
     }
 }
-int ezC3D::Parameters::Parameters::processorType() const
+int ezC3D::ParametersNS::Parameters::processorType() const
 {
     return _processorType;
 }
-int ezC3D::Parameters::Parameters::nbParamBlock() const
+int ezC3D::ParametersNS::Parameters::nbParamBlock() const
 {
     return _nbParamBlock;
 }
-int ezC3D::Parameters::Parameters::checksum() const
+int ezC3D::ParametersNS::Parameters::checksum() const
 {
     return _checksum;
 }
-int ezC3D::Parameters::Parameters::parametersStart() const
+int ezC3D::ParametersNS::Parameters::parametersStart() const
 {
     return _parametersStart;
 }
-void ezC3D::Parameters::Parameters::print() const
+void ezC3D::ParametersNS::Parameters::print() const
 {
     std::cout << "Parameters header" << std::endl;
     std::cout << "parametersStart = " << parametersStart() << std::endl;
@@ -70,23 +70,23 @@ void ezC3D::Parameters::Parameters::print() const
 
 
 
-ezC3D::Parameters::Group::Group::Group()
+ezC3D::ParametersNS::GroupNS::Group::Group()
 {
 
 }
-const std::vector<ezC3D::Parameters::Group::Group>& ezC3D::Parameters::Parameters::groups() const
+const std::vector<ezC3D::ParametersNS::GroupNS::Group>& ezC3D::ParametersNS::Parameters::groups() const
 {
     return _groups;
 }
-ezC3D::Parameters::Group::Group &ezC3D::Parameters::Parameters::group_nonConst(int group)
+ezC3D::ParametersNS::GroupNS::Group &ezC3D::ParametersNS::Parameters::group_nonConst(int group)
 {
     return _groups[group];
 }
-const ezC3D::Parameters::Group::Group &ezC3D::Parameters::Parameters::group(int group) const
+const ezC3D::ParametersNS::GroupNS::Group &ezC3D::ParametersNS::Parameters::group(int group) const
 {
     return _groups[group];
 }
-const ezC3D::Parameters::Group::Group &ezC3D::Parameters::Parameters::group(const std::string &groupName) const
+const ezC3D::ParametersNS::GroupNS::Group &ezC3D::ParametersNS::Parameters::group(const std::string &groupName) const
 {
     for (int i = 0; i < groups().size(); ++i){
         if (!group(i).name().compare(groupName))
@@ -94,27 +94,27 @@ const ezC3D::Parameters::Group::Group &ezC3D::Parameters::Parameters::group(cons
     }
     throw std::invalid_argument("Group name was not found in parameters");
 }
-void ezC3D::Parameters::Group::Group::lock()
+void ezC3D::ParametersNS::GroupNS::Group::lock()
 {
     _isLocked = true;
 }
-void ezC3D::Parameters::Group::Group::unlock()
+void ezC3D::ParametersNS::GroupNS::Group::unlock()
 {
     _isLocked = false;
 }
-bool ezC3D::Parameters::Group::Group::isLocked() const
+bool ezC3D::ParametersNS::GroupNS::Group::isLocked() const
 {
     return _isLocked;
 }
-const std::string& ezC3D::Parameters::Group::Group::description() const
+const std::string& ezC3D::ParametersNS::GroupNS::Group::description() const
 {
     return _description;
 }
-const std::string& ezC3D::Parameters::Group::Group::name() const
+const std::string& ezC3D::ParametersNS::GroupNS::Group::name() const
 {
     return _name;
 }
-int ezC3D::Parameters::Group::Group::read(ezC3D::C3D &file, int nbCharInName)
+int ezC3D::ParametersNS::GroupNS::Group::read(ezC3D::C3D &file, int nbCharInName)
 {
     if (nbCharInName < 0)
         _isLocked = true;
@@ -142,14 +142,14 @@ int ezC3D::Parameters::Group::Group::read(ezC3D::C3D &file, int nbCharInName)
     // Return how many bytes
     return nextParamByteInFile;
 }
-int ezC3D::Parameters::Group::Group::addParameter(ezC3D::C3D &file, int nbCharInName)
+int ezC3D::ParametersNS::GroupNS::Group::addParameter(ezC3D::C3D &file, int nbCharInName)
 {
-    ezC3D::Parameters::Group::Parameter p;
+    ezC3D::ParametersNS::GroupNS::Parameter p;
     int nextParamByteInFile = p.read(file, nbCharInName);
     _parameters.push_back(p);
     return nextParamByteInFile;
 }
-void ezC3D::Parameters::Group::Group::print() const
+void ezC3D::ParametersNS::GroupNS::Group::print() const
 {
     std::cout << "groupName = " << name() << std::endl;
     std::cout << "isLocked = " << isLocked() << std::endl;
@@ -160,23 +160,23 @@ void ezC3D::Parameters::Group::Group::print() const
         parameter(i).print();
     }
 }
-const std::vector<ezC3D::Parameters::Group::Parameter>& ezC3D::Parameters::Group::Group::parameters() const
+const std::vector<ezC3D::ParametersNS::GroupNS::Parameter>& ezC3D::ParametersNS::GroupNS::Group::parameters() const
 {
     return _parameters;
 }
 
-const ezC3D::Parameters::Group::Parameter &ezC3D::Parameters::Group::Group::parameter(int idx) const
+const ezC3D::ParametersNS::GroupNS::Parameter &ezC3D::ParametersNS::GroupNS::Group::parameter(int idx) const
 {
     if (idx < 0 || idx >= _parameters.size())
         throw std::out_of_range("Wrong number of parameter");
     return _parameters[idx];
 }
-std::vector<ezC3D::Parameters::Group::Parameter>& ezC3D::Parameters::Group::Group::parameters_nonConst()
+std::vector<ezC3D::ParametersNS::GroupNS::Parameter>& ezC3D::ParametersNS::GroupNS::Group::parameters_nonConst()
 {
     return _parameters;
 }
 
-const ezC3D::Parameters::Group::Parameter &ezC3D::Parameters::Group::Group::parameter(std::string parameterName) const
+const ezC3D::ParametersNS::GroupNS::Parameter &ezC3D::ParametersNS::GroupNS::Group::parameter(std::string parameterName) const
 {
     for (int i = 0; i < parameters().size(); ++i){
         if (!parameter(i).name().compare(parameterName))
@@ -188,31 +188,31 @@ const ezC3D::Parameters::Group::Parameter &ezC3D::Parameters::Group::Group::para
 
 
 
-ezC3D::Parameters::Group::Parameter::Parameter()
+ezC3D::ParametersNS::GroupNS::Parameter::Parameter()
 {
 
 }
-void ezC3D::Parameters::Group::Parameter::lock()
+void ezC3D::ParametersNS::GroupNS::Parameter::lock()
 {
     _isLocked = true;
 }
-void ezC3D::Parameters::Group::Parameter::unlock()
+void ezC3D::ParametersNS::GroupNS::Parameter::unlock()
 {
     _isLocked = false;
 }
-bool ezC3D::Parameters::Group::Parameter::isLocked() const
+bool ezC3D::ParametersNS::GroupNS::Parameter::isLocked() const
 {
     return _isLocked;
 }
-const std::string& ezC3D::Parameters::Group::Parameter::description() const
+const std::string& ezC3D::ParametersNS::GroupNS::Parameter::description() const
 {
     return _description;
 }
-const std::string& ezC3D::Parameters::Group::Parameter::name() const
+const std::string& ezC3D::ParametersNS::GroupNS::Parameter::name() const
 {
     return _name;
 }
-int ezC3D::Parameters::Group::Parameter::read(ezC3D::C3D &file, int nbCharInName)
+int ezC3D::ParametersNS::GroupNS::Parameter::read(ezC3D::C3D &file, int nbCharInName)
 {
     if (nbCharInName < 0)
         _isLocked = true;
@@ -296,7 +296,7 @@ int ezC3D::Parameters::Group::Parameter::read(ezC3D::C3D &file, int nbCharInName
     return nextParamByteInFile;
 }
 
-void ezC3D::Parameters::Group::Parameter::print() const
+void ezC3D::ParametersNS::GroupNS::Parameter::print() const
 {
     std::cout << "parameterName = " << name() << std::endl;
     std::cout << "isLocked = " << isLocked() << std::endl;
@@ -319,7 +319,7 @@ void ezC3D::Parameters::Group::Parameter::print() const
 }
 
 
-const std::vector<std::string>& ezC3D::Parameters::Group::Parameter::stringValues() const
+const std::vector<std::string>& ezC3D::ParametersNS::GroupNS::Parameter::stringValues() const
 {
     if (_data_type != DATA_TYPE::CHAR)
         throw std::invalid_argument("This parameter is not string");
