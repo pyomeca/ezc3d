@@ -114,42 +114,42 @@ void ezC3D::DataNS::Points3dNS::Point::print() const
 
 ezC3D::DataNS::Points3dNS::Point::Point() :
     _name(""),
-    _idxInData(-1)
+    _data(new float[4]())
 {
 
 }
 float ezC3D::DataNS::Points3dNS::Point::x() const
 {
-    return _x;
+    return _data[0];
 }
 void ezC3D::DataNS::Points3dNS::Point::x(float x)
 {
-    _x = x;
+    _data[0] = x;
 }
 
 float ezC3D::DataNS::Points3dNS::Point::y() const
 {
-    return _y;
+    return _data[1];
 }
 void ezC3D::DataNS::Points3dNS::Point::y(float y)
 {
-    _y = y;
+    _data[1] = y;
 }
 
 float ezC3D::DataNS::Points3dNS::Point::z() const
 {
-    return _z;
+    return _data[2];
 }
 void ezC3D::DataNS::Points3dNS::Point::z(float z)
 {
-    _z = z;
+    _data[2] = z;
 }
 float ezC3D::DataNS::Points3dNS::Point::residual() const
 {
-    return _residual;
+    return _data[3];
 }
 void ezC3D::DataNS::Points3dNS::Point::residual(float residual){
-    _residual = residual;
+    _data[3] = residual;
 }
 const std::string& ezC3D::DataNS::Points3dNS::Point::name() const
 {
@@ -158,14 +158,6 @@ const std::string& ezC3D::DataNS::Points3dNS::Point::name() const
 void ezC3D::DataNS::Points3dNS::Point::name(const std::string &name)
 {
     _name = name;
-}
-int ezC3D::DataNS::Points3dNS::Point::idxInData() const
-{
-    return _idxInData;
-}
-void ezC3D::DataNS::Points3dNS::Point::idxInData(int idxInData)
-{
-    _idxInData = idxInData;
 }
 
 

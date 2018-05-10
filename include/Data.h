@@ -4,6 +4,7 @@
 #include "ezC3D.h"
 #include <stdexcept>
 #include <iostream>
+#include <memory>
 
 class ezC3D::DataNS::Data{
 public:
@@ -68,15 +69,8 @@ public:
     const std::string& name() const;
     void name(const std::string &name);
 
-    int idxInData() const;
-    void idxInData(int idxInData);
-
 protected:
-    float _x;
-    float _y;
-    float _z;
-    float _residual;
-
+    std::shared_ptr<float[]> _data;
     std::string _name;
     int _idxInData;
 };
