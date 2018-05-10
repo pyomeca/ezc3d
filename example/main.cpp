@@ -20,7 +20,7 @@ int main()
 
     // Test for specific subframe Analog
     std::string nameAnalog(c3d.data().frame(10).analogs()->subframe(2).channel(2).name());
-    ezC3D::DataNS::AnalogsNS::SubFrame::Channel c(c3d.data().frame(10).analogs()->subframe(2).channel(nameAnalog));
+    ezC3D::DataNS::AnalogsNS::Channel c(c3d.data().frame(10).analogs()->subframe(2).channel(nameAnalog));
     c.print();
     c = c3d.data().frame(10).analogs()->subframe(2).channel(3);
     c.print();
