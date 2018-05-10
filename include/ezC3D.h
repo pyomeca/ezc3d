@@ -17,6 +17,7 @@ namespace ezC3D_NAMESPACE {
     };
 
     class Header;
+    class Parameters;
 }
 
 class ezC3D : public std::fstream{
@@ -55,11 +56,10 @@ public:
                     std::vector<float> &param_data,
                     int currentIdx = 0);
 
-    class Parameters;
     class Data;
 
     const ezC3D_NAMESPACE::Header& header() const;
-    const std::shared_ptr<Parameters>& parameters() const;
+    const ezC3D_NAMESPACE::Parameters& parameters() const;
     const std::shared_ptr<Data>& data() const;
 
 protected:
@@ -67,7 +67,7 @@ protected:
 
     // Holder of data
     std::shared_ptr<ezC3D_NAMESPACE::Header> _header;
-    std::shared_ptr<Parameters> _parameters;
+    std::shared_ptr<ezC3D_NAMESPACE::Parameters> _parameters;
     std::shared_ptr<Data> _data;
 
     // Internal reading function

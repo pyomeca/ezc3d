@@ -4,7 +4,7 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D::Parameters{
+class ezC3D_NAMESPACE::Parameters{
 public:
     Parameters(ezC3D &file);
     void read(ezC3D &file);
@@ -33,7 +33,7 @@ protected:
 };
 
 
-class ezC3D::Parameters::Group{
+class ezC3D_NAMESPACE::Parameters::Group{
 public:
     Group();
 
@@ -61,7 +61,7 @@ protected:
 
     std::vector<Parameter> _parameters; // Holder for the parameters of the group
 };
-class ezC3D::Parameters::Group::Parameter{
+class ezC3D_NAMESPACE::Parameters::Group::Parameter{
 public:
     Parameter();
 
