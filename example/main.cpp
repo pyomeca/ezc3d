@@ -8,9 +8,9 @@ int main()
 
 
     // Print the read C3D
-    //c3d.header().print();
-    c3d.parameters().print();
-    c3d.data().print();
+    c3d.header().print();
+    //c3d.parameters().print();
+    //c3d.data().print();
 
 
     // Test for specific frame Point

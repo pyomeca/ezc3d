@@ -13,19 +13,6 @@ ezC3D::C3D::C3D(const std::string &filePath):
     _data = std::shared_ptr<ezC3D::DataNS::Data>(new ezC3D::DataNS::Data(*this));
 }
 
-ezC3D::C3D::C3D(const char* filePath):
-    std::fstream(filePath, std::ios::in | std::ios::binary),
-    _filePath(filePath)
-{
-    if (!is_open())
-        throw std::ios_base::failure("Could not open the C3D file");
-
-    // Read all the section
-    _header = std::shared_ptr<ezC3D::Header>(new ezC3D::Header(*this));
-    _parameters = std::shared_ptr<ezC3D::ParametersNS::Parameters>(new ezC3D::ParametersNS::Parameters(*this));
-    _data = std::shared_ptr<ezC3D::DataNS::Data>(new ezC3D::DataNS::Data(*this));
-}
-
 
 ezC3D::C3D::~C3D()
 {

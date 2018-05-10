@@ -157,7 +157,14 @@ const std::string& ezC3D::DataNS::Points3dNS::Point::name() const
 }
 void ezC3D::DataNS::Points3dNS::Point::name(const std::string &name)
 {
-    _name = name;
+    std::string name_copy = name;
+    // Remove the spaces at the end of the name
+    for (int i = name_copy.size(); i >= 0; --i)
+        if (name_copy[name_copy.size()-1] == ' ')
+            name_copy.pop_back();
+        else
+            break;
+    _name = name_copy;
 }
 
 
@@ -216,7 +223,15 @@ const std::string& ezC3D::DataNS::AnalogsNS::Channel::name() const
 
 void ezC3D::DataNS::AnalogsNS::Channel::name(const std::string &name)
 {
-    _name = name;
+    std::string name_copy = name;
+    // Remove the spaces at the end of the name
+    for (int i = name_copy.size(); i >= 0; --i)
+        if (name_copy[name_copy.size()-1] == ' ')
+            name_copy.pop_back();
+        else
+            break;
+
+    _name = name_copy;
 }
 
 
