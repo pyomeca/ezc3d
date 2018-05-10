@@ -4,10 +4,10 @@
 #include "ezC3D.h"
 #include <stdexcept>
 
-class ezC3D_NAMESPACE::Parameters{
+class ezC3D::Parameters{
 public:
-    Parameters(ezC3D &file);
-    void read(ezC3D &file);
+    Parameters(ezC3D::Reader &file);
+    void read(ezC3D::Reader &file);
     void print() const;
 
     class Group;
@@ -33,12 +33,12 @@ protected:
 };
 
 
-class ezC3D_NAMESPACE::Parameters::Group{
+class ezC3D::Parameters::Group{
 public:
     Group();
 
-    int read(ezC3D &file, int nbCharInName);
-    int addParameter(ezC3D &file, int nbCharInName);
+    int read(ezC3D::Reader &file, int nbCharInName);
+    int addParameter(ezC3D::Reader &file, int nbCharInName);
     void print() const;
 
     class Parameter;
@@ -61,11 +61,11 @@ protected:
 
     std::vector<Parameter> _parameters; // Holder for the parameters of the group
 };
-class ezC3D_NAMESPACE::Parameters::Group::Parameter{
+class ezC3D::Parameters::Group::Parameter{
 public:
     Parameter();
 
-    int read(ezC3D &file, int nbCharInName);
+    int read(ezC3D::Reader &file, int nbCharInName);
     void print() const;
 
     // Getter for the group
