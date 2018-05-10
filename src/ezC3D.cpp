@@ -1,6 +1,6 @@
 #include "ezC3D.h"
 
-ezC3D::ezC3D(const std::string &filePath):
+ezC3D_NAMESPACE::ezC3D::ezC3D(const std::string &filePath):
     std::fstream(filePath, std::ios::in | std::ios::binary),
     _filePath(filePath)
 {
@@ -13,7 +13,7 @@ ezC3D::ezC3D(const std::string &filePath):
     _data = std::shared_ptr<ezC3D_NAMESPACE::Data>(new ezC3D_NAMESPACE::Data(*this));
 }
 
-ezC3D::ezC3D(const char* filePath):
+ezC3D_NAMESPACE::ezC3D::ezC3D(const char* filePath):
     std::fstream(filePath, std::ios::in | std::ios::binary),
     _filePath(filePath)
 {
@@ -27,7 +27,7 @@ ezC3D::ezC3D(const char* filePath):
 }
 
 
-ezC3D::~ezC3D()
+ezC3D_NAMESPACE::ezC3D::~ezC3D()
 {
     close();
 }
@@ -35,14 +35,14 @@ ezC3D::~ezC3D()
 
 
 
-unsigned int ezC3D::hex2uint(const char * val){
+unsigned int ezC3D_NAMESPACE::ezC3D::hex2uint(const char * val){
     int ret(0);
     for (int i=0; i<strlen(val); i++)
         ret |= int((unsigned char)val[i]) * int(pow(0x100, i));
     return ret;
 }
 
-int ezC3D::hex2int(const char * val){
+int ezC3D_NAMESPACE::ezC3D::hex2int(const char * val){
     unsigned int tp(hex2uint(val));
 
     // convert to signed int
@@ -61,14 +61,14 @@ int ezC3D::hex2int(const char * val){
     return out;
 }
 
-int ezC3D::hex2long(const char * val){
+int ezC3D_NAMESPACE::ezC3D::hex2long(const char * val){
     long ret(0);
     for (int i=0; i<strlen(val); i++)
         ret |= long((unsigned char)val[i]) * long(pow(0x100, i));
     return ret;
 }
 
-void ezC3D::readFile(int nByteToRead, char * c, int nByteFromPrevious,
+void ezC3D_NAMESPACE::ezC3D::readFile(int nByteToRead, char * c, int nByteFromPrevious,
                      const  std::ios_base::seekdir &pos)
 {
     this->seekg (nByteFromPrevious, pos); // Move to number analogs
@@ -76,14 +76,14 @@ void ezC3D::readFile(int nByteToRead, char * c, int nByteFromPrevious,
     c[nByteToRead] = '\0'; // Make sure last char is NULL
 }
 
-void ezC3D::readChar(int nByteToRead, char * c,int nByteFromPrevious,
+void ezC3D_NAMESPACE::ezC3D::readChar(int nByteToRead, char * c,int nByteFromPrevious,
                      const  std::ios_base::seekdir &pos)
 {
     c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 }
 
-std::string ezC3D::readString(int nByteToRead, int nByteFromPrevious,
+std::string ezC3D_NAMESPACE::ezC3D::readString(int nByteToRead, int nByteFromPrevious,
                               const std::ios_base::seekdir &pos)
 {
     char c[nByteToRead + 1];
@@ -91,7 +91,7 @@ std::string ezC3D::readString(int nByteToRead, int nByteFromPrevious,
     return std::string(c);
 }
 
-int ezC3D::readInt(int nByteToRead, int nByteFromPrevious,
+int ezC3D_NAMESPACE::ezC3D::readInt(int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char c[nByteToRead + 1];
@@ -101,7 +101,7 @@ int ezC3D::readInt(int nByteToRead, int nByteFromPrevious,
     return hex2int(c);
 }
 
-int ezC3D::readUint(int nByteToRead, int nByteFromPrevious,
+int ezC3D_NAMESPACE::ezC3D::readUint(int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char c[nByteToRead + 1];
@@ -111,7 +111,7 @@ int ezC3D::readUint(int nByteToRead, int nByteFromPrevious,
     return hex2uint(c);
 }
 
-float ezC3D::readFloat(int nByteFromPrevious,
+float ezC3D_NAMESPACE::ezC3D::readFloat(int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
     int nByteToRead(4*ezC3D_NAMESPACE::READ_SIZE::BYTE);
@@ -121,7 +121,7 @@ float ezC3D::readFloat(int nByteFromPrevious,
     return coucou;
 }
 
-long ezC3D::readLong(int nByteToRead,
+long ezC3D_NAMESPACE::ezC3D::readLong(int nByteToRead,
               int nByteFromPrevious,
               const  std::ios_base::seekdir &pos)
 {
@@ -130,7 +130,7 @@ long ezC3D::readLong(int nByteToRead,
     return hex2long(c);
 }
 
-void ezC3D::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
+void ezC3D_NAMESPACE::ezC3D::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
                        std::vector<int> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -140,7 +140,7 @@ void ezC3D::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
             readMatrix(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezC3D::readMatrix(std::vector<int> dimension,
+void ezC3D_NAMESPACE::ezC3D::readMatrix(std::vector<int> dimension,
                        std::vector<float> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -150,7 +150,7 @@ void ezC3D::readMatrix(std::vector<int> dimension,
             readMatrix(dimension, param_data, currentIdx + 1);
 }
 
-void ezC3D::readMatrix(std::vector<int> dimension,
+void ezC3D_NAMESPACE::ezC3D::readMatrix(std::vector<int> dimension,
                        std::vector<std::string> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -160,17 +160,17 @@ void ezC3D::readMatrix(std::vector<int> dimension,
             readMatrix(dimension, param_data, currentIdx + 1);
 }
 
-const ezC3D_NAMESPACE::Header& ezC3D::header() const
+const ezC3D_NAMESPACE::Header& ezC3D_NAMESPACE::ezC3D::header() const
 {
     return *_header;
 }
 
-const ezC3D_NAMESPACE::Parameters& ezC3D::parameters() const
+const ezC3D_NAMESPACE::Parameters& ezC3D_NAMESPACE::ezC3D::parameters() const
 {
     return *_parameters;
 }
 
-const ezC3D_NAMESPACE::Data& ezC3D::data() const
+const ezC3D_NAMESPACE::Data& ezC3D_NAMESPACE::ezC3D::data() const
 {
     return *_data;
 }
