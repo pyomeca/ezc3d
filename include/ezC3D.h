@@ -36,7 +36,10 @@ namespace ezC3D {
             class Points3d;
             class Point;
         }
-        class Analogs;
+        namespace AnalogsNS {
+            class Analogs;
+            class SubFrame;
+        }
     }
 }
 
