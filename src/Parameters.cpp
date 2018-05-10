@@ -1,5 +1,5 @@
 #include "Parameters.h"
-ezC3D::Parameters::Parameters(ezC3D::Reader &file) :
+ezC3D::Parameters::Parameters(ezC3D::C3D &file) :
     _parametersStart(0),
     _checksum(0),
     _nbParamBlock(0),
@@ -114,7 +114,7 @@ const std::string& ezC3D::Parameters::Group::name() const
 {
     return _name;
 }
-int ezC3D::Parameters::Group::read(ezC3D::Reader &file, int nbCharInName)
+int ezC3D::Parameters::Group::read(ezC3D::C3D &file, int nbCharInName)
 {
     if (nbCharInName < 0)
         _isLocked = true;
@@ -142,7 +142,7 @@ int ezC3D::Parameters::Group::read(ezC3D::Reader &file, int nbCharInName)
     // Return how many bytes
     return nextParamByteInFile;
 }
-int ezC3D::Parameters::Group::addParameter(ezC3D::Reader &file, int nbCharInName)
+int ezC3D::Parameters::Group::addParameter(ezC3D::C3D &file, int nbCharInName)
 {
     ezC3D::Parameters::Group::Parameter p;
     int nextParamByteInFile = p.read(file, nbCharInName);
@@ -212,7 +212,7 @@ const std::string& ezC3D::Parameters::Group::Parameter::name() const
 {
     return _name;
 }
-int ezC3D::Parameters::Group::Parameter::read(ezC3D::Reader &file, int nbCharInName)
+int ezC3D::Parameters::Group::Parameter::read(ezC3D::C3D &file, int nbCharInName)
 {
     if (nbCharInName < 0)
         _isLocked = true;
