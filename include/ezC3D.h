@@ -20,15 +20,15 @@ namespace ezC3D {
     class C3D;
     class Header;
 
-    namespace Parameters {
+    namespace ParametersNS {
         class Parameters;
-        namespace Group {
+        namespace GroupNS {
             class Group;
             class Parameter;
         }
     }
 
-    namespace Data {
+    namespace DataNS {
         class Data;
     }
 }
@@ -70,16 +70,16 @@ public:
                     int currentIdx = 0);
 
     const ezC3D::Header& header() const;
-    const ezC3D::Parameters::Parameters& parameters() const;
-    const ezC3D::Data::Data& data() const;
+    const ezC3D::ParametersNS::Parameters& parameters() const;
+    const ezC3D::DataNS::Data& data() const;
 
 protected:
     std::string _filePath; // Remember the file path
 
     // Holder of data
     std::shared_ptr<ezC3D::Header> _header;
-    std::shared_ptr<ezC3D::Parameters::Parameters> _parameters;
-    std::shared_ptr<ezC3D::Data::Data> _data;
+    std::shared_ptr<ezC3D::ParametersNS::Parameters> _parameters;
+    std::shared_ptr<ezC3D::DataNS::Data> _data;
 
     // Internal reading function
     void readFile(int nByteToRead,
