@@ -73,7 +73,11 @@ public:
     const std::string& name() const;
     const std::string& description() const;
 
-    const std::vector<std::string>& stringValues() const;
+    const std::vector<std::string>& valuesAsString() const;
+    const std::vector<int>& valuesAsByte() const;
+    const std::vector<int>& valuesAsInt() const;
+    const std::vector<float>& valuesAsFloat() const;
+
 protected:
     enum DATA_TYPE{
         CHAR = -1,

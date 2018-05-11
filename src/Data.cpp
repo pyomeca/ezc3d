@@ -12,8 +12,8 @@ ezC3D::DataNS::Data::Data(ezC3D::C3D &file)
         ezC3D::DataNS::Frame frame;
 
         // Get names of the data
-        std::vector<std::string> pointNames(file.parameters().group("POINT").parameter("LABELS").stringValues());
-        std::vector<std::string> analogNames(file.parameters().group("ANALOG").parameter("LABELS").stringValues());
+        std::vector<std::string> pointNames(file.parameters().group("POINT").parameter("LABELS").valuesAsString());
+        std::vector<std::string> analogNames(file.parameters().group("ANALOG").parameter("LABELS").valuesAsString());
 
         // Read point 3d
         if (file.header().scaleFactor() < 0){
