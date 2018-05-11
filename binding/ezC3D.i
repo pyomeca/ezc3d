@@ -1,5 +1,5 @@
-/* File : example.i */
-%module example
+/* File : ezC3D.i */
+%module ezC3D
 %{
 #include "ezC3D.h"
 %}
@@ -9,7 +9,8 @@
 
 /* Instantiate std_vector */
 %include <std_vector.i>
-// Instantiate templates used by example
+
+// Instantiate templates
 namespace std {
    %template(VecInt) vector<int>;
    %template(VecFloat) vector<float>;
