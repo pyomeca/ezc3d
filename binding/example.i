@@ -1,7 +1,7 @@
 /* File : example.i */
 %module example
 %{
-#include "../../../include/ezC3D.h"
+#include "ezC3D.h"
 %}
 
 /* Instantiate std_string */
@@ -27,8 +27,8 @@ namespace std {
 
 
 /* Includes all neceressary files from the API */
-%include "../../../include/ezC3D.h"
-%include "../../../include/Header.h"
-%include "../../../include/Parameters.h"
-%include "../../../include/Data.h"
+%include "ezC3D.h"
+%include "Header.h"
+%include "Parameters.h"
+%include "Data.h"
 
