@@ -319,9 +319,28 @@ void ezC3D::ParametersNS::GroupNS::Parameter::print() const
 }
 
 
-const std::vector<std::string>& ezC3D::ParametersNS::GroupNS::Parameter::stringValues() const
+const std::vector<std::string>& ezC3D::ParametersNS::GroupNS::Parameter::valuesAsString() const
 {
     if (_data_type != DATA_TYPE::CHAR)
         throw std::invalid_argument("This parameter is not string");
     return _param_data_string;
 }
+
+const std::vector<int> &ezC3D::ParametersNS::GroupNS::Parameter::valuesAsByte() const
+{
+    if (_data_type != DATA_TYPE::BYTE)
+        throw std::invalid_argument("This parameter is not string");
+    return _param_data_int;
+}
+
+const std::vector<int> &ezC3D::ParametersNS::GroupNS::Parameter::valuesAsInt() const
+{
+    return valuesAsByte();
+}
+const std::vector<float> &ezC3D::ParametersNS::GroupNS::Parameter::valuesAsFloat() const
+{
+    if (_data_type != DATA_TYPE::FLOAT)
+        throw std::invalid_argument("This parameter is not string");
+    return _param_data_float;
+}
+
