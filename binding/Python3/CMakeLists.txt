@@ -1,15 +1,17 @@
 # Include python
 find_package(PYTHON3 REQUIRED)
 include_directories(${Python3_INCLUDE_DIRS})
+find_package(Numpy REQUIRED)
+include_directories(${NUMPY_INCLUDES})
 
 set(CMAKE_SWIG_FLAGS "")
-set_source_files_properties(../${PROJECT_NAME}.i PROPERTIES CPLUSPLUS ON)
+set_source_files_properties(${PROJECT_NAME}_python.i PROPERTIES CPLUSPLUS ON)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 
 # Add swig module
-SWIG_ADD_LIBRARY(ezC3D LANGUAGE python SOURCES ../${PROJECT_NAME}.i)
-swig_link_libraries(ezC3D ${PROJECT_NAME} ${PYTHON_LIBRARIES})
+SWIG_ADD_LIBRARY(ezC3D LANGUAGE python SOURCES ${PROJECT_NAME}_python.i)
+swig_link_libraries(ezC3D ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_LIBRARIES})
 
 # Files to install with Python
 set(PYTHON_INSTALL_FILES
