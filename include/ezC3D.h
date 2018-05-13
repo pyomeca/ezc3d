@@ -10,6 +10,7 @@
 #include <memory>
 
 // Easy accessors
+void coucou(std::vector<double>& tata);
 void coucou(double* tata, int n_tata);
 
 namespace ezC3D {
