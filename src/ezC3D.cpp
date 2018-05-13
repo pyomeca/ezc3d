@@ -161,3 +161,11 @@ const ezC3D::DataNS::Data& ezC3D::C3D::data() const
 {
     return *_data;
 }
+
+void coucou(double *tata, int n_tata)
+{
+    //int * tata = new int[n_tata];
+    for (int i = 0; i<n_tata; ++i)
+        tata[i] = 2*i;
+    return;
+}
