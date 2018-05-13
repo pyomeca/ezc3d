@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <memory>
 
+// Easy accessors
+void coucou(double* tata, int n_tata);
 
 namespace ezC3D {
     // Size of some constant (in Byte)
@@ -82,6 +84,7 @@ public:
     const ezC3D::Header& header() const;
     const ezC3D::ParametersNS::Parameters& parameters() const;
     const ezC3D::DataNS::Data& data() const;
+
 
 protected:
     std::string _filePath; // Remember the file path
