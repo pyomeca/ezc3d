@@ -52,6 +52,7 @@ if (NOT NUMPY_FOUND)
         OUTPUT_VARIABLE NUMPY_FIND_OUTPUT
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+    message(${NUMPY_FIND_ERROR})
 
     ## process the output from the execution of the command
     if (NOT NUMPY_FIND_RESULT)
