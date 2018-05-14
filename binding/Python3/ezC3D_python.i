@@ -13,13 +13,31 @@
 %apply (int* IN_ARRAY1, int DIM1) {(int* frames, int nFrames)};
 
 %inline %{
-PyObject * _finalizePoints(int nMarkers, int nFrames, double * data){
+PyObject * _finalizePoints(const ezC3D::C3D& c3d,
+                           const std::vector<int>& markers,
+                           const std::vector<int>& frames)
+{
+    // Get the data
+    int nMarkers = markers.size();
+    int nFrames = frames.size();
+    double * data = new double[4 * nMarkers * nFrames];
+    for (int f = 0; f < frames.size(); ++f){
+        const ezC3D::DataNS::Frame& frame(c3d.data().frame(frames[f]));
+        for (int m = 0; m < markers.size(); ++m){
+            const ezC3D::DataNS::Points3dNS::Point& point(frame.points().point(markers[m]));
+            data[nMarkers*nFrames*0+nFrames*m+f] = point.x();
+            data[nMarkers*nFrames*1+nFrames*m+f] = point.y();
+            data[nMarkers*nFrames*2+nFrames*m+f] = point.z();
+            data[nMarkers*nFrames*3+nFrames*m+f] = 1;
+        }
+    }
+
+    // Export them to Python Object
     int nArraySize = 3;
     npy_intp * arraySizes = new npy_intp[nArraySize];
     arraySizes[0] = 4;
     arraySizes[1] = nMarkers;
     arraySizes[2] = nFrames;
-
     PyArrayObject * c = (PyArrayObject *)PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, data);
     delete[] arraySizes;
 
@@ -33,52 +51,38 @@ PyObject * _finalizePoints(int nMarkers, int nFrames, double * data){
 %extend ezC3D::C3D
 {
     PyObject * getPoints(){
-        int nMarkers = self->header().nb3dPoints();
-        int nFrames = self->header().nbFrames();
-        double * data = new double[4 * nMarkers * nFrames];
-        for (int f = 0; f < nFrames; ++f){
-            const ezC3D::DataNS::Frame& frame(self->data().frame(f));
-            for (int i = 0; i < frame.points().points().size(); ++i){
-                const ezC3D::DataNS::Points3dNS::Point& point(frame.points().point(i));
-                data[nMarkers*nFrames*0+nFrames*i+f] = point.x();
-                data[nMarkers*nFrames*1+nFrames*i+f] = point.y();
-                data[nMarkers*nFrames*2+nFrames*i+f] = point.z();
-                data[nMarkers*nFrames*3+nFrames*i+f] = 1;
-            }
-        }
-        return _finalizePoints(nMarkers, nFrames, data);
+        std::vector<int> markers;
+        for (int i = 0; i < self->header().nb3dPoints(); ++i)
+            markers.push_back(i);
+
+        std::vector<int> frames;
+        for (int i = 0; i < self->header().nbFrames(); ++i)
+            frames.push_back(i);
+
+        return _finalizePoints(*self, markers, frames);
     }
 
     PyObject * getPoints(int* frames, int nFrames)
     {
-        int nMarkers = self->header().nb3dPoints();
-        double * data = new double[4 * nMarkers * nFrames];
-        for (int f = 0; f < nFrames; ++f){
-            const ezC3D::DataNS::Frame& frame(self->data().frame(frames[f]));
-            for (int i = 0; i < frame.points().points().size(); ++i){
-                const ezC3D::DataNS::Points3dNS::Point& point(frame.points().point(i));
-                data[nMarkers*nFrames*0+nFrames*i+f] = point.x();
-                data[nMarkers*nFrames*1+nFrames*i+f] = point.y();
-                data[nMarkers*nFrames*2+nFrames*i+f] = point.z();
-                data[nMarkers*nFrames*3+nFrames*i+f] = 1;
-            }
-        }
-        return _finalizePoints(nMarkers, nFrames, data);
+        std::vector<int> markers;
+        for (int i = 0; i < self->header().nb3dPoints(); ++i)
+            markers.push_back(i);
+
+        std::vector<int> _frames;
+        _frames.assign(frames, frames + nFrames);
+        return _finalizePoints(*self, markers, _frames);
     }
 
     PyObject * getPoint(int frame)
     {
-        double * data = new double[4 * self->header().nb3dPoints()];
-        int nMarkers = self->header().nb3dPoints();
+        std::vector<int> markers;
+        for (int i = 0; i < self->header().nb3dPoints(); ++i)
+            markers.push_back(i);
 
-        const ezC3D::DataNS::Frame& f(self->data().frame(frame));
-        for (int i = 0; i < f.points().points().size(); ++i){
-            data[i + 0*self->header().nb3dPoints()] = f.points().point(i).x();
-            data[i + 1*self->header().nb3dPoints()] = f.points().point(i).y();
-            data[i + 2*self->header().nb3dPoints()] = f.points().point(i).z();
-            data[i + 3*self->header().nb3dPoints()] = 1;
-        }
-        return _finalizePoints(nMarkers, 1, data);
+        std::vector<int> frames;
+        frames.push_back(frame);
+
+        return _finalizePoints(*self, markers, frames);
     }
 }
 
