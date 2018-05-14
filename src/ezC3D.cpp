@@ -162,21 +162,3 @@ const ezC3D::DataNS::Data& ezC3D::C3D::data() const
     return *_data;
 }
 
-void coucou(std::vector<double>& tata)
-{
-    //int * tata = new int[n_tata];
-    for (int i = 0; i<tata.size(); ++i)
-        tata[i] = 2*i;
-    return;
-}
-void coucou(double* tata, int n_tata)
-{
-    std::vector<double> v;
-    v.insert(v.end(), tata, tata + n_tata);
-    coucou(v);
-    memcpy(tata, &v[0], n_tata * sizeof(double));
-    for (int i = 0; i<n_tata; ++i){
-        std::cout << v[i] << std::endl;
-        std::cout << tata[i] << std::endl;
-    }
-}
