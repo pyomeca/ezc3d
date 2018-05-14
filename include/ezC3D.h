@@ -9,10 +9,6 @@
 #include <stdexcept>
 #include <memory>
 
-// Easy accessors
-void coucou(std::vector<double>& tata);
-void coucou(double* tata, int n_tata);
-
 namespace ezC3D {
     // Size of some constant (in Byte)
     enum READ_SIZE{
@@ -36,7 +32,7 @@ namespace ezC3D {
 
         class Frame;
         namespace Points3dNS {
-            class Points3d;
+            class Points;
             class Point;
         }
         namespace AnalogsNS {
@@ -85,7 +81,6 @@ public:
     const ezC3D::Header& header() const;
     const ezC3D::ParametersNS::Parameters& parameters() const;
     const ezC3D::DataNS::Data& data() const;
-
 
 protected:
     std::string _filePath; // Remember the file path
