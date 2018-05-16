@@ -26,9 +26,9 @@ class CompiledLibInstall(setuptools.command.install.install):
 if __name__ == '__main__':
     setuptools.setup(
         name='ezC3D',
-        version='1.0.0-dev',
+        version='${EZC3D_VERSION_MAJOR}.${EZC3D_VERSION_MINOR}',
         packages=['swig_ezC3D'],
-        license='Apache License 2.0',
+        license='MIT',
         author='Pariterre',
         author_email='pariterre@gmail.com',
         cmdclass={'install': CompiledLibInstall}

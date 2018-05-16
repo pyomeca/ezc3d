@@ -129,7 +129,6 @@ semantic as :command:`add_library` but take care of Python module naming rules
 
 If library type is not specified, ``MODULE`` is assumed.
 #]=======================================================================]
-message("yo")
 
 set (_PYTHON_PREFIX Python3)
 #message(${${_PYTHON_PREFIX}_EXECUTABLE})
