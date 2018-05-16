@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
-set (Tutorial_VERSION_MAJOR 0)
-set (Tutorial_VERSION_MINOR 1)
-
 project(ezC3D)
+
+set (${PROJECT_NAME}_VERSION_MAJOR 0)
+set (${PROJECT_NAME}_VERSION_MINOR 1)
+
 
 # Set some variables
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
@@ -22,5 +23,12 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 # Headers
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
+# Installation
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
+        )
+
 # Add swig subdirectory
 add_subdirectory(binding)
+

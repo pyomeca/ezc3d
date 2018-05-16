@@ -32,7 +32,6 @@
 #  NUMPY_LFLAGS     = Linker flags (optional)
 
 if (NOT NUMPY_FOUND)
-
     if (NOT NUMPY_ROOT_DIR)
         set (NUMPY_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
     endif (NOT NUMPY_ROOT_DIR)
@@ -52,7 +51,6 @@ if (NOT NUMPY_FOUND)
         OUTPUT_VARIABLE NUMPY_FIND_OUTPUT
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
-    message(${NUMPY_FIND_ERROR})
 
     ## process the output from the execution of the command
     if (NOT NUMPY_FIND_RESULT)
@@ -102,7 +100,6 @@ if (NOT NUMPY_FOUND)
 
     ##__________________________________________________________________________
     ## Actions taken when all components have been found
-
     find_package_handle_standard_args (NUMPY DEFAULT_MSG NUMPY_INCLUDES)
 
     if (NUMPY_FOUND)
@@ -114,9 +111,9 @@ if (NOT NUMPY_FOUND)
             message (STATUS "NUMPY_API_VERSION = ${NUMPY_API_VERSION}")
         endif (NOT NUMPY_FIND_QUIETLY)
     else (NUMPY_FOUND)
-        if (NUMPY_FIND_REQUIRED)
+        if (Numpy_FIND_REQUIRED)
             message (FATAL_ERROR "Could not find NUMPY!")
-        endif (NUMPY_FIND_REQUIRED)
+        endif (Numpy_FIND_REQUIRED)
     endif (NUMPY_FOUND)
 
     ##__________________________________________________________________________
