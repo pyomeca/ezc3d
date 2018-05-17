@@ -10,21 +10,20 @@
 %}
 %include <std_vector.i>
 
-%apply (int* IN_ARRAY1, int DIM1) {(int* frames, int nFrames)};
+%apply (int* IN_ARRAY1, int DIM1) {(int* markers, int nMarkers)};
+%apply (int* IN_ARRAY1, int DIM1) {(int* channels, int nChannels)};
 
 %inline %{
-PyObject * _finalizePoints(const ezC3D::C3D& c3d,
-                           const std::vector<int>& markers,
-                           const std::vector<int>& frames)
+PyObject * _get_points(const ezC3D::C3D& c3d, const std::vector<int>& markers)
 {
     // Get the data
     int nMarkers = markers.size();
-    int nFrames = frames.size();
+    const std::vector<ezC3D::DataNS::Frame>& frames = c3d.data().frames();
+    int nFrames(frames.size());
     double * data = new double[4 * nMarkers * nFrames];
-    for (int f = 0; f < frames.size(); ++f){
-        const ezC3D::DataNS::Frame& frame(c3d.data().frame(frames[f]));
-        for (int m = 0; m < markers.size(); ++m){
-            const ezC3D::DataNS::Points3dNS::Point& point(frame.points().point(markers[m]));
+    for (int f = 0; f < nFrames; ++f){
+        for (int m = 0; m < nMarkers; ++m){
+            const ezC3D::DataNS::Points3dNS::Point& point(frames[f].points().point(markers[m]));
             data[nMarkers*nFrames*0+nFrames*m+f] = point.x();
             data[nMarkers*nFrames*1+nFrames*m+f] = point.y();
             data[nMarkers*nFrames*2+nFrames*m+f] = point.z();
@@ -48,41 +47,87 @@ PyObject * _finalizePoints(const ezC3D::C3D& c3d,
 }
 %}
 
+%inline %{
+PyObject * _get_analogs(const ezC3D::C3D& c3d, const std::vector<int>& analogs)
+{
+    // Get the data
+    int nAnalogs = analogs.size();
+    const std::vector<ezC3D::DataNS::Frame>& frames = c3d.data().frames();
+    int nFrames(frames.size());
+    int nSubframe(c3d.header().nbAnalogByFrame());
+    double * data = new double[nAnalogs * nFrames * nSubframe];
+    for (int f = 0; f < nFrames; ++f){
+        for (int sf = 0; sf < nSubframe; ++sf){
+            const std::vector<ezC3D::DataNS::AnalogsNS::Channel>& channels(frames[f].analogs().subframe(sf).channels());
+            for (int a = 0; a < nAnalogs; ++a){
+                data[nAnalogs*nFrames*sf+nFrames*a+f] = channels[a].value();
+            }
+        }
+    }
+
+    // Export them to Python Object
+    int nArraySize = 3;
+    npy_intp * arraySizes = new npy_intp[nArraySize];
+    arraySizes[0] = 1;
+    arraySizes[1] = nAnalogs;
+    arraySizes[2] = nFrames * nSubframe;
+    PyArrayObject * c = (PyArrayObject *)PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, data);
+    delete[] arraySizes;
+
+    // Give ownership to Python so it will free the memory when needed
+    PyArray_ENABLEFLAGS(c, NPY_ARRAY_OWNDATA);
+
+    return PyArray_Return(c);
+}
+%}
+
 %extend ezC3D::C3D
 {
-    PyObject * getPoints(){
+    // Extend c3d class to get an easy accessor to data points
+    PyObject * get_points(){
         std::vector<int> markers;
         for (int i = 0; i < self->header().nb3dPoints(); ++i)
             markers.push_back(i);
-
-        std::vector<int> frames;
-        for (int i = 0; i < self->header().nbFrames(); ++i)
-            frames.push_back(i);
-
-        return _finalizePoints(*self, markers, frames);
+        return _get_points(*self, markers);
     }
 
-    PyObject * getPoints(int* frames, int nFrames)
+    PyObject * get_points(int* markers, int nMarkers)
     {
-        std::vector<int> markers;
-        for (int i = 0; i < self->header().nb3dPoints(); ++i)
-            markers.push_back(i);
-
-        std::vector<int> _frames;
-        _frames.assign(frames, frames + nFrames);
-        return _finalizePoints(*self, markers, _frames);
+        std::vector<int> _markers;
+        for (int i = 0; i < nMarkers; ++i)
+            _markers.push_back(markers[i]);
+        return _get_points(*self, _markers);
     }
 
-    PyObject * getPoint(int frame)
+    PyObject * get_points(int marker)
     {
         std::vector<int> markers;
-        for (int i = 0; i < self->header().nb3dPoints(); ++i)
-            markers.push_back(i);
+        markers.push_back(marker);
+        return _get_points(*self, markers);
+    }
 
-        std::vector<int> frames;
-        frames.push_back(frame);
 
-        return _finalizePoints(*self, markers, frames);
+    // Extend c3d class to get an easy accessor to data points
+    PyObject * get_analogs(){
+        std::vector<int> channels;
+        for (int i = 0; i < self->header().nbAnalogsMeasurement(); ++i)
+            channels.push_back(i);
+        return _get_analogs(*self, channels);
+    }
+
+    PyObject * get_analogs(int* channels, int nChannels)
+    {
+        std::vector<int> _channels;
+        for (int i = 0; i < nChannels; ++i)
+            _channels.push_back(channels[i]);
+        return _get_analogs(*self, _channels);
+    }
+
+    PyObject * get_analogs(int channel)
+    {
+        std::vector<int> channels;
+        channels.push_back(channel);
+        return _get_analogs(*self, channels);
     }
 }
 
