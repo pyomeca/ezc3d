@@ -5,7 +5,7 @@ add_executable(${PROJECT_NAME} "main.cpp")
 
 
 # Libraries
-find_library(EZ_C3D ezC3D ../Debug)
+find_library(EZ_C3D ezc3d ../build)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${EZ_C3D})
 
 # # Set some variables
