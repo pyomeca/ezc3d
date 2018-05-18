@@ -25,7 +25,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # Installation
 install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
         INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
         )
 
