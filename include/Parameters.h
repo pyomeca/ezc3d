@@ -1,18 +1,18 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
-#include "ezC3D.h"
+#include "ezc3d.h"
 #include <stdexcept>
 
-class ezC3D::ParametersNS::Parameters{
+class ezc3d::ParametersNS::Parameters{
 public:
-    Parameters(ezC3D::C3D &file);
+    Parameters(ezc3d::c3d &file);
     void print() const;
 
-    const std::vector<ezC3D::ParametersNS::GroupNS::Group>& groups() const;
-    const ezC3D::ParametersNS::GroupNS::Group& group(int group) const;
-    const ezC3D::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
-    ezC3D::ParametersNS::GroupNS::Group& group_nonConst(int group);
+    const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
+    const ezc3d::ParametersNS::GroupNS::Group& group(int group) const;
+    const ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
+    ezc3d::ParametersNS::GroupNS::Group& group_nonConst(int group);
 
     int parametersStart() const;
     int checksum() const;
@@ -20,7 +20,7 @@ public:
     int processorType() const;
 
 protected:
-    std::vector<ezC3D::ParametersNS::GroupNS::Group> _groups; // Holder for the group of parameters
+    std::vector<ezc3d::ParametersNS::GroupNS::Group> _groups; // Holder for the group of parameters
 
     // Read the Parameters Header
     int _parametersStart;   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
@@ -30,12 +30,12 @@ protected:
 };
 
 
-class ezC3D::ParametersNS::GroupNS::Group{
+class ezc3d::ParametersNS::GroupNS::Group{
 public:
     Group();
 
-    int read(ezC3D::C3D &file, int nbCharInName);
-    int addParameter(ezC3D::C3D &file, int nbCharInName);
+    int read(ezc3d::c3d &file, int nbCharInName);
+    int addParameter(ezc3d::c3d &file, int nbCharInName);
     void print() const;
 
     // Getter for the group
@@ -59,11 +59,11 @@ protected:
 };
 
 
-class ezC3D::ParametersNS::GroupNS::Parameter{
+class ezc3d::ParametersNS::GroupNS::Parameter{
 public:
     Parameter();
 
-    int read(ezC3D::C3D &file, int nbCharInName);
+    int read(ezc3d::c3d &file, int nbCharInName);
     void print() const;
 
     // Getter for the group
