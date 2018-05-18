@@ -1,13 +1,13 @@
 
 #include <vector>
-#include "ezC3D.h"
+#include "ezc3d.h"
 
 int main()
 {
-    ezC3D::C3D c3d("../markers_analogs.c3d");
+    ezc3d::c3d c3d("../markers_analogs.c3d");
 
 
-    // Print the read C3D
+    // Print the read c3d
     c3d.header().print();
     //c3d.parameters().print();
     //c3d.data().print();
@@ -15,12 +15,12 @@ int main()
 
     // Test for specific frame Point
     std::string namePoint(c3d.data().frame(10).points().point(0).name());
-    ezC3D::DataNS::Points3dNS::Point p(c3d.data().frame(10).points().point(namePoint));
+    ezc3d::DataNS::Points3dNS::Point p(c3d.data().frame(10).points().point(namePoint));
     p.print();
 
     // Test for specific subframe Analog
     std::string nameAnalog(c3d.data().frame(10).analogs().subframe(2).channel(2).name());
-    ezC3D::DataNS::AnalogsNS::Channel c(c3d.data().frame(10).analogs().subframe(2).channel(nameAnalog));
+    ezc3d::DataNS::AnalogsNS::Channel c(c3d.data().frame(10).analogs().subframe(2).channel(nameAnalog));
     c.print();
     c = c3d.data().frame(10).analogs().subframe(2).channel(3);
     c.print();
