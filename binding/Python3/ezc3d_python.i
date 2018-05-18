@@ -60,7 +60,7 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
         for (int sf = 0; sf < nSubframe; ++sf){
             const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels(frames[f].analogs().subframe(sf).channels());
             for (int a = 0; a < nAnalogs; ++a){
-                data[nAnalogs*nFrames*sf+nFrames*a+f] = channels[analogs[a]].value();
+                data[nSubframe*nFrames*a + sf+nSubframe*f] = channels[analogs[a]].value();
             }
         }
     }
