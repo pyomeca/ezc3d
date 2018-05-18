@@ -94,7 +94,6 @@ protected:
     std::vector<float> _param_data_float; // Actual parameter
     std::vector<std::string> _param_data_string; // Actual parameter
 
-
     std::string _name;
     std::string _description;
 };
