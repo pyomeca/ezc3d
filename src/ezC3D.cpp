@@ -19,7 +19,14 @@ ezC3D::C3D::~C3D()
     close();
 }
 
-
+void ezC3D::removeSpacesOfAString(std::string& s){
+    // Remove the spaces at the end of the strings
+    for (int i = s.size(); i >= 0; --i)
+        if (s[s.size()-1] == ' ')
+            s.pop_back();
+        else
+            break;
+}
 
 
 unsigned int ezC3D::C3D::hex2uint(const char * val){
