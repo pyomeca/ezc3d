@@ -60,7 +60,7 @@ PyObject * _get_analogs(const ezC3D::C3D& c3d, const std::vector<int>& analogs)
         for (int sf = 0; sf < nSubframe; ++sf){
             const std::vector<ezC3D::DataNS::AnalogsNS::Channel>& channels(frames[f].analogs().subframe(sf).channels());
             for (int a = 0; a < nAnalogs; ++a){
-                data[nAnalogs*nFrames*sf+nFrames*a+f] = channels[a].value();
+                data[nAnalogs*nFrames*sf+nFrames*a+f] = channels[analogs[a]].value();
             }
         }
     }
@@ -110,7 +110,7 @@ PyObject * _get_analogs(const ezC3D::C3D& c3d, const std::vector<int>& analogs)
     // Extend c3d class to get an easy accessor to data points
     PyObject * get_analogs(){
         std::vector<int> channels;
-        for (int i = 0; i < self->header().nbAnalogsMeasurement(); ++i)
+        for (int i = 0; i < self->header().nbAnalogs(); ++i)
             channels.push_back(i);
         return _get_analogs(*self, channels);
     }

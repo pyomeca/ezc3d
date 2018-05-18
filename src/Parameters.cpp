@@ -262,6 +262,7 @@ int ezC3D::ParametersNS::GroupNS::Parameter::read(ezC3D::C3D &file, int nbCharIn
             std::string tp;
             for (int i = 0; i < _dimension[0]; ++i)
                 tp += param_data_string_tp[i];
+            ezC3D::removeSpacesOfAString(tp);
             _param_data_string.push_back(tp);
         }
         else if (_dimension.size() == 2){
@@ -272,6 +273,7 @@ int ezC3D::ParametersNS::GroupNS::Parameter::read(ezC3D::C3D &file, int nbCharIn
                     tp += param_data_string_tp[idx];
                     ++idx;
                 }
+                ezC3D::removeSpacesOfAString(tp);
                 _param_data_string.push_back(tp);
             }
         }
@@ -323,6 +325,7 @@ const std::vector<std::string>& ezC3D::ParametersNS::GroupNS::Parameter::valuesA
 {
     if (_data_type != DATA_TYPE::CHAR)
         throw std::invalid_argument("This parameter is not string");
+
     return _param_data_string;
 }
 
