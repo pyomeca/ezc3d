@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <memory>
 
-namespace ezC3D {
+namespace ezc3d {
     // Size of some constant (in Byte)
     enum READ_SIZE{
         BYTE = 1,
@@ -17,7 +17,7 @@ namespace ezC3D {
     };
     void removeSpacesOfAString(std::string& s);
 
-    class C3D;
+    class c3d;
     class Header;
 
     namespace ParametersNS {
@@ -44,10 +44,10 @@ namespace ezC3D {
     }
 }
 
-class ezC3D::C3D : public std::fstream{
+class ezc3d::c3d : public std::fstream{
 public:
-    C3D(const std::string &filePath);
-    ~C3D();
+    c3d(const std::string &filePath);
+    ~c3d();
 
 
     // Byte reading functions
@@ -79,17 +79,17 @@ public:
                     std::vector<float> &param_data,
                     int currentIdx = 0);
 
-    const ezC3D::Header& header() const;
-    const ezC3D::ParametersNS::Parameters& parameters() const;
-    const ezC3D::DataNS::Data& data() const;
+    const ezc3d::Header& header() const;
+    const ezc3d::ParametersNS::Parameters& parameters() const;
+    const ezc3d::DataNS::Data& data() const;
 
 protected:
     std::string _filePath; // Remember the file path
 
     // Holder of data
-    std::shared_ptr<ezC3D::Header> _header;
-    std::shared_ptr<ezC3D::ParametersNS::Parameters> _parameters;
-    std::shared_ptr<ezC3D::DataNS::Data> _data;
+    std::shared_ptr<ezc3d::Header> _header;
+    std::shared_ptr<ezc3d::ParametersNS::Parameters> _parameters;
+    std::shared_ptr<ezc3d::DataNS::Data> _data;
 
     // Internal reading function
     void readFile(int nByteToRead,

@@ -1,13 +1,13 @@
 #ifndef __HEAEDER_H__
 #define __HEAEDER_H__
 
-#include "ezC3D.h"
+#include "ezc3d.h"
 #include <stdexcept>
 
-class ezC3D::Header{
+class ezc3d::Header{
 public:
-    Header(ezC3D::C3D &file);
-    void read(ezC3D::C3D &file);
+    Header(ezc3d::c3d &file);
+    void read(ezc3d::c3d &file);
     void print() const;
 
     // Getter on the parameters
@@ -40,7 +40,7 @@ public:
 protected:
     // Read the Header
     int _parametersAddress;         // Byte 1.1
-    int _checksum;                 // Byte 1.2 ==> 80 if it is a C3D
+    int _checksum;                 // Byte 1.2 ==> 80 if it is a c3d
     int _nb3dPoints;                // Byte 2 ==> number of stored trajectories
     int _nbAnalogsMeasurement;      // Byte 3 ==> number of analog data
     int _firstFrame; // 1-based!    // Byte 4 ==> first frame in the file

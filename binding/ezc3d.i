@@ -1,7 +1,7 @@
-/* File : ezC3D.i */
+/* File : ezc3d.i */
 %module ezc3d
 %{
-#include "ezC3D.h"
+#include "ezc3d.h"
 %}
 
 /* Instantiate std_string */
@@ -16,19 +16,19 @@ namespace std {
    %template(VecFloat) vector<float>;
    %template(VecString) vector<std::string>;
 
-   %template(VecGroups) vector<ezC3D::ParametersNS::GroupNS::Group>;
-   %template(VecParameters) vector<ezC3D::ParametersNS::GroupNS::Parameter>;
+   %template(VecGroups) vector<ezc3d::ParametersNS::GroupNS::Group>;
+   %template(VecParameters) vector<ezc3d::ParametersNS::GroupNS::Parameter>;
 
-   %template(VecFrames) vector<ezC3D::DataNS::Frame>;
-   %template(VecPoints) vector<ezC3D::DataNS::Points3dNS::Point>;
-   %template(VecAnalogSubFrames) vector<ezC3D::DataNS::AnalogsNS::SubFrame>;
-   %template(VecAnalogChannels) vector<ezC3D::DataNS::AnalogsNS::Channel>;
+   %template(VecFrames) vector<ezc3d::DataNS::Frame>;
+   %template(VecPoints) vector<ezc3d::DataNS::Points3dNS::Point>;
+   %template(VecAnalogSubFrames) vector<ezc3d::DataNS::AnalogsNS::SubFrame>;
+   %template(VecAnalogChannels) vector<ezc3d::DataNS::AnalogsNS::Channel>;
 
 }
 
 
 /* Includes all neceressary files from the API */
-%include "ezC3D.h"
+%include "ezc3d.h"
 %include "Header.h"
 %include "Parameters.h"
 %include "Data.h"
