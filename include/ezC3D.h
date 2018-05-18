@@ -15,6 +15,7 @@ namespace ezC3D {
         BYTE = 1,
         WORD = 2
     };
+    void removeSpacesOfAString(std::string& s);
 
     class C3D;
     class Header;
