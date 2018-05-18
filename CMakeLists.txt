@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(ezC3D)
+project(ezc3d)
 
 set (${PROJECT_NAME}_VERSION_MAJOR 0)
 set (${PROJECT_NAME}_VERSION_MINOR 1)
@@ -25,7 +25,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # Installation
 install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/coucou #${PROJECT_NAME}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}
         INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
         )
 
