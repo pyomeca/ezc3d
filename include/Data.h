@@ -39,10 +39,15 @@ protected:
 
 class ezc3d::DataNS::Points3dNS::Points{
 public:
-    void add(ezc3d::DataNS::Points3dNS::Point p);
+    Points();
+    Points(int nMarkers);
+
+    void add(const ezc3d::DataNS::Points3dNS::Point& p);
+    void replace(int idx, const ezc3d::DataNS::Points3dNS::Point& p);
     void print() const;
 
     const std::vector<Point>& points() const;
+    std::vector<Point>& points_nonConst();
     const ezc3d::DataNS::Points3dNS::Point& point(int idx) const;
     const ezc3d::DataNS::Points3dNS::Point& point(const std::string& pointName) const;
 
@@ -79,11 +84,15 @@ protected:
 
 class ezc3d::DataNS::AnalogsNS::Analogs{
 public:
+    Analogs();
+    Analogs(int nSubframes);
     void print() const;
 
     const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes() const;
+    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes_nonConst();
     const ezc3d::DataNS::AnalogsNS::SubFrame& subframe(int idx) const;
     void addSubframe(const SubFrame& subframe);
+    void replaceSubframe(int idx, const SubFrame& subframe);
 
 protected:
     std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe;
@@ -91,9 +100,12 @@ protected:
 
 class ezc3d::DataNS::AnalogsNS::SubFrame{
 public:
+    SubFrame();
+    SubFrame(int nChannels);
     void print() const;
 
-    void addChannel(Channel allChannelsData);
+    void addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel);
+    void replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel& channel);
     void addChannels(const std::vector<Channel>& allChannelsData);
     const std::vector<Channel>& channels() const;
     const ezc3d::DataNS::AnalogsNS::Channel& channel(int idx) const;

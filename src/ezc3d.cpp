@@ -65,11 +65,11 @@ int ezc3d::c3d::hex2long(const char * val){
 void ezc3d::c3d::readFile(int nByteToRead, char * c, int nByteFromPrevious,
                      const  std::ios_base::seekdir &pos)
 {
-    this->seekg (nByteFromPrevious, pos); // Move to number analogs
+    if (pos != 1)
+        this->seekg (nByteFromPrevious, pos); // Move to number analogs
     this->read (c, nByteToRead);
     c[nByteToRead] = '\0'; // Make sure last char is NULL
 }
-
 void ezc3d::c3d::readChar(int nByteToRead, char * c,int nByteFromPrevious,
                      const  std::ios_base::seekdir &pos)
 {
@@ -111,8 +111,7 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
     int nByteToRead(4*ezc3d::READ_SIZE::BYTE);
     char c[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
-    float coucou = *reinterpret_cast<float*>(c);
-    return coucou;
+    return *reinterpret_cast<float*>(c);
 }
 
 long ezc3d::c3d::readLong(int nByteToRead,
