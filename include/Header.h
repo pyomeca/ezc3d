@@ -2,9 +2,8 @@
 #define __HEAEDER_H__
 
 #include "ezc3d.h"
-#include <stdexcept>
 
-class ezc3d::Header{
+class EZC3D_API ezc3d::Header{
 public:
     Header(ezc3d::c3d &file);
     void read(ezc3d::c3d &file);

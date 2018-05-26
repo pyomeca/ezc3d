@@ -2,9 +2,8 @@
 #define __PARAMETERS_H__
 
 #include "ezc3d.h"
-#include <stdexcept>
 
-class ezc3d::ParametersNS::Parameters{
+class EZC3D_API ezc3d::ParametersNS::Parameters{
 public:
     Parameters(ezc3d::c3d &file);
     void print() const;
@@ -30,7 +29,7 @@ protected:
 };
 
 
-class ezc3d::ParametersNS::GroupNS::Group{
+class EZC3D_API ezc3d::ParametersNS::GroupNS::Group{
 public:
     Group();
 
@@ -59,7 +58,7 @@ protected:
 };
 
 
-class ezc3d::ParametersNS::GroupNS::Parameter{
+class EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter{
 public:
     Parameter();
 

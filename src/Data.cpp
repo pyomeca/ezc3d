@@ -1,3 +1,4 @@
+#define EZC3D_API_EXPORTS
 #include "Data.h"
 // Implementation of data class
 
