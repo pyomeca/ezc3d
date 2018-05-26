@@ -1,4 +1,6 @@
+#define EZC3D_API_EXPORTS
 #include "Parameters.h"
+
 ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     _parametersStart(0),
     _checksum(0),
@@ -12,7 +14,7 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     _processorType = file.readInt(1*ezc3d::READ_SIZE::BYTE);
 
     // Read parameter or group
-    int nextParamByteInFile((int)file.tellg() + _parametersStart - ezc3d::READ_SIZE::BYTE);
+    std::streampos nextParamByteInFile((int)file.tellg() + _parametersStart - ezc3d::READ_SIZE::BYTE);
     while (nextParamByteInFile)
     {
         // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
@@ -26,7 +28,7 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
         int id(file.readInt(1*ezc3d::READ_SIZE::BYTE));
 
         // Make sure there at least enough group
-        for (int i = _groups.size(); i < abs(id); ++i)
+        for (size_t i = _groups.size(); i < abs(id); ++i)
             _groups.push_back(ezc3d::ParametersNS::GroupNS::Group());
 
         // Group ID always negative for groups and positive parameter of group ID
