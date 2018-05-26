@@ -2,11 +2,10 @@
 #define __DATA_H__
 
 #include "ezc3d.h"
-#include <stdexcept>
-#include <iostream>
-#include <memory>
 
-class ezc3d::DataNS::Data{
+
+
+class EZC3D_API ezc3d::DataNS::Data{
 public:
     Data(ezc3d::c3d &file);
     void print() const;
@@ -19,7 +18,7 @@ protected:
     std::vector<ezc3d::DataNS::Frame> _frames;
 };
 
-class ezc3d::DataNS::Frame{
+class EZC3D_API ezc3d::DataNS::Frame{
 public:
 
     void print() const;
@@ -37,7 +36,7 @@ protected:
     std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs> _analogs; // All subframe for all analogs
 };
 
-class ezc3d::DataNS::Points3dNS::Points{
+class EZC3D_API ezc3d::DataNS::Points3dNS::Points{
 public:
     Points();
     Points(int nMarkers);
@@ -55,7 +54,7 @@ protected:
     std::vector<ezc3d::DataNS::Points3dNS::Point> _points;
 };
 
-class ezc3d::DataNS::Points3dNS::Point{
+class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
 public:
     void print() const;
     Point();
@@ -82,7 +81,7 @@ protected:
     int _idxInData;
 };
 
-class ezc3d::DataNS::AnalogsNS::Analogs{
+class EZC3D_API ezc3d::DataNS::AnalogsNS::Analogs{
 public:
     Analogs();
     Analogs(int nSubframes);
@@ -98,7 +97,7 @@ protected:
     std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe;
 };
 
-class ezc3d::DataNS::AnalogsNS::SubFrame{
+class EZC3D_API ezc3d::DataNS::AnalogsNS::SubFrame{
 public:
     SubFrame();
     SubFrame(int nChannels);
@@ -114,7 +113,7 @@ protected:
     std::vector<Channel> _channels;
 };
 
-class ezc3d::DataNS::AnalogsNS::Channel{
+class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
 public:
     void print() const;
 

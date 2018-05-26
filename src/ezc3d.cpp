@@ -1,3 +1,4 @@
+#define EZC3D_API_EXPORTS
 #include "ezc3d.h"
 
 ezc3d::c3d::c3d(const std::string &filePath):
@@ -21,7 +22,7 @@ ezc3d::c3d::~c3d()
 
 void ezc3d::removeSpacesOfAString(std::string& s){
     // Remove the spaces at the end of the strings
-    for (int i = s.size(); i >= 0; --i)
+    for (size_t i = s.size(); i >= 0; --i)
         if (s[s.size()-1] == ' ')
             s.pop_back();
         else
@@ -80,7 +81,7 @@ void ezc3d::c3d::readChar(int nByteToRead, char * c,int nByteFromPrevious,
 std::string ezc3d::c3d::readString(int nByteToRead, int nByteFromPrevious,
                               const std::ios_base::seekdir &pos)
 {
-    char c[nByteToRead + 1];
+    char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
     return std::string(c);
 }
@@ -88,7 +89,7 @@ std::string ezc3d::c3d::readString(int nByteToRead, int nByteFromPrevious,
 int ezc3d::c3d::readInt(int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
-    char c[nByteToRead + 1];
+    char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
@@ -98,7 +99,7 @@ int ezc3d::c3d::readInt(int nByteToRead, int nByteFromPrevious,
 int ezc3d::c3d::readUint(int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
-    char c[nByteToRead + 1];
+    char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
@@ -109,7 +110,7 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
     int nByteToRead(4*ezc3d::READ_SIZE::BYTE);
-    char c[nByteToRead + 1];
+    char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
     return *reinterpret_cast<float*>(c);
 }
@@ -118,7 +119,7 @@ long ezc3d::c3d::readLong(int nByteToRead,
               int nByteFromPrevious,
               const  std::ios_base::seekdir &pos)
 {
-    char c[nByteToRead + 1];
+    char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
     return hex2long(c);
 }

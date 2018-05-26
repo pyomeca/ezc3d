@@ -1,3 +1,4 @@
+#define EZC3D_API_EXPORTS
 #include "Header.h"
 
 ezc3d::Header::Header(ezc3d::c3d &file)
