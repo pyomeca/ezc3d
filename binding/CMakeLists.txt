@@ -10,6 +10,5 @@ endif()
 
 # Add subdirectories for each language if desired
 if(BUILD_PYTHON)
-
     add_subdirectory(Python3)
 endif()
