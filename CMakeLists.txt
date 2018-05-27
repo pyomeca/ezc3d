@@ -24,10 +24,16 @@ add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # Installation
+if(WIN32)
+	set(${PROJECT_NAME}_LIB_FOLDER Lib)
+else()
+	set(${PROJECT_NAME}_LIB_FOLDER lib)
+endif()
 install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}
-        INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME}
+        ARCHIVE DESTINATION ${LIB_FOLDER}/static
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION ${LIB_FOLDER}
+        INCLUDES DESTINATION include}
         )
 
 # Add swig subdirectory
