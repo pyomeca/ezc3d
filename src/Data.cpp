@@ -131,10 +131,9 @@ void ezc3d::DataNS::Points3dNS::Point::print() const
 
 
 ezc3d::DataNS::Points3dNS::Point::Point() :
-    _name(""),
-    _data(new float[4]())
+    _name("")
 {
-
+	_data.resize(4);
 }
 float ezc3d::DataNS::Points3dNS::Point::x() const
 {
@@ -163,7 +162,7 @@ void ezc3d::DataNS::Points3dNS::Point::z(float z)
     _data[2] = z;
 }
 
-const std::shared_ptr<float[]> ezc3d::DataNS::Points3dNS::Point::data() const
+const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const
 {
     return _data;
 }
