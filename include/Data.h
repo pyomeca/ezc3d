@@ -68,7 +68,7 @@ public:
     float z() const;
     void z(float z);
 
-    const std::shared_ptr<float[]> data() const;
+	const std::vector<float> data() const;
 
     float residual() const;
     void residual(float residual);
@@ -76,7 +76,7 @@ public:
     void name(const std::string &name);
 
 protected:
-    std::shared_ptr<float[]> _data;
+	std::vector<float> _data;
     std::string _name;
     int _idxInData;
 };
