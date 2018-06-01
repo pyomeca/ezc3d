@@ -334,18 +334,20 @@ const std::vector<std::string>& ezc3d::ParametersNS::GroupNS::Parameter::valuesA
 const std::vector<int> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const
 {
     if (_data_type != DATA_TYPE::BYTE)
-        throw std::invalid_argument("This parameter is not string");
+        throw std::invalid_argument("This parameter is a BYTE");
     return _param_data_int;
 }
 
 const std::vector<int> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const
 {
-    return valuesAsByte();
+    if (_data_type != DATA_TYPE::INT)
+        throw std::invalid_argument("This parameter is a INT");
+    return _param_data_int;
 }
 const std::vector<float> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsFloat() const
 {
     if (_data_type != DATA_TYPE::FLOAT)
-        throw std::invalid_argument("This parameter is not string");
+        throw std::invalid_argument("This parameter is a FLOAT");
     return _param_data_float;
 }
 

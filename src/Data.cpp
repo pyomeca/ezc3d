@@ -12,8 +12,12 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
     _frames.resize(file.header().nbFrames());
 
     // Get names of the data
-    const std::vector<std::string>& pointNames(file.parameters().group("POINT").parameter("LABELS").valuesAsString());
-    const std::vector<std::string>& analogNames(file.parameters().group("ANALOG").parameter("LABELS").valuesAsString());
+    std::vector<std::string> pointNames;
+    if (file.header().nb3dPoints() > 0)
+        pointNames = file.parameters().group("POINT").parameter("LABELS").valuesAsString();
+    std::vector<std::string> analogNames;
+    if (file.header().nbAnalogs() > 0)
+        analogNames = file.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
     // Read the actual data
     for (int j = 0; j < file.header().nbFrames(); ++j){
@@ -28,8 +32,12 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                 pts_tp[i].residual(file.readFloat());
                 if (i < pointNames.size())
                     pts_tp[i].name(pointNames[i]);
-                else
-                    pts_tp[i].name("unlabeled_point_" + i);
+                else {
+                    std::stringstream unlabel;
+                    unlabel << "unlabeled_point_" << i;
+                    pts_tp[i].name(unlabel.str());
+                }
+
             }
             _frames[j].add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
 
@@ -40,10 +48,13 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                 for (int i = 0; i < file.header().nbAnalogs(); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
                     c.value(file.readFloat());
-                    if (i < pointNames.size())
+                    if (i < 0) //analogNames.size())
                         c.name(analogNames[i]);
-                    else
-                        c.name("unlabeled_analog_" + i);
+                    else {
+                        std::stringstream unlabel;
+                        unlabel << "unlabeled_analog_" << i;
+                        c.name(unlabel.str());
+                    }
                     sub.replaceChannel(i, c);
                 }
                 analog.replaceSubframe(k, sub);
