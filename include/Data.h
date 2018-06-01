@@ -1,6 +1,7 @@
 #ifndef __DATA_H__
 #define __DATA_H__
 
+#include <sstream>
 #include "ezc3d.h"
 
 
