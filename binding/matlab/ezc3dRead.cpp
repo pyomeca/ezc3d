@@ -115,8 +115,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 fillDoubleInStruct(analogsStruct, 1, c3d.header().nbAnalogByFrame() * c3d.header().frameRate() );
                 fillDoubleInStruct(analogsStruct, 2, c3d.header().nbAnalogByFrame() * c3d.header().firstFrame());
                 fillDoubleInStruct(analogsStruct, 3, c3d.header().nbAnalogByFrame() * c3d.header().lastFrame()-1); // 0-based
-                std::cout <<  c3d.header().nbAnalogByFrame() << std::endl;
-                std::cout << c3d.header().lastFrame() << std::endl;
             }
 
             // fill events
