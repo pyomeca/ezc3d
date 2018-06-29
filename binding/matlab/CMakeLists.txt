@@ -9,10 +9,12 @@ find_package(Matlab REQUIRED COMPONENTS MX_LIBRARY)
 set(CPP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ezc3dRead.cpp)
 
 # Add project
-INCLUDE_DIRECTORIES(${Matlab_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
-add_library(${PROJECT_NAME} SHARED ${CPP_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/Matlabdef.def)#
+add_library(${PROJECT_NAME} SHARED ${CPP_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/Matlabdef.def)
 # Reset the name of the output
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_NAME ${MASTER_PROJECT_NAME})
+
+# Add headers
+target_include_directories(${PROJECT_NAME} PRIVATE ${Matlab_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 # Set the name of the library
 if(WIN32)

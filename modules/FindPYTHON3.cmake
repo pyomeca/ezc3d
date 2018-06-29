@@ -130,8 +130,9 @@ semantic as :command:`add_library` but take care of Python module naming rules
 If library type is not specified, ``MODULE`` is assumed.
 #]=======================================================================]
 
+
 set (_PYTHON_PREFIX Python3)
-#message(${${_PYTHON_PREFIX}_EXECUTABLE})
+
 set (_Python3_REQUIRED_VERSION_MAJOR 3)
 
 include (${CMAKE_CURRENT_LIST_DIR}/FindPython/Support.cmake)
