@@ -257,7 +257,7 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
         _dimension.push_back(1);
     else // otherwise it's a matrix
         for (int i=0; i<nDimensions; ++i)
-            _dimension.push_back (file.readInt(1*ezc3d::READ_SIZE::BYTE));    // Read the dimension size of the matrix
+            _dimension.push_back (file.readUint(1*ezc3d::READ_SIZE::BYTE));    // Read the dimension size of the matrix
 
     // Read the data for the parameters
     if (_data_type == DATA_TYPE::CHAR){
