@@ -43,9 +43,9 @@ public:
     bool isLocked() const;
     const std::string& name() const;
     const std::string& description() const;
-    const std::vector<Parameter>& parameters() const;
-    const Parameter& parameter(int idx) const;
-    std::vector<Parameter>& parameters_nonConst();
+    const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters() const;
+    const ezc3d::ParametersNS::GroupNS::Parameter& parameter(int idx) const;
+    std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters_nonConst();
     const Parameter& parameter(std::string parameterName) const;
 
 protected:
@@ -60,6 +60,13 @@ protected:
 
 class EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter{
 public:
+    enum DATA_TYPE{
+        CHAR = -1,
+        BYTE = 1,
+        INT = 2,
+        FLOAT = 4
+    };
+
     Parameter();
 
     int read(ezc3d::c3d &file, int nbCharInName);
@@ -72,18 +79,13 @@ public:
     const std::string& name() const;
     const std::string& description() const;
 
+    DATA_TYPE type() const;
     const std::vector<std::string>& valuesAsString() const;
     const std::vector<int>& valuesAsByte() const;
     const std::vector<int>& valuesAsInt() const;
     const std::vector<float>& valuesAsFloat() const;
 
 protected:
-    enum DATA_TYPE{
-        CHAR = -1,
-        BYTE = 1,
-        INT = 2,
-        FLOAT = 4
-    };
 
     bool _isLocked; // If the group should not be modified
 
