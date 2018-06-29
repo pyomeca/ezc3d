@@ -6,8 +6,10 @@
 int main()
 {
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10; ++i){
         ezc3d::c3d c3d("../markers_analogs.c3d");
+        std::cout << "coucou" << std::endl;
+    }
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 

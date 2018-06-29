@@ -41,7 +41,7 @@ protected:
     int _parametersAddress;         // Byte 1.1
     int _checksum;                 // Byte 1.2 ==> 80 if it is a c3d
     int _nb3dPoints;                // Byte 2 ==> number of stored trajectories
-    int _nbAnalogsMeasurement;      // Byte 3 ==> number of analog data
+    int _nbAnalogsMeasurement;      // Byte 3 ==> number of analog data per point frame
     int _firstFrame; // 1-based!    // Byte 4 ==> first frame in the file
     int _lastFrame;                 // Byte 5 ==> last frame in the file
     int _nbMaxInterpGap;            // Byte 6 ==> maximal gap for interpolation

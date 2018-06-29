@@ -46,8 +46,8 @@ public:
     void replace(int idx, const ezc3d::DataNS::Points3dNS::Point& p);
     void print() const;
 
-    const std::vector<Point>& points() const;
-    std::vector<Point>& points_nonConst();
+    const std::vector<ezc3d::DataNS::Points3dNS::Point>& points() const;
+    std::vector<ezc3d::DataNS::Points3dNS::Point>& points_nonConst();
     const ezc3d::DataNS::Points3dNS::Point& point(int idx) const;
     const ezc3d::DataNS::Points3dNS::Point& point(const std::string& pointName) const;
 
@@ -106,12 +106,12 @@ public:
 
     void addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel);
     void replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel& channel);
-    void addChannels(const std::vector<Channel>& allChannelsData);
-    const std::vector<Channel>& channels() const;
+    void addChannels(const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& allChannelsData);
+    const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels() const;
     const ezc3d::DataNS::AnalogsNS::Channel& channel(int idx) const;
     const ezc3d::DataNS::AnalogsNS::Channel& channel(std::string channelName) const;
 protected:
-    std::vector<Channel> _channels;
+    std::vector<ezc3d::DataNS::AnalogsNS::Channel> _channels;
 };
 
 class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
