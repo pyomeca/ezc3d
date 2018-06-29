@@ -1,19 +1,19 @@
 
-option(BUILD_PYTHON "Build Python SWIG module" OFF)
-option(BUILD_MATLAB "Build Matlab module" OFF)
+option(BINDER_PYTHON3 "Build Python SWIG module" OFF)
+option(BINDER_MATLAB "Build Matlab module" OFF)
 
 # If at least one interface
-if (BUILD_PYTHON)
+if (BINDER_PYTHON3)
 	# Set up swig
 	find_package(SWIG REQUIRED)
 	include(${SWIG_USE_FILE})
 endif()
 
 # Add subdirectories for each language if desired
-if(BUILD_PYTHON)
-    add_subdirectory(Python3)
+if (BINDER_PYTHON3)
+    add_subdirectory(python3)
 endif()
 
-if(BUILD_MATLAB)
+if (BINDER_MATLAB)
     add_subdirectory(matlab)
 endif()

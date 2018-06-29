@@ -35,8 +35,8 @@ SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRU
 
 # Linker and instalation
 target_link_libraries(${PROJECT_NAME} ${MASTER_PROJECT_NAME} ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
-set(Matlab_TOOLBOX_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE FILEPATH "Toolbox path to install, please note that the default directory may require administrator access")
-install(TARGETS ${PROJECT_NAME} DESTINATION ${Matlab_TOOLBOX_INSTALL_DIR}/${PROJECT_NAME})
+set(Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE FILEPATH "Toolbox path to install, please note that the default directory may require administrator access")
+install(TARGETS ${PROJECT_NAME} DESTINATION ${Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR}/${PROJECT_NAME})
 
 
 
