@@ -1,33 +1,43 @@
+set(MASTER_PROJECT_NAME ${PROJECT_NAME})
+
+project(${MASTER_PROJECT_NAME}_matlab)
 cmake_minimum_required(VERSION 3.1)
-find_package(Matlab COMPONENTS MX_LIBRARY REQUIRED)
 
-# Get the files to compile
-file(GLOB CPP_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp )
+find_package(Matlab REQUIRED COMPONENTS MX_LIBRARY)
 
-foreach(CPP_FILE ${CPP_FILES})
-	get_filename_component(mex_lib_name ${CPP_FILE} NAME_WE)
-	
-	INCLUDE_DIRECTORIES(${Matlab_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/../../include ${CMAKE_CURRENT_SOURCE_DIR})
-	add_library(${mex_lib_name} SHARED ${CPP_FILE})
+# Get the file to compile
+set(CPP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ezc3dRead.cpp)
 
-	# Set the name of the library
-	if(WIN32)
-	  if (CMAKE_CL_64)
-		  SET_TARGET_PROPERTIES(${mex_lib_name} PROPERTIES SUFFIX .mexw64)
-	  else(CMAKE_CL_64)
-		  SET_TARGET_PROPERTIES(${mex_lib_name} PROPERTIES SUFFIX .mexw32)
-	  endif(CMAKE_CL_64)
-	else(WIN32)
-	  if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-		  SET_TARGET_PROPERTIES(${mex_lib_name} PROPERTIES SUFFIX .mexa64 PREFIX "")
-	  else(CMAKE_SIZEOF_VOID_P MATCHES "8")
-		  SET_TARGET_PROPERTIES(${mex_lib_name} PROPERTIES SUFFIX .mexglx PREFIX "")
-	  endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
-	endif(WIN32)
+# Add project
+INCLUDE_DIRECTORIES(${Matlab_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+add_library(${PROJECT_NAME} SHARED ${CPP_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/Matlabdef.def)#
+# Reset the name of the output
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_NAME ${MASTER_PROJECT_NAME})
 
-	target_link_libraries(${mex_lib_name} ${PROJECT_NAME} ${Matlab_LIBRARIES})
-	#install(TARGETS ${mex_lib_name} DESTINATION ${Matlab_ROOT_DIR}/toolbox/${mex_lib_name})
-endforeach(CPP_FILE)
+# Set the name of the library
+if(WIN32)
+  if (CMAKE_CL_64)
+      SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SUFFIX .mexw64)
+  else(CMAKE_CL_64)
+      SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SUFFIX .mexw32)
+  endif(CMAKE_CL_64)
+else(WIN32)
+  if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SUFFIX .mexa64 PREFIX "")
+  else(CMAKE_SIZEOF_VOID_P MATCHES "8")
+      SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SUFFIX .mexglx PREFIX "")
+  endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
+endif(WIN32)
+
+# Set runtime path for linux
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES INSTALL_RPATH ${${MASTER_PROJECT_NAME}_BIN_FOLDER})
+SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+# Linker and instalation
+target_link_libraries(${PROJECT_NAME} ${MASTER_PROJECT_NAME} ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
+set(Matlab_TOOLBOX_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE FILEPATH "Toolbox path to install, please note that the default directory may require administrator access")
+install(TARGETS ${PROJECT_NAME} DESTINATION ${Matlab_TOOLBOX_INSTALL_DIR}/${PROJECT_NAME})
+
 
 
 

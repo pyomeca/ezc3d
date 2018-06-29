@@ -210,6 +210,11 @@ const std::string& ezc3d::ParametersNS::GroupNS::Parameter::description() const
 {
     return _description;
 }
+
+ezc3d::ParametersNS::GroupNS::Parameter::DATA_TYPE ezc3d::ParametersNS::GroupNS::Parameter::type() const
+{
+    return _data_type;
+}
 const std::string& ezc3d::ParametersNS::GroupNS::Parameter::name() const
 {
     return _name;
