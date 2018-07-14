@@ -17,6 +17,7 @@ ENDIF()
 
 # Prepare add library
 aux_source_directory(src SRC_LIST)
+set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
 if (BUILD_SHARED_LIBS)
 	add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
 else()
@@ -47,7 +48,11 @@ install(DIRECTORY include DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
 # Add binding subdirectory
 add_subdirectory(binding)
 
-
+# Add the example if asked
+set(BUILD_EXAMPLE TRUE CACHE BOOL "Build a C++ example")
+if (BUILD_EXAMPLE)
+    add_subdirectory(example)
+endif()
 
 
 
