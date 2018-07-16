@@ -20,6 +20,17 @@ ezc3d::c3d::~c3d()
     close();
 }
 
+void ezc3d::c3d::write(const std::string& filePath) const
+{
+    std::fstream f(filePath, std::ios::out | std::ios::binary);
+
+    // Write the header
+    this->header().write(f);
+
+
+    f.close();
+}
+
 void ezc3d::removeSpacesOfAString(std::string& s){
     // Remove the spaces at the end of the strings
     for (size_t i = s.size(); i >= 0; --i)

@@ -63,6 +63,8 @@ public:
     c3d(const std::string &filePath);
     ~c3d();
 
+    // Write the c3d to a file
+    void write(const std::string &filePath) const;
 
     // Byte reading functions
     void readChar(int nByteToRead,
