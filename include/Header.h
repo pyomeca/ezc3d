@@ -1,6 +1,8 @@
 #ifndef __HEAEDER_H__
 #define __HEAEDER_H__
 
+#include <fstream>
+
 #include "ezc3d.h"
 
 class EZC3D_API ezc3d::Header{
@@ -8,6 +10,7 @@ public:
     Header(ezc3d::c3d &file);
     void read(ezc3d::c3d &file);
     void print() const;
+    void write(std::fstream& f) const;
 
     // Getter on the parameters
     int parametersAddress() const;
@@ -29,9 +32,11 @@ public:
     int emptyBlock2() const;
     const std::vector<float>& eventsTime() const;
     float eventsTime(int i) const;
-    int eventsDisplay() const;
+    std::vector<int> eventsDisplay() const;
+    int eventsDisplay(int idx) const;
     int emptyBlock3() const;
-    const std::string& eventsLabel() const;
+    const std::vector<std::string>& eventsLabel() const;
+    const std::string& eventsLabel(int idx) const;
     int emptyBlock4() const;
     int nbFrames() const;
     int nbAnalogs() const;
@@ -56,9 +61,9 @@ protected:
     int _nbEvents;                  // Byte 151 ==> Number of defined time events (0 to 18)
     int _emptyBlock2;               // Byte 152
     std::vector<float> _eventsTime; // Byte 153-188 ==> Event times (floating-point) in seconds
-    int _eventsDisplay;             // Byte 189-197 ==> Event display (0x00 = ON, 0x01 = OFF)
+    std::vector<int> _eventsDisplay;// Byte 189-197 ==> Event display (0x00 = ON, 0x01 = OFF)
     int _emptyBlock3;               // Byte 198
-    std::string _eventsLabel;       // Byte 199-234 ==> Event labels (4 char by label)
+    std::vector<std::string> _eventsLabel;       // Byte 199-234 ==> Event labels (4 char by label)
     int _emptyBlock4;               // Byte 235-256
 };
 
