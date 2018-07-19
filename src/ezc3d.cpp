@@ -94,7 +94,9 @@ std::string ezc3d::c3d::readString(int nByteToRead, int nByteFromPrevious,
 {
     char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
-    return std::string(c);
+    std::string out(c);
+    delete c;
+    return out;
 }
 
 int ezc3d::c3d::readInt(int nByteToRead, int nByteFromPrevious,
@@ -104,7 +106,9 @@ int ezc3d::c3d::readInt(int nByteToRead, int nByteFromPrevious,
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
-    return hex2int(c);
+    int out(hex2int(c));
+    delete c;
+    return out;
 }
 
 int ezc3d::c3d::readUint(int nByteToRead, int nByteFromPrevious,
@@ -114,7 +118,9 @@ int ezc3d::c3d::readUint(int nByteToRead, int nByteFromPrevious,
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
-    return hex2uint(c);
+    int out(hex2uint(c));
+    delete c;
+    return out;
 }
 
 float ezc3d::c3d::readFloat(int nByteFromPrevious,
@@ -123,16 +129,9 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
     int nByteToRead(4*ezc3d::READ_SIZE::BYTE);
     char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
-    return *reinterpret_cast<float*>(c);
-}
-
-long ezc3d::c3d::readLong(int nByteToRead,
-              int nByteFromPrevious,
-              const  std::ios_base::seekdir &pos)
-{
-    char* c = new char[nByteToRead + 1];
-    readFile(nByteToRead, c, nByteFromPrevious, pos);
-    return hex2long(c);
+    float out (*reinterpret_cast<float*>(c));
+    delete c;
+    return out;
 }
 
 void ezc3d::c3d::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
