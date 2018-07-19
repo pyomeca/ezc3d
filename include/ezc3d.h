@@ -81,9 +81,6 @@ public:
                  const std::ios_base::seekdir &pos = std::ios::cur);
     float readFloat(int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
-    long readLong(int nByteToRead,
-                  int nByteFromPrevious = 0,
-                  const  std::ios_base::seekdir &pos = std::ios::cur);
     void readMatrix(std::vector<int> dimension,
                     std::vector<std::string> &param_data,
                     int currentIdx = 0);
