@@ -111,9 +111,9 @@ protected:
         const  std::ios_base::seekdir &pos = std::ios::cur);
 
     // Converting functions
-    unsigned int hex2uint(const char * val);
-    int hex2int(const char * val);
-    int hex2long(const char * val);
+    unsigned int hex2uint(const char * val, int len);
+    int hex2int(const char * val, int len);
+    int hex2long(const char * val, int len);
 };
 #include "Header.h"
 #include "Data.h"
