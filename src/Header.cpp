@@ -185,7 +185,7 @@ void ezc3d::Header::print() const{
     std::cout << "nbAnalogs = " << nbAnalogs() << std::endl;
     std::cout << "firstFrame = " << firstFrame() << std::endl;
     std::cout << "lastFrame = " << lastFrame() << std::endl;
-    std::cout << "lastFrame = " << nbFrames() << std::endl;
+    std::cout << "nbFrames = " << nbFrames() << std::endl;
     std::cout << "nbMaxInterpGap = " << nbMaxInterpGap() << std::endl;
     std::cout << "scaleFactor = " << scaleFactor() << std::endl;
     std::cout << "dataStartAnalog = " << dataStartAnalog() << std::endl;

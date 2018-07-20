@@ -265,27 +265,23 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
         file.readMatrix(_dimension, param_data_string_tp);
         // Vicon c3d organize its text in column-wise format, I am not sure if
         // this is a standard or a custom made stuff
-        if (_dimension.size() == 1){
+        int maxParamToRead(0);
+        if (_dimension.size() == 1)
+            maxParamToRead = 1;
+        else
+            for (int i = 1; i < _dimension.size(); ++i)
+                maxParamToRead += _dimension[i];
+
+        int idx(0);
+        for (int i = 0; i < maxParamToRead; ++i){
             std::string tp;
-            for (int i = 0; i < _dimension[0]; ++i)
-                tp += param_data_string_tp[i];
+            for (int j = 0; j < _dimension[0]; ++j){
+                tp += param_data_string_tp[idx];
+                ++idx;
+            }
             ezc3d::removeSpacesOfAString(tp);
             _param_data_string.push_back(tp);
         }
-        else if (_dimension.size() == 2){
-            int idx(0);
-            for (int i = 0; i < _dimension[1]; ++i){
-                std::string tp;
-                for (int j = 0; j < _dimension[0]; ++j){
-                    tp += param_data_string_tp[idx];
-                    ++idx;
-                }
-                ezc3d::removeSpacesOfAString(tp);
-                _param_data_string.push_back(tp);
-            }
-        }
-        else
-            throw std::ios_base::failure("Parsing char on matrix other than 2d or 1d matrix is not implemented yet");
     }
     else if (_data_type == DATA_TYPE::BYTE)
         file.readMatrix((int)_data_type, _dimension, _param_data_int);
