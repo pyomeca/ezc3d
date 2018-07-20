@@ -41,20 +41,20 @@ void ezc3d::removeSpacesOfAString(std::string& s){
 }
 
 
-unsigned int ezc3d::c3d::hex2uint(const char * val){
+unsigned int ezc3d::c3d::hex2uint(const char * val, int len){
     int ret(0);
-    for (int i=0; i<strlen(val); i++)
+    for (int i=0; i<len; i++)
         ret |= int((unsigned char)val[i]) * int(pow(0x100, i));
     return ret;
 }
 
-int ezc3d::c3d::hex2int(const char * val){
-    unsigned int tp(hex2uint(val));
+int ezc3d::c3d::hex2int(const char * val, int len){
+    unsigned int tp(hex2uint(val, len));
 
     // convert to signed int
     // Find max int value
     unsigned int max(0);
-    for (int i=0; i<strlen(val); ++i)
+    for (int i=0; i<len; ++i)
         max |= 0xFF * int(pow(0x100, i));
 
     // If the value is over uint_max / 2 then it is a negative number
@@ -67,9 +67,9 @@ int ezc3d::c3d::hex2int(const char * val){
     return out;
 }
 
-int ezc3d::c3d::hex2long(const char * val){
+int ezc3d::c3d::hex2long(const char * val, int len){
     long ret(0);
-    for (int i=0; i<strlen(val); i++)
+    for (int i=0; i<len; i++)
         ret |= long((unsigned char)val[i]) * long(pow(0x100, i));
     return ret;
 }
@@ -106,7 +106,7 @@ int ezc3d::c3d::readInt(int nByteToRead, int nByteFromPrevious,
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
-    int out(hex2int(c));
+    int out(hex2int(c, nByteToRead));
     delete c;
     return out;
 }
@@ -118,7 +118,7 @@ int ezc3d::c3d::readUint(int nByteToRead, int nByteFromPrevious,
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
-    int out(hex2uint(c));
+    int out(hex2uint(c, nByteToRead));
     delete c;
     return out;
 }
