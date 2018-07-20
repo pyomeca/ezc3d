@@ -6,9 +6,9 @@
 // SANDBOX
 int main()
 {
-    ezc3d::c3d c3d("markers_analogs.c3d");
-    c3d.write("tata.c3d");
-    //ezc3d::c3d c3d_2("tata.c3d");
+    //ezc3d::c3d c3d("markers_analogs.c3d");
+    //c3d.write("tata.c3d");
+    ezc3d::c3d c3d_2("/home/laboratoire/mnt/F/Data/Archet/Poids_et_deformation/RAW/2017_05_31_AMd/Musique/tata.c3d");
 }
 
 
