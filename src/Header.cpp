@@ -250,6 +250,5 @@ void ezc3d::Header::write(std::fstream &f) const
     }
     for (int i=0; i<22; ++i)
         f.write(reinterpret_cast<const char*>(&_emptyBlock4), 1*ezc3d::READ_SIZE::WORD);
-    f.write("2", ezc3d::READ_SIZE::WORD);
 }
 
