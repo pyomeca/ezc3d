@@ -69,6 +69,20 @@ void ezc3d::ParametersNS::Parameters::print() const
     std::cout << std::endl;
 }
 
+void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
+{
+    // Write the header of parameters
+    f.write(reinterpret_cast<const char*>(&_parametersStart), ezc3d::BYTE);
+    f.write(reinterpret_cast<const char*>(&_checksum), ezc3d::BYTE);
+    // Leave a blank space which will be later fill
+    // (number of block can't be known before writing them)
+    int blankValue(0);
+    f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
+    int processorType = 84;
+    f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
+
+}
+
 
 
 
