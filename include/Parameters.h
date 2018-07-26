@@ -7,6 +7,7 @@ class EZC3D_API ezc3d::ParametersNS::Parameters{
 public:
     Parameters(ezc3d::c3d &file);
     void print() const;
+    void write(std::fstream& f) const;
 
     const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
     const ezc3d::ParametersNS::GroupNS::Group& group(int group) const;

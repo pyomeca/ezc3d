@@ -27,6 +27,8 @@ void ezc3d::c3d::write(const std::string& filePath) const
     // Write the header
     this->header().write(f);
 
+    // Write the parameters
+    this->parameters().write(f);
 
     f.close();
 }
