@@ -25,9 +25,12 @@
 
 namespace ezc3d {
     // Size of some constant (in Byte)
-    enum READ_SIZE {
+    enum DATA_TYPE{
+        CHAR = -1,
         BYTE = 1,
-        WORD = 2
+        INT = 2,
+        WORD = 2,
+        FLOAT = 4
     };
     EZC3D_API void removeSpacesOfAString(std::string& s);
 

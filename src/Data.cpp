@@ -6,7 +6,7 @@
 ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 {
     // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
-    file.readInt(ezc3d::READ_SIZE::BYTE, 256*ezc3d::READ_SIZE::WORD*(file.header().parametersAddress()-1) + 256*ezc3d::READ_SIZE::WORD*file.parameters().nbParamBlock() - ezc3d::READ_SIZE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
+    file.readInt(ezc3d::DATA_TYPE::BYTE, 256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + 256*ezc3d::DATA_TYPE::WORD*file.parameters().nbParamBlock() - ezc3d::DATA_TYPE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
 
     // Initialize some variables
     _frames.resize(file.header().nbFrames());
@@ -85,6 +85,13 @@ void ezc3d::DataNS::Data::print() const
     }
 }
 
+void ezc3d::DataNS::Data::write(std::fstream &f) const
+{
+    for (int i=0; i<frames().size(); ++i){
+        frame(i).write(f);
+    }
+}
+
 
 
 // Point3d data
@@ -111,6 +118,13 @@ void ezc3d::DataNS::Points3dNS::Points::print() const
 {
     for (int i = 0; i < points().size(); ++i)
         point(i).print();
+}
+
+void ezc3d::DataNS::Points3dNS::Points::write(std::fstream &f) const
+{
+    for (int i=0; i<points().size(); ++i){
+        point(i).write(f);
+    }
 }
 
 const std::vector<ezc3d::DataNS::Points3dNS::Point>& ezc3d::DataNS::Points3dNS::Points::points() const
@@ -144,7 +158,14 @@ void ezc3d::DataNS::Points3dNS::Point::print() const
 ezc3d::DataNS::Points3dNS::Point::Point() :
     _name("")
 {
-	_data.resize(4);
+    _data.resize(4);
+}
+void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const
+{
+    f.write(reinterpret_cast<const char*>(&_data[0]), ezc3d::DATA_TYPE::FLOAT);
+    f.write(reinterpret_cast<const char*>(&_data[1]), ezc3d::DATA_TYPE::FLOAT);
+    f.write(reinterpret_cast<const char*>(&_data[2]), ezc3d::DATA_TYPE::FLOAT);
+    f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
 }
 float ezc3d::DataNS::Points3dNS::Point::x() const
 {
@@ -213,6 +234,12 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::print() const
         channel(i).print();
     }
 }
+void ezc3d::DataNS::AnalogsNS::SubFrame::write(std::fstream &f) const
+{
+    for (int i = 0; i < channels().size(); ++i){
+        channel(i).write(f);
+    }
+}
 
 void ezc3d::DataNS::AnalogsNS::SubFrame::addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel)
 {
@@ -255,7 +282,10 @@ void ezc3d::DataNS::AnalogsNS::Channel::print() const
 {
     std::cout << "Analog[" << name() << "] = " << value() << std::endl;
 }
-
+void ezc3d::DataNS::AnalogsNS::Channel::write(std::fstream &f) const
+{
+    f.write(reinterpret_cast<const char*>(&_value), ezc3d::DATA_TYPE::FLOAT);
+}
 const std::string& ezc3d::DataNS::AnalogsNS::Channel::name() const
 {
     return _name;
@@ -276,6 +306,11 @@ void ezc3d::DataNS::Frame::print() const
 {
     points().print();
     analogs().print();
+}
+void ezc3d::DataNS::Frame::write(std::fstream &f) const
+{
+    points().write(f);
+    analogs().write(f);
 }
 const ezc3d::DataNS::Points3dNS::Points& ezc3d::DataNS::Frame::points() const
 {
@@ -328,6 +363,12 @@ void ezc3d::DataNS::AnalogsNS::Analogs::print() const
         std::cout << "Subframe = " << i << std::endl;
         subframe(i).print();
         std::cout << std::endl;
+    }
+}
+void ezc3d::DataNS::AnalogsNS::Analogs::write(std::fstream &f) const
+{
+    for (int i = 0; i < subframes().size(); ++i){
+        subframe(i).write(f);
     }
 }
 void ezc3d::DataNS::AnalogsNS::Analogs::addSubframe(const ezc3d::DataNS::AnalogsNS::SubFrame& subframe)

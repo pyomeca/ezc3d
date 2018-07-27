@@ -138,45 +138,45 @@ int ezc3d::Header::parametersAddress() const
 void ezc3d::Header::read(ezc3d::c3d &file)
 {
     // Parameter address
-    _parametersAddress = file.readInt(1*ezc3d::READ_SIZE::BYTE, 0, std::ios::beg);
-    _checksum = file.readInt(1*ezc3d::READ_SIZE::BYTE);
+    _parametersAddress = file.readInt(1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
+    _checksum = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum != 80) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
     // Number of data
-    _nb3dPoints = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _nbAnalogsMeasurement = file.readInt(1*ezc3d::READ_SIZE::WORD);
+    _nb3dPoints = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _nbAnalogsMeasurement = file.readInt(1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
-    _firstFrame = file.readInt(1*ezc3d::READ_SIZE::WORD) - 1; // 1-based!
-    _lastFrame = file.readInt(1*ezc3d::READ_SIZE::WORD);
+    _firstFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
+    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD);
 
     // Some info
-    _nbMaxInterpGap = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _scaleFactor = file.readInt(2*ezc3d::READ_SIZE::WORD);
+    _nbMaxInterpGap = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _scaleFactor = file.readInt(2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    _dataStartAnalog = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _nbAnalogByFrame = file.readInt(1*ezc3d::READ_SIZE::WORD);
+    _dataStartAnalog = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _nbAnalogByFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     _frameRate = file.readFloat();
-    _emptyBlock1 = file.readInt(135*ezc3d::READ_SIZE::WORD);
+    _emptyBlock1 = file.readInt(135*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of keys
-    _keyLabelPresent = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _firstBlockKeyLabel = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _fourCharPresent = file.readInt(1*ezc3d::READ_SIZE::WORD);
+    _keyLabelPresent = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _firstBlockKeyLabel = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _fourCharPresent = file.readInt(1*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of events
-    _nbEvents = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _emptyBlock2 = file.readInt(1*ezc3d::READ_SIZE::WORD);
+    _nbEvents = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock2 = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     for (int i = 0; i < _eventsTime.size(); ++i)
         _eventsTime[i] = file.readFloat();
     for (int i = 0; i < _eventsDisplay.size(); ++i)
-        _eventsDisplay[i] = file.readInt(1*ezc3d::READ_SIZE::WORD);
-    _emptyBlock3 = file.readInt(1*ezc3d::READ_SIZE::WORD);
+        _eventsDisplay[i] = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock3 = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     for (int i = 0; i<_eventsLabel.size(); ++i)
-        _eventsLabel[i] = file.readString(2*ezc3d::READ_SIZE::WORD);
-    _emptyBlock4 = file.readInt(22*ezc3d::READ_SIZE::WORD);
+        _eventsLabel[i] = file.readString(2*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock4 = file.readInt(22*ezc3d::DATA_TYPE::WORD);
 }
 void ezc3d::Header::print() const{
     std::cout << "HEADER" << std::endl;
@@ -211,44 +211,44 @@ void ezc3d::Header::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&_checksum), ezc3d::BYTE);
 
     // Number of data
-    f.write(reinterpret_cast<const char*>(&_nb3dPoints), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_nbAnalogsMeasurement), 1*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nb3dPoints), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nbAnalogsMeasurement), 1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
     int firstFrame(_firstFrame + 1); // 1-based!
-    f.write(reinterpret_cast<const char*>(&firstFrame), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_lastFrame), 1*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&firstFrame), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_lastFrame), 1*ezc3d::DATA_TYPE::WORD);
 
     // Some info
-    f.write(reinterpret_cast<const char*>(&_nbMaxInterpGap), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_scaleFactor), 2*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nbMaxInterpGap), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_scaleFactor), 2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    f.write(reinterpret_cast<const char*>(&_dataStartAnalog), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_nbAnalogByFrame), 1*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&_dataStartAnalog), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nbAnalogByFrame), 1*ezc3d::DATA_TYPE::WORD);
     float frameRate(_frameRate);
-    f.write(reinterpret_cast<const char*>(&frameRate), 2*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&frameRate), 2*ezc3d::DATA_TYPE::WORD);
     for (int i=0; i<135; ++i)
-        f.write(reinterpret_cast<const char*>(&_emptyBlock1), 1*ezc3d::READ_SIZE::WORD);
+        f.write(reinterpret_cast<const char*>(&_emptyBlock1), 1*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of keys
-    f.write(reinterpret_cast<const char*>(&_keyLabelPresent), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_firstBlockKeyLabel), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_fourCharPresent), 1*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&_keyLabelPresent), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_firstBlockKeyLabel), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_fourCharPresent), 1*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of events
-    f.write(reinterpret_cast<const char*>(&_nbEvents), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_emptyBlock2), 1*ezc3d::READ_SIZE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nbEvents), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_emptyBlock2), 1*ezc3d::DATA_TYPE::WORD);
     for (int i = 0; i < _eventsTime.size(); ++i)
-        f.write(reinterpret_cast<const char*>(&_eventsTime[i]), 2*ezc3d::READ_SIZE::WORD);
+        f.write(reinterpret_cast<const char*>(&_eventsTime[i]), 2*ezc3d::DATA_TYPE::WORD);
     for (int i = 0; i < _eventsDisplay.size(); ++i)
-        f.write(reinterpret_cast<const char*>(&_eventsDisplay[i]), 1*ezc3d::READ_SIZE::WORD);
-    f.write(reinterpret_cast<const char*>(&_emptyBlock3), 1*ezc3d::READ_SIZE::WORD);
+        f.write(reinterpret_cast<const char*>(&_eventsDisplay[i]), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_emptyBlock3), 1*ezc3d::DATA_TYPE::WORD);
     for (int i = 0; i < _eventsLabel.size(); ++i){
         const char* event = _eventsLabel[i].c_str();
-        f.write(event, 2*ezc3d::READ_SIZE::WORD);
+        f.write(event, 2*ezc3d::DATA_TYPE::WORD);
     }
     for (int i=0; i<22; ++i)
-        f.write(reinterpret_cast<const char*>(&_emptyBlock4), 1*ezc3d::READ_SIZE::WORD);
+        f.write(reinterpret_cast<const char*>(&_emptyBlock4), 1*ezc3d::DATA_TYPE::WORD);
 }
 
