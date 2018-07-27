@@ -37,6 +37,7 @@ public:
     int read(ezc3d::c3d &file, int nbCharInName);
     int addParameter(ezc3d::c3d &file, int nbCharInName);
     void print() const;
+    void write(std::fstream& f, int groupIdx) const;
 
     // Getter for the group
     void lock();
@@ -72,6 +73,7 @@ public:
 
     int read(ezc3d::c3d &file, int nbCharInName);
     void print() const;
+    void write(std::fstream& f, int groupIdx) const;
 
     // Getter for the group
     void lock();
@@ -89,6 +91,7 @@ public:
 protected:
 
     bool _isLocked; // If the group should not be modified
+    void writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx=0) const;
 
     std::vector<int> _dimension; // Mapping of the data vector
     DATA_TYPE _data_type; // What kind of data there is in the parameter
