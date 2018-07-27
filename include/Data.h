@@ -10,6 +10,7 @@ class EZC3D_API ezc3d::DataNS::Data{
 public:
     Data(ezc3d::c3d &file);
     void print() const;
+    void write(std::fstream &f) const;
 
     // Getter
     const std::vector<ezc3d::DataNS::Frame>& frames() const;
@@ -23,6 +24,7 @@ class EZC3D_API ezc3d::DataNS::Frame{
 public:
 
     void print() const;
+    void write(std::fstream &f) const;
 
     void add(ezc3d::DataNS::AnalogsNS::Analogs analog_frame);
     void add(ezc3d::DataNS::Points3dNS::Points point3d_frame);
@@ -45,6 +47,7 @@ public:
     void add(const ezc3d::DataNS::Points3dNS::Point& p);
     void replace(int idx, const ezc3d::DataNS::Points3dNS::Point& p);
     void print() const;
+    void write(std::fstream &f) const;
 
     const std::vector<ezc3d::DataNS::Points3dNS::Point>& points() const;
     std::vector<ezc3d::DataNS::Points3dNS::Point>& points_nonConst();
@@ -59,6 +62,7 @@ class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
 public:
     void print() const;
     Point();
+    void write(std::fstream &f) const;
 
     float x() const;
     void x(float x);
@@ -87,6 +91,7 @@ public:
     Analogs();
     Analogs(int nSubframes);
     void print() const;
+    void write(std::fstream &f) const;
 
     const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes() const;
     std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes_nonConst();
@@ -103,6 +108,7 @@ public:
     SubFrame();
     SubFrame(int nChannels);
     void print() const;
+    void write(std::fstream &f) const;
 
     void addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel);
     void replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel& channel);
@@ -117,6 +123,7 @@ protected:
 class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
 public:
     void print() const;
+    void write(std::fstream &f) const;
 
     float value() const;
     void value(float v);

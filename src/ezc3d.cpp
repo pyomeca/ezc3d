@@ -30,6 +30,9 @@ void ezc3d::c3d::write(const std::string& filePath) const
     // Write the parameters
     this->parameters().write(f);
 
+    // Write the data
+    this->data().write(f);
+
     f.close();
 }
 
@@ -128,7 +131,7 @@ int ezc3d::c3d::readUint(int nByteToRead, int nByteFromPrevious,
 float ezc3d::c3d::readFloat(int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
-    int nByteToRead(4*ezc3d::READ_SIZE::BYTE);
+    int nByteToRead(4*ezc3d::DATA_TYPE::BYTE);
     char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
     float out (*reinterpret_cast<float*>(c));
@@ -141,7 +144,7 @@ void ezc3d::c3d::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readInt(dataLenghtInBytes*ezc3d::READ_SIZE::BYTE));
+            param_data.push_back (readInt(dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
         else
             readMatrix(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
@@ -161,7 +164,7 @@ void ezc3d::c3d::readMatrix(std::vector<int> dimension,
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back(readString(ezc3d::READ_SIZE::BYTE));
+            param_data.push_back(readString(ezc3d::DATA_TYPE::BYTE));
         else
             readMatrix(dimension, param_data, currentIdx + 1);
 }

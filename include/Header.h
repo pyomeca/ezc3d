@@ -10,7 +10,7 @@ public:
     Header(ezc3d::c3d &file);
     void read(ezc3d::c3d &file);
     void print() const;
-    void write(std::fstream& f) const;
+    void write(std::fstream &f) const;
 
     // Getter on the parameters
     int parametersAddress() const;
