@@ -7,7 +7,7 @@ class EZC3D_API ezc3d::ParametersNS::Parameters{
 public:
     Parameters(ezc3d::c3d &file);
     void print() const;
-    void write(std::fstream& f) const;
+    void write(std::fstream &f) const;
 
     const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
     const ezc3d::ParametersNS::GroupNS::Group& group(int group) const;
@@ -37,7 +37,7 @@ public:
     int read(ezc3d::c3d &file, int nbCharInName);
     int addParameter(ezc3d::c3d &file, int nbCharInName);
     void print() const;
-    void write(std::fstream& f, int groupIdx) const;
+    void write(std::fstream &f, int groupIdx) const;
 
     // Getter for the group
     void lock();
@@ -62,18 +62,11 @@ protected:
 
 class EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter{
 public:
-    enum DATA_TYPE{
-        CHAR = -1,
-        BYTE = 1,
-        INT = 2,
-        FLOAT = 4
-    };
-
     Parameter();
 
     int read(ezc3d::c3d &file, int nbCharInName);
     void print() const;
-    void write(std::fstream& f, int groupIdx) const;
+    void write(std::fstream &f, int groupIdx) const;
 
     // Getter for the group
     void lock();
@@ -82,7 +75,7 @@ public:
     const std::string& name() const;
     const std::string& description() const;
 
-    DATA_TYPE type() const;
+    ezc3d::DATA_TYPE type() const;
     const std::vector<std::string>& valuesAsString() const;
     const std::vector<int>& valuesAsByte() const;
     const std::vector<int>& valuesAsInt() const;
@@ -91,7 +84,7 @@ public:
 protected:
 
     bool _isLocked; // If the group should not be modified
-    void writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx=0) const;
+    int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx=0, int cmp=0) const;
 
     std::vector<int> _dimension; // Mapping of the data vector
     DATA_TYPE _data_type; // What kind of data there is in the parameter

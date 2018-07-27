@@ -158,11 +158,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 // Fill each parameters
                 for (int p = 0; p < parameters.size(); ++p){
                     ezc3d::ParametersNS::GroupNS::Parameter param = parameters[p];
-                    if (param.type() == ezc3d::ParametersNS::GroupNS::Parameter::DATA_TYPE::INT)
+                    if (param.type() == ezc3d::DATA_TYPE::INT)
                         fillDoubleInStruct(parametersStruct, p, param.valuesAsInt());
-                    else if (param.type() == ezc3d::ParametersNS::GroupNS::Parameter::DATA_TYPE::FLOAT)
+                    else if (param.type() == ezc3d::DATA_TYPE::FLOAT)
                         fillDoubleInStruct(parametersStruct, p, param.valuesAsFloat());
-                    else if (param.type() == ezc3d::ParametersNS::GroupNS::Parameter::DATA_TYPE::CHAR)
+                    else if (param.type() == ezc3d::DATA_TYPE::CHAR)
                         fillStrInStruct(parametersStruct, p, param.valuesAsString());
                 }
             }
