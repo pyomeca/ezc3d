@@ -76,17 +76,37 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&_checksum), ezc3d::BYTE);
     // Leave a blank space which will be later fill
     // (number of block can't be known before writing them)
+    std::streampos pos(f.tellg()); // remember where to input this value later
     int blankValue(0);
     f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
     int processorType = 84;
     f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
 
+    // Write each parameters
+    for (int i=0; i<groups().size(); ++i){
+        group(i).write(f, -(i+1));
+    }
+
+    // Move the cursor to a beginning of a block
+    std::streampos actualPos(f.tellg());
+    for (int i=0; i<512 - (int)actualPos % 512; ++i){
+        f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
+    }
+    // Go back at the left blank space and write the actual position
+    actualPos = f.tellg();
+    f.seekg(pos);
+    int nBlocksToNext = int(actualPos - pos-2)/512;
+    if (int(actualPos - pos-2) % 512 > 0)
+        ++nBlocksToNext;
+    f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
+    f.seekg(actualPos);
 }
 
 
 
 
-ezc3d::ParametersNS::GroupNS::Group::Group()
+ezc3d::ParametersNS::GroupNS::Group::Group() :
+    _isLocked(false)
 {
 
 }
@@ -176,6 +196,37 @@ void ezc3d::ParametersNS::GroupNS::Group::print() const
         parameter(i).print();
     }
 }
+void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx) const
+{
+    int nCharName(name().size());
+    if (isLocked())
+        nCharName *= -1;
+    f.write(reinterpret_cast<const char*>(&nCharName), 1*ezc3d::READ_SIZE::BYTE);
+    if (isLocked())
+        nCharName *= -1;
+    f.write(reinterpret_cast<const char*>(&groupIdx), 1*ezc3d::READ_SIZE::BYTE);
+    f.write(name().c_str(), nCharName*ezc3d::READ_SIZE::BYTE);
+
+    // It is not possible already to know in how many bytes the next parameter is
+    int blank(0);
+    std::streampos pos(f.tellg());
+    f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::READ_SIZE::BYTE);
+
+    int nCharGroupDescription(description().size());
+    f.write(reinterpret_cast<const char*>(&nCharGroupDescription), 1*ezc3d::READ_SIZE::BYTE);
+    f.write(description().c_str(), nCharGroupDescription*ezc3d::READ_SIZE::BYTE);
+
+    std::streampos actualPos(f.tellg());
+    // Go back at the left blank space and write the actual position
+    f.seekg(pos);
+    int nCharToNext = int(actualPos - pos);
+    f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::READ_SIZE::BYTE);
+    f.seekg(actualPos);
+
+    for (int i=0; i<parameters().size(); ++i){
+        parameter(i).write(f, -groupIdx);
+    }
+}
 const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& ezc3d::ParametersNS::GroupNS::Group::parameters() const
 {
     return _parameters;
@@ -204,7 +255,8 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
 
 
 
-ezc3d::ParametersNS::GroupNS::Parameter::Parameter()
+ezc3d::ParametersNS::GroupNS::Parameter::Parameter() :
+    _isLocked(false)
 {
 
 }
@@ -280,6 +332,8 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
         // Vicon c3d organize its text in column-wise format, I am not sure if
         // this is a standard or a custom made stuff
         int maxParamToRead(0);
+        if (_dimension.size() > 2)
+            throw std::ios_base::failure ("Parameter with more than 2 dimensions is not implemented. Please contact the programmer to implement it");
         if (_dimension.size() == 1)
             maxParamToRead = 1;
         else
@@ -337,6 +391,87 @@ void ezc3d::ParametersNS::GroupNS::Parameter::print() const
     std::cout << "description = " << _description << std::endl;
 }
 
+void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupIdx) const
+{
+    int nCharName(name().size());
+    if (isLocked())
+        nCharName *= -1;
+    f.write(reinterpret_cast<const char*>(&nCharName), 1*ezc3d::READ_SIZE::BYTE);
+    if (isLocked())
+        nCharName *= -1;
+    f.write(reinterpret_cast<const char*>(&groupIdx), 1*ezc3d::READ_SIZE::BYTE);
+    f.write(name().c_str(), nCharName*ezc3d::READ_SIZE::BYTE);
+
+    // It is not possible already to know in how many bytes the next parameter is
+    int blank(0);
+    std::streampos pos(f.tellg());
+    f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::READ_SIZE::BYTE);
+
+    // Write the parameter values
+    f.write(reinterpret_cast<const char*>(&_data_type), 1*ezc3d::READ_SIZE::BYTE);
+    int size_dim(_dimension.size());
+    // If it is a scalar, store it as so
+    if (_dimension.size() == 1 && _dimension[0] == 1){
+        int _size_dim(0);
+        f.write(reinterpret_cast<const char*>(&_size_dim), 1*ezc3d::READ_SIZE::BYTE);
+    }
+    else{
+        f.write(reinterpret_cast<const char*>(&size_dim), 1*ezc3d::READ_SIZE::BYTE);
+        for (int i=0; i<_dimension.size(); ++i)
+            f.write(reinterpret_cast<const char*>(&_dimension[i]), 1*ezc3d::READ_SIZE::BYTE);
+    }
+    int hasSize(1);
+    for (int i=0; i<_dimension.size(); ++i)
+        hasSize *= _dimension[i];
+    if (hasSize > 0){
+        if (_data_type == DATA_TYPE::CHAR){
+            if (_dimension.size() == 1){
+                f.write(_param_data_string[0].c_str(), _param_data_string[0].size()*(int)DATA_TYPE::BYTE);
+            } else if (_dimension.size() == 2){
+                for (int i=0; i<_dimension[1]; ++i){
+                    f.write(_param_data_string[i].c_str(), _param_data_string[i].size()*(int)DATA_TYPE::BYTE);
+                    const char buffer = ' ';
+                    for (int j=_param_data_string[i].size(); j<_dimension[0]; ++j)
+                        f.write(&buffer, (int)DATA_TYPE::BYTE);
+                }
+            }
+            else
+                throw std::ios_base::failure ("Parameter with more than 2 dimensions is not implemented. Please contact the programmer to implement it");
+
+        } else {
+            if (!_name.compare("COLOURS")){
+                int a = 1;
+                ++a;
+            }
+            writeImbricatedParameter(f, _dimension);
+        }
+    }
+
+    // Write description of the parameter
+    int nCharDescription(description().size());
+    f.write(reinterpret_cast<const char*>(&nCharDescription), 1*ezc3d::READ_SIZE::BYTE);
+    f.write(description().c_str(), nCharDescription*ezc3d::READ_SIZE::BYTE);
+
+    // Go back at the left blank space and write the actual position
+    std::streampos actualPos(f.tellg());
+    f.seekg(pos);
+    int nCharToNext = int(actualPos - pos);
+    f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::READ_SIZE::BYTE);
+    f.seekg(actualPos);
+}
+void ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx) const{
+    for (int i=0; i<dim[currentIdx]; ++i)
+        if (currentIdx == dim.size()-1){
+            if (_data_type == DATA_TYPE::BYTE)
+                f.write(reinterpret_cast<const char*>(&_param_data_int[currentIdx]), (int)_data_type);
+            else if (_data_type == DATA_TYPE::INT)
+                f.write(reinterpret_cast<const char*>(&_param_data_int[currentIdx]), (int)_data_type);
+            else if (_data_type == DATA_TYPE::FLOAT)
+                f.write(reinterpret_cast<const char*>(&_param_data_float[currentIdx]), (int)_data_type);
+        }
+        else
+            writeImbricatedParameter(f, dim, currentIdx + 1);
+}
 
 const std::vector<std::string>& ezc3d::ParametersNS::GroupNS::Parameter::valuesAsString() const
 {
