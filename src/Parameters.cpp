@@ -326,31 +326,8 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
             _dimension.push_back (file.readUint(1*ezc3d::DATA_TYPE::BYTE));    // Read the dimension size of the matrix
 
     // Read the data for the parameters
-    if (_data_type == DATA_TYPE::CHAR){
-        std::vector<std::string> param_data_string_tp;
-        file.readMatrix(_dimension, param_data_string_tp);
-        // Vicon c3d organize its text in column-wise format, I am not sure if
-        // this is a standard or a custom made stuff
-        int maxParamToRead(0);
-        if (_dimension.size() > 2)
-            throw std::ios_base::failure ("Parameter with more than 2 dimensions is not implemented. Please contact the programmer to implement it");
-        if (_dimension.size() == 1)
-            maxParamToRead = 1;
-        else
-            for (int i = 1; i < _dimension.size(); ++i)
-                maxParamToRead += _dimension[i];
-
-        int idx(0);
-        for (int i = 0; i < maxParamToRead; ++i){
-            std::string tp;
-            for (int j = 0; j < _dimension[0]; ++j){
-                tp += param_data_string_tp[idx];
-                ++idx;
-            }
-            ezc3d::removeSpacesOfAString(tp);
-            _param_data_string.push_back(tp);
-        }
-    }
+    if (_data_type == DATA_TYPE::CHAR)
+        file.readMatrix(_dimension, _param_data_string);
     else if (_data_type == DATA_TYPE::BYTE)
         file.readMatrix((int)_data_type, _dimension, _param_data_int);
     else if (_data_type == DATA_TYPE::INT)
@@ -427,17 +404,9 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
         if (_data_type == DATA_TYPE::CHAR){
             if (_dimension.size() == 1){
                 f.write(_param_data_string[0].c_str(), _param_data_string[0].size()*(int)DATA_TYPE::BYTE);
-            } else if (_dimension.size() == 2){
-                for (int i=0; i<_dimension[1]; ++i){
-                    f.write(_param_data_string[i].c_str(), _param_data_string[i].size()*(int)DATA_TYPE::BYTE);
-                    const char buffer = ' ';
-                    for (int j=_param_data_string[i].size(); j<_dimension[0]; ++j)
-                        f.write(&buffer, (int)DATA_TYPE::BYTE);
-                }
+            } else {
+                writeImbricatedParameter(f, _dimension, 1);
             }
-            else
-                throw std::ios_base::failure ("Parameter with more than 2 dimensions is not implemented. Please contact the programmer to implement it");
-
         } else {
             writeImbricatedParameter(f, _dimension);
         }
@@ -464,6 +433,12 @@ int ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstre
                 f.write(reinterpret_cast<const char*>(&_param_data_int[cmp]), (int)_data_type);
             else if (_data_type == DATA_TYPE::FLOAT)
                 f.write(reinterpret_cast<const char*>(&_param_data_float[cmp]), (int)_data_type);
+            else if (_data_type == DATA_TYPE::CHAR){
+                f.write(_param_data_string[cmp].c_str(), _param_data_string[cmp].size()*(int)DATA_TYPE::BYTE);
+                const char buffer = ' ';
+                for (int j=_param_data_string[cmp].size(); j<_dimension[0]; ++j)
+                    f.write(&buffer, (int)DATA_TYPE::BYTE);
+            }
             ++cmp;
         }
         else

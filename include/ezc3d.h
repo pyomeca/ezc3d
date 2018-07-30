@@ -84,14 +84,13 @@ public:
                  const std::ios_base::seekdir &pos = std::ios::cur);
     float readFloat(int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
-    void readMatrix(std::vector<int> dimension,
-                    std::vector<std::string> &param_data,
-                    int currentIdx = 0);
+    void readMatrix(const std::vector<int> &dimension,
+                    std::vector<std::string> &param_data);
     void readMatrix(int dataLenghtInBytes,
-                    std::vector<int> dimension,
+                    const std::vector<int> &dimension,
                     std::vector<int> &param_data,
                     int currentIdx = 0);
-    void readMatrix(std::vector<int> dimension,
+    void readMatrix(const std::vector<int> &dimension,
                     std::vector<float> &param_data,
                     int currentIdx = 0);
 
@@ -112,6 +111,16 @@ protected:
         char * c,
         int nByteFromPrevious = 0,
         const  std::ios_base::seekdir &pos = std::ios::cur);
+
+    // Internal function for reading strings
+    int _dispatchMatrix(const std::vector<int> &dimension,
+                         const std::vector<std::string> &param_data_in,
+                         std::vector<std::string> &param_data_out,
+                         int idxInParam = 0,
+                         int currentIdx = 1);
+    void _readMatrix(const std::vector<int> &dimension,
+                     std::vector<std::string> &param_data,
+                     int currentIdx = 0);
 
     // Converting functions
     unsigned int hex2uint(const char * val, int len);
