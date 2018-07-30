@@ -56,7 +56,7 @@ protected:
     std::string _name;
     std::string _description;
 
-    std::vector<Parameter> _parameters; // Holder for the parameters of the group
+    std::vector<ezc3d::ParametersNS::GroupNS::Parameter> _parameters; // Holder for the parameters of the group
 };
 
 
