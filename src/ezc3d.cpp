@@ -139,7 +139,7 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
     return out;
 }
 
-void ezc3d::c3d::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
+void ezc3d::c3d::readMatrix(int dataLenghtInBytes, const std::vector<int> &dimension,
                        std::vector<int> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -149,7 +149,7 @@ void ezc3d::c3d::readMatrix(int dataLenghtInBytes, std::vector<int> dimension,
             readMatrix(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readMatrix(std::vector<int> dimension,
+void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
                        std::vector<float> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -159,14 +159,53 @@ void ezc3d::c3d::readMatrix(std::vector<int> dimension,
             readMatrix(dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readMatrix(std::vector<int> dimension,
+void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
+                       std::vector<std::string> &param_data_string)
+{
+    std::vector<std::string> param_data_string_tp;
+    _readMatrix(dimension, param_data_string_tp);
+
+    // Vicon c3d stores text length on first dimension, I am not sure if
+    // this is a standard or a custom made stuff. I implemented it like that for now
+    if (dimension.size() == 1){
+        std::string tp;
+        for (int j = 0; j < dimension[0]; ++j)
+            tp += param_data_string_tp[j];
+        ezc3d::removeSpacesOfAString(tp);
+        param_data_string.push_back(tp);
+    }
+    else
+        _dispatchMatrix(dimension, param_data_string_tp, param_data_string);
+}
+
+void ezc3d::c3d::_readMatrix(const std::vector<int> &dimension,
                        std::vector<std::string> &param_data, int currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back(readString(ezc3d::DATA_TYPE::BYTE));
         else
-            readMatrix(dimension, param_data, currentIdx + 1);
+            _readMatrix(dimension, param_data, currentIdx + 1);
+}
+
+int ezc3d::c3d::_dispatchMatrix(const std::vector<int> &dimension,
+                                 const std::vector<std::string> &param_data_in,
+                                 std::vector<std::string> &param_data_out, int idxInParam,
+                                 int currentIdx)
+{
+    for (int i=0; i<dimension[currentIdx]; ++i)
+        if (currentIdx == dimension.size()-1){
+            std::string tp;
+            for (int j = 0; j < dimension[0]; ++j){
+                tp += param_data_in[idxInParam];
+                ++idxInParam;
+            }
+            ezc3d::removeSpacesOfAString(tp);
+            param_data_out.push_back(tp);
+        }
+        else
+            idxInParam = _dispatchMatrix(dimension, param_data_in, param_data_out, idxInParam, currentIdx + 1);
+    return idxInParam;
 }
 
 const ezc3d::Header& ezc3d::c3d::header() const
