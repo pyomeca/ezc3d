@@ -8,8 +8,11 @@
  // SANDBOX FOR DEVELOPER
 int main()
 {
-    ezc3d::c3d c3d("markers_analogs.c3d");
-    c3d.write("tata.c3d");
+    //ezc3d::c3d c3d("markers_analogs.c3d");
+    ezc3d::c3d c3d_2;
+    //c3d.write("tata.c3d");
+    c3d_2.write("tata2.c3d");
+    ezc3d::c3d c3d_3("tata2.c3d");
 }
 
 #else

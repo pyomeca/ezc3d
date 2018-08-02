@@ -1,6 +1,151 @@
 #define EZC3D_API_EXPORTS
 #include "Parameters.h"
 
+ezc3d::ParametersNS::Parameters::Parameters():
+    _parametersStart(1),
+    _checksum(0x50),
+    _nbParamBlock(0),
+    _processorType(84)
+{
+    // Mandatory groups
+    {
+        ezc3d::ParametersNS::GroupNS::Group grp("POINT", "");
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
+            p.set(std::vector<int>()={0}, {1});
+            p.lock();
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
+            p.set(std::vector<int>()={-1}, {1});
+            p.lock();
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
+            p.set(std::vector<int>()={0}, {1});
+            p.lock();
+            grp.addParameter(p);
+        }
+        {
+            std::cout << "DATA_START" << std::endl;
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("FRAMES", "");
+            p.set(std::vector<int>()={0}, {1});
+            p.lock();
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
+            p.set(std::vector<std::string>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
+            p.set(std::vector<std::string>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
+            p.set(std::vector<std::string>()={"mm"}, {2});
+            grp.addParameter(p);
+        }
+        _groups.push_back(grp);
+    }
+    {
+        ezc3d::ParametersNS::GroupNS::Group grp("ANALOG", "");
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
+            p.set(std::vector<int>()={0}, {1});
+            p.lock();
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("LABEL", "");
+            p.set(std::vector<std::string>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("GEN_SCALE", "");
+            p.set(std::vector<int>()={1}, {1});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
+            p.set(std::vector<int>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("OFFSET", "");
+            p.set(std::vector<int>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
+            p.set(std::vector<std::string>()={"mm"}, {2});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
+            p.set(std::vector<int>()={0}, {1});
+            p.lock();
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("FORMAT", "");
+            p.set(std::vector<std::string>()={"SIGNED"}, {6});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("BITS", "");
+            p.set(std::vector<int>()={12}, {1});
+            grp.addParameter(p);
+        }
+        _groups.push_back(grp);
+    }
+    {
+        ezc3d::ParametersNS::GroupNS::Group grp("FORCE_PLATEFORM", "");
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
+            p.set(std::vector<int>()={0}, {1});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("TYPE", "");
+            p.set(std::vector<std::string>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("ZERO", "");
+            p.set(std::vector<int>()={1,0}, {2});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("CORNERS", "");
+            p.set(std::vector<float>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("ORIGIN", "");
+            p.set(std::vector<float>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("CHANNEL", "");
+            p.set(std::vector<int>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
+            ezc3d::ParametersNS::GroupNS::Parameter p("CAL_MATRIX", "");
+            p.set(std::vector<float>()={}, {0});
+            grp.addParameter(p);
+        }
+        _groups.push_back(grp);
+    }
+}
+
 ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     _parametersStart(0),
     _checksum(0),
@@ -105,8 +250,10 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
 
 
 
-ezc3d::ParametersNS::GroupNS::Group::Group() :
-    _isLocked(false)
+ezc3d::ParametersNS::GroupNS::Group::Group(const std::string &name, const std::string &description) :
+    _isLocked(false),
+    _name(name),
+    _description(description)
 {
 
 }
@@ -185,6 +332,20 @@ int ezc3d::ParametersNS::GroupNS::Group::addParameter(ezc3d::c3d &file, int nbCh
     _parameters.push_back(p);
     return nextParamByteInFile;
 }
+
+void ezc3d::ParametersNS::GroupNS::Group::addParameter(const ezc3d::ParametersNS::GroupNS::Parameter &p)
+{
+    int alreadyExistIdx(-1);
+    for (int i=0; i<_parameters.size(); ++i)
+        if (!parameter(i).name().compare(p.name())){
+            alreadyExistIdx = i;
+            break;
+        }
+    if (alreadyExistIdx < 0)
+        _parameters.push_back(p);
+    else
+        _parameters[alreadyExistIdx] = p;
+}
 void ezc3d::ParametersNS::GroupNS::Group::print() const
 {
     std::cout << "groupName = " << name() << std::endl;
@@ -205,7 +366,7 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx) c
     if (isLocked())
         nCharName *= -1;
     f.write(reinterpret_cast<const char*>(&groupIdx), 1*ezc3d::DATA_TYPE::BYTE);
-    f.write(name().c_str(), nCharName*ezc3d::DATA_TYPE::BYTE);
+    f.write(ezc3d::toUpper(name()).c_str(), nCharName*ezc3d::DATA_TYPE::BYTE);
 
     // It is not possible already to know in how many bytes the next parameter is
     int blank(0);
@@ -255,8 +416,10 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
 
 
 
-ezc3d::ParametersNS::GroupNS::Parameter::Parameter() :
-    _isLocked(false)
+ezc3d::ParametersNS::GroupNS::Parameter::Parameter(const std::string &name, const std::string &description) :
+    _isLocked(false),
+    _name(name),
+    _description(description)
 {
 
 }
@@ -346,6 +509,25 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
     return nextParamByteInFile;
 }
 
+void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<int> &data, const std::vector<int>& dimension)
+{
+    _data_type = ezc3d::DATA_TYPE::INT;
+    _param_data_int = data;
+    _dimension = dimension;
+}
+void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data, const std::vector<int> &dimension)
+{
+    _data_type = ezc3d::DATA_TYPE::FLOAT;
+    _param_data_float = data;
+    _dimension = dimension;
+}
+void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string> &data, const std::vector<int> &dimension)
+{
+    _data_type = ezc3d::DATA_TYPE::CHAR;
+    _param_data_string = data;
+    _dimension = dimension;
+}
+
 void ezc3d::ParametersNS::GroupNS::Parameter::print() const
 {
     std::cout << "parameterName = " << name() << std::endl;
@@ -377,7 +559,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
     if (isLocked())
         nCharName *= -1;
     f.write(reinterpret_cast<const char*>(&groupIdx), 1*ezc3d::DATA_TYPE::BYTE);
-    f.write(name().c_str(), nCharName*ezc3d::DATA_TYPE::BYTE);
+    f.write(ezc3d::toUpper(name()).c_str(), nCharName*ezc3d::DATA_TYPE::BYTE);
 
     // It is not possible already to know in how many bytes the next parameter is
     int blank(0);

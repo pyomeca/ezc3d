@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include <string.h>
 #include <cmath>
@@ -33,6 +34,7 @@ namespace ezc3d {
         FLOAT = 4
     };
     EZC3D_API void removeSpacesOfAString(std::string& s);
+    EZC3D_API std::string toUpper(const std::string &str);
 
     class c3d;
     class EZC3D_API Header;
@@ -63,6 +65,7 @@ namespace ezc3d {
 
 class EZC3D_API ezc3d::c3d : public std::fstream {
 public:
+    c3d();
     c3d(const std::string &filePath);
     ~c3d();
 
