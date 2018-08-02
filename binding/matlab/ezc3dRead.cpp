@@ -3,60 +3,7 @@
 #include <memory>
 
 #include "ezc3d.h"
-
-void fillDoubleInStruct(mxArray *field, mwIndex idx, int value){
-    // markers_Number
-    mxArray* ptr = mxCreateDoubleMatrix(1, 1, mxREAL);
-    double * val = mxGetPr(ptr);
-    val[0] = (double)value;
-    mxSetFieldByNumber(field, 0, idx, ptr);
-}
-void fillDoubleInStruct(mxArray *field, mwIndex idx, const std::vector<int>& values){
-    // markers_Number
-    mxArray* ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
-    double * val = mxGetPr(ptr);
-    for (int i =0; i < values.size(); ++i)
-        val[i] = (double)values[i];
-    mxSetFieldByNumber(field, 0, idx, ptr);
-}
-
-void fillDoubleInStruct(mxArray *field, mwIndex idx, double value){
-    // markers_Number
-    mxArray* ptr = mxCreateDoubleMatrix(1, 1, mxREAL);
-    double * val = mxGetPr(ptr);
-    val[0] = value;
-    mxSetFieldByNumber(field, 0, idx, ptr);
-}
-void fillDoubleInStruct(mxArray *field, mwIndex idx, const std::vector<float>& values){
-    // markers_Number
-    mxArray* ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
-    double * val = mxGetPr(ptr);
-    for (int i =0; i < values.size(); ++i)
-        val[i] = (double)values[i];
-    mxSetFieldByNumber(field, 0, idx, ptr);
-}
-void fillDoubleInStruct(mxArray *field, mwIndex idx, const std::vector<double>& values){
-    // markers_Number
-    mxArray* ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
-    double * val = mxGetPr(ptr);
-    for (int i =0; i < values.size(); ++i)
-        val[i] = values[i];
-    mxSetFieldByNumber(field, 0, idx, ptr);
-}
-
-void fillStrInStruct(mxArray *field, mwIndex idx, const std::string &value){
-    // markers_Number
-    mxSetFieldByNumber(field, 0, idx, mxCreateString(value.c_str()));
-}
-void fillStrInStruct(mxArray *field, mwIndex idx, const std::vector<std::string>& values){
-    // markers_Number
-    mxArray* ptr = mxCreateCellMatrix(values.size(), 1);
-
-    // Fill cell matrix with input arguments
-    for (int i =0; i < values.size(); ++i)
-        mxSetCell(ptr, i, mxCreateString(values[i].c_str()) );
-    mxSetFieldByNumber(field, 0, idx, ptr);
-}
+#include "utils.h"
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
@@ -99,10 +46,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxArray * markersStruct = mxCreateStructArray(2, markerFieldsDims, sizeof(markersFieldsNames)/sizeof(*markersFieldsNames), markersFieldsNames);
                 mxSetFieldByNumber(headerStruct, 0, 0, markersStruct);
 
-                fillDoubleInStruct(markersStruct, 0, c3d.header().nb3dPoints());
-                fillDoubleInStruct(markersStruct, 1, c3d.header().frameRate());
-                fillDoubleInStruct(markersStruct, 2, c3d.header().firstFrame());
-                fillDoubleInStruct(markersStruct, 3, c3d.header().lastFrame()-1);
+                fillMatlabField(markersStruct, 0, c3d.header().nb3dPoints());
+                fillMatlabField(markersStruct, 1, c3d.header().frameRate());
+                fillMatlabField(markersStruct, 2, c3d.header().firstFrame());
+                fillMatlabField(markersStruct, 3, c3d.header().lastFrame());
             }
             // fill analogs
             {
@@ -111,10 +58,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxArray * analogsStruct = mxCreateStructArray(2, analogsFieldsDims, sizeof(analogsFieldsNames)/sizeof(*analogsFieldsNames), analogsFieldsNames);
                 mxSetFieldByNumber(headerStruct, 0, 1, analogsStruct);
 
-                fillDoubleInStruct(analogsStruct, 0, c3d.header().nbAnalogs());
-                fillDoubleInStruct(analogsStruct, 1, c3d.header().nbAnalogByFrame() * c3d.header().frameRate() );
-                fillDoubleInStruct(analogsStruct, 2, c3d.header().nbAnalogByFrame() * c3d.header().firstFrame());
-                fillDoubleInStruct(analogsStruct, 3, c3d.header().nbAnalogByFrame() * c3d.header().lastFrame()-1); // 0-based
+                fillMatlabField(analogsStruct, 0, c3d.header().nbAnalogs());
+                fillMatlabField(analogsStruct, 1, c3d.header().nbAnalogByFrame() * c3d.header().frameRate() );
+                fillMatlabField(analogsStruct, 2, c3d.header().nbAnalogByFrame() * c3d.header().firstFrame());
+                fillMatlabField(analogsStruct, 3, c3d.header().nbAnalogByFrame() * c3d.header().lastFrame());
             }
 
             // fill events
@@ -124,9 +71,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxArray * eventsStruct = mxCreateStructArray(2, eventsFieldsDims, sizeof(eventsFieldsNames)/sizeof(*eventsFieldsNames), eventsFieldsNames);
                 mxSetFieldByNumber(headerStruct, 0, 2, eventsStruct);
 
-                fillDoubleInStruct(eventsStruct, 0, (int)c3d.header().eventsTime().size());
-                fillDoubleInStruct(eventsStruct, 1, c3d.header().eventsTime());
-                fillStrInStruct(eventsStruct, 2, c3d.header().eventsLabel());
+                fillMatlabField(eventsStruct, 0, (int)c3d.header().eventsTime().size());
+                fillMatlabField(eventsStruct, 1, c3d.header().eventsTime());
+                fillMatlabField(eventsStruct, 2, c3d.header().eventsLabel());
             }
         }
 
@@ -159,11 +106,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 for (int p = 0; p < parameters.size(); ++p){
                     ezc3d::ParametersNS::GroupNS::Parameter param = parameters[p];
                     if (param.type() == ezc3d::DATA_TYPE::INT)
-                        fillDoubleInStruct(parametersStruct, p, param.valuesAsInt());
+                        fillMatlabField(parametersStruct, p, param.valuesAsInt());
                     else if (param.type() == ezc3d::DATA_TYPE::FLOAT)
-                        fillDoubleInStruct(parametersStruct, p, param.valuesAsFloat());
+                        fillMatlabField(parametersStruct, p, param.valuesAsFloat());
                     else if (param.type() == ezc3d::DATA_TYPE::CHAR)
-                        fillStrInStruct(parametersStruct, p, param.valuesAsString());
+                        fillMatlabField(parametersStruct, p, param.valuesAsString());
                 }
             }
         }

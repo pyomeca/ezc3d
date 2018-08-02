@@ -3,13 +3,19 @@
 // Implementation of data class
 
 
+ezc3d::DataNS::Data::Data()
+{
+
+}
+
 ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 {
     // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
     file.readInt(ezc3d::DATA_TYPE::BYTE, 256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + 256*ezc3d::DATA_TYPE::WORD*file.parameters().nbParamBlock() - ezc3d::DATA_TYPE::BYTE, std::ios::beg); // "- BYTE" so it is just prior
 
     // Initialize some variables
-    _frames.resize(file.header().nbFrames());
+    if (file.header().nbFrames()>0)
+        _frames.resize(file.header().nbFrames());
 
     // Get names of the data
     std::vector<std::string> pointNames;
