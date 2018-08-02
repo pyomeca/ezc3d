@@ -1,6 +1,14 @@
 #define EZC3D_API_EXPORTS
 #include "ezc3d.h"
 
+ezc3d::c3d::c3d():
+    _filePath("")
+{
+    _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
+    _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters());
+    _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
+}
+
 ezc3d::c3d::c3d(const std::string &filePath):
     std::fstream(filePath, std::ios::in | std::ios::binary),
     _filePath(filePath)
@@ -43,6 +51,11 @@ void ezc3d::removeSpacesOfAString(std::string& s){
             s.pop_back();
         else
             break;
+}
+std::string ezc3d::toUpper(const std::string &str){
+    std::string new_str = str;
+    std::transform(new_str.begin(), new_str.end(), new_str.begin(), ::toupper);
+    return new_str;
 }
 
 

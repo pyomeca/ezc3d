@@ -1,12 +1,38 @@
 #define EZC3D_API_EXPORTS
 #include "Header.h"
 
+ezc3d::Header::Header():
+    _checksum(0x50),
+    _parametersAddress(2),
+    _nb3dPoints(0),
+    _nbAnalogsMeasurement(0),
+    _firstFrame(0),
+    _lastFrame(0),
+    _nbMaxInterpGap(10),
+    _scaleFactor(-1),
+    _dataStartAnalog(1),
+    _nbAnalogByFrame(1),
+    _frameRate(100),
+    _emptyBlock1(0),
+    _keyLabelPresent(0),
+    _firstBlockKeyLabel(0),
+    _fourCharPresent(0x3039),
+    _nbEvents(0),
+    _emptyBlock2(0),
+    _emptyBlock3(0),
+    _emptyBlock4(0)
+{
+    _eventsTime.resize(18);
+    _eventsDisplay.resize(9);
+    _eventsLabel.resize(18);
+}
+
 ezc3d::Header::Header(ezc3d::c3d &file) :
     _checksum(0x50),
     _parametersAddress(2),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
-    _firstFrame(1),
+    _firstFrame(0),
     _lastFrame(0),
     _nbMaxInterpGap(10),
     _scaleFactor(-1),
@@ -27,6 +53,9 @@ ezc3d::Header::Header(ezc3d::c3d &file) :
     _eventsLabel.resize(18);
     read(file);
 }
+
+
+
 int ezc3d::Header::nbFrames() const
 {
     return _lastFrame - _firstFrame;
@@ -149,7 +178,7 @@ void ezc3d::Header::read(ezc3d::c3d &file)
 
     // Idx of first and last frame
     _firstFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
-    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
 
     // Some info
     _nbMaxInterpGap = file.readInt(1*ezc3d::DATA_TYPE::WORD);
@@ -216,8 +245,9 @@ void ezc3d::Header::write(std::fstream &f) const
 
     // Idx of first and last frame
     int firstFrame(_firstFrame + 1); // 1-based!
+    int lastFrame(_lastFrame + 1); // 1-based!
     f.write(reinterpret_cast<const char*>(&firstFrame), 1*ezc3d::DATA_TYPE::WORD);
-    f.write(reinterpret_cast<const char*>(&_lastFrame), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&lastFrame), 1*ezc3d::DATA_TYPE::WORD);
 
     // Some info
     f.write(reinterpret_cast<const char*>(&_nbMaxInterpGap), 1*ezc3d::DATA_TYPE::WORD);

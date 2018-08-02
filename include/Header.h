@@ -7,6 +7,7 @@
 
 class EZC3D_API ezc3d::Header{
 public:
+    Header();
     Header(ezc3d::c3d &file);
     void read(ezc3d::c3d &file);
     void print() const;

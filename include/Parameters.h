@@ -5,6 +5,7 @@
 
 class EZC3D_API ezc3d::ParametersNS::Parameters{
 public:
+    Parameters();
     Parameters(ezc3d::c3d &file);
     void print() const;
     void write(std::fstream &f) const;
@@ -32,10 +33,11 @@ protected:
 
 class EZC3D_API ezc3d::ParametersNS::GroupNS::Group{
 public:
-    Group();
+    Group(const std::string &name = "", const std::string &description = "");
 
     int read(ezc3d::c3d &file, int nbCharInName);
     int addParameter(ezc3d::c3d &file, int nbCharInName);
+    void addParameter(const ezc3d::ParametersNS::GroupNS::Parameter& p);
     void print() const;
     void write(std::fstream &f, int groupIdx) const;
 
@@ -62,9 +64,12 @@ protected:
 
 class EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter{
 public:
-    Parameter();
+    Parameter(const std::string &name = "", const std::string &description = "");
 
     int read(ezc3d::c3d &file, int nbCharInName);
+    void set(const std::vector<int>& data, const std::vector<int>& dimension);
+    void set(const std::vector<float>& data, const std::vector<int>& dimension);
+    void set(const std::vector<std::string>& data, const std::vector<int>& dimension);
     void print() const;
     void write(std::fstream &f, int groupIdx) const;
 
@@ -87,7 +92,7 @@ protected:
     int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx=0, int cmp=0) const;
 
     std::vector<int> _dimension; // Mapping of the data vector
-    DATA_TYPE _data_type; // What kind of data there is in the parameter
+    ezc3d::DATA_TYPE _data_type; // What kind of data there is in the parameter
     std::vector<int> _param_data_int; // Actual parameter
     std::vector<float> _param_data_float; // Actual parameter
     std::vector<std::string> _param_data_string; // Actual parameter
