@@ -2,6 +2,7 @@ set(MASTER_PROJECT_NAME ${PROJECT_NAME})
 
 project(${MASTER_PROJECT_NAME}_example)
 add_executable(${PROJECT_NAME} "main.cpp")
+add_dependencies(${PROJECT_NAME} ${MASTER_PROJECT_NAME})
 
 # Headers
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)

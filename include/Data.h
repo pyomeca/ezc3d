@@ -8,6 +8,7 @@
 
 class EZC3D_API ezc3d::DataNS::Data{
 public:
+    Data();
     Data(ezc3d::c3d &file);
     void print() const;
     void write(std::fstream &f) const;
