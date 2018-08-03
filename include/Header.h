@@ -16,14 +16,18 @@ public:
     // Getter on the parameters
     int parametersAddress() const;
     int checksum() const;
+    void nb3dPoints(int n);
     int nb3dPoints() const;
     int nbAnalogsMeasurement() const;
+    void firstFrame(int frame);
     int firstFrame() const;
+    void lastFrame(int frame);
     int lastFrame() const;
     int nbMaxInterpGap() const;
     int scaleFactor() const;
-    int dataStartAnalog() const;
+    int dataStart() const;
     int nbAnalogByFrame() const;
+    void frameRate(double f);
     double frameRate() const;
     int emptyBlock1() const;
     int keyLabelPresent() const;
@@ -40,6 +44,7 @@ public:
     const std::string& eventsLabel(int idx) const;
     int emptyBlock4() const;
     int nbFrames() const;
+    void nbAnalogs(int n);
     int nbAnalogs() const;
 
 protected:
@@ -52,7 +57,7 @@ protected:
     int _lastFrame;                 // Byte 5 ==> last frame in the file
     int _nbMaxInterpGap;            // Byte 6 ==> maximal gap for interpolation
     int _scaleFactor;               // Byte 7-8 ==> convert int to 3d reference frame, floating point if negative
-    int _dataStartAnalog;           // Byte 9 ==> Number of first block for 3D and analog data
+    int _dataStart;                 // Byte 9 ==> Number of first block for 3D and analog data
     int _nbAnalogByFrame;           // Byte 10 ==> Number of analog by frame
     double _frameRate;              // Byte 11-12 ==> 3d frame rate in Hz (floating point)
     int _emptyBlock1;               // Byte 13-147

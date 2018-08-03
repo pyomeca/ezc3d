@@ -24,7 +24,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
-            p.set(std::vector<int>()={0}, {1});
+            p.set(std::vector<float>()={0}, {1});
             p.lock();
             grp.addParameter(p);
         }
@@ -52,7 +52,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             p.set(std::vector<std::string>()={"mm"}, {2});
             grp.addParameter(p);
         }
-        _groups.push_back(grp);
+        addGroup(grp);
     }
     {
         ezc3d::ParametersNS::GroupNS::Group grp("ANALOG", "");
@@ -63,7 +63,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             grp.addParameter(p);
         }
         {
-            ezc3d::ParametersNS::GroupNS::Parameter p("LABEL", "");
+            ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
             p.set(std::vector<std::string>()={}, {0});
             grp.addParameter(p);
         }
@@ -103,7 +103,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             p.set(std::vector<int>()={12}, {1});
             grp.addParameter(p);
         }
-        _groups.push_back(grp);
+        addGroup(grp);
     }
     {
         ezc3d::ParametersNS::GroupNS::Group grp("FORCE_PLATEFORM", "");
@@ -142,7 +142,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             p.set(std::vector<float>()={}, {0});
             grp.addParameter(p);
         }
-        _groups.push_back(grp);
+        addGroup(grp);
     }
 }
 
@@ -265,17 +265,38 @@ ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group_nonC
 {
     return _groups[group];
 }
+
+void ezc3d::ParametersNS::Parameters::addGroup(const ezc3d::ParametersNS::GroupNS::Group &g)
+{
+    // If the group already exist, override and merge
+    int alreadyExtIdx(groupIdx(g.name()));
+    if (alreadyExtIdx < 0)
+        _groups.push_back(g);
+    else {
+        for (int i=0; i<g.parameters().size(); ++i)
+            _groups[alreadyExtIdx].addParameter(g.parameter(i));
+    }
+
+}
 const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(int group) const
 {
     return _groups[group];
 }
 const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(const std::string &groupName) const
 {
+    int idx(groupIdx(groupName));
+    if (idx < 0)
+        throw std::invalid_argument("Group name was not found in parameters");
+    return group(idx);
+}
+
+int ezc3d::ParametersNS::Parameters::groupIdx(const std::string &groupName) const
+{
     for (int i = 0; i < groups().size(); ++i){
         if (!group(i).name().compare(groupName))
-            return group(i);
+            return i;
     }
-    throw std::invalid_argument("Group name was not found in parameters");
+    return -1;
 }
 void ezc3d::ParametersNS::GroupNS::Group::lock()
 {
@@ -329,12 +350,15 @@ int ezc3d::ParametersNS::GroupNS::Group::addParameter(ezc3d::c3d &file, int nbCh
 {
     ezc3d::ParametersNS::GroupNS::Parameter p;
     int nextParamByteInFile = p.read(file, nbCharInName);
-    _parameters.push_back(p);
+    addParameter(p);
     return nextParamByteInFile;
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::addParameter(const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
+    if (p.type() == ezc3d::DATA_TYPE::NONE)
+        throw std::runtime_error("Data type is not set");
+
     int alreadyExistIdx(-1);
     for (int i=0; i<_parameters.size(); ++i)
         if (!parameter(i).name().compare(p.name())){
@@ -403,14 +427,20 @@ std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& ezc3d::ParametersNS::Group
 {
     return _parameters;
 }
-
-const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter(std::string parameterName) const
+int ezc3d::ParametersNS::GroupNS::Group::parameterIdx(std::string parameterName) const
 {
     for (int i = 0; i < parameters().size(); ++i){
         if (!parameter(i).name().compare(parameterName))
-            return parameter(i);
+            return i;
     }
-    throw std::invalid_argument("Parameter name was not found within the group");
+    return -1;
+}
+const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter(std::string parameterName) const
+{
+    int idx(parameterIdx(parameterName));
+    if (idx < 0)
+        throw std::invalid_argument("Parameter name was not found within the group");
+    return parameter(idx);
 }
 
 
@@ -418,6 +448,7 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
 
 ezc3d::ParametersNS::GroupNS::Parameter::Parameter(const std::string &name, const std::string &description) :
     _isLocked(false),
+    _data_type(ezc3d::DATA_TYPE::NONE),
     _name(name),
     _description(description)
 {
@@ -509,20 +540,45 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
     return nextParamByteInFile;
 }
 
+bool ezc3d::ParametersNS::GroupNS::Parameter::isDimensionConsistent(int dataSize, const std::vector<int>& dimension) const {
+    if (dataSize == 0){
+        if (dimension.size() == 0 || (dimension.size() == 1 && dimension[0] == 0))
+            return true;
+        else
+            return false;
+    }
+
+    int dimesionSize(1);
+    for (int i=0; i<dimension.size(); ++i)
+        dimesionSize *= dimension[i];
+    if (dataSize == dimesionSize)
+        return true;
+    else
+        return false;
+}
 void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<int> &data, const std::vector<int>& dimension)
 {
+    if (!isDimensionConsistent(data.size(), dimension))
+        throw std::range_error("Dimension of the data does not correspond to sent dimensions");
     _data_type = ezc3d::DATA_TYPE::INT;
     _param_data_int = data;
     _dimension = dimension;
 }
 void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data, const std::vector<int> &dimension)
 {
+    if (!isDimensionConsistent(data.size(), dimension))
+        throw std::range_error("Dimension of the data does not correspond to sent dimensions");
     _data_type = ezc3d::DATA_TYPE::FLOAT;
     _param_data_float = data;
     _dimension = dimension;
 }
 void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string> &data, const std::vector<int> &dimension)
 {
+    std::vector<int> dimensionNoStr;
+    for (int i=1; i<dimension.size(); ++i)
+        dimensionNoStr.push_back(dimension[i]);
+    if (!isDimensionConsistent(data.size(), dimensionNoStr))
+        throw std::range_error("Dimension of the data does not correspond to sent dimensions");
     _data_type = ezc3d::DATA_TYPE::CHAR;
     _param_data_string = data;
     _dimension = dimension;

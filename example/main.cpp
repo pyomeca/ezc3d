@@ -8,11 +8,66 @@
  // SANDBOX FOR DEVELOPER
 int main()
 {
-    //ezc3d::c3d c3d("markers_analogs.c3d");
-    ezc3d::c3d c3d_2;
-    //c3d.write("tata.c3d");
-    c3d_2.write("tata2.c3d");
-    ezc3d::c3d c3d_3("tata2.c3d");
+    ezc3d::c3d c3d("markers_analogs.c3d");
+
+    // Add a new markers to the c3d (one filled with zeros, the other one with data)
+    c3d.addMarker("new_marker1");
+    std::vector<ezc3d::DataNS::Frame> frames;
+    ezc3d::DataNS::Frame frame;
+    ezc3d::DataNS::Points3dNS::Points pts_new;
+    ezc3d::DataNS::Points3dNS::Point pt_new;
+    pt_new.name("new_marker2");
+    pt_new.x(1.0);
+    pt_new.y(2.0);
+    pt_new.z(3.0);
+    pts_new.add(pt_new);
+    frame.add(pts_new);
+    for (int i=0; i<c3d.data().frames().size(); ++i)
+        frames.push_back(frame);
+    c3d.addMarker(frames);
+
+    // Add a new frame
+    ezc3d::DataNS::Frame f;
+    std::vector<std::string>labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
+    int nPoints(c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+    ezc3d::DataNS::Points3dNS::Points pts;
+    for (int i=0; i<nPoints; ++i){
+        ezc3d::DataNS::Points3dNS::Point pt;
+        pt.name(labels[i]);
+        pt.x(1.0);
+        pt.y(2.0);
+        pt.z(3.0);
+        pts.add(pt);
+    }
+    ezc3d::DataNS::AnalogsNS::Analogs analog;
+    ezc3d::DataNS::AnalogsNS::SubFrame subframe;
+    for (int i=0; i<c3d.header().nbAnalogs(); ++i){
+        ezc3d::DataNS::AnalogsNS::Channel c;
+        c.value(i+1);
+        subframe.addChannel(c);
+    }
+    for (int i=0; i<c3d.header().nbAnalogByFrame(); ++i)
+        analog.addSubframe(subframe);
+    f.add(pts, analog);
+    c3d.addFrame(f);
+
+
+    // Add new parameters
+    ezc3d::ParametersNS::GroupNS::Parameter p1("new_param_2");
+    p1.set(std::vector<int>() = {2}, {1});
+    c3d.addParameter("new_group_1", p1);
+    ezc3d::ParametersNS::GroupNS::Parameter p2("new_param_1");
+    p2.set(std::vector<int>() = {1, 2, 4, 8, 9, 1}, {3, 2}); // TESTER LE READER DANS MATLAB!
+    c3d.addParameter("new_group_1", p2);
+    ezc3d::ParametersNS::GroupNS::Parameter p3("test2");
+    p3.set(std::vector<std::string>() = {"value1", "longer_value"}, {20, 2});
+    c3d.addParameter("new_group_2", p3);
+
+    // write the changed c3d
+    c3d.write("augmentedC3d.c3d");
+
+    // Read it back
+    ezc3d::c3d augmentedC3d("augmentedC3d.c3d");
 }
 
 #else
