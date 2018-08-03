@@ -19,13 +19,92 @@ ezc3d::c3d::c3d(const std::string &filePath):
     // Read all the section
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this));
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters(*this));
+    // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
+    updateHeader();
+
+    // Now read the actual data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this));
 }
-
 
 ezc3d::c3d::~c3d()
 {
     close();
+}
+
+void ezc3d::c3d::updateHeader()
+{
+    // Parameter is always consider as the right value. If there is a discrepancy between them, change the header
+    if (parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0] != header().nbFrames()){
+        _header->firstFrame(0);
+        _header->lastFrame(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
+    }
+    if (parameters().group("POINT").parameter("RATE").valuesAsFloat()[0] != header().frameRate()){
+        _header->frameRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
+    }
+    if (parameters().group("POINT").parameter("USED").valuesAsInt()[0] != header().nb3dPoints()){
+        _header->nb3dPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+    }
+    if (parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() != header().nbAnalogs()){
+        _header->nbAnalogs(parameters().group("ANALOG").parameter("LABELS").valuesAsString().size());
+    }
+}
+
+void ezc3d::c3d::updateParameters()
+{
+    if (data().frames().size() < 1)
+        return;
+
+    // If frames has been added
+    ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
+    int nFrames(data().frames().size());
+    if (nFrames != grpPoint.parameter("FRAMES").valuesAsInt()[0]){
+        int idx(grpPoint.parameterIdx("FRAMES"));
+        grpPoint.parameters_nonConst()[idx].set(std::vector<int>() = {nFrames}, {1});
+    }
+
+    // If points has been added
+    int nPoints(data().frame(0).points().points().size());
+    if (nPoints != grpPoint.parameter("USED").valuesAsInt()[0]){
+        grpPoint.parameters_nonConst()[grpPoint.parameterIdx("USED")].set(std::vector<int>() = {nPoints}, {1});
+
+        int idxLabels(grpPoint.parameterIdx("LABELS"));
+        int idxDescriptions(grpPoint.parameterIdx("DESCRIPTIONS"));
+        std::vector<std::string> labels;
+        std::vector<std::string> descriptions;
+        int longestName(-1);
+        for (int i = 0; i<nPoints; ++i){
+            std::string name(data().frame(0).points().point(i).name());
+            if (int(name.size()) > longestName)
+                longestName = name.size();
+            labels.push_back(name);
+            descriptions.push_back("");
+        }
+        grpPoint.parameters_nonConst()[idxLabels].set(labels, {longestName, nPoints});
+        grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions, {0, nPoints});
+    }
+
+    // If analogous data has been added
+    ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
+    int nAnalogs(data().frame(0).analogs().subframe(0).channels().size());
+    if (nAnalogs != grpAnalog.parameter("USED").valuesAsInt()[0]){
+        grpAnalog.parameters_nonConst()[grpAnalog.parameterIdx("USED")].set(std::vector<int>() = {nAnalogs}, {1});
+
+        int idxLabels(grpAnalog.parameterIdx("LABELS"));
+        int idxDescriptions(grpAnalog.parameterIdx("DESCRIPTIONS"));
+        std::vector<std::string> labels;
+        std::vector<std::string> descriptions;
+        int longestName(-1);
+        for (int i = 0; i<nAnalogs; ++i){
+            std::string name(data().frame(0).analogs().subframe(0).channel(i).name());
+            if (int(name.size()) > longestName)
+                longestName = name.size();
+            labels.push_back(name);
+            descriptions.push_back("");
+        }
+        grpAnalog.parameters_nonConst()[idxLabels].set(labels, {longestName, nAnalogs});
+        grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions, {0, nAnalogs});
+    }
+
 }
 
 void ezc3d::c3d::write(const std::string& filePath) const
@@ -234,5 +313,83 @@ const ezc3d::ParametersNS::Parameters& ezc3d::c3d::parameters() const
 const ezc3d::DataNS::Data& ezc3d::c3d::data() const
 {
     return *_data;
+}
+
+void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
+{
+    int idx(parameters().groupIdx(groupName));
+    if (idx < 0){
+        _parameters->addGroup(ezc3d::ParametersNS::GroupNS::Group(groupName));
+        idx = parameters().groups().size()-1;
+    }
+    _parameters->group_nonConst(idx).addParameter(p);
+
+    // Do a sanity check on the header if important stuff like number of frames or number of elements is changed
+    updateHeader();
+}
+
+void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
+{
+    // Make sure f.points().points() is the same as data.f[ANY].points()
+    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
+    if (f.points().points().size() != labels.size())
+        throw std::runtime_error("Points in frame and already existing must be the same");
+    for (int i=0; i<labels.size(); ++i)
+        if (f.points().pointIdx(labels[i]) < 0)
+            throw std::runtime_error("All markers must appears in the frames and points");
+
+    int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+    if (f.points().points().size() != nPoints)
+        throw std::runtime_error("Points must be consiquent");
+
+    int nAnalogs(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+    int subSize(f.analogs().subframes().size());
+    int nChannel(f.analogs().subframes()[0].channels().size());
+    int nAnal(header().nbAnalogByFrame());
+    if ((nAnalogs != 0 && f.analogs().subframes().size() == 0) || (f.analogs().subframes()[0].channels().size() != nAnalogs &&
+                                                                   f.analogs().subframes().size() != header().nbAnalogByFrame() ))
+        throw std::runtime_error("Analogs must be consiquent with data");
+
+
+
+
+    // Replace the jth frame
+    _data->frame(f, j);
+    updateParameters();
+}
+
+void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
+{
+    if (frames.size() != data().frames().size())
+        throw std::runtime_error("Frames must have the same number of frames");
+    if (frames[0].points().points().size() == 0)
+        throw std::runtime_error("Points cannot be empty");
+
+    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
+    for (int idx = 0; idx<frames[0].points().points().size(); ++idx){
+        const std::string &name(frames[0].points().point(idx).name());
+        for (int i=0; i<labels.size(); ++i)
+            if (!name.compare(labels[i]))
+                throw std::runtime_error("Marker already exists");
+
+        for (int f=0; f<data().frames().size(); ++f)
+            _data->frames_nonConst()[f].points_nonConst().add(frames[f].points().point(idx));
+    }
+    updateParameters();
+    updateHeader();
+}
+void ezc3d::c3d::addMarker(const std::string &name){
+    std::vector<ezc3d::DataNS::Frame> dummy_frames;
+    ezc3d::DataNS::Points3dNS::Points dummy_pts;
+    ezc3d::DataNS::Points3dNS::Point emptyPoint;
+    emptyPoint.name(name);
+    dummy_pts.add(emptyPoint);
+    for (int f=0; f<data().frames().size(); ++f){
+        ezc3d::DataNS::Frame frame;
+        frame.add(dummy_pts);
+        dummy_frames.push_back(frame);
+    }
+
+    addMarker(dummy_frames);
 }
 

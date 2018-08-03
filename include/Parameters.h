@@ -1,6 +1,7 @@
 #ifndef __PARAMETERS_H__
 #define __PARAMETERS_H__
 
+#include <stdexcept>
 #include "ezc3d.h"
 
 class EZC3D_API ezc3d::ParametersNS::Parameters{
@@ -13,7 +14,9 @@ public:
     const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
     const ezc3d::ParametersNS::GroupNS::Group& group(int group) const;
     const ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
+    int groupIdx(const std::string& groupName) const;
     ezc3d::ParametersNS::GroupNS::Group& group_nonConst(int group);
+    void addGroup(const ezc3d::ParametersNS::GroupNS::Group& g);
 
     int parametersStart() const;
     int checksum() const;
@@ -50,7 +53,8 @@ public:
     const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters() const;
     const ezc3d::ParametersNS::GroupNS::Parameter& parameter(int idx) const;
     std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters_nonConst();
-    const Parameter& parameter(std::string parameterName) const;
+    int parameterIdx(std::string parameterName) const;
+    const ezc3d::ParametersNS::GroupNS::Parameter& parameter(std::string parameterName) const;
 
 protected:
     bool _isLocked; // If the group should not be modified
@@ -90,6 +94,7 @@ protected:
 
     bool _isLocked; // If the group should not be modified
     int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx=0, int cmp=0) const;
+    bool isDimensionConsistent(int dataSize, const std::vector<int>& dimension) const;
 
     std::vector<int> _dimension; // Mapping of the data vector
     ezc3d::DATA_TYPE _data_type; // What kind of data there is in the parameter
