@@ -31,7 +31,8 @@ namespace ezc3d {
         BYTE = 1,
         INT = 2,
         WORD = 2,
-        FLOAT = 4
+        FLOAT = 4,
+        NONE = 10000
     };
     EZC3D_API void removeSpacesOfAString(std::string& s);
     EZC3D_API std::string toUpper(const std::string &str);
@@ -68,6 +69,8 @@ public:
     c3d();
     c3d(const std::string &filePath);
     ~c3d();
+    void updateHeader();
+    void updateParameters();
 
     // Write the c3d to a file
     void write(const std::string &filePath) const;
@@ -100,6 +103,12 @@ public:
     const ezc3d::Header& header() const;
     const ezc3d::ParametersNS::Parameters& parameters() const;
     const ezc3d::DataNS::Data& data() const;
+
+    // Public C3D modifiation interface
+    void addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p);
+    void addFrame(const DataNS::Frame &f, int j = -1);
+    void addMarker(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void addMarker(const std::string &name);
 
 protected:
     std::string _filePath; // Remember the file path

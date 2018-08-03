@@ -10,8 +10,8 @@ ezc3d::Header::Header():
     _lastFrame(0),
     _nbMaxInterpGap(10),
     _scaleFactor(-1),
-    _dataStartAnalog(1),
-    _nbAnalogByFrame(1),
+    _dataStart(1),
+    _nbAnalogByFrame(0),
     _frameRate(100),
     _emptyBlock1(0),
     _keyLabelPresent(0),
@@ -36,8 +36,8 @@ ezc3d::Header::Header(ezc3d::c3d &file) :
     _lastFrame(0),
     _nbMaxInterpGap(10),
     _scaleFactor(-1),
-    _dataStartAnalog(1),
-    _nbAnalogByFrame(1),
+    _dataStart(1),
+    _nbAnalogByFrame(0),
     _frameRate(100),
     _emptyBlock1(0),
     _keyLabelPresent(0),
@@ -60,9 +60,17 @@ int ezc3d::Header::nbFrames() const
 {
     return _lastFrame - _firstFrame;
 }
+
+void ezc3d::Header::nbAnalogs(int n)
+{
+    _nbAnalogsMeasurement = n * _nbAnalogByFrame;
+}
 int ezc3d::Header::nbAnalogs() const
 {
-    return _nbAnalogsMeasurement / _nbAnalogByFrame;
+    if (_nbAnalogByFrame == 0)
+        return 0;
+    else
+        return _nbAnalogsMeasurement / _nbAnalogByFrame;
 }
 int ezc3d::Header::emptyBlock4() const
 {
@@ -119,6 +127,10 @@ int ezc3d::Header::emptyBlock1() const
 {
     return _emptyBlock1;
 }
+void ezc3d::Header::frameRate(double f)
+{
+    _frameRate = f;
+}
 double ezc3d::Header::frameRate() const
 {
     return _frameRate;
@@ -127,9 +139,9 @@ int ezc3d::Header::nbAnalogByFrame() const
 {
     return _nbAnalogByFrame;
 }
-int ezc3d::Header::dataStartAnalog() const
+int ezc3d::Header::dataStart() const
 {
-    return _dataStartAnalog;
+    return _dataStart;
 }
 int ezc3d::Header::scaleFactor() const
 {
@@ -139,17 +151,29 @@ int ezc3d::Header::nbMaxInterpGap() const
 {
     return _nbMaxInterpGap;
 }
-int ezc3d::Header::lastFrame() const
+void ezc3d::Header::firstFrame(int frame)
 {
-    return _lastFrame;
+    _firstFrame = frame;
 }
 int ezc3d::Header::firstFrame() const
 {
     return _firstFrame;
 }
+void ezc3d::Header::lastFrame(int frame)
+{
+    _lastFrame = frame;
+}
+int ezc3d::Header::lastFrame() const
+{
+    return _lastFrame;
+}
 int ezc3d::Header::nbAnalogsMeasurement() const
 {
     return _nbAnalogsMeasurement;
+}
+void ezc3d::Header::nb3dPoints(int n)
+{
+    _nb3dPoints = n;
 }
 int ezc3d::Header::nb3dPoints() const
 {
@@ -178,14 +202,14 @@ void ezc3d::Header::read(ezc3d::c3d &file)
 
     // Idx of first and last frame
     _firstFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
-    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
+    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD);
 
     // Some info
     _nbMaxInterpGap = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     _scaleFactor = file.readInt(2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    _dataStartAnalog = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _dataStart = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     _nbAnalogByFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     _frameRate = file.readFloat();
     _emptyBlock1 = file.readInt(135*ezc3d::DATA_TYPE::WORD);
@@ -217,7 +241,7 @@ void ezc3d::Header::print() const{
     std::cout << "nbFrames = " << nbFrames() << std::endl;
     std::cout << "nbMaxInterpGap = " << nbMaxInterpGap() << std::endl;
     std::cout << "scaleFactor = " << scaleFactor() << std::endl;
-    std::cout << "dataStartAnalog = " << dataStartAnalog() << std::endl;
+    std::cout << "dataStart = " << dataStart() << std::endl;
     std::cout << "nbAnalogByFrame = " << nbAnalogByFrame() << std::endl;
     std::cout << "frameRate = " << frameRate() << std::endl;
     std::cout << "keyLabelPresent = " << keyLabelPresent() << std::endl;
@@ -254,7 +278,7 @@ void ezc3d::Header::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&_scaleFactor), 2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    f.write(reinterpret_cast<const char*>(&_dataStartAnalog), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_dataStart), 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&_nbAnalogByFrame), 1*ezc3d::DATA_TYPE::WORD);
     float frameRate(_frameRate);
     f.write(reinterpret_cast<const char*>(&frameRate), 2*ezc3d::DATA_TYPE::WORD);
