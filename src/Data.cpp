@@ -55,7 +55,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                 for (int i = 0; i < file.header().nbAnalogs(); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
                     c.value(file.readFloat());
-                    if (i < 0) //analogNames.size())
+                    if (i < analogNames.size())
                         c.name(analogNames[i]);
                     else {
                         std::stringstream unlabel;
@@ -278,6 +278,10 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::addChannels(const std::vector<ezc3d::Da
 {
     _channels = allChannelsData;
 }
+std::vector<ezc3d::DataNS::AnalogsNS::Channel>& ezc3d::DataNS::AnalogsNS::SubFrame::channels_nonConst()
+{
+    return _channels;
+}
 const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& ezc3d::DataNS::AnalogsNS::SubFrame::channels() const
 {
     return _channels;
@@ -349,6 +353,10 @@ ezc3d::DataNS::Points3dNS::Points &ezc3d::DataNS::Frame::points_nonConst() const
 const ezc3d::DataNS::Points3dNS::Points& ezc3d::DataNS::Frame::points() const
 {
     return *_points;
+}
+ezc3d::DataNS::AnalogsNS::Analogs &ezc3d::DataNS::Frame::analogs_nonConst() const
+{
+    return *_analogs;
 }
 const ezc3d::DataNS::AnalogsNS::Analogs& ezc3d::DataNS::Frame::analogs() const
 {
