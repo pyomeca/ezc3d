@@ -48,7 +48,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
                 fillMatlabField(markersStruct, 0, c3d.header().nb3dPoints());
                 fillMatlabField(markersStruct, 1, c3d.header().frameRate());
-                fillMatlabField(markersStruct, 2, c3d.header().firstFrame());
+                fillMatlabField(markersStruct, 2, c3d.header().firstFrame()+1);
                 fillMatlabField(markersStruct, 3, c3d.header().lastFrame());
             }
             // fill analogs
@@ -60,7 +60,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
                 fillMatlabField(analogsStruct, 0, c3d.header().nbAnalogs());
                 fillMatlabField(analogsStruct, 1, c3d.header().nbAnalogByFrame() * c3d.header().frameRate() );
-                fillMatlabField(analogsStruct, 2, c3d.header().nbAnalogByFrame() * c3d.header().firstFrame());
+                fillMatlabField(analogsStruct, 2, c3d.header().nbAnalogByFrame() * c3d.header().firstFrame()+1);
                 fillMatlabField(analogsStruct, 3, c3d.header().nbAnalogByFrame() * c3d.header().lastFrame());
             }
 
