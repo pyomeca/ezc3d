@@ -36,7 +36,7 @@ int main()
     ezc3d::DataNS::Frame frame;
     subframes_analog.channels_nonConst().push_back(emptyChannel);
     for (int sf=0; sf<c3d.header().nbAnalogByFrame(); ++sf){
-        subframes_analog.channels_nonConst()[0].value(sf);
+        subframes_analog.channels_nonConst()[0].value(sf+1);
         frame.analogs_nonConst().addSubframe(subframes_analog);
     }
     for (int f=0; f<c3d.data().frames().size(); ++f)
