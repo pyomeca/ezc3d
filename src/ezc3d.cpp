@@ -103,6 +103,30 @@ void ezc3d::c3d::updateParameters()
         }
         grpAnalog.parameters_nonConst()[idxLabels].set(labels, {longestName, nAnalogs});
         grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions, {0, nAnalogs});
+
+        int idxScale(grpAnalog.parameterIdx("SCALE"));
+        std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
+        for (int i = grpAnalog.parameter(idxScale).valuesAsFloat().size(); i<nAnalogs; ++i)
+            scales.push_back(1);
+        grpAnalog.parameters_nonConst()[idxScale].set(scales, {int(scales.size())});
+
+        int idxOffset(grpAnalog.parameterIdx("OFFSET"));
+        std::vector<int> offset(grpAnalog.parameter(idxOffset).valuesAsInt());
+        for (int i = grpAnalog.parameter(idxOffset).valuesAsInt().size(); i<nAnalogs; ++i)
+            offset.push_back(0);
+        grpAnalog.parameters_nonConst()[idxOffset].set(offset, {int(offset.size())});
+
+        int idxUnits(grpAnalog.parameterIdx("UNITS"));
+        std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
+        int longestUnit(-1);
+        for (int i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i<nAnalogs; ++i){
+            units.push_back("V");
+        }
+        for (int i=0; i<units.size(); ++i)
+            if (int(units[i].size()) > longestUnit)
+                longestUnit = units[i].size();
+        grpAnalog.parameters_nonConst()[idxUnits].set(units, {longestUnit, int(units.size())});
+
     }
 
 }
@@ -384,12 +408,52 @@ void ezc3d::c3d::addMarker(const std::string &name){
     ezc3d::DataNS::Points3dNS::Point emptyPoint;
     emptyPoint.name(name);
     dummy_pts.add(emptyPoint);
-    for (int f=0; f<data().frames().size(); ++f){
-        ezc3d::DataNS::Frame frame;
-        frame.add(dummy_pts);
+    ezc3d::DataNS::Frame frame;
+    frame.add(dummy_pts);
+    for (int f=0; f<data().frames().size(); ++f)
         dummy_frames.push_back(frame);
-    }
-
     addMarker(dummy_frames);
+}
+
+void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
+{
+    if (frames.size() != data().frames().size())
+        throw std::runtime_error("Frames must have the same number of frames");
+    if (frames[0].analogs().subframes().size() != header().nbAnalogByFrame())
+        throw std::runtime_error("Subrames must have the same number of subframes");
+    if (frames[0].analogs().subframe(0).channels().size() == 0)
+        throw std::runtime_error("Channels cannot be empty");
+
+    std::vector<std::string> labels(parameters().group("ANALOG").parameter("LABELS").valuesAsString());
+    for (int idx = 0; idx<frames[0].analogs().subframe(0).channels().size(); ++idx){
+        const std::string &name(frames[0].analogs().subframe(0).channel(idx).name());
+        for (int i=0; i<labels.size(); ++i)
+            if (!name.compare(labels[i]))
+                throw std::runtime_error("Analog channel already exists");
+
+        for (int f=0; f<data().frames().size(); ++f){
+            for (int sf=0; sf<header().nbAnalogByFrame(); ++sf){
+                _data->frames_nonConst()[f].analogs_nonConst().subframes_nonConst()[sf].addChannel(frames[f].analogs().subframe(sf).channel(idx));
+            }
+        }
+    }
+    updateParameters();
+    updateHeader();
+}
+
+void ezc3d::c3d::addAnalog(const std::string &name)
+{
+    std::vector<ezc3d::DataNS::Frame> dummy_frames;
+    ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
+    ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
+    emptyChannel.name(name);
+    emptyChannel.value(0);
+    ezc3d::DataNS::Frame frame;
+    dummy_subframes.channels_nonConst().push_back(emptyChannel);
+    for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
+        frame.analogs_nonConst().addSubframe(dummy_subframes);
+    for (int f=0; f<data().frames().size(); ++f)
+        dummy_frames.push_back(frame);
+    addAnalog(dummy_frames);
 }
 
