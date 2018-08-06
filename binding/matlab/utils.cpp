@@ -26,7 +26,7 @@ void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<int>& values
     }
     double * val = mxGetDoubles(ptr);
     for (int i =0; i < values.size(); ++i)
-        val[i] = 1;
+        val[i] = values[i];
     mxSetFieldByNumber(field, 0, idx, ptr);
 }
 
