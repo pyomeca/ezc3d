@@ -662,15 +662,20 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(actualPos);
 }
+
+const std::vector<int> ezc3d::ParametersNS::GroupNS::Parameter::dimension() const
+{
+    return _dimension;
+}
 int ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx, int cmp) const{
     for (int i=0; i<dim[currentIdx]; ++i)
         if (currentIdx == dim.size()-1){
             if (_data_type == DATA_TYPE::BYTE)
-                f.write(reinterpret_cast<const char*>(&_param_data_int[cmp]), (int)_data_type);
+                f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])), (int)_data_type);
             else if (_data_type == DATA_TYPE::INT)
-                f.write(reinterpret_cast<const char*>(&_param_data_int[cmp]), (int)_data_type);
+                f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])), (int)_data_type);
             else if (_data_type == DATA_TYPE::FLOAT)
-                f.write(reinterpret_cast<const char*>(&_param_data_float[cmp]), (int)_data_type);
+                f.write(reinterpret_cast<const char*>(&(_param_data_float[cmp])), (int)_data_type);
             else if (_data_type == DATA_TYPE::CHAR){
                 f.write(_param_data_string[cmp].c_str(), _param_data_string[cmp].size()*(int)DATA_TYPE::BYTE);
                 const char buffer = ' ';
