@@ -11,12 +11,22 @@ void fillMatlabField(mxArray *field, mwIndex idx, int value){
     val[0] = (double)value;
     mxSetFieldByNumber(field, 0, idx, ptr);
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<int>& values){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<int>& values, const std::vector<int>& dimension){
     // markers_Number
-    mxArray* ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
-    double * val = mxGetPr(ptr);
+    mxArray* ptr;
+    if (dimension.size() == 0)
+        ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
+    else {
+        mwSize ndim(dimension.size());
+        mwSize *dims = new mwSize[ndim];
+        for (int i=0; i<ndim; ++i)
+            dims[i] = dimension[i];
+        ptr = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
+        delete[] dims;
+    }
+    double * val = mxGetDoubles(ptr);
     for (int i =0; i < values.size(); ++i)
-        val[i] = (double)values[i];
+        val[i] = 1;
     mxSetFieldByNumber(field, 0, idx, ptr);
 }
 
@@ -27,7 +37,7 @@ void fillMatlabField(mxArray *field, mwIndex idx, double value){
     val[0] = value;
     mxSetFieldByNumber(field, 0, idx, ptr);
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<float>& values){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<float>& values, const std::vector<int>& dimension){
     // markers_Number
     mxArray* ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
     double * val = mxGetPr(ptr);
@@ -35,7 +45,7 @@ void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<float>& valu
         val[i] = (double)values[i];
     mxSetFieldByNumber(field, 0, idx, ptr);
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<double>& values){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<double>& values, const std::vector<int>& dimension){
     // markers_Number
     mxArray* ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
     double * val = mxGetPr(ptr);
@@ -48,7 +58,7 @@ void fillMatlabField(mxArray *field, mwIndex idx, const std::string &value){
     // markers_Number
     mxSetFieldByNumber(field, 0, idx, mxCreateString(value.c_str()));
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<std::string>& values){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<std::string>& values, const std::vector<int>& dimension){
     // markers_Number
     mxArray* ptr = mxCreateCellMatrix(values.size(), 1);
 
