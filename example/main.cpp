@@ -77,7 +77,7 @@ int main()
     p2.set(std::vector<int>() = {1, 1, 2, 3, 5, 8}, {3, 2}); // TESTER LE READER DANS MATLAB!
     c3d.addParameter("new_group_1", p2);
     ezc3d::ParametersNS::GroupNS::Parameter p3("new_param_1");
-    p3.set(std::vector<std::string>() = {"value1", "longer_value"}, {20, 2});
+    p3.set(std::vector<std::string>() = {"value1", "longer_value1", "value2", "longer_value2"}, {20, 2, 2});
     c3d.addParameter("new_group_2", p3);
 
     // write the changed c3d
