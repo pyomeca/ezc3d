@@ -382,6 +382,11 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     updateParameters();
 }
 
+void ezc3d::c3d::addData(const std::vector<ezc3d::DataNS::Frame> &frames)
+{
+    addMarker(frames);
+    addAnalog(frames);
+}
 void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
 {
     if (frames.size() != data().frames().size())

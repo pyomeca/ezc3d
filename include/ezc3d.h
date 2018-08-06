@@ -107,6 +107,7 @@ public:
     // Public C3D modifiation interface
     void addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p);
     void addFrame(const DataNS::Frame &f, int j = -1);
+    void addData(const std::vector<ezc3d::DataNS::Frame> &frames);
     void addMarker(const std::vector<ezc3d::DataNS::Frame> &frames);
     void addMarker(const std::string &name);
     void addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames);
