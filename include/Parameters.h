@@ -78,6 +78,7 @@ public:
     void write(std::fstream &f, int groupIdx) const;
 
     // Getter for the group
+    const std::vector<int> dimension() const;
     void lock();
     void unlock();
     bool isLocked() const;
