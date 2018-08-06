@@ -106,11 +106,11 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 for (int p = 0; p < parameters.size(); ++p){
                     ezc3d::ParametersNS::GroupNS::Parameter param = parameters[p];
                     if (param.type() == ezc3d::DATA_TYPE::INT)
-                        fillMatlabField(parametersStruct, p, param.valuesAsInt());
+                        fillMatlabField(parametersStruct, p, param.valuesAsInt(), param.dimension());
                     else if (param.type() == ezc3d::DATA_TYPE::FLOAT)
-                        fillMatlabField(parametersStruct, p, param.valuesAsFloat());
+                        fillMatlabField(parametersStruct, p, param.valuesAsFloat(), param.dimension());
                     else if (param.type() == ezc3d::DATA_TYPE::CHAR)
-                        fillMatlabField(parametersStruct, p, param.valuesAsString());
+                        fillMatlabField(parametersStruct, p, param.valuesAsString(), param.dimension());
                 }
             }
         }
