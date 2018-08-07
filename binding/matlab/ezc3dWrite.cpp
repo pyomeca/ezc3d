@@ -77,6 +77,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         pointLabels.push_back(name);
         delete[] name;
     }
+    // Add them to the c3d
+    for (int i=0; i<pointLabels.size(); ++i)
+        c3d.addMarker(pointLabels[i]);
 
     mxArray *parameterAnalogs = mxGetField(parameter, 0, "ANALOG");
     if (!parameterAnalogs)
@@ -98,7 +101,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
 
     // Fill the data
-    std::vector<ezc3d::DataNS::Frame> frames;
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
     for (int f=0; f<nFramesPoints; ++f){
@@ -125,9 +127,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             analog.addSubframe(subframes);
         }
         frame.add(pts_new, analog);
-        frames.push_back(frame);
+        c3d.addFrame(frame);// Add the previously created frame
     }
-    c3d.addData(frames); // Add the previously created
 
     return;
 }
