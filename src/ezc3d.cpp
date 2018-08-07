@@ -356,37 +356,28 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 {
     // Make sure f.points().points() is the same as data.f[ANY].points()
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    if (f.points().points().size() != labels.size())
+    if (labels.size() != 0 && f.points().points().size() != labels.size())
         throw std::runtime_error("Points in frame and already existing must be the same");
     for (int i=0; i<labels.size(); ++i)
         if (f.points().pointIdx(labels[i]) < 0)
             throw std::runtime_error("All markers must appears in the frames and points");
 
     int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
-    if (f.points().points().size() != nPoints)
-        throw std::runtime_error("Points must be consiquent");
+    if (nPoints != 0 && f.points().points().size() != nPoints)
+        throw std::runtime_error("Points must be consistent");
 
     int nAnalogs(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     int subSize(f.analogs().subframes().size());
     int nChannel(f.analogs().subframes()[0].channels().size());
-    int nAnal(header().nbAnalogByFrame());
-    if ((nAnalogs != 0 && f.analogs().subframes().size() == 0) || (f.analogs().subframes()[0].channels().size() != nAnalogs &&
-                                                                   f.analogs().subframes().size() != header().nbAnalogByFrame() ))
-        throw std::runtime_error("Analogs must be consiquent with data");
-
-
-
+    int nAnalogByFrames(header().nbAnalogByFrame());
+    if (!(nAnalogs==0 && nAnalogByFrames==0) && ((nAnalogs != 0 && subSize == 0) || (nChannel != nAnalogs && subSize != nAnalogByFrames )))
+        throw std::runtime_error("Analogs must be consistent with data");
 
     // Replace the jth frame
     _data->frame(f, j);
     updateParameters();
 }
 
-void ezc3d::c3d::addData(const std::vector<ezc3d::DataNS::Frame> &frames)
-{
-    addMarker(frames);
-    addAnalog(frames);
-}
 void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
 {
     if (frames.size() != data().frames().size())
