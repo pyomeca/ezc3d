@@ -12,7 +12,7 @@ ezc3d::Header::Header():
     _scaleFactor(-1),
     _dataStart(1),
     _nbAnalogByFrame(0),
-    _frameRate(100),
+    _frameRate(0),
     _emptyBlock1(0),
     _keyLabelPresent(0),
     _firstBlockKeyLabel(0),
@@ -38,7 +38,7 @@ ezc3d::Header::Header(ezc3d::c3d &file) :
     _scaleFactor(-1),
     _dataStart(1),
     _nbAnalogByFrame(0),
-    _frameRate(100),
+    _frameRate(0),
     _emptyBlock1(0),
     _keyLabelPresent(0),
     _firstBlockKeyLabel(0),
@@ -134,6 +134,10 @@ void ezc3d::Header::frameRate(double f)
 double ezc3d::Header::frameRate() const
 {
     return _frameRate;
+}
+void ezc3d::Header::nbAnalogByFrame(int nb)
+{
+    _nbAnalogByFrame = nb;
 }
 int ezc3d::Header::nbAnalogByFrame() const
 {
