@@ -70,7 +70,7 @@ public:
     c3d(const std::string &filePath);
     ~c3d();
     void updateHeader();
-    void updateParameters();
+    void updateParameters(const std::vector<std::string> &newMarkers = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
     // Write the c3d to a file
     void write(const std::string &filePath) const;
