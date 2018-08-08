@@ -68,13 +68,18 @@ ezc3d::ParametersNS::Parameters::Parameters():
             grp.addParameter(p);
         }
         {
+            ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
+            p.set(std::vector<std::string>()={}, {0});
+            grp.addParameter(p);
+        }
+        {
             ezc3d::ParametersNS::GroupNS::Parameter p("GEN_SCALE", "");
             p.set(std::vector<int>()={1}, {1});
             grp.addParameter(p);
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
-            p.set(std::vector<int>()={}, {0});
+            p.set(std::vector<float>()={}, {0});
             grp.addParameter(p);
         }
         {
@@ -89,7 +94,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
-            p.set(std::vector<int>()={0}, {1});
+            p.set(std::vector<float>()={0}, {1});
             p.lock();
             grp.addParameter(p);
         }
