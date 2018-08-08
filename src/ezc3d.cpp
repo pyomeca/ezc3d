@@ -38,21 +38,29 @@ void ezc3d::c3d::updateHeader()
         _header->firstFrame(0);
         _header->lastFrame(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
     }
-    if (parameters().group("POINT").parameter("RATE").valuesAsFloat()[0] != header().frameRate()){
-        _header->frameRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
+    int pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
+    if (pointRate != header().frameRate()){
+        _header->frameRate(pointRate);
     }
     if (parameters().group("POINT").parameter("USED").valuesAsInt()[0] != header().nb3dPoints()){
         _header->nb3dPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     }
-    if (parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() != header().nbAnalogs()){
-        _header->nbAnalogs(parameters().group("ANALOG").parameter("LABELS").valuesAsString().size());
+
+    int analogRate(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]);
+    if (pointRate != 0 && analogRate / pointRate != header().nbAnalogByFrame()){
+        _header->nbAnalogByFrame(analogRate / pointRate);
+    }
+    if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0] != header().nbAnalogs()){
+        _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
     }
 }
 
-void ezc3d::c3d::updateParameters()
+void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, const std::vector<std::string> &newAnalogs)
 {
-    if (data().frames().size() < 1)
-        return;
+    if (data().frames().size() != 0 && newMarkers.size() > 0)
+        throw std::runtime_error("newMarkers in updateParameters should only be called on empty c3d");
+    if (data().frames().size() != 0 && newAnalogs.size() > 0)
+        throw std::runtime_error("newAnalogs in updateParameters should only be called on empty c3d");
 
     // If frames has been added
     ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
@@ -63,7 +71,11 @@ void ezc3d::c3d::updateParameters()
     }
 
     // If points has been added
-    int nPoints(data().frame(0).points().points().size());
+    int nPoints;
+    if (data().frames().size() > 0)
+        nPoints = data().frame(0).points().points().size();
+    else
+        nPoints = parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size();
     if (nPoints != grpPoint.parameter("USED").valuesAsInt()[0]){
         grpPoint.parameters_nonConst()[grpPoint.parameterIdx("USED")].set(std::vector<int>() = {nPoints}, {1});
 
@@ -73,7 +85,12 @@ void ezc3d::c3d::updateParameters()
         std::vector<std::string> descriptions;
         int longestName(-1);
         for (int i = 0; i<nPoints; ++i){
-            std::string name(data().frame(0).points().point(i).name());
+            std::string name;
+            if (data().frames().size() == 0){
+                name = newMarkers[i];
+            } else {
+                name = data().frame(0).points().point(i).name();
+            }
             if (int(name.size()) > longestName)
                 longestName = name.size();
             labels.push_back(name);
@@ -85,7 +102,11 @@ void ezc3d::c3d::updateParameters()
 
     // If analogous data has been added
     ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
-    int nAnalogs(data().frame(0).analogs().subframe(0).channels().size());
+    int nAnalogs;
+    if (data().frames().size() > 0)
+        nAnalogs =  data().frame(0).analogs().subframe(0).channels().size();
+    else
+        nAnalogs = parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() + newAnalogs.size();
     if (nAnalogs != grpAnalog.parameter("USED").valuesAsInt()[0]){
         grpAnalog.parameters_nonConst()[grpAnalog.parameterIdx("USED")].set(std::vector<int>() = {nAnalogs}, {1});
 
@@ -95,7 +116,12 @@ void ezc3d::c3d::updateParameters()
         std::vector<std::string> descriptions;
         int longestName(-1);
         for (int i = 0; i<nAnalogs; ++i){
-            std::string name(data().frame(0).analogs().subframe(0).channel(i).name());
+            std::string name;
+            if (data().frames().size() == 0){
+                name = newAnalogs[i];
+            } else {
+                name = data().frame(0).analogs().subframe(0).channel(i).name();
+            }
             if (int(name.size()) > longestName)
                 longestName = name.size();
             labels.push_back(name);
@@ -128,7 +154,7 @@ void ezc3d::c3d::updateParameters()
         grpAnalog.parameters_nonConst()[idxUnits].set(units, {longestUnit, int(units.size())});
 
     }
-
+    updateHeader();
 }
 
 void ezc3d::c3d::write(const std::string& filePath) const
@@ -380,8 +406,8 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 
 void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
 {
-    if (frames.size() != data().frames().size())
-        throw std::runtime_error("Frames must have the same number of frames");
+    if (frames.size() == 0 || frames.size() != data().frames().size())
+        throw std::runtime_error("Frames must have the same number as the frame count");
     if (frames[0].points().points().size() == 0)
         throw std::runtime_error("Points cannot be empty");
 
@@ -396,19 +422,22 @@ void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
             _data->frames_nonConst()[f].points_nonConst().add(frames[f].points().point(idx));
     }
     updateParameters();
-    updateHeader();
 }
 void ezc3d::c3d::addMarker(const std::string &name){
-    std::vector<ezc3d::DataNS::Frame> dummy_frames;
-    ezc3d::DataNS::Points3dNS::Points dummy_pts;
-    ezc3d::DataNS::Points3dNS::Point emptyPoint;
-    emptyPoint.name(name);
-    dummy_pts.add(emptyPoint);
-    ezc3d::DataNS::Frame frame;
-    frame.add(dummy_pts);
-    for (int f=0; f<data().frames().size(); ++f)
-        dummy_frames.push_back(frame);
-    addMarker(dummy_frames);
+    if (data().frames().size() > 0){
+        std::vector<ezc3d::DataNS::Frame> dummy_frames;
+        ezc3d::DataNS::Points3dNS::Points dummy_pts;
+        ezc3d::DataNS::Points3dNS::Point emptyPoint;
+        emptyPoint.name(name);
+        dummy_pts.add(emptyPoint);
+        ezc3d::DataNS::Frame frame;
+        frame.add(dummy_pts);
+        for (int f=0; f<data().frames().size(); ++f)
+            dummy_frames.push_back(frame);
+        addMarker(dummy_frames);
+    } else {
+        updateParameters({name});
+    }
 }
 
 void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
@@ -434,22 +463,25 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
         }
     }
     updateParameters();
-    updateHeader();
 }
 
 void ezc3d::c3d::addAnalog(const std::string &name)
 {
-    std::vector<ezc3d::DataNS::Frame> dummy_frames;
-    ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
-    ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
-    emptyChannel.name(name);
-    emptyChannel.value(0);
-    ezc3d::DataNS::Frame frame;
-    dummy_subframes.channels_nonConst().push_back(emptyChannel);
-    for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
-        frame.analogs_nonConst().addSubframe(dummy_subframes);
-    for (int f=0; f<data().frames().size(); ++f)
-        dummy_frames.push_back(frame);
-    addAnalog(dummy_frames);
+    if (data().frames().size() > 0){
+        std::vector<ezc3d::DataNS::Frame> dummy_frames;
+        ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
+        ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
+        emptyChannel.name(name);
+        emptyChannel.value(0);
+        ezc3d::DataNS::Frame frame;
+        dummy_subframes.channels_nonConst().push_back(emptyChannel);
+        for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
+            frame.analogs_nonConst().addSubframe(dummy_subframes);
+        for (int f=0; f<data().frames().size(); ++f)
+            dummy_frames.push_back(frame);
+        addAnalog(dummy_frames);
+    } else {
+        updateParameters({}, {name});
+    }
 }
 
