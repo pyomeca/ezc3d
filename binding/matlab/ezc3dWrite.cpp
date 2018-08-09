@@ -5,6 +5,49 @@
 #include "ezc3d.h"
 #include "utils.h"
 
+int parseParam(mxDouble* data, const std::vector<int> &dimension,
+               std::vector<int> &param_data, int idxInData=0, int currentIdx=0)
+{
+    if (dimension[currentIdx] == 0)
+        return -1;
+    if (dimension.size() == 1 & (dimension[currentIdx] == 1)){
+        param_data.push_back (data[idxInData]);
+        return -1;
+    }
+
+    for (int i=0; i<dimension[currentIdx]; ++i){
+        if (currentIdx == dimension.size()-1){
+            param_data.push_back (data[idxInData]);
+            ++idxInData;
+        }
+        else
+            idxInData = parseParam(data, dimension, param_data, idxInData, currentIdx + 1);
+    }
+    return idxInData;
+}
+int parseParam(mxDouble* data, const std::vector<int> &dimension,
+               std::vector<float> &param_data, int idxInData=0, int currentIdx=0)
+{
+    if (dimension.size() == 1){
+        if (dimension[currentIdx] == 0)
+            return -1;
+        if (dimension[currentIdx] == 1){
+            param_data.push_back (data[idxInData]);
+            return -1;
+        }
+    }
+
+    for (int i=0; i<dimension[currentIdx]; ++i){
+        if (currentIdx == dimension.size()-1){
+            param_data.push_back (data[idxInData]);
+            ++idxInData;
+        }
+        else
+            idxInData = parseParam(data, dimension, param_data, idxInData, currentIdx + 1);
+    }
+    return idxInData;
+}
+
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
     // Check inputs and outputs
@@ -17,7 +60,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     if (nlhs != 0)
         mexErrMsgTxt("Too many output arguments.");
 
-    // Receive the pathmx
+    // Receive the path
     mwSize pathlen = mxGetNumberOfElements(prhs[0]) + 1;
     char *path_tp = new char[pathlen];
     mxGetString(prhs[0], path_tp, pathlen);
@@ -33,10 +76,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     // Receive the structure
     const mxArray * c3dStruct(prhs[1]);
 
-    // Get pointer on each struct (header, parameter, data)
-    mxArray *header = mxGetField(c3dStruct, 0, "header");
-    if (!header)
-        mexErrMsgTxt("'header' is not accessible in the structure.");
+    //    // Get pointer on each struct (header, parameter, data)
+    //    mxArray *header = mxGetField(c3dStruct, 0, "header");
+    //    if (!header)
+    //        mexErrMsgTxt("'header' is not accessible in the structure.");
     mxArray *parameter = mxGetField(c3dStruct, 0, "parameter");
     if (!parameter)
         mexErrMsgTxt("'parameter' is not accessible in the structure.");
@@ -73,8 +116,85 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         nSubframes = nFramesAnalogs/nFramesPoints;
     }
 
+
+
     // Create a fresh c3d which will be fill with c3d struct
     ezc3d::c3d c3d;
+
+    //  Fill the parameters
+    for (int g=0; g<mxGetNumberOfFields(parameter); ++g){ // top level
+        std::string groupName(mxGetFieldNameByNumber(parameter, g));
+        mxArray* groupField(mxGetFieldByNumber(parameter, 0, g));
+        for (int p=0; p<mxGetNumberOfFields(groupField); ++p){
+            std::string paramName(mxGetFieldNameByNumber(groupField, p));
+            mxArray* paramField(mxGetFieldByNumber(groupField, 0, p));
+            // Copy the parameters into the c3d, but skip those who will be updated later
+            if ( !(!groupName.compare("POINT") && !paramName.compare("USED")) &&
+                     !(!groupName.compare("POINT") && !paramName.compare("FRAMES")) &&
+                     !(!groupName.compare("POINT") && !paramName.compare("LABELS")) &&
+                     !(!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) &&
+
+                     !(!groupName.compare("ANALOG") && !paramName.compare("USED")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("LABELS")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("SCALE")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))
+                     ){
+                std::cout << groupName << " : " << paramName << std::endl;
+                std::vector<int> dimension;
+                int nDim;
+                if (!paramField)
+                    nDim = 0;
+                else
+                    nDim =(mxGetNumberOfDimensions(paramField));
+                if (nDim == 0)
+                    dimension.push_back(0);
+                else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 0)
+                    dimension.push_back(0);
+                else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 1)
+                    dimension.push_back(1);
+                else
+                    for (int i=0; i<nDim; ++i)
+                        dimension.push_back(mxGetDimensions(paramField)[i]);
+
+                ezc3d::ParametersNS::GroupNS::Parameter newParam(paramName);
+                if (c3d.parameters().groupIdx(groupName) != -1 &&
+                        c3d.parameters().group(groupName).parameterIdx(paramName) != -1){
+                    ezc3d::DATA_TYPE type(c3d.parameters().group(groupName).parameter(paramName).type());
+                    if  (type == ezc3d::DATA_TYPE::INT || type == ezc3d::DATA_TYPE::BYTE) {
+                        std::cout << "old int" << std::endl;
+                        std::vector<int> data;
+                        parseParam(mxGetDoubles(paramField), dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (type == ezc3d::DATA_TYPE::FLOAT) {
+                        std::cout << "old float" << std::endl;
+                        std::vector<float> data;
+                        parseParam(mxGetDoubles(paramField), dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (type == ezc3d::DATA_TYPE::CHAR) {
+                        std::cout << "old char" << std::endl;
+                        std::cout << "TO DO" << std::endl;
+                        newParam.set(std::vector<std::string>() = {"2"}, {1});
+                    }
+                } else {
+                    if (!paramField || mxIsDouble(paramField)){
+                        std::cout << "new float" << std::endl;
+                        std::vector<float> data;
+                        parseParam(mxGetDoubles(paramField), dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (mxIsCell(paramField)){
+                        std::cout << "new char" << std::endl;
+                        std::cout << "TO DO" << std::endl;
+                        newParam.set(std::vector<std::string>() = {"2"}, {1});
+                    }
+                }
+
+                c3d.addParameter(groupName, newParam);
+                std::cout << "done" << std::endl;
+            }
+        }
+    }
 
     // Fill it with some values
     std::cout << "100 Hz hard-coded" << std::endl;
@@ -84,7 +204,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
     std::cout << "1000 Hz hard-coded" << std::endl;
     ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
-    analogRate.set(std::vector<float>() = {500}, {1});
+    analogRate.set(std::vector<float>() = {2000}, {1});
     c3d.addParameter("ANALOG", analogRate);
     std::cout << "No parameters are copied! To be implemented" << std::endl;
 
@@ -117,7 +237,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     mxArray *parameterAnalogsLabels = mxGetField(parameterAnalogs, 0, "LABELS");
     if (!parameterAnalogsLabels)
         mexErrMsgTxt("'parameter.ANALOG.LABELS' parameters is not accessible in the structure.");
-    if (nAnalogs != mxGetN(parameterAnalogsLabels))
+    if (nAnalogs != mxGetN(parameterAnalogsLabels) * mxGetM(parameterAnalogsLabels))
         mexErrMsgTxt("'parameter.ANALOG.LABELS' must have the same length as nAnalogs of the data.");
     std::vector<std::string> analogsLabels;
     for (int i=0; i<nAnalogs; ++i){
