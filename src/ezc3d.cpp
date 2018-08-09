@@ -87,7 +87,10 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         for (int i = 0; i<nPoints; ++i){
             std::string name;
             if (data().frames().size() == 0){
-                name = newMarkers[i];
+                if (i<parameters().group("POINT").parameter("LABELS").valuesAsString().size())
+                    name = parameters().group("POINT").parameter("LABELS").valuesAsString()[i];
+                else
+                    name = newMarkers[i - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
             } else {
                 name = data().frame(0).points().point(i).name();
             }
@@ -103,9 +106,12 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     // If analogous data has been added
     ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
     int nAnalogs;
-    if (data().frames().size() > 0)
-        nAnalogs =  data().frame(0).analogs().subframe(0).channels().size();
-    else
+    if (data().frames().size() > 0){
+        if (data().frame(0).analogs().subframes().size() > 0)
+            nAnalogs = data().frame(0).analogs().subframe(0).channels().size();
+        else
+            nAnalogs = 0;
+    } else
         nAnalogs = parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() + newAnalogs.size();
     if (nAnalogs != grpAnalog.parameter("USED").valuesAsInt()[0]){
         grpAnalog.parameters_nonConst()[grpAnalog.parameterIdx("USED")].set(std::vector<int>() = {nAnalogs}, {1});
@@ -118,7 +124,10 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         for (int i = 0; i<nAnalogs; ++i){
             std::string name;
             if (data().frames().size() == 0){
-                name = newAnalogs[i];
+                if (i<parameters().group("ANALOG").parameter("LABELS").valuesAsString().size())
+                    name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[i];
+                else
+                    name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
             } else {
                 name = data().frame(0).analogs().subframe(0).channel(i).name();
             }
@@ -394,10 +403,12 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 
     int nAnalogs(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     int subSize(f.analogs().subframes().size());
-    int nChannel(f.analogs().subframes()[0].channels().size());
-    int nAnalogByFrames(header().nbAnalogByFrame());
-    if (!(nAnalogs==0 && nAnalogByFrames==0) && ((nAnalogs != 0 && subSize == 0) || (nChannel != nAnalogs && subSize != nAnalogByFrames )))
-        throw std::runtime_error("Analogs must be consistent with data");
+    if (subSize != 0){
+        int nChannel(f.analogs().subframes()[0].channels().size());
+        int nAnalogByFrames(header().nbAnalogByFrame());
+        if (!(nAnalogs==0 && nAnalogByFrames==0) && ((nAnalogs != 0 && subSize == 0) || (nChannel != nAnalogs && subSize != nAnalogByFrames )))
+            throw std::runtime_error("Analogs must be consistent with data");
+    }
 
     // Replace the jth frame
     _data->frame(f, j);
