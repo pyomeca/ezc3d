@@ -86,11 +86,15 @@ int main()
 
         // Read it back!
         ezc3d::c3d augmentedC3d("augmentedC3d.c3d");
+        augmentedC3d.parameters().print();
     }
 
     {
         // Create an empty fresh c3d
         ezc3d::c3d c3d_empty;
+        ezc3d::ParametersNS::GroupNS::Parameter t("SCALE");
+        t.set(std::vector<float>(), {0});
+
 
         // Fill it with some values
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
