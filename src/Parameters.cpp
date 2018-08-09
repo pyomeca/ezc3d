@@ -18,7 +18,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
-            p.set(std::vector<int>()={-1}, {1});
+            p.set(std::vector<float>()={-1}, {1});
             p.lock();
             grp.addParameter(p);
         }
@@ -111,7 +111,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         addGroup(grp);
     }
     {
-        ezc3d::ParametersNS::GroupNS::Group grp("FORCE_PLATEFORM", "");
+        ezc3d::ParametersNS::GroupNS::Group grp("FORCE_PLATFORM", "");
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
             p.set(std::vector<int>()={0}, {1});
@@ -547,7 +547,10 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
 
 bool ezc3d::ParametersNS::GroupNS::Parameter::isDimensionConsistent(int dataSize, const std::vector<int>& dimension) const {
     if (dataSize == 0){
-        if (dimension.size() == 0 || (dimension.size() == 1 && dimension[0] == 0))
+        int dim(1);
+        for (int i=0; i<dimension.size(); ++i)
+            dim *= dimension[i];
+        if (dimension.size() == 0 || dim == 0)
             return true;
         else
             return false;
