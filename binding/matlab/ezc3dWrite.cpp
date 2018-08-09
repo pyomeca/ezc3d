@@ -8,15 +8,30 @@
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
     // Check inputs and outputs
-    if (nrhs != 1)
-        mexErrMsgTxt("Input argument must be a valid c3d structure.");
-    if (mxIsStruct(prhs[0]) != 1)
-        mexErrMsgTxt("Input argument must be a valid c3d structure.");
+    if (nrhs != 2)
+        mexErrMsgTxt("Input argument must be valids path and c3d structure.");
+    if (mxIsChar(prhs[0]) != 1)
+        mexErrMsgTxt("Input argument 1 must be a valid path to write.");
+    if (mxIsStruct(prhs[1]) != 1)
+        mexErrMsgTxt("Input argument 2 must be a valid c3d structure.");
     if (nlhs != 0)
         mexErrMsgTxt("Too many output arguments.");
 
-    // Receive the path
-    const mxArray * c3dStruct(prhs[0]);
+    // Receive the pathmx
+    mwSize pathlen = mxGetNumberOfElements(prhs[0]) + 1;
+    char *path_tp = new char[pathlen];
+    mxGetString(prhs[0], path_tp, pathlen);
+    std::string path(path_tp);
+    delete[] path_tp;
+    if (path.size() == 0)
+        mexErrMsgTxt("Input argument 1 must be a valid path to write.");
+    std::string extension = ".c3d";
+    if (path.substr(path.find_last_of(".")).compare(extension)){
+        path += extension;
+    }
+
+    // Receive the structure
+    const mxArray * c3dStruct(prhs[1]);
 
     // Get pointer on each struct (header, parameter, data)
     mxArray *header = mxGetField(c3dStruct, 0, "header");
@@ -51,13 +66,28 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     size_t nAnalogs(dimsAnalogs[1]);
     size_t nFramesAnalogs(dimsAnalogs[0]);
 
-    if (nFramesAnalogs % nFramesPoints != 0)
-        mexErrMsgTxt("Number of frames of Points and Analogs should be a multiple of an integer");
-    size_t nSubframes(nFramesAnalogs/nFramesPoints);
-
+    size_t nSubframes(0);
+    if (nFramesPoints != 0){
+        if (nFramesAnalogs % nFramesPoints != 0)
+            mexErrMsgTxt("Number of frames of Points and Analogs should be a multiple of an integer");
+        nSubframes = nFramesAnalogs/nFramesPoints;
+    }
 
     // Create a fresh c3d which will be fill with c3d struct
     ezc3d::c3d c3d;
+
+    // Fill it with some values
+    std::cout << "100 Hz hard-coded" << std::endl;
+    ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
+    pointRate.set(std::vector<float>() = {100}, {1});
+    c3d.addParameter("POINT", pointRate);
+
+    std::cout << "1000 Hz hard-coded" << std::endl;
+    ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
+    analogRate.set(std::vector<float>() = {500}, {1});
+    c3d.addParameter("ANALOG", analogRate);
+    std::cout << "No parameters are copied! To be implemented" << std::endl;
+
 
     // Get the name of the markers and the analogs
     mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
@@ -87,7 +117,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     mxArray *parameterAnalogsLabels = mxGetField(parameterAnalogs, 0, "LABELS");
     if (!parameterAnalogsLabels)
         mexErrMsgTxt("'parameter.ANALOG.LABELS' parameters is not accessible in the structure.");
-    if (nAnalogs != mxGetM(parameterAnalogsLabels))
+    if (nAnalogs != mxGetN(parameterAnalogsLabels))
         mexErrMsgTxt("'parameter.ANALOG.LABELS' must have the same length as nAnalogs of the data.");
     std::vector<std::string> analogsLabels;
     for (int i=0; i<nAnalogs; ++i){
@@ -98,27 +128,29 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         analogsLabels.push_back(name);
         delete[] name;
     }
-
+    // Add them to the c3d
+    for (int i=0; i<analogsLabels.size(); ++i)
+        c3d.addAnalog(analogsLabels[i]);
 
     // Fill the data
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
     for (int f=0; f<nFramesPoints; ++f){
         ezc3d::DataNS::Frame frame;
-        ezc3d::DataNS::Points3dNS::Points pts_new;
+        ezc3d::DataNS::Points3dNS::Points pts;
         for (int i=0; i<nPoints; ++i){
-            ezc3d::DataNS::Points3dNS::Point pt_new;
-            pt_new.name(pointLabels[i]);
-            pt_new.x(allDataPoints[nPointsComponents*i+0+f*3*nPoints]);
-            pt_new.y(allDataPoints[nPointsComponents*i+1+f*3*nPoints]);
-            pt_new.z(allDataPoints[nPointsComponents*i+2+f*3*nPoints]);
-            pts_new.add(pt_new);
+            ezc3d::DataNS::Points3dNS::Point pt;
+            pt.name(pointLabels[i]);
+            pt.x(allDataPoints[nPointsComponents*i+0+f*3*nPoints]);
+            pt.y(allDataPoints[nPointsComponents*i+1+f*3*nPoints]);
+            pt.z(allDataPoints[nPointsComponents*i+2+f*3*nPoints]);
+            pts.add(pt);
         }
 
         ezc3d::DataNS::AnalogsNS::Analogs analog;
         for (int sf=0; sf<nSubframes; ++sf){
             ezc3d::DataNS::AnalogsNS::SubFrame subframes;
-            for (int i=0; i<2; ++i){
+            for (int i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 c.value(allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]);
                 c.name(analogsLabels[i]);
@@ -126,9 +158,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             }
             analog.addSubframe(subframes);
         }
-        frame.add(pts_new, analog);
+        frame.add(pts, analog);
         c3d.addFrame(frame);// Add the previously created frame
     }
-
+    c3d.write(path);
     return;
 }
