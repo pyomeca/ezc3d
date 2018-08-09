@@ -102,7 +102,9 @@ int main()
         c3d_empty.addParameter("ANALOG", analogRate);
 
         c3d_empty.addMarker("new_marker1"); // Add empty
+        c3d_empty.addMarker("new_marker2"); // Add empty
         c3d_empty.addAnalog("new_analog1"); // add the empty
+        c3d_empty.addAnalog("new_analog2"); // add the empty
         // Add a new frame
         ezc3d::DataNS::Frame f;
         std::vector<std::string>labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
@@ -126,6 +128,7 @@ int main()
         for (int i=0; i<c3d_empty.header().nbAnalogByFrame(); ++i)
             analog.addSubframe(subframe);
         f.add(pts, analog);
+        c3d_empty.addFrame(f);
         c3d_empty.addFrame(f);
 
         // Write the brand new c3d
