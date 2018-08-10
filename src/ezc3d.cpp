@@ -403,7 +403,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 
     int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     if (nPoints != 0 && f.points().points().size() != nPoints)
-        throw std::runtime_error("Points must be consistent");
+        throw std::runtime_error("Points must be consistent in terms of number of points");
 
     int nAnalogs(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     int subSize(f.analogs().subframes().size());
@@ -411,7 +411,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
         int nChannel(f.analogs().subframes()[0].channels().size());
         int nAnalogByFrames(header().nbAnalogByFrame());
         if (!(nAnalogs==0 && nAnalogByFrames==0) && ((nAnalogs != 0 && subSize == 0) || (nChannel != nAnalogs && subSize != nAnalogByFrames )))
-            throw std::runtime_error("Analogs must be consistent with data");
+            throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
     }
 
     // Replace the jth frame
