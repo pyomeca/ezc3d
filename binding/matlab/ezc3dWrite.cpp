@@ -10,10 +10,6 @@ int parseParam(mxDouble* data, const std::vector<int> &dimension,
 {
     if (dimension[currentIdx] == 0)
         return -1;
-    if (dimension.size() == 1 & (dimension[currentIdx] == 1)){
-        param_data.push_back (data[idxInData]);
-        return -1;
-    }
 
     for (int i=0; i<dimension[currentIdx]; ++i){
         if (currentIdx == dimension.size()-1){
@@ -28,14 +24,8 @@ int parseParam(mxDouble* data, const std::vector<int> &dimension,
 int parseParam(mxDouble* data, const std::vector<int> &dimension,
                std::vector<float> &param_data, int idxInData=0, int currentIdx=0)
 {
-    if (dimension.size() == 1){
-        if (dimension[currentIdx] == 0)
-            return -1;
-        if (dimension[currentIdx] == 1){
-            param_data.push_back (data[idxInData]);
-            return -1;
-        }
-    }
+    if (dimension[currentIdx] == 0)
+        return -1;
 
     for (int i=0; i<dimension[currentIdx]; ++i){
         if (currentIdx == dimension.size()-1){
@@ -47,6 +37,37 @@ int parseParam(mxDouble* data, const std::vector<int> &dimension,
     }
     return idxInData;
 }
+int parseParam(mxArray* data, const std::vector<int> &dimension,
+               std::vector<std::string> &param_data, int idxInData=0, int currentIdx=0)
+{
+    if (dimension[currentIdx] == 0)
+        return -1;
+
+    for (int i=0; i<dimension[currentIdx]; ++i){
+        if (currentIdx == dimension.size()-1){
+            mxArray *cell(mxGetCell(data, idxInData));
+            mwSize pathlen = mxGetNumberOfElements(cell) + 1;
+            char *path_tp = new char[pathlen];
+            mxGetString(cell, path_tp, pathlen);
+            std::string path(path_tp);
+            delete[] path_tp;
+            param_data.push_back (path);
+            ++idxInData;
+        }
+        else
+            idxInData = parseParam(data, dimension, param_data, idxInData, currentIdx + 1);
+    }
+    return idxInData;
+}
+int checkLongestStrParam(const std::vector<std::string> &param_data){
+    int longest(0);
+    for (int i=0; i<param_data.size(); ++i){
+        if (param_data[i].size() > longest)
+            longest = param_data[i].size();
+    }
+    return longest;
+}
+
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
@@ -69,17 +90,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     if (path.size() == 0)
         mexErrMsgTxt("Input argument 1 must be a valid path to write.");
     std::string extension = ".c3d";
-    if (path.substr(path.find_last_of(".")).compare(extension)){
+    if (path.find_last_of(".") > path.size() || path.substr(path.find_last_of(".")).compare(extension)){
         path += extension;
     }
 
     // Receive the structure
     const mxArray * c3dStruct(prhs[1]);
-
-    //    // Get pointer on each struct (header, parameter, data)
-    //    mxArray *header = mxGetField(c3dStruct, 0, "header");
-    //    if (!header)
-    //        mexErrMsgTxt("'header' is not accessible in the structure.");
     mxArray *parameter = mxGetField(c3dStruct, 0, "parameter");
     if (!parameter)
         mexErrMsgTxt("'parameter' is not accessible in the structure.");
@@ -141,7 +157,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                      !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET")) &&
                      !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))
                      ){
-                std::cout << groupName << " : " << paramName << std::endl;
                 std::vector<int> dimension;
                 int nDim;
                 if (!paramField)
@@ -163,51 +178,37 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         c3d.parameters().group(groupName).parameterIdx(paramName) != -1){
                     ezc3d::DATA_TYPE type(c3d.parameters().group(groupName).parameter(paramName).type());
                     if  (type == ezc3d::DATA_TYPE::INT || type == ezc3d::DATA_TYPE::BYTE) {
-                        std::cout << "old int" << std::endl;
                         std::vector<int> data;
                         parseParam(mxGetDoubles(paramField), dimension, data);
                         newParam.set(data, dimension);
                     } else if (type == ezc3d::DATA_TYPE::FLOAT) {
-                        std::cout << "old float" << std::endl;
                         std::vector<float> data;
                         parseParam(mxGetDoubles(paramField), dimension, data);
                         newParam.set(data, dimension);
                     } else if (type == ezc3d::DATA_TYPE::CHAR) {
-                        std::cout << "old char" << std::endl;
-                        std::cout << "TO DO" << std::endl;
-                        newParam.set(std::vector<std::string>() = {"2"}, {1});
+                        std::vector<std::string> data;
+                        parseParam(paramField, dimension, data);
+                        int longest(checkLongestStrParam(data));
+                        dimension.insert(dimension.begin(), {longest});
+                        newParam.set(data, dimension);
                     }
                 } else {
                     if (!paramField || mxIsDouble(paramField)){
-                        std::cout << "new float" << std::endl;
                         std::vector<float> data;
                         parseParam(mxGetDoubles(paramField), dimension, data);
                         newParam.set(data, dimension);
                     } else if (mxIsCell(paramField)){
-                        std::cout << "new char" << std::endl;
-                        std::cout << "TO DO" << std::endl;
-                        newParam.set(std::vector<std::string>() = {"2"}, {1});
+                        std::vector<std::string> data;
+                        parseParam(paramField, dimension, data);
+                        int longest(checkLongestStrParam(data));
+                        dimension.insert(dimension.begin(), {longest});
+                        newParam.set(data, dimension);
                     }
                 }
-
                 c3d.addParameter(groupName, newParam);
-                std::cout << "done" << std::endl;
             }
         }
     }
-
-    // Fill it with some values
-    std::cout << "100 Hz hard-coded" << std::endl;
-    ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
-    pointRate.set(std::vector<float>() = {100}, {1});
-    c3d.addParameter("POINT", pointRate);
-
-    std::cout << "1000 Hz hard-coded" << std::endl;
-    ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
-    analogRate.set(std::vector<float>() = {2000}, {1});
-    c3d.addParameter("ANALOG", analogRate);
-    std::cout << "No parameters are copied! To be implemented" << std::endl;
-
 
     // Get the name of the markers and the analogs
     mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
