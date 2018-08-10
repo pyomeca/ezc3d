@@ -29,7 +29,10 @@ ezc3d::ParametersNS::Parameters::Parameters():
             grp.addParameter(p);
         }
         {
-            std::cout << "DATA_START" << std::endl;
+            ezc3d::ParametersNS::GroupNS::Parameter p("DATA_START", "");
+            p.set(std::vector<int>()={0}, {1});
+            p.lock();
+            grp.addParameter(p);
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("FRAMES", "");
@@ -232,9 +235,10 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
     int processorType = 84;
     f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
 
-    // Write each parameters
+    // Write each groups
+    std::streampos dataStartPosition; // Special parameter in POINT group
     for (int i=0; i<groups().size(); ++i){
-        group(i).write(f, -(i+1));
+        group(i).write(f, -(i+1), dataStartPosition);
     }
 
     // Move the cursor to a beginning of a block
@@ -247,6 +251,15 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
     f.seekg(pos);
     int nBlocksToNext = int(actualPos - pos-2)/512;
     if (int(actualPos - pos-2) % 512 > 0)
+        ++nBlocksToNext;
+    f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
+    f.seekg(actualPos);
+
+    // Go back to data start blank space and write the actual position
+    actualPos = f.tellg();
+    f.seekg(dataStartPosition);
+    nBlocksToNext = int(actualPos)/512;
+    if (int(actualPos) % 512 > 0)
         ++nBlocksToNext;
     f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
     f.seekg(actualPos);
@@ -386,7 +399,7 @@ void ezc3d::ParametersNS::GroupNS::Group::print() const
         parameter(i).print();
     }
 }
-void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx) const
+void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const
 {
     int nCharName(name().size());
     if (isLocked())
@@ -414,7 +427,7 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx) c
     f.seekg(actualPos);
 
     for (int i=0; i<parameters().size(); ++i){
-        parameter(i).write(f, -groupIdx);
+        parameter(i).write(f, -groupIdx, dataStartPosition);
     }
 }
 const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& ezc3d::ParametersNS::GroupNS::Group::parameters() const
@@ -614,7 +627,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::print() const
     std::cout << "description = " << _description << std::endl;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupIdx) const
+void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const
 {
     int nCharName(name().size());
     if (isLocked())
@@ -654,7 +667,12 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
                 writeImbricatedParameter(f, _dimension, 1);
             }
         } else {
-            writeImbricatedParameter(f, _dimension);
+            if (!_name.compare("DATA_START")){
+                // This is a special case defined in the standard where you write the number of blocks up to the data
+                dataStartPosition = f.tellg();
+                f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::DATA_TYPE::BYTE);
+            } else
+                writeImbricatedParameter(f, _dimension);
         }
     }
 

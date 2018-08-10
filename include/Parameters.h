@@ -42,7 +42,7 @@ public:
     int addParameter(ezc3d::c3d &file, int nbCharInName);
     void addParameter(const ezc3d::ParametersNS::GroupNS::Parameter& p);
     void print() const;
-    void write(std::fstream &f, int groupIdx) const;
+    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
 
     // Getter for the group
     void lock();
@@ -75,7 +75,7 @@ public:
     void set(const std::vector<float>& data, const std::vector<int>& dimension);
     void set(const std::vector<std::string>& data, const std::vector<int>& dimension);
     void print() const;
-    void write(std::fstream &f, int groupIdx) const;
+    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
 
     // Getter for the group
     const std::vector<int> dimension() const;
