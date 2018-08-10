@@ -121,7 +121,6 @@ protected:
     std::shared_ptr<ezc3d::DataNS::Data> _data;
 
     // Internal reading function
-    void _allocate();
     char * c_float;
     int m_nByteToRead_float;
     void readFile(int nByteToRead,
