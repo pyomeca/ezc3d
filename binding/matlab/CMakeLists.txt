@@ -16,7 +16,11 @@ foreach(SUFFIXES Read Write)
     add_library(${PROJECT_NAME}_${SUFFIXES} SHARED ${CPP_FILE_${SUFFIXES}} ${CMAKE_CURRENT_SOURCE_DIR}/Matlabdef.def)
 
     # Reset the name of the output
-    SET_TARGET_PROPERTIES(${PROJECT_NAME}_${SUFFIXES} PROPERTIES LIBRARY_OUTPUT_NAME ${MASTER_PROJECT_NAME}${SUFFIXES})
+	if(WIN32)
+		SET_TARGET_PROPERTIES(${PROJECT_NAME}_${SUFFIXES} PROPERTIES OUTPUT_NAME ${MASTER_PROJECT_NAME}${SUFFIXES})
+	else(WIN32)
+		SET_TARGET_PROPERTIES(${PROJECT_NAME}_${SUFFIXES} PROPERTIES LIBRARY_OUTPUT_NAME ${MASTER_PROJECT_NAME}${SUFFIXES})
+	endif(WIN32)
 
     # Add headers
     target_include_directories(${PROJECT_NAME}_${SUFFIXES} PRIVATE ${Matlab_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
@@ -42,17 +46,18 @@ foreach(SUFFIXES Read Write)
 
     # Linker and instalation
     target_link_libraries(${PROJECT_NAME}_${SUFFIXES} ${MASTER_PROJECT_NAME} ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
-    set(Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE FILEPATH "Toolbox path to install, please note that the default directory may require administrator access")
-    install(TARGETS ${PROJECT_NAME}_${SUFFIXES} DESTINATION ${Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR}/${PROJECT_NAME})
-
+	if(WIN32)
+		install(TARGETS ${PROJECT_NAME}_${SUFFIXES}
+			RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${${MASTER_PROJECT_NAME}_BIN_FOLDER}
+		)
+	else(WIN32)
+		set(Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE FILEPATH "Toolbox path to install, please note that the default directory may require administrator access")
+		install(TARGETS ${PROJECT_NAME}_${SUFFIXES}
+			DESTINATION ${Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+		)
+	endif(WIN32)
+	
 endforeach(SUFFIXES)
-
-
-
-
-
-
-
 
 
 
