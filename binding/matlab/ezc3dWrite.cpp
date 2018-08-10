@@ -108,12 +108,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     // Setup important factors
     if (!dataPoints)
         mexErrMsgTxt("'data.points' is not accessible in the structure.");
-    if (mxGetNumberOfDimensions(dataPoints) != 3 )
-        mexErrMsgTxt("'data.points' should be in format XYZ x nPoints x nFrames.");
     const mwSize *dimsPoints = mxGetDimensions(dataPoints);
+    size_t nFramesPoints;
+    if (mxGetNumberOfDimensions(dataPoints) == 3)
+        nFramesPoints = dimsPoints[2];
+    else if (mxGetNumberOfDimensions(dataPoints) == 2)
+        nFramesPoints = 1;
+    else
+        mexErrMsgTxt("'data.points' should be in format XYZ x nPoints x nFrames.");
     size_t nPointsComponents(dimsPoints[0]);
     size_t nPoints(dimsPoints[1]);
-    size_t nFramesPoints(dimsPoints[2]);
     if (nPointsComponents < 3 || nPointsComponents > 4)
         mexErrMsgTxt("'data.points' should be in format XYZ x nPoints x nFrames.");
 
