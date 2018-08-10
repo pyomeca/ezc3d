@@ -122,7 +122,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("TYPE", "");
-            p.set(std::vector<std::string>()={}, {0});
+            p.set(std::vector<int>()={}, {0});
             grp.addParameter(p);
         }
         {
