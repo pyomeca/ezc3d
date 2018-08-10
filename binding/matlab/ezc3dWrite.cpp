@@ -191,24 +191,39 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         int longest(checkLongestStrParam(data));
                         dimension.insert(dimension.begin(), {longest});
                         newParam.set(data, dimension);
-                    }
+                    } else
+                        mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
                 } else {
-                    if (!paramField || mxIsDouble(paramField)){
+                    if (!paramField || mxIsDouble(paramField)) {
                         std::vector<float> data;
                         parseParam(mxGetDoubles(paramField), dimension, data);
                         newParam.set(data, dimension);
-                    } else if (mxIsCell(paramField)){
+                    } else if (mxIsCell(paramField)) {
                         std::vector<std::string> data;
                         parseParam(paramField, dimension, data);
                         int longest(checkLongestStrParam(data));
                         dimension.insert(dimension.begin(), {longest});
                         newParam.set(data, dimension);
-                    }
+                    } else if (mxIsChar(paramField)) {
+                        std::vector<std::string> data;
+                        mwSize paramlen = mxGetNumberOfElements(paramField) + 1;
+                        char *param_tp = new char[paramlen];
+                        mxGetString(paramField, param_tp, paramlen);
+                        std::string paramStr(param_tp);
+                        delete[] param_tp;
+                        data.push_back (paramStr);
+                        int longest(checkLongestStrParam(data));
+                        dimension.insert(dimension.begin(), {longest});
+                        dimension.pop_back(); // Matlab inserted the length already
+                        newParam.set(data, dimension);
+                    } else
+                        mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
                 }
                 c3d.addParameter(groupName, newParam);
             }
         }
     }
+
 
     // Get the name of the markers and the analogs
     mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
