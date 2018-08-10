@@ -89,7 +89,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
-            p.set(std::vector<std::string>()={"mm"}, {2});
+            p.set(std::vector<std::string>()={"V"}, {2});
             grp.addParameter(p);
         }
         {
