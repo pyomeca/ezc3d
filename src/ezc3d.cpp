@@ -2,9 +2,11 @@
 #include "ezc3d.h"
 
 ezc3d::c3d::c3d():
-    _filePath("")
+    _filePath(""),
+    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
 {
-    _allocate();
+    c_float = new char[m_nByteToRead_float + 1];
+
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters());
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
@@ -12,9 +14,11 @@ ezc3d::c3d::c3d():
 
 ezc3d::c3d::c3d(const std::string &filePath):
     std::fstream(filePath, std::ios::in | std::ios::binary),
-    _filePath(filePath)
+    _filePath(filePath),
+    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
 {
-    _allocate();
+    c_float = new char[m_nByteToRead_float + 1];
+
     if (!is_open())
         throw std::ios_base::failure("Could not open the c3d file");
 
@@ -494,11 +498,5 @@ void ezc3d::c3d::addAnalog(const std::string &name)
     } else {
         updateParameters({}, {name});
     }
-}
-
-void ezc3d::c3d::_allocate()
-{
-    m_nByteToRead_float = 4*ezc3d::DATA_TYPE::BYTE;
-    c_float = new char[m_nByteToRead_float + 1];
 }
 

@@ -6,9 +6,21 @@
 
 
 #ifdef BUILD_SANDBOX
+#include <chrono>
  // SANDBOX FOR DEVELOPER
 int main()
 {
+    {
+        // Speed test
+        auto start = std::chrono::high_resolution_clock::now();
+        for (int i = 0; i < 50; ++i){
+            ezc3d::c3d c3d("markers_analogs.c3d");
+        }
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+        std::cout << double(duration.count()) /1000/1000 << std::endl;
+    }
+
     {
         ezc3d::c3d c3d("markers_analogs.c3d");
 
@@ -87,7 +99,6 @@ int main()
 
         // Read it back!
         ezc3d::c3d augmentedC3d("augmentedC3d.c3d");
-        augmentedC3d.parameters().print();
     }
 
     {
@@ -141,7 +152,6 @@ int main()
 
         // Read it back!
         ezc3d::c3d emptyC3d("emptyC3d.c3d");
-        emptyC3d.parameters().print();
     }
     return 0;
 }
