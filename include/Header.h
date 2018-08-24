@@ -7,22 +7,28 @@
 
 class EZC3D_API ezc3d::Header{
 public:
+    Header();
     Header(ezc3d::c3d &file);
     void read(ezc3d::c3d &file);
     void print() const;
-    void write(std::fstream& f) const;
+    void write(std::fstream &f) const;
 
     // Getter on the parameters
     int parametersAddress() const;
     int checksum() const;
+    void nb3dPoints(int n);
     int nb3dPoints() const;
     int nbAnalogsMeasurement() const;
+    void firstFrame(int frame);
     int firstFrame() const;
+    void lastFrame(int frame);
     int lastFrame() const;
     int nbMaxInterpGap() const;
     int scaleFactor() const;
-    int dataStartAnalog() const;
+    int dataStart() const;
+    void nbAnalogByFrame(int nb);
     int nbAnalogByFrame() const;
+    void frameRate(double f);
     double frameRate() const;
     int emptyBlock1() const;
     int keyLabelPresent() const;
@@ -39,6 +45,7 @@ public:
     const std::string& eventsLabel(int idx) const;
     int emptyBlock4() const;
     int nbFrames() const;
+    void nbAnalogs(int n);
     int nbAnalogs() const;
 
 protected:
@@ -46,12 +53,12 @@ protected:
     int _parametersAddress;         // Byte 1.1
     int _checksum;                 // Byte 1.2 ==> 80 if it is a c3d
     int _nb3dPoints;                // Byte 2 ==> number of stored trajectories
-    int _nbAnalogsMeasurement;      // Byte 3 ==> number of analog data per point frame
+    int _nbAnalogsMeasurement;      // Byte 3 ==> total number of analog data per point frame
     int _firstFrame; // 1-based!    // Byte 4 ==> first frame in the file
     int _lastFrame;                 // Byte 5 ==> last frame in the file
     int _nbMaxInterpGap;            // Byte 6 ==> maximal gap for interpolation
     int _scaleFactor;               // Byte 7-8 ==> convert int to 3d reference frame, floating point if negative
-    int _dataStartAnalog;           // Byte 9 ==> Number of first block for 3D and analog data
+    int _dataStart;                 // Byte 9 ==> Number of first block for 3D and analog data
     int _nbAnalogByFrame;           // Byte 10 ==> Number of analog by frame
     double _frameRate;              // Byte 11-12 ==> 3d frame rate in Hz (floating point)
     int _emptyBlock1;               // Byte 13-147

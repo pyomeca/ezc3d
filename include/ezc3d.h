@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include <string.h>
 #include <cmath>
@@ -25,11 +26,16 @@
 
 namespace ezc3d {
     // Size of some constant (in Byte)
-    enum READ_SIZE {
+    enum DATA_TYPE{
+        CHAR = -1,
         BYTE = 1,
-        WORD = 2
+        INT = 2,
+        WORD = 2,
+        FLOAT = 4,
+        NONE = 10000
     };
     EZC3D_API void removeSpacesOfAString(std::string& s);
+    EZC3D_API std::string toUpper(const std::string &str);
 
     class c3d;
     class EZC3D_API Header;
@@ -60,8 +66,11 @@ namespace ezc3d {
 
 class EZC3D_API ezc3d::c3d : public std::fstream {
 public:
+    c3d();
     c3d(const std::string &filePath);
     ~c3d();
+    void updateHeader();
+    void updateParameters(const std::vector<std::string> &newMarkers = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
     // Write the c3d to a file
     void write(const std::string &filePath) const;
@@ -81,20 +90,27 @@ public:
                  const std::ios_base::seekdir &pos = std::ios::cur);
     float readFloat(int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
-    void readMatrix(std::vector<int> dimension,
-                    std::vector<std::string> &param_data,
-                    int currentIdx = 0);
+    void readMatrix(const std::vector<int> &dimension,
+                    std::vector<std::string> &param_data);
     void readMatrix(int dataLenghtInBytes,
-                    std::vector<int> dimension,
+                    const std::vector<int> &dimension,
                     std::vector<int> &param_data,
                     int currentIdx = 0);
-    void readMatrix(std::vector<int> dimension,
+    void readMatrix(const std::vector<int> &dimension,
                     std::vector<float> &param_data,
                     int currentIdx = 0);
 
     const ezc3d::Header& header() const;
     const ezc3d::ParametersNS::Parameters& parameters() const;
     const ezc3d::DataNS::Data& data() const;
+
+    // Public C3D modifiation interface
+    void addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p);
+    void addFrame(const ezc3d::DataNS::Frame &f, int j = -1);
+    void addMarker(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void addMarker(const std::string &name);
+    void addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void addAnalog(const std::string &name);
 
 protected:
     std::string _filePath; // Remember the file path
@@ -105,10 +121,22 @@ protected:
     std::shared_ptr<ezc3d::DataNS::Data> _data;
 
     // Internal reading function
+    char * c_float;
+    int m_nByteToRead_float;
     void readFile(int nByteToRead,
         char * c,
         int nByteFromPrevious = 0,
         const  std::ios_base::seekdir &pos = std::ios::cur);
+
+    // Internal function for reading strings
+    int _dispatchMatrix(const std::vector<int> &dimension,
+                         const std::vector<std::string> &param_data_in,
+                         std::vector<std::string> &param_data_out,
+                         int idxInParam = 0,
+                         int currentIdx = 1);
+    void _readMatrix(const std::vector<int> &dimension,
+                     std::vector<std::string> &param_data,
+                     int currentIdx = 0);
 
     // Converting functions
     unsigned int hex2uint(const char * val, int len);

@@ -1,8 +1,8 @@
 project(ezc3d)
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
 
 set (${PROJECT_NAME}_VERSION_MAJOR 0)
-set (${PROJECT_NAME}_VERSION_MINOR 1)
+set (${PROJECT_NAME}_VERSION_MINOR 2)
 
 # Set some variables
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
@@ -11,8 +11,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	MESSAGE(STATUS "Setting build type to 'Release' as none was specified.")
 	SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  # Set the possible values of build type for cmake-gui
-  SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+	# Set the possible values of build type for cmake-gui
+	SET_PROPERTY(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 ENDIF()
 
 # Prepare add library
@@ -26,7 +26,7 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 
 # Add headers
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Installation
 if(WIN32)
@@ -49,10 +49,12 @@ install(DIRECTORY include DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
 add_subdirectory(binding)
 
 # Add the example if asked
-set(BUILD_EXAMPLE TRUE CACHE BOOL "Build a C++ example")
-if (BUILD_EXAMPLE)
-    add_subdirectory(example)
-endif()
+if(NOT WIN32)
+	set(BUILD_EXAMPLE TRUE CACHE BOOL "Build a C++ example")
+	if (BUILD_EXAMPLE)
+		add_subdirectory(example)
+	endif()
+endif(NOT WIN32)
 
 
 
