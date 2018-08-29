@@ -165,6 +165,13 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     _checksum = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
     _nbParamBlock = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
     _processorType = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
+    if (_checksum == 0){
+        // Theoritically, this is a bad c3d formatting and should return an error, but for some reason
+        // qualisys decided that they would not comply to the standard a put _parameterStart and _checksum to 0
+        // This is a patch for Qualisys bad formatting c3d
+        _parametersStart = 1;
+        _checksum = 0x50;
+    }
 
     // Read parameter or group
     std::streampos nextParamByteInFile((int)file.tellg() + _parametersStart - ezc3d::DATA_TYPE::BYTE);
