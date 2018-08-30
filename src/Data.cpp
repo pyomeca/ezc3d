@@ -15,7 +15,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 
     // Initialize some variables
     if (file.header().nbFrames()>0)
-        _frames.resize(file.header().nbFrames());
+        _frames.resize(static_cast<size_t>(file.header().nbFrames()));
 
     // Get names of the data
     std::vector<std::string> pointNames;
@@ -26,13 +26,13 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
         analogNames = file.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
     // Read the actual data
-    for (int j = 0; j < file.header().nbFrames(); ++j){
+    for (size_t j = 0; j < static_cast<size_t>(file.header().nbFrames()); ++j){
         ezc3d::DataNS::Frame f;
         if (file.header().scaleFactor() < 0){ // if it is float
             // Read point 3d
             ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(file.header().nb3dPoints());
             std::vector<ezc3d::DataNS::Points3dNS::Point>& pts_tp(ptsAtAFrame.points_nonConst());
-            for (int i = 0; i < file.header().nb3dPoints(); ++i){
+            for (size_t i = 0; i < static_cast<size_t>(file.header().nb3dPoints()); ++i){
                 pts_tp[i].x(file.readFloat());
                 pts_tp[i].y(file.readFloat());
                 pts_tp[i].z(file.readFloat());
@@ -52,7 +52,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
             ezc3d::DataNS::AnalogsNS::Analogs analog(file.header().nbAnalogByFrame());
             for (int k = 0; k < file.header().nbAnalogByFrame(); ++k){
                 ezc3d::DataNS::AnalogsNS::SubFrame sub(file.header().nbAnalogs());
-                for (int i = 0; i < file.header().nbAnalogs(); ++i){
+                for (size_t i = 0; i < static_cast<size_t>(file.header().nbAnalogs()); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
                     c.value(file.readFloat());
                     if (i < analogNames.size())
@@ -62,7 +62,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                         unlabel << "unlabeled_analog_" << i;
                         c.name(unlabel.str());
                     }
-                    sub.replaceChannel(i, c);
+                    sub.replaceChannel(static_cast<int>(i), c);
                 }
                 analog.replaceSubframe(k, sub);
             }
@@ -78,7 +78,7 @@ void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &f, int j)
     if (j < 0)
         _frames.push_back(f);
     else
-        _frames[j].add(f);
+        _frames[static_cast<size_t>(j)].add(f);
 }
 std::vector<ezc3d::DataNS::Frame> &ezc3d::DataNS::Data::frames_nonConst()
 {
@@ -90,13 +90,13 @@ const std::vector<ezc3d::DataNS::Frame>& ezc3d::DataNS::Data::frames() const
 }
 const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(int idx) const
 {
-    if (idx < 0 || idx >= frames().size())
+    if (idx < 0 || idx >= static_cast<int>(frames().size()))
         throw std::out_of_range("Wrong number of frames");
-    return _frames[idx];
+    return _frames[static_cast<size_t>(idx)];
 }
 void ezc3d::DataNS::Data::print() const
 {
-    for (int i = 0; i < frames().size(); ++i){
+    for (int i = 0; i < static_cast<int>(frames().size()); ++i){
         std::cout << "Frame " << i << std::endl;
         frame(i).print();
         std::cout << std::endl;
@@ -105,7 +105,7 @@ void ezc3d::DataNS::Data::print() const
 
 void ezc3d::DataNS::Data::write(std::fstream &f) const
 {
-    for (int i=0; i<frames().size(); ++i){
+    for (int i=0; i<static_cast<int>(frames().size()); ++i){
         frame(i).write(f);
     }
 }
@@ -120,7 +120,9 @@ ezc3d::DataNS::Points3dNS::Points::Points()
 
 ezc3d::DataNS::Points3dNS::Points::Points(int nMarkers)
 {
-    _points.resize(nMarkers);
+    if (nMarkers < 0)
+        throw std::out_of_range("Wrong number of markers");
+    _points.resize(static_cast<size_t>(nMarkers));
 }
 
 void ezc3d::DataNS::Points3dNS::Points::add(const ezc3d::DataNS::Points3dNS::Point &p)
@@ -130,17 +132,19 @@ void ezc3d::DataNS::Points3dNS::Points::add(const ezc3d::DataNS::Points3dNS::Poi
 
 void ezc3d::DataNS::Points3dNS::Points::replace(int idx, const ezc3d::DataNS::Points3dNS::Point &p)
 {
-    _points[idx] = p;
+    if (idx < 0 || idx >= static_cast<int>(points().size()))
+        throw std::out_of_range("Wrong number of idx");
+    _points[static_cast<size_t>(idx)] = p;
 }
 void ezc3d::DataNS::Points3dNS::Points::print() const
 {
-    for (int i = 0; i < points().size(); ++i)
+    for (int i = 0; i < static_cast<int>(points().size()); ++i)
         point(i).print();
 }
 
 void ezc3d::DataNS::Points3dNS::Points::write(std::fstream &f) const
 {
-    for (int i=0; i<points().size(); ++i){
+    for (int i=0; i<static_cast<int>(points().size()); ++i){
         point(i).write(f);
     }
 }
@@ -155,16 +159,16 @@ std::vector<ezc3d::DataNS::Points3dNS::Point> &ezc3d::DataNS::Points3dNS::Points
 }
 int ezc3d::DataNS::Points3dNS::Points::pointIdx(const std::string &pointName) const
 {
-    for (int i = 0; i<points().size(); ++i)
+    for (int i = 0; i<static_cast<int>(points().size()); ++i)
         if (!point(i).name().compare(pointName))
             return i;
     return -1;
 }
 const ezc3d::DataNS::Points3dNS::Point& ezc3d::DataNS::Points3dNS::Points::point(int idx) const
 {
-    if (idx < 0 || idx >= points().size())
+    if (idx < 0 || idx >= static_cast<int>(points().size()))
         throw std::out_of_range("Tried to access wrong index for points data");
-    return _points[idx];
+    return _points[static_cast<size_t>(idx)];
 }
 const ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point(const std::string &pointName) const
 {
@@ -251,17 +255,19 @@ ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame()
 }
 ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame(int nChannels)
 {
-    _channels.resize(nChannels);
+    if (nChannels < 0)
+        throw std::out_of_range("Number of channels can't be under 0");
+    _channels.resize(static_cast<size_t>(nChannels));
 }
 void ezc3d::DataNS::AnalogsNS::SubFrame::print() const
 {
-    for (int i = 0; i < channels().size(); ++i){
+    for (int i = 0; i < static_cast<int>(channels().size()); ++i){
         channel(i).print();
     }
 }
 void ezc3d::DataNS::AnalogsNS::SubFrame::write(std::fstream &f) const
 {
-    for (int i = 0; i < channels().size(); ++i){
+    for (int i = 0; i < static_cast<int>(channels().size()); ++i){
         channel(i).write(f);
     }
 }
@@ -272,7 +278,9 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::addChannel(const ezc3d::DataNS::Analogs
 }
 void ezc3d::DataNS::AnalogsNS::SubFrame::replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel &channel)
 {
-    _channels[idx] = channel;
+    if (idx < 0 || idx >= static_cast<int>(channels().size()))
+        throw std::out_of_range("Tried to access wrong index for channel data");
+    _channels[static_cast<size_t>(idx)] = channel;
 }
 void ezc3d::DataNS::AnalogsNS::SubFrame::addChannels(const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& allChannelsData)
 {
@@ -288,13 +296,13 @@ const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& ezc3d::DataNS::AnalogsNS::
 }
 const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(int idx) const
 {
-    if (idx < 0 || idx >= _channels.size())
+    if (idx < 0 || idx >= static_cast<int>(_channels.size()))
         throw std::out_of_range("Tried to access wrong index for analog data");
-    return _channels[idx];
+    return _channels[static_cast<size_t>(idx)];
 }
 const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(std::string channelName) const
 {
-    for (int i = 0; i < channels().size(); ++i)
+    for (int i = 0; i < static_cast<int>(channels().size()); ++i)
         if (!channel(i).name().compare(channelName))
             return channel(i);
     throw std::invalid_argument("Analog name was not found within the analogs");
@@ -389,9 +397,9 @@ std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> &ezc3d::DataNS::AnalogsNS::Analo
 }
 const ezc3d::DataNS::AnalogsNS::SubFrame& ezc3d::DataNS::AnalogsNS::Analogs::subframe(int idx) const
 {
-    if (idx < 0 || idx >= _subframe.size())
+    if (idx < 0 || idx >= static_cast<int>(_subframe.size()))
         throw std::out_of_range("Tried to access wrong subframe index for analog data");
-    return _subframe[idx];
+    return _subframe[static_cast<size_t>(idx)];
 }
 
 
@@ -401,11 +409,13 @@ ezc3d::DataNS::AnalogsNS::Analogs::Analogs()
 }
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs(int nSubframes)
 {
-    _subframe.resize(nSubframes);
+    if (nSubframes < 0)
+        throw std::out_of_range("Number of subframes can't be under 0");
+    _subframe.resize(static_cast<size_t>(nSubframes));
 }
 void ezc3d::DataNS::AnalogsNS::Analogs::print() const
 {
-    for (int i = 0; i < subframes().size(); ++i){
+    for (int i = 0; i < static_cast<int>(subframes().size()); ++i){
         std::cout << "Subframe = " << i << std::endl;
         subframe(i).print();
         std::cout << std::endl;
@@ -413,7 +423,7 @@ void ezc3d::DataNS::AnalogsNS::Analogs::print() const
 }
 void ezc3d::DataNS::AnalogsNS::Analogs::write(std::fstream &f) const
 {
-    for (int i = 0; i < subframes().size(); ++i){
+    for (int i = 0; i < static_cast<int>(subframes().size()); ++i){
         subframe(i).write(f);
     }
 }
@@ -423,5 +433,7 @@ void ezc3d::DataNS::AnalogsNS::Analogs::addSubframe(const ezc3d::DataNS::Analogs
 }
 void ezc3d::DataNS::AnalogsNS::Analogs::replaceSubframe(int idx, const ezc3d::DataNS::AnalogsNS::SubFrame& subframe)
 {
-    _subframe[idx] = subframe;
+    if (idx < 0 || idx >= static_cast<int>(_subframe.size()))
+        throw std::out_of_range("Tried to access wrong subframe index for analog data");
+    _subframe[static_cast<size_t>(idx)] = subframe;
 }

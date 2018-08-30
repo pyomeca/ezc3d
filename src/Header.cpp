@@ -2,8 +2,8 @@
 #include "Header.h"
 
 ezc3d::Header::Header():
-    _checksum(0x50),
     _parametersAddress(2),
+    _checksum(0x50),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
     _firstFrame(0),
@@ -28,8 +28,8 @@ ezc3d::Header::Header():
 }
 
 ezc3d::Header::Header(ezc3d::c3d &file) :
-    _checksum(0x50),
     _parametersAddress(2),
+    _checksum(0x50),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
     _firstFrame(0),
@@ -82,7 +82,9 @@ const std::vector<std::string>& ezc3d::Header::eventsLabel() const
 }
 const std::string& ezc3d::Header::eventsLabel(int idx) const
 {
-    return _eventsLabel[idx];
+    if (idx < 0)
+        throw std::invalid_argument("Event label not found");
+    return _eventsLabel[static_cast<unsigned int>(idx)];
 }
 int ezc3d::Header::emptyBlock3() const
 {
@@ -93,7 +95,9 @@ std::vector<int> ezc3d::Header::eventsDisplay() const
     return _eventsDisplay;
 }
 int ezc3d::Header::eventsDisplay(int idx) const{
-    return _eventsDisplay[idx];
+    if (idx < 0)
+        throw std::invalid_argument("Event display not found");
+    return _eventsDisplay[static_cast<unsigned int>(idx)];
 }
 const std::vector<float>& ezc3d::Header::eventsTime() const
 {
@@ -101,7 +105,9 @@ const std::vector<float>& ezc3d::Header::eventsTime() const
 }
 float ezc3d::Header::eventsTime(int idx) const
 {
-    return _eventsTime[idx];
+    if (idx < 0)
+        throw std::invalid_argument("Event time not found");
+    return _eventsTime[static_cast<unsigned int>(idx)];
 }
 int ezc3d::Header::emptyBlock2() const
 {
@@ -127,11 +133,11 @@ int ezc3d::Header::emptyBlock1() const
 {
     return _emptyBlock1;
 }
-void ezc3d::Header::frameRate(double f)
+void ezc3d::Header::frameRate(float f)
 {
     _frameRate = f;
 }
-double ezc3d::Header::frameRate() const
+float ezc3d::Header::frameRate() const
 {
     return _frameRate;
 }
@@ -226,12 +232,12 @@ void ezc3d::Header::read(ezc3d::c3d &file)
     // Parameters of events
     _nbEvents = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     _emptyBlock2 = file.readInt(1*ezc3d::DATA_TYPE::WORD);
-    for (int i = 0; i < _eventsTime.size(); ++i)
+    for (unsigned int i = 0; i < _eventsTime.size(); ++i)
         _eventsTime[i] = file.readFloat();
-    for (int i = 0; i < _eventsDisplay.size(); ++i)
+    for (unsigned int i = 0; i < _eventsDisplay.size(); ++i)
         _eventsDisplay[i] = file.readInt(1*ezc3d::DATA_TYPE::WORD);
     _emptyBlock3 = file.readInt(1*ezc3d::DATA_TYPE::WORD);
-    for (int i = 0; i<_eventsLabel.size(); ++i)
+    for (unsigned int i = 0; i<_eventsLabel.size(); ++i)
         _eventsLabel[i] = file.readString(2*ezc3d::DATA_TYPE::WORD);
     _emptyBlock4 = file.readInt(22*ezc3d::DATA_TYPE::WORD);
 }
@@ -252,11 +258,11 @@ void ezc3d::Header::print() const{
     std::cout << "firstBlockKeyLabel = " << firstBlockKeyLabel() << std::endl;
     std::cout << "fourCharPresent = " << fourCharPresent() << std::endl;
     std::cout << "nbEvents = " << nbEvents() << std::endl;
-    for (int i=0; i<eventsTime().size(); ++i)
+    for (int i=0; i<static_cast<int>(eventsTime().size()); ++i)
         std::cout << "eventsTime[" << i << "] = " << eventsTime(i) << std::endl;
-    for (int i=0; i<eventsTime().size(); ++i)
+    for (int i=0; i<static_cast<int>(eventsTime().size()); ++i)
         std::cout << "eventsDisplay[" << i << "] = " << eventsDisplay(i) << std::endl;
-    for (int i=0; i<eventsLabel().size(); ++i)
+    for (int i=0; i<static_cast<int>(eventsLabel().size()); ++i)
         std::cout << "eventsLabel[" << i << "] = " << eventsLabel(i) << std::endl;
     std::cout << std::endl;
 }
@@ -284,7 +290,7 @@ void ezc3d::Header::write(std::fstream &f) const
     // Parameters of analog data
     f.write(reinterpret_cast<const char*>(&_dataStart), 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&_nbAnalogByFrame), 1*ezc3d::DATA_TYPE::WORD);
-    float frameRate(_frameRate);
+    float frameRate(static_cast<float>(_frameRate));
     f.write(reinterpret_cast<const char*>(&frameRate), 2*ezc3d::DATA_TYPE::WORD);
     for (int i=0; i<135; ++i)
         f.write(reinterpret_cast<const char*>(&_emptyBlock1), 1*ezc3d::DATA_TYPE::WORD);
@@ -297,12 +303,12 @@ void ezc3d::Header::write(std::fstream &f) const
     // Parameters of events
     f.write(reinterpret_cast<const char*>(&_nbEvents), 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&_emptyBlock2), 1*ezc3d::DATA_TYPE::WORD);
-    for (int i = 0; i < _eventsTime.size(); ++i)
+    for (unsigned int i = 0; i < _eventsTime.size(); ++i)
         f.write(reinterpret_cast<const char*>(&_eventsTime[i]), 2*ezc3d::DATA_TYPE::WORD);
-    for (int i = 0; i < _eventsDisplay.size(); ++i)
+    for (unsigned int i = 0; i < _eventsDisplay.size(); ++i)
         f.write(reinterpret_cast<const char*>(&_eventsDisplay[i]), 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&_emptyBlock3), 1*ezc3d::DATA_TYPE::WORD);
-    for (int i = 0; i < _eventsLabel.size(); ++i){
+    for (unsigned int i = 0; i < _eventsLabel.size(); ++i){
         const char* event = _eventsLabel[i].c_str();
         f.write(event, 2*ezc3d::DATA_TYPE::WORD);
     }
