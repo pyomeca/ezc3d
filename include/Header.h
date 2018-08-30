@@ -28,8 +28,8 @@ public:
     int dataStart() const;
     void nbAnalogByFrame(int nb);
     int nbAnalogByFrame() const;
-    void frameRate(double f);
-    double frameRate() const;
+    void frameRate(float f);
+    float frameRate() const;
     int emptyBlock1() const;
     int keyLabelPresent() const;
     int firstBlockKeyLabel() const;
@@ -60,7 +60,7 @@ protected:
     int _scaleFactor;               // Byte 7-8 ==> convert int to 3d reference frame, floating point if negative
     int _dataStart;                 // Byte 9 ==> Number of first block for 3D and analog data
     int _nbAnalogByFrame;           // Byte 10 ==> Number of analog by frame
-    double _frameRate;              // Byte 11-12 ==> 3d frame rate in Hz (floating point)
+    float _frameRate;              // Byte 11-12 ==> 3d frame rate in Hz (floating point)
     int _emptyBlock1;               // Byte 13-147
     int _keyLabelPresent;           // Byte 148 ==> 12345 if Label and range are present
     int _firstBlockKeyLabel;        // Byte 149 ==> First block of key labels (if present)

@@ -1,5 +1,5 @@
 
-#define BUILD_SANDBOX
+//#define BUILD_SANDBOX
 #include <vector>
 #include "ezc3d.h"
 
@@ -34,7 +34,7 @@ int main()
         pt_new.y(2.0);
         pt_new.z(3.0);
         pts_new.add(pt_new);
-        for (int i=0; i<c3d.data().frames().size(); ++i){
+        for (size_t i=0; i<c3d.data().frames().size(); ++i){
             ezc3d::DataNS::Frame frame;
             frame.add(pts_new);
             frames_point.push_back(frame);
@@ -53,7 +53,7 @@ int main()
             subframes_analog.channels_nonConst()[0].value(sf+1);
             frame.analogs_nonConst().addSubframe(subframes_analog);
         }
-        for (int f=0; f<c3d.data().frames().size(); ++f)
+        for (size_t f=0; f<c3d.data().frames().size(); ++f)
             frames_analog.push_back(frame);
         c3d.addAnalog(frames_analog);
 
@@ -62,7 +62,7 @@ int main()
         std::vector<std::string>labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
         int nPoints(c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (int i=0; i<nPoints; ++i){
+        for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             pt.name(labels[i]);
             pt.x(1.0);
@@ -126,7 +126,7 @@ int main()
         std::vector<std::string>labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
         int nPoints(c3d_empty.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (int i=0; i<nPoints; ++i){
+        for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             pt.name(labels[i]);
             pt.x(1.0);
@@ -173,7 +173,7 @@ int main()
         pt_new.y(2.0);
         pt_new.z(3.0);
         pts_new.add(pt_new);
-        for (int i=0; i<c3d.data().frames().size(); ++i){
+        for (size_t i=0; i<c3d.data().frames().size(); ++i){
             ezc3d::DataNS::Frame frame;
             frame.add(pts_new);
             frames_point.push_back(frame);
@@ -192,7 +192,7 @@ int main()
             subframes_analog.channels_nonConst()[0].value(sf+1);
             frame.analogs_nonConst().addSubframe(subframes_analog);
         }
-        for (int f=0; f<c3d.data().frames().size(); ++f)
+        for (size_t f=0; f<c3d.data().frames().size(); ++f)
             frames_analog.push_back(frame);
         c3d.addAnalog(frames_analog);
 
@@ -201,7 +201,7 @@ int main()
         std::vector<std::string>labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
         int nPoints(c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (int i=0; i<nPoints; ++i){
+        for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             pt.name(labels[i]);
             pt.x(1.0);
@@ -266,7 +266,7 @@ int main()
         std::vector<std::string>labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
         int nPoints(c3d_empty.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (int i=0; i<nPoints; ++i){
+        for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             pt.name(labels[i]);
             pt.x(1.0);
