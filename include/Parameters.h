@@ -94,7 +94,7 @@ public:
 protected:
 
     bool _isLocked; // If the group should not be modified
-    int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, int currentIdx=0, int cmp=0) const;
+    unsigned int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, unsigned int currentIdx=0, unsigned int cmp=0) const;
     bool isDimensionConsistent(int dataSize, const std::vector<int>& dimension) const;
 
     std::vector<int> _dimension; // Mapping of the data vector
