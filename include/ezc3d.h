@@ -76,29 +76,29 @@ public:
     void write(const std::string &filePath) const;
 
     // Byte reading functions
-    void readChar(int nByteToRead,
+    void readChar(unsigned int nByteToRead,
                   char * c,
                   int nByteFromPrevious = 0,
                   const  std::ios_base::seekdir &pos = std::ios::cur);
-    std::string readString(int nByteToRead, int nByteFromPrevious = 0,
+    std::string readString(unsigned int nByteToRead, int nByteFromPrevious = 0,
                            const std::ios_base::seekdir &pos = std::ios::cur);
-    int readInt(int nByteToRead,
+    int readInt(unsigned int nByteToRead,
                 int nByteFromPrevious = 0,
                 const std::ios_base::seekdir &pos = std::ios::cur);
-    int readUint(int nByteToRead,
+    int readUint(unsigned int nByteToRead,
                  int nByteFromPrevious = 0,
                  const std::ios_base::seekdir &pos = std::ios::cur);
     float readFloat(int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
     void readMatrix(const std::vector<int> &dimension,
                     std::vector<std::string> &param_data);
-    void readMatrix(int dataLenghtInBytes,
+    void readMatrix(unsigned int dataLenghtInBytes,
                     const std::vector<int> &dimension,
                     std::vector<int> &param_data,
-                    int currentIdx = 0);
+                    size_t currentIdx = 0);
     void readMatrix(const std::vector<int> &dimension,
                     std::vector<float> &param_data,
-                    int currentIdx = 0);
+                    size_t currentIdx = 0);
 
     const ezc3d::Header& header() const;
     const ezc3d::ParametersNS::Parameters& parameters() const;
@@ -122,25 +122,25 @@ protected:
 
     // Internal reading function
     char * c_float;
-    int m_nByteToRead_float;
-    void readFile(int nByteToRead,
+    unsigned int m_nByteToRead_float;
+    void readFile(unsigned int nByteToRead,
         char * c,
         int nByteFromPrevious = 0,
         const  std::ios_base::seekdir &pos = std::ios::cur);
 
     // Internal function for reading strings
-    int _dispatchMatrix(const std::vector<int> &dimension,
+    size_t _dispatchMatrix(const std::vector<int> &dimension,
                          const std::vector<std::string> &param_data_in,
                          std::vector<std::string> &param_data_out,
-                         int idxInParam = 0,
-                         int currentIdx = 1);
+                         size_t idxInParam = 0,
+                         size_t currentIdx = 1);
     void _readMatrix(const std::vector<int> &dimension,
                      std::vector<std::string> &param_data,
-                     int currentIdx = 0);
+                     size_t currentIdx = 0);
 
     // Converting functions
-    unsigned int hex2uint(const char * val, int len);
-    int hex2int(const char * val, int len);
+    unsigned int hex2uint(const char * val, unsigned int len);
+    int hex2int(const char * val, unsigned int len);
     int hex2long(const char * val, int len);
 };
 #include "Header.h"
