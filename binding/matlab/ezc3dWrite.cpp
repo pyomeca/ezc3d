@@ -287,18 +287,18 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             pts.add(pt);
         }
 
-        ezc3d::DataNS::AnalogsNS::Analogs analog;
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
         for (int sf=0; sf<nSubframes; ++sf){
-            ezc3d::DataNS::AnalogsNS::SubFrame subframes;
+            ezc3d::DataNS::AnalogsNS::SubFrame subframe;
             for (int i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 c.value(allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]);
                 c.name(analogsLabels[i]);
-                subframes.addChannel(c);
+                subframe.addChannel(c);
             }
-            analog.addSubframe(subframes);
+            analogs.addSubframe(subframe);
         }
-        frame.add(pts, analog);
+        frame.add(pts, analogs);
         c3d.addFrame(frame);// Add the previously created frame
     }
     c3d.write(path);
