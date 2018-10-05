@@ -179,12 +179,15 @@ void ezc3d::c3d::write(const std::string& filePath) const
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
     // Write the header
+    std::cout << "Writing header" << std::endl;
     this->header().write(f);
 
     // Write the parameters
+    std::cout << "Writing parameters" << std::endl;
     this->parameters().write(f);
 
     // Write the data
+    std::cout << "Writing data" << std::endl;
     this->data().write(f);
 
     f.close();

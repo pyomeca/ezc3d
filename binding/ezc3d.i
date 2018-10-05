@@ -8,6 +8,7 @@
 %include <std_vector.i>
 
 /* Instantiate std_string */
+%include <std_string.i>
 %include <std_iostream.i>
 
 // Instantiate templates
