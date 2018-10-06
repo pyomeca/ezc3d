@@ -165,20 +165,10 @@ class c3d(C3dMapper):
                     and (not (group == "ANALOG" and param == "SCALE"))
                     and (not (group == "ANALOG" and param == "OFFSET"))
                     and (not (group == "ANALOG" and param == "UNITS"))
-                        ):
+                ):
                     old_param = groups[group][param]
                     new_param = ezc3d.Parameter(param)
-                    dim = len(old_param["value"])
-                    if dim == 1:
-                        dim = []
-                    else:
-                        dim = [dim]
-                    if old_param['type'] == ezc3d.CHAR and dim != [] and dim[0] > 0:
-                        first_dim = -1
-                        for string in old_param["value"]:
-                            if len(string) > first_dim:
-                                first_dim = len(string)
-                        dim.insert(0, first_dim)
+                    dim = [len(old_param["value"])]
                     new_param.set(old_param["value"], dim)
                     new_c3d.addParameter(group, new_param)
 
@@ -226,3 +216,4 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+
