@@ -151,6 +151,16 @@ class c3d(C3dMapper):
 
         # Fill the parameters
         groups = self._storage['parameters']
+
+        # Update some important stuff (names of markers and analogs)
+        point_labels = groups['POINT']['LABELS']['value']
+        for point_label in point_labels:
+            new_c3d.addMarker(point_label)
+
+        analog_labels = groups['ANALOG']['LABELS']['value']
+        for analog_label in analog_labels:
+            new_c3d.addAnalog(analog_label)
+
         for group in groups:
             for param in groups[group]:
                 # Copy the parameters into the c3d, but skip those who will be updated automatically later
@@ -158,10 +168,9 @@ class c3d(C3dMapper):
                     not (group == "POINT" and param == "USED")
                     and (not (group == "POINT" and param == "FRAMES"))
                     and (not (group == "POINT" and param == "LABELS"))
-                    and (not (group == "POINT" and param == "DESCRIPTIONS"))
+
                     and (not (group == "ANALOG" and param == "USED"))
                     and (not (group == "ANALOG" and param == "LABELS"))
-                    and (not (group == "ANALOG" and param == "DESCRIPTIONS"))
                     and (not (group == "ANALOG" and param == "SCALE"))
                     and (not (group == "ANALOG" and param == "OFFSET"))
                     and (not (group == "ANALOG" and param == "UNITS"))
@@ -169,6 +178,13 @@ class c3d(C3dMapper):
                     old_param = groups[group][param]
                     new_param = ezc3d.Parameter(param)
                     dim = [len(old_param["value"])]
+
+                    # Special cases
+                    if group == "POINT" and param == "DESCRIPTIONS" and dim[0] != nb_points:
+                        continue
+                    if group == "ANALOG" and param == "DESCRIPTIONS" and dim[0] != nb_analogs:
+                        continue
+
                     if old_param["type"] == ezc3d.BYTE or old_param["type"] == ezc3d.INT:
                         new_param.set(ezc3d.VecInt(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.FLOAT:
@@ -178,25 +194,6 @@ class c3d(C3dMapper):
                     else:
                         raise NotImplementedError("Parameter type not implemented yet")
                     new_c3d.addParameter(group, new_param)
-
-        # Update some important stuff (names and descriptions of markers and analogs)
-        point_labels = groups['POINT']['LABELS']['value']
-        for point_label in point_labels:
-            new_c3d.addMarker(point_label)
-        point_descriptions = groups['POINT']['DESCRIPTIONS']['value']
-        if len(point_descriptions) == len(point_labels):
-            new_param = ezc3d.Parameter('DESCRIPTIONS')
-            new_param.set(ezc3d.VecString(point_descriptions), [len(point_descriptions)])
-            new_c3d.addParameter('POINT', new_param)
-
-        analog_labels = groups['ANALOG']['LABELS']['value']
-        for analog_label in analog_labels:
-            new_c3d.addAnalog(analog_label)
-        analog_descriptions = groups['ANALOG']['DESCRIPTIONS']['value']
-        if len(analog_descriptions) == len(analog_labels):
-            new_param = ezc3d.Parameter('DESCRIPTIONS')
-            new_param.set(ezc3d.VecString(analog_descriptions), [len(analog_descriptions)])
-            new_c3d.addParameter('ANALOG', new_param)
 
         # Initialization for speed
         pt = ezc3d.Point()
