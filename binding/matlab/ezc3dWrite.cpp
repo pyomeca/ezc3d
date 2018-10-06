@@ -192,8 +192,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                     } else if (type == ezc3d::DATA_TYPE::CHAR) {
                         std::vector<std::string> data;
                         parseParam(paramField, dimension, data);
-                        int longest(checkLongestStrParam(data));
-                        dimension.insert(dimension.begin(), {longest});
                         newParam.set(data, dimension);
                     } else
                         mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
@@ -216,8 +214,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         std::string paramStr(param_tp);
                         delete[] param_tp;
                         data.push_back (paramStr);
-                        int longest(checkLongestStrParam(data));
-                        dimension.insert(dimension.begin(), {longest});
                         dimension.pop_back(); // Matlab inserted the length already
                         newParam.set(data, dimension);
                     } else
