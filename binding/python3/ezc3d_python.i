@@ -13,6 +13,8 @@
 %apply (int* IN_ARRAY1, int DIM1) {(int* markers, int nMarkers)};
 %apply (int* IN_ARRAY1, int DIM1) {(int* channels, int nChannels)};
 
+%rename(console_print) print;
+
 %inline %{
 PyObject * _get_points(const ezc3d::c3d& c3d, const std::vector<int>& markers)
 {
