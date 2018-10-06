@@ -166,8 +166,6 @@ class c3d(C3dMapper):
                     and (not (group == "ANALOG" and param == "OFFSET"))
                     and (not (group == "ANALOG" and param == "UNITS"))
                 ):
-                    if group == "FORCE_PLATFORM" and param == "CORNERS":
-                        print("Coucou")
                     old_param = groups[group][param]
                     new_param = ezc3d.Parameter(param)
                     dim = [len(old_param["value"])]
@@ -181,14 +179,24 @@ class c3d(C3dMapper):
                         raise NotImplementedError("Parameter type not implemented yet")
                     new_c3d.addParameter(group, new_param)
 
-        # Update some important stuff (name of markers and analogs)
+        # Update some important stuff (names and descriptions of markers and analogs)
         point_labels = groups['POINT']['LABELS']['value']
         for point_label in point_labels:
             new_c3d.addMarker(point_label)
+        point_descriptions = groups['POINT']['DESCRIPTIONS']['value']
+        if len(point_descriptions) == len(point_labels):
+            new_param = ezc3d.Parameter('DESCRIPTIONS')
+            new_param.set(ezc3d.VecString(point_descriptions), [len(point_descriptions)])
+            new_c3d.addParameter('POINT', new_param)
 
         analog_labels = groups['ANALOG']['LABELS']['value']
         for analog_label in analog_labels:
             new_c3d.addAnalog(analog_label)
+        analog_descriptions = groups['ANALOG']['DESCRIPTIONS']['value']
+        if len(analog_descriptions) == len(analog_labels):
+            new_param = ezc3d.Parameter('DESCRIPTIONS')
+            new_param.set(ezc3d.VecString(analog_descriptions), [len(analog_descriptions)])
+            new_c3d.addParameter('ANALOG', new_param)
 
         # Initialization for speed
         pt = ezc3d.Point()
@@ -215,7 +223,7 @@ class c3d(C3dMapper):
             for sf in range(nb_analog_subframes):
                 for i in range(nb_analogs):
                     c.name(analog_labels[i])
-                    c.value(data_analogs[0, i, nb_analog_subframes*sf + sf])
+                    c.value(data_analogs[0, i, nb_analog_subframes*f + sf])
                     subframe.replaceChannel(i, c)
                 analogs.replaceSubframe(sf, subframe)
             frame = ezc3d.Frame()
