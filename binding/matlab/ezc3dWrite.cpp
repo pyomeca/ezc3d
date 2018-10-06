@@ -141,6 +141,50 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     // Create a fresh c3d which will be fill with c3d struct
     ezc3d::c3d c3d;
 
+    // Get the names of the markers
+    mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
+    if (!parameterPoints)
+        mexErrMsgTxt("'parameter.POINT' is not accessible in the structure.");
+    mxArray *parameterPointsLabels = mxGetField(parameterPoints, 0, "LABELS");
+    if (!parameterPointsLabels)
+        mexErrMsgTxt("'parameter.POINT.LABELS' parameters is not accessible in the structure.");
+    if (nPoints != mxGetM(parameterPointsLabels) * mxGetN(parameterPointsLabels))
+        mexErrMsgTxt("'parameter.POINT.LABELS' must have the same length as nPoints of the data.");
+    std::vector<std::string> pointLabels;
+    for (int i=0; i<nPoints; ++i){
+        mxArray *pointLabelsPtr = mxGetCell(parameterPointsLabels, i);
+        mwSize namelen = mxGetNumberOfElements(pointLabelsPtr) + 1;
+        char *name = new char[namelen];
+        mxGetString(pointLabelsPtr, name, namelen);
+        pointLabels.push_back(name);
+        delete[] name;
+    }
+    // Add them to the c3d
+    for (int i=0; i<pointLabels.size(); ++i)
+        c3d.addMarker(pointLabels[i]);
+
+    // Get the names of the analogs
+    mxArray *parameterAnalogs = mxGetField(parameter, 0, "ANALOG");
+    if (!parameterAnalogs)
+        mexErrMsgTxt("'parameter.ANALOG' is not accessible in the structure.");
+    mxArray *parameterAnalogsLabels = mxGetField(parameterAnalogs, 0, "LABELS");
+    if (!parameterAnalogsLabels)
+        mexErrMsgTxt("'parameter.ANALOG.LABELS' parameters is not accessible in the structure.");
+    if (nAnalogs != mxGetN(parameterAnalogsLabels) * mxGetM(parameterAnalogsLabels))
+        mexErrMsgTxt("'parameter.ANALOG.LABELS' must have the same length as nAnalogs of the data.");
+    std::vector<std::string> analogsLabels;
+    for (int i=0; i<nAnalogs; ++i){
+        mxArray *analogsLabelsPtr = mxGetCell(parameterAnalogsLabels, i);
+        mwSize namelen = mxGetNumberOfElements(analogsLabelsPtr) + 1;
+        char *name = new char[namelen];
+        mxGetString(analogsLabelsPtr, name, namelen);
+        analogsLabels.push_back(name);
+        delete[] name;
+    }
+    // Add them to the c3d
+    for (int i=0; i<analogsLabels.size(); ++i)
+        c3d.addAnalog(analogsLabels[i]);
+
     //  Fill the parameters
     for (int g=0; g<mxGetNumberOfFields(parameter); ++g){ // top level
         std::string groupName(mxGetFieldNameByNumber(parameter, g));
@@ -148,15 +192,13 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         for (int p=0; p<mxGetNumberOfFields(groupField); ++p){
             std::string paramName(mxGetFieldNameByNumber(groupField, p));
             mxArray* paramField(mxGetFieldByNumber(groupField, 0, p));
-            // Copy the parameters into the c3d, but skip those who will be updated later
+            // Copy the parameters into the c3d, but skip those who are already done
             if ( !(!groupName.compare("POINT") && !paramName.compare("USED")) &&
                      !(!groupName.compare("POINT") && !paramName.compare("FRAMES")) &&
                      !(!groupName.compare("POINT") && !paramName.compare("LABELS")) &&
-                     !(!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) &&
 
                      !(!groupName.compare("ANALOG") && !paramName.compare("USED")) &&
                      !(!groupName.compare("ANALOG") && !paramName.compare("LABELS")) &&
-                     !(!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) &&
                      !(!groupName.compare("ANALOG") && !paramName.compare("SCALE")) &&
                      !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET")) &&
                      !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))
@@ -176,6 +218,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 else
                     for (int i=0; i<nDim; ++i)
                         dimension.push_back(mxGetDimensions(paramField)[i]);
+
+                // Special cases
+                if ( (!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != nPoints)
+                    continue;
+                if ( (!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != nAnalogs)
+                    continue;
 
                 ezc3d::ParametersNS::GroupNS::Parameter newParam(paramName);
                 if (c3d.parameters().groupIdx(groupName) != -1 &&
@@ -203,8 +251,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                     } else if (mxIsCell(paramField)) {
                         std::vector<std::string> data;
                         parseParam(paramField, dimension, data);
-                        int longest(checkLongestStrParam(data));
-                        dimension.insert(dimension.begin(), {longest});
                         newParam.set(data, dimension);
                     } else if (mxIsChar(paramField)) {
                         std::vector<std::string> data;
@@ -225,48 +271,6 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     }
 
 
-    // Get the name of the markers and the analogs
-    mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
-    if (!parameterPoints)
-        mexErrMsgTxt("'parameter.POINT' is not accessible in the structure.");
-    mxArray *parameterPointsLabels = mxGetField(parameterPoints, 0, "LABELS");
-    if (!parameterPointsLabels)
-        mexErrMsgTxt("'parameter.POINT.LABELS' parameters is not accessible in the structure.");
-    if (nPoints != mxGetM(parameterPointsLabels) * mxGetN(parameterPointsLabels))
-        mexErrMsgTxt("'parameter.POINT.LABELS' must have the same length as nPoints of the data.");
-    std::vector<std::string> pointLabels;
-    for (int i=0; i<nPoints; ++i){
-        mxArray *pointLabelsPtr = mxGetCell(parameterPointsLabels, i);
-        mwSize namelen = mxGetNumberOfElements(pointLabelsPtr) + 1;
-        char *name = new char[namelen];
-        mxGetString(pointLabelsPtr, name, namelen);
-        pointLabels.push_back(name);
-        delete[] name;
-    }
-    // Add them to the c3d
-    for (int i=0; i<pointLabels.size(); ++i)
-        c3d.addMarker(pointLabels[i]);
-
-    mxArray *parameterAnalogs = mxGetField(parameter, 0, "ANALOG");
-    if (!parameterAnalogs)
-        mexErrMsgTxt("'parameter.ANALOG' is not accessible in the structure.");
-    mxArray *parameterAnalogsLabels = mxGetField(parameterAnalogs, 0, "LABELS");
-    if (!parameterAnalogsLabels)
-        mexErrMsgTxt("'parameter.ANALOG.LABELS' parameters is not accessible in the structure.");
-    if (nAnalogs != mxGetN(parameterAnalogsLabels) * mxGetM(parameterAnalogsLabels))
-        mexErrMsgTxt("'parameter.ANALOG.LABELS' must have the same length as nAnalogs of the data.");
-    std::vector<std::string> analogsLabels;
-    for (int i=0; i<nAnalogs; ++i){
-        mxArray *analogsLabelsPtr = mxGetCell(parameterAnalogsLabels, i);
-        mwSize namelen = mxGetNumberOfElements(analogsLabelsPtr) + 1;
-        char *name = new char[namelen];
-        mxGetString(analogsLabelsPtr, name, namelen);
-        analogsLabels.push_back(name);
-        delete[] name;
-    }
-    // Add them to the c3d
-    for (int i=0; i<analogsLabels.size(); ++i)
-        c3d.addAnalog(analogsLabels[i]);
 
     // Fill the data
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
