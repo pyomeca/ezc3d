@@ -166,10 +166,19 @@ class c3d(C3dMapper):
                     and (not (group == "ANALOG" and param == "OFFSET"))
                     and (not (group == "ANALOG" and param == "UNITS"))
                 ):
+                    if group == "FORCE_PLATFORM" and param == "CORNERS":
+                        print("Coucou")
                     old_param = groups[group][param]
                     new_param = ezc3d.Parameter(param)
                     dim = [len(old_param["value"])]
-                    new_param.set(old_param["value"], dim)
+                    if old_param["type"] == ezc3d.BYTE or old_param["type"] == ezc3d.INT:
+                        new_param.set(ezc3d.VecInt(old_param["value"]), dim)
+                    elif old_param["type"] == ezc3d.FLOAT:
+                        new_param.set(ezc3d.VecFloat(old_param["value"]), dim)
+                    elif old_param["type"] == ezc3d.CHAR:
+                        new_param.set(ezc3d.VecString(old_param["value"]), dim)
+                    else:
+                        raise NotImplementedError("Parameter type not implemented yet")
                     new_c3d.addParameter(group, new_param)
 
         # Update some important stuff (name of markers and analogs)
