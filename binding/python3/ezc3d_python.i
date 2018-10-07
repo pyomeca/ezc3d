@@ -1,4 +1,4 @@
-/* File : ezc3d_python.i */
+// File : ezc3d_python.i
 %{
 #define SWIG_FILE_WITH_INIT
 #include "ezc3d.h"
