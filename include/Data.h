@@ -69,6 +69,7 @@ class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
 public:
     void print() const;
     Point();
+    Point(const ezc3d::DataNS::Points3dNS::Point&);
     void write(std::fstream &f) const;
 
     float x() const;

@@ -189,6 +189,14 @@ ezc3d::DataNS::Points3dNS::Point::Point() :
 {
     _data.resize(4);
 }
+ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &p) :
+    _name(p.name())
+{
+    _data.resize(4);
+    x(p.x());
+    y(p.y());
+    z(p.z());
+}
 void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const
 {
     f.write(reinterpret_cast<const char*>(&_data[0]), ezc3d::DATA_TYPE::FLOAT);
