@@ -89,8 +89,10 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
 
         size_t idxLabels(static_cast<size_t>(grpPoint.parameterIdx("LABELS")));
         size_t idxDescriptions(static_cast<size_t>(grpPoint.parameterIdx("DESCRIPTIONS")));
+        size_t idxUnits(static_cast<size_t>(grpPoint.parameterIdx("UNITS")));
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
+        std::vector<std::string> units;
         int longestName(-1);
         for (int i = 0; i<nPoints; ++i){
             std::string name;
@@ -106,9 +108,11 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
                 longestName = static_cast<int>(name.size());
             labels.push_back(name);
             descriptions.push_back("");
+            units.push_back("mm");
         }
         grpPoint.parameters_nonConst()[idxLabels].set(labels, {longestName, nPoints});
         grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions, {0, nPoints});
+        grpPoint.parameters_nonConst()[idxUnits].set(units, {2, nPoints});
     }
 
     // If analogous data has been added
