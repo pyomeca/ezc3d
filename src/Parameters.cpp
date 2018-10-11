@@ -52,7 +52,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
-            p.set(std::vector<std::string>()={"mm"}, {2});
+            p.set(std::vector<std::string>()={}, {0});
             grp.addParameter(p);
         }
         addGroup(grp);
@@ -92,7 +92,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
-            p.set(std::vector<std::string>()={"V"}, {2});
+            p.set(std::vector<std::string>()={}, {0});
             grp.addParameter(p);
         }
         {
@@ -103,12 +103,12 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("FORMAT", "");
-            p.set(std::vector<std::string>()={"SIGNED"}, {6});
+            p.set(std::vector<std::string>()={}, {0});
             grp.addParameter(p);
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("BITS", "");
-            p.set(std::vector<int>()={12}, {1});
+            p.set(std::vector<int>()={}, {0});
             grp.addParameter(p);
         }
         addGroup(grp);
