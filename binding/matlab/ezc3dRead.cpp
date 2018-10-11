@@ -56,7 +56,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 fillMatlabField(markersStruct, 0, c3d->header().nb3dPoints());
                 fillMatlabField(markersStruct, 1, c3d->header().frameRate());
                 fillMatlabField(markersStruct, 2, c3d->header().firstFrame()+1);
-                fillMatlabField(markersStruct, 3, c3d->header().lastFrame());
+                fillMatlabField(markersStruct, 3, c3d->header().lastFrame()+1);
             }
             // fill analogs
             {
@@ -68,7 +68,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 fillMatlabField(analogsStruct, 0, c3d->header().nbAnalogs());
                 fillMatlabField(analogsStruct, 1, c3d->header().nbAnalogByFrame() * c3d->header().frameRate() );
                 fillMatlabField(analogsStruct, 2, c3d->header().nbAnalogByFrame() * c3d->header().firstFrame()+1);
-                fillMatlabField(analogsStruct, 3, c3d->header().nbAnalogByFrame() * c3d->header().lastFrame());
+                fillMatlabField(analogsStruct, 3, c3d->header().nbAnalogByFrame() * (c3d->header().lastFrame()+1));
             }
 
             // fill events
@@ -132,7 +132,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
             // Fill the point data and analogous data
             {
-            mwSize nFramesPoints(c3d->header().lastFrame() - c3d->header().firstFrame());
+            mwSize nFramesPoints(c3d->header().lastFrame() - c3d->header().firstFrame() + 1);
             mwSize nPoints(c3d->header().nb3dPoints());
             mwSize dataPointsFieldsDims[3] = {3, nPoints, nFramesPoints};
             mxArray * dataPoints = mxCreateNumericArray(3, dataPointsFieldsDims, mxDOUBLE_CLASS, mxREAL);
