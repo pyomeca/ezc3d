@@ -68,7 +68,7 @@ class EZC3D_API ezc3d::c3d : public std::fstream {
 public:
     c3d();
     c3d(const std::string &filePath);
-    ~c3d();
+    virtual ~c3d();
     void updateHeader();
     void updateParameters(const std::vector<std::string> &newMarkers = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
