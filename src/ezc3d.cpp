@@ -316,11 +316,13 @@ void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
     // Vicon c3d stores text length on first dimension, I am not sure if
     // this is a standard or a custom made stuff. I implemented it like that for now
     if (dimension.size() == 1){
-        std::string tp;
-        for (int j = 0; j < dimension[0]; ++j)
-            tp += param_data_string_tp[static_cast<size_t>(j)];
-        ezc3d::removeSpacesOfAString(tp);
-        param_data_string.push_back(tp);
+        if (dimension[0] != 0) {
+            std::string tp;
+            for (int j = 0; j < dimension[0]; ++j)
+                tp += param_data_string_tp[static_cast<size_t>(j)];
+            ezc3d::removeSpacesOfAString(tp);
+            param_data_string.push_back(tp);
+        }
     }
     else
         _dispatchMatrix(dimension, param_data_string_tp, param_data_string);

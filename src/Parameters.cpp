@@ -103,7 +103,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("FORMAT", "");
-            p.set(std::vector<std::string>()={"SIGNED"}, {1});
+            p.set(std::vector<std::string>()={}, {});
             grp.addParameter(p);
         }
         {
@@ -537,7 +537,7 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
 
     // number of dimension of parameter (0 for scalar)
     int nDimensions(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
-    if (nDimensions == 0) // In the special case of a scalar
+    if (nDimensions == 0 && _data_type != DATA_TYPE::CHAR) // In the special case of a scalar
         _dimension.push_back(1);
     else // otherwise it's a matrix
         for (int i=0; i<nDimensions; ++i)
@@ -604,12 +604,12 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string>
     if (!isDimensionConsistent(static_cast<int>(data.size()), dimension))
         throw std::range_error("Dimension of the data does not correspond to sent dimensions");
     // Insert the length of the longest string
-    int first_dim(0);
+    size_t first_dim(0);
     for (unsigned int i=0; i<data.size(); ++i)
         if (data[i].size() > first_dim)
             first_dim = data[i].size();
     std::vector<int> dimensionWithStrLen = dimension;
-    dimensionWithStrLen.insert(dimensionWithStrLen.begin(), first_dim);
+    dimensionWithStrLen.insert(dimensionWithStrLen.begin(), static_cast<int>(first_dim));
 
     _data_type = ezc3d::DATA_TYPE::CHAR;
     _param_data_string = data;
