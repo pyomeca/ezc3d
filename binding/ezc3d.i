@@ -1,14 +1,14 @@
-/* File : ezc3d.i */
+// File : ezc3d.i
 %module ezc3d
 %{
 #include "ezc3d.h"
 %}
 
-/* Instantiate std_vector */
+// Instantiate from standard library
 %include <std_vector.i>
-
-/* Instantiate std_string */
+%include <std_string.i>
 %include <std_iostream.i>
+%include <std_except.i>
 
 // Instantiate templates
 namespace std {
@@ -26,8 +26,27 @@ namespace std {
 
 }
 
+// Manage exceptions raised
+%include exception.i
+%exception {
+    try {
+        $action
+    } catch (const std::invalid_argument& e) {
+        SWIG_exception(SWIG_ValueError, e.what());
+    } catch (const std::out_of_range& e) {
+        SWIG_exception(SWIG_ValueError, e.what());
+    } catch (const std::ios_base::failure& e) {
+        SWIG_exception(SWIG_IOError, e.what());
+    } catch (const std::runtime_error& e) {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+    } catch (const std::exception& e) {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+    } catch (...) {
+       SWIG_exception(SWIG_UnknownError, "An unknown exception was raise");
+    }
+}
 
-/* Includes all neceressary files from the API */
+// Includes all neceressary files from the API
 %include "ezc3d.h"
 %include "Header.h"
 %include "Parameters.h"
