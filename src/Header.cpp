@@ -58,7 +58,10 @@ ezc3d::Header::Header(ezc3d::c3d &file) :
 
 int ezc3d::Header::nbFrames() const
 {
-    return _lastFrame - _firstFrame;
+    if (nb3dPoints() == 0 && nbAnalogs() == 0)
+        return 0;
+    else
+        return _lastFrame - _firstFrame + 1;
 }
 
 void ezc3d::Header::nbAnalogs(int n)
@@ -143,7 +146,9 @@ float ezc3d::Header::frameRate() const
 }
 void ezc3d::Header::nbAnalogByFrame(int nb)
 {
+    int analogs(nbAnalogs());
     _nbAnalogByFrame = nb;
+    nbAnalogs(analogs);
 }
 int ezc3d::Header::nbAnalogByFrame() const
 {
@@ -212,7 +217,7 @@ void ezc3d::Header::read(ezc3d::c3d &file)
 
     // Idx of first and last frame
     _firstFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
-    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _lastFrame = file.readInt(1*ezc3d::DATA_TYPE::WORD) - 1;
 
     // Some info
     _nbMaxInterpGap = file.readInt(1*ezc3d::DATA_TYPE::WORD);
