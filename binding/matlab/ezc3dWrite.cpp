@@ -141,95 +141,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     // Create a fresh c3d which will be fill with c3d struct
     ezc3d::c3d c3d;
 
-    //  Fill the parameters
-    for (int g=0; g<mxGetNumberOfFields(parameter); ++g){ // top level
-        std::string groupName(mxGetFieldNameByNumber(parameter, g));
-        mxArray* groupField(mxGetFieldByNumber(parameter, 0, g));
-        for (int p=0; p<mxGetNumberOfFields(groupField); ++p){
-            std::string paramName(mxGetFieldNameByNumber(groupField, p));
-            mxArray* paramField(mxGetFieldByNumber(groupField, 0, p));
-            // Copy the parameters into the c3d, but skip those who will be updated later
-            if ( !(!groupName.compare("POINT") && !paramName.compare("USED")) &&
-                     !(!groupName.compare("POINT") && !paramName.compare("FRAMES")) &&
-                     !(!groupName.compare("POINT") && !paramName.compare("LABELS")) &&
-                     !(!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) &&
-
-                     !(!groupName.compare("ANALOG") && !paramName.compare("USED")) &&
-                     !(!groupName.compare("ANALOG") && !paramName.compare("LABELS")) &&
-                     !(!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) &&
-                     !(!groupName.compare("ANALOG") && !paramName.compare("SCALE")) &&
-                     !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET")) &&
-                     !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))
-                     ){
-                std::vector<int> dimension;
-                int nDim;
-                if (!paramField)
-                    nDim = 0;
-                else
-                    nDim =(mxGetNumberOfDimensions(paramField));
-                if (nDim == 0)
-                    dimension.push_back(0);
-                else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 0)
-                    dimension.push_back(0);
-                else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 1)
-                    dimension.push_back(1);
-                else
-                    for (int i=0; i<nDim; ++i)
-                        dimension.push_back(mxGetDimensions(paramField)[i]);
-
-                ezc3d::ParametersNS::GroupNS::Parameter newParam(paramName);
-                if (c3d.parameters().groupIdx(groupName) != -1 &&
-                        c3d.parameters().group(groupName).parameterIdx(paramName) != -1){
-                    ezc3d::DATA_TYPE type(c3d.parameters().group(groupName).parameter(paramName).type());
-                    if  (type == ezc3d::DATA_TYPE::INT || type == ezc3d::DATA_TYPE::BYTE) {
-                        std::vector<int> data;
-                        parseParam(mxGetDoubles(paramField), dimension, data);
-                        newParam.set(data, dimension);
-                    } else if (type == ezc3d::DATA_TYPE::FLOAT) {
-                        std::vector<float> data;
-                        parseParam(mxGetDoubles(paramField), dimension, data);
-                        newParam.set(data, dimension);
-                    } else if (type == ezc3d::DATA_TYPE::CHAR) {
-                        std::vector<std::string> data;
-                        parseParam(paramField, dimension, data);
-                        int longest(checkLongestStrParam(data));
-                        dimension.insert(dimension.begin(), {longest});
-                        newParam.set(data, dimension);
-                    } else
-                        mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
-                } else {
-                    if (!paramField || mxIsDouble(paramField)) {
-                        std::vector<float> data;
-                        parseParam(mxGetDoubles(paramField), dimension, data);
-                        newParam.set(data, dimension);
-                    } else if (mxIsCell(paramField)) {
-                        std::vector<std::string> data;
-                        parseParam(paramField, dimension, data);
-                        int longest(checkLongestStrParam(data));
-                        dimension.insert(dimension.begin(), {longest});
-                        newParam.set(data, dimension);
-                    } else if (mxIsChar(paramField)) {
-                        std::vector<std::string> data;
-                        mwSize paramlen = mxGetNumberOfElements(paramField) + 1;
-                        char *param_tp = new char[paramlen];
-                        mxGetString(paramField, param_tp, paramlen);
-                        std::string paramStr(param_tp);
-                        delete[] param_tp;
-                        data.push_back (paramStr);
-                        int longest(checkLongestStrParam(data));
-                        dimension.insert(dimension.begin(), {longest});
-                        dimension.pop_back(); // Matlab inserted the length already
-                        newParam.set(data, dimension);
-                    } else
-                        mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
-                }
-                c3d.addParameter(groupName, newParam);
-            }
-        }
-    }
-
-
-    // Get the name of the markers and the analogs
+    // Get the names of the markers
     mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
     if (!parameterPoints)
         mexErrMsgTxt("'parameter.POINT' is not accessible in the structure.");
@@ -251,6 +163,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     for (int i=0; i<pointLabels.size(); ++i)
         c3d.addMarker(pointLabels[i]);
 
+    // Get the names of the analogs
     mxArray *parameterAnalogs = mxGetField(parameter, 0, "ANALOG");
     if (!parameterAnalogs)
         mexErrMsgTxt("'parameter.ANALOG' is not accessible in the structure.");
@@ -272,6 +185,93 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     for (int i=0; i<analogsLabels.size(); ++i)
         c3d.addAnalog(analogsLabels[i]);
 
+    //  Fill the parameters
+    for (int g=0; g<mxGetNumberOfFields(parameter); ++g){ // top level
+        std::string groupName(mxGetFieldNameByNumber(parameter, g));
+        mxArray* groupField(mxGetFieldByNumber(parameter, 0, g));
+        for (int p=0; p<mxGetNumberOfFields(groupField); ++p){
+            std::string paramName(mxGetFieldNameByNumber(groupField, p));
+            mxArray* paramField(mxGetFieldByNumber(groupField, 0, p));
+            // Copy the parameters into the c3d, but skip those who are already done
+            if ( !(!groupName.compare("POINT") && !paramName.compare("USED")) &&
+                     !(!groupName.compare("POINT") && !paramName.compare("FRAMES")) &&
+                     !(!groupName.compare("POINT") && !paramName.compare("LABELS")) &&
+
+                     !(!groupName.compare("ANALOG") && !paramName.compare("USED")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("LABELS")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("SCALE")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET")) &&
+                     !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))
+                     ){
+                std::vector<int> dimension;
+                int nDim;
+                if (!paramField)
+                    nDim = 0;
+                else
+                    nDim =(mxGetNumberOfDimensions(paramField));
+                if (nDim == 0)
+                    dimension.push_back(0);
+                else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 0)
+                    dimension.push_back(0);
+                else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 1)
+                    dimension.push_back(1);
+                else
+                    for (int i=0; i<nDim; ++i)
+                        dimension.push_back(mxGetDimensions(paramField)[i]);
+
+                // Special cases
+                if ( (!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != nPoints)
+                    continue;
+                if ( (!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != nAnalogs)
+                    continue;
+
+                ezc3d::ParametersNS::GroupNS::Parameter newParam(paramName);
+                if (c3d.parameters().groupIdx(groupName) != -1 &&
+                        c3d.parameters().group(groupName).parameterIdx(paramName) != -1){
+                    ezc3d::DATA_TYPE type(c3d.parameters().group(groupName).parameter(paramName).type());
+                    if  (type == ezc3d::DATA_TYPE::INT || type == ezc3d::DATA_TYPE::BYTE) {
+                        std::vector<int> data;
+                        parseParam(mxGetDoubles(paramField), dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (type == ezc3d::DATA_TYPE::FLOAT) {
+                        std::vector<float> data;
+                        parseParam(mxGetDoubles(paramField), dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (type == ezc3d::DATA_TYPE::CHAR) {
+                        std::vector<std::string> data;
+                        parseParam(paramField, dimension, data);
+                        newParam.set(data, dimension);
+                    } else
+                        mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
+                } else {
+                    if (!paramField || mxIsDouble(paramField)) {
+                        std::vector<float> data;
+                        parseParam(mxGetDoubles(paramField), dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (mxIsCell(paramField)) {
+                        std::vector<std::string> data;
+                        parseParam(paramField, dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (mxIsChar(paramField)) {
+                        std::vector<std::string> data;
+                        mwSize paramlen = mxGetNumberOfElements(paramField) + 1;
+                        char *param_tp = new char[paramlen];
+                        mxGetString(paramField, param_tp, paramlen);
+                        std::string paramStr(param_tp);
+                        delete[] param_tp;
+                        data.push_back (paramStr);
+                        dimension.pop_back(); // Matlab inserted the length already
+                        newParam.set(data, dimension);
+                    } else
+                        mexErrMsgTxt(std::string("Unrecognized type for parameter." + groupName + "." + paramName + ".").c_str());
+                }
+                c3d.addParameter(groupName, newParam);
+            }
+        }
+    }
+
+
+
     // Fill the data
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
@@ -287,18 +287,18 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             pts.add(pt);
         }
 
-        ezc3d::DataNS::AnalogsNS::Analogs analog;
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
         for (int sf=0; sf<nSubframes; ++sf){
-            ezc3d::DataNS::AnalogsNS::SubFrame subframes;
+            ezc3d::DataNS::AnalogsNS::SubFrame subframe;
             for (int i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 c.value(allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]);
                 c.name(analogsLabels[i]);
-                subframes.addChannel(c);
+                subframe.addChannel(c);
             }
-            analog.addSubframe(subframes);
+            analogs.addSubframe(subframe);
         }
-        frame.add(pts, analog);
+        frame.add(pts, analogs);
         c3d.addFrame(frame);// Add the previously created frame
     }
     c3d.write(path);

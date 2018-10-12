@@ -91,7 +91,6 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         size_t idxDescriptions(static_cast<size_t>(grpPoint.parameterIdx("DESCRIPTIONS")));
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
-        int longestName(-1);
         for (int i = 0; i<nPoints; ++i){
             std::string name;
             if (data().frames().size() == 0){
@@ -102,13 +101,11 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             } else {
                 name = data().frame(0).points().point(i).name();
             }
-            if (int(name.size()) > longestName)
-                longestName = static_cast<int>(name.size());
             labels.push_back(name);
             descriptions.push_back("");
         }
-        grpPoint.parameters_nonConst()[idxLabels].set(labels, {longestName, nPoints});
-        grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions, {0, nPoints});
+        grpPoint.parameters_nonConst()[idxLabels].set(labels, {nPoints});
+        grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions, {nPoints});
     }
 
     // If analogous data has been added
@@ -128,7 +125,6 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
-        int longestName(-1);
         for (int i = 0; i<nAnalogs; ++i){
             std::string name;
             if (data().frames().size() == 0){
@@ -139,13 +135,11 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             } else {
                 name = data().frame(0).analogs().subframe(0).channel(i).name();
             }
-            if (int(name.size()) > longestName)
-                longestName = static_cast<int>(name.size());
             labels.push_back(name);
             descriptions.push_back("");
         }
-        grpAnalog.parameters_nonConst()[idxLabels].set(labels, {longestName, nAnalogs});
-        grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions, {0, nAnalogs});
+        grpAnalog.parameters_nonConst()[idxLabels].set(labels, {nAnalogs});
+        grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions, {nAnalogs});
 
         int idxScale(static_cast<int>(grpAnalog.parameterIdx("SCALE")));
         std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
@@ -161,14 +155,9 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
 
         int idxUnits(grpAnalog.parameterIdx("UNITS"));
         std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
-        int longestUnit(-1);
-        for (int i = static_cast<int>(grpAnalog.parameter(idxUnits).valuesAsString().size()); i<nAnalogs; ++i){
+        for (int i = static_cast<int>(grpAnalog.parameter(idxUnits).valuesAsString().size()); i<nAnalogs; ++i)
             units.push_back("V");
-        }
-        for (unsigned int i=0; i<units.size(); ++i)
-            if (int(units[i].size()) > longestUnit)
-                longestUnit = static_cast<int>(units[i].size());
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxUnits)].set(units, {longestUnit, int(units.size())});
+        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxUnits)].set(units, {int(units.size())});
 
     }
     updateHeader();
