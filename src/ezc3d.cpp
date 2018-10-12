@@ -43,10 +43,10 @@ void ezc3d::c3d::updateHeader()
     // Parameter is always consider as the right value. If there is a discrepancy between them, change the header
     if (parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0] != header().nbFrames()){
         _header->firstFrame(0);
-        _header->lastFrame(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
+        _header->lastFrame(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0] - 1);
     }
     float pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
-    float buffer(10000);
+    float buffer(10000); // For decimal truncature
     if (static_cast<int>(pointRate*buffer) != static_cast<int>(header().frameRate()*buffer)){
         _header->frameRate(pointRate);
     }
@@ -54,9 +54,8 @@ void ezc3d::c3d::updateHeader()
         _header->nb3dPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     }
 
-    float analogRate(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]);
-    if (static_cast<int>(pointRate) != 0 && static_cast<int>((analogRate / pointRate) * buffer) != static_cast<int>(header().nbAnalogByFrame()*buffer)){
-        _header->nbAnalogByFrame(static_cast<int>(analogRate / pointRate));
+    if (_data != nullptr && data().frames().size() > 0 && data().frame(0).analogs().subframes().size() != static_cast<size_t>(header().nbAnalogByFrame())){
+        _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().subframes().size()));
     }
     if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0] != header().nbAnalogs()){
         _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
@@ -89,8 +88,10 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
 
         size_t idxLabels(static_cast<size_t>(grpPoint.parameterIdx("LABELS")));
         size_t idxDescriptions(static_cast<size_t>(grpPoint.parameterIdx("DESCRIPTIONS")));
+        size_t idxUnits(static_cast<size_t>(grpPoint.parameterIdx("UNITS")));
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
+        std::vector<std::string> units;
         for (int i = 0; i<nPoints; ++i){
             std::string name;
             if (data().frames().size() == 0){
@@ -103,9 +104,11 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             }
             labels.push_back(name);
             descriptions.push_back("");
+            units.push_back("mm");
         }
         grpPoint.parameters_nonConst()[idxLabels].set(labels, {nPoints});
         grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions, {nPoints});
+        grpPoint.parameters_nonConst()[idxUnits].set(units, {nPoints});
     }
 
     // If analogous data has been added
@@ -395,7 +398,14 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     if (nPoints != 0 && static_cast<int>(f.points().points().size()) != nPoints)
         throw std::runtime_error("Points must be consistent in terms of number of points");
 
-    int nAnalogs(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+    if (f.points().points().size() > 0 && static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0){
+        throw std::runtime_error("Analogs frame rate must be specified if you add some");
+    }
+    if (f.analogs().subframes().size() > 0 && static_cast<double>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]) == 0.0){
+        throw std::runtime_error("Analogs frame rate must be specified if you add some");
+    }
+
+    int nAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
     int subSize(static_cast<int>(f.analogs().subframes().size()));
     if (subSize != 0){
         int nChannel(static_cast<int>(f.analogs().subframes()[0].channels().size()));
