@@ -10,7 +10,6 @@ ezc3d::c3d::c3d():
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters());
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
-    std::cout << "coucou travis!" << std::endl;
 }
 
 ezc3d::c3d::c3d(const std::string &filePath):
