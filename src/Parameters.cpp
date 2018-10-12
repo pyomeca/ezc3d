@@ -52,7 +52,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
-            p.set(std::vector<std::string>()={"mm"}, {2});
+            p.set(std::vector<std::string>()={"mm"}, {1});
             grp.addParameter(p);
         }
         addGroup(grp);
@@ -92,7 +92,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
-            p.set(std::vector<std::string>()={"V"}, {2});
+            p.set(std::vector<std::string>()={"V"}, {1});
             grp.addParameter(p);
         }
         {
@@ -103,7 +103,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("FORMAT", "");
-            p.set(std::vector<std::string>()={"SIGNED"}, {6});
+            p.set(std::vector<std::string>()={"SIGNED"}, {1});
             grp.addParameter(p);
         }
         {
@@ -244,9 +244,8 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
 
     // Write each groups
     std::streampos dataStartPosition; // Special parameter in POINT group
-    for (int i=0; i<static_cast<int>(groups().size()); ++i){
+    for (int i=0; i<static_cast<int>(groups().size()); ++i)
         group(i).write(f, -(i+1), dataStartPosition);
-    }
 
     // Move the cursor to a beginning of a block
     std::streampos actualPos(f.tellg());
@@ -433,9 +432,9 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, s
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(actualPos);
 
-    for (int i=0; i<static_cast<int>(parameters().size()); ++i){
+    for (int i=0; i<static_cast<int>(parameters().size()); ++i)
         parameter(i).write(f, -groupIdx, dataStartPosition);
-    }
+
 }
 const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& ezc3d::ParametersNS::GroupNS::Group::parameters() const
 {
@@ -602,14 +601,19 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data
 }
 void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string> &data, const std::vector<int> &dimension)
 {
-    std::vector<int> dimensionNoStr;
-    for (unsigned int i=1; i<dimension.size(); ++i)
-        dimensionNoStr.push_back(dimension[i]);
-    if (!isDimensionConsistent(static_cast<int>(data.size()), dimensionNoStr))
+    if (!isDimensionConsistent(static_cast<int>(data.size()), dimension))
         throw std::range_error("Dimension of the data does not correspond to sent dimensions");
+    // Insert the length of the longest string
+    int first_dim(0);
+    for (unsigned int i=0; i<data.size(); ++i)
+        if (data[i].size() > first_dim)
+            first_dim = data[i].size();
+    std::vector<int> dimensionWithStrLen = dimension;
+    dimensionWithStrLen.insert(dimensionWithStrLen.begin(), first_dim);
+
     _data_type = ezc3d::DATA_TYPE::CHAR;
     _param_data_string = data;
-    _dimension = dimension;
+    _dimension = dimensionWithStrLen;
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::print() const
@@ -663,9 +667,13 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
         for (unsigned int i=0; i<_dimension.size(); ++i)
             f.write(reinterpret_cast<const char*>(&_dimension[i]), 1*ezc3d::DATA_TYPE::BYTE);
     }
-    int hasSize(1);
-    for (unsigned int i=0; i<_dimension.size(); ++i)
-        hasSize *= _dimension[i];
+
+    int hasSize(0);
+    if (_dimension.size() > 0){
+        hasSize = 1;
+        for (unsigned int i=0; i<_dimension.size(); ++i)
+            hasSize *= _dimension[i];
+    }
     if (hasSize > 0){
         if (_data_type == DATA_TYPE::CHAR){
             if (_dimension.size() == 1){
