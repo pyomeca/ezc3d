@@ -8,23 +8,25 @@ env:
 
 matrix:
   include:
+
     - os: linux
-      dist: trusty
-      sudo: true
-      compiler: gcc
-      addons:
-       apt:
-         packages: &precise_latest_boost_packages
-           - g++
-           - python-yaml
-           - lcov
-           - libgtest-dev
-           - cmake
-    
+        dist: trusty
+        compiler: gcc
+        env:
+          - COMPILER=g++-7
+        addons:
+          apt:
+            sources: ['ubuntu-toolchain-r-test']
+	        packages: [g++, valgrind]
+
 before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get install -y g++ libgtest-dev lcov python-yaml valgrind cmake
+
     # Combine global build options with OS/compiler-dependent options
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+
     # Install google test
     - git clone https://github.com/google/googletest.git
     - mkdir googletest/build
@@ -32,6 +34,7 @@ before_install:
     - sudo cmake -DBUILD_SHARED_LIBS=ON ..
     - sudo make
     - sudo make install
+    - which valgrind
     - cd "${TRAVIS_BUILD_DIR}"
 install:
     - sudo pip install codecov
