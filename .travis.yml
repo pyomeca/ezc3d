@@ -8,7 +8,6 @@ matrix:
       - COMPILER=g++-7
     addons:
       apt:
-        sources: ['ubuntu-toolchain-r-test']
         packages: [g++, valgrind, python-yaml, lcov, cmake, libgtest-dev]
 
     
