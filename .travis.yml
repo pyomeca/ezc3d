@@ -24,6 +24,8 @@ before_install:
     - sudo cmake ..
     - sudo make
     - sudo cp *.a /usr/lib
+    - pwd
+    - ls ..
     - sudo cp -r /usr/src/gtest/include/gtest /usr/include/gtest
 
 install:
