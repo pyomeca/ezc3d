@@ -17,12 +17,15 @@ before_install:
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
 
+    # Compile Gtest
+    - sudo apt-get install cmake # install cmake
+    - sudo mkdir /usr/src/gtest/build
+    - cd /usr/src/gtest/build
+    - sudo cmake ..
+    - sudo make
+    - sudo make install
+
 install:
-    #- if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
-    #- echo ${PATH}
-    #- echo ${CXX}
-    #- ${CXX} --version
-    #- ${CXX} -v
     - sudo pip install codecov
     
 script:
