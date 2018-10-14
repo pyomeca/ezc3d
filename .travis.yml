@@ -8,7 +8,6 @@ env:
 
 matrix:
   include:
-
     - os: linux
         dist: trusty
         compiler: gcc
@@ -17,7 +16,7 @@ matrix:
         addons:
           apt:
             sources: ['ubuntu-toolchain-r-test']
-	        packages: [g++, valgrind]
+            packages: [g++, valgrind]
 
 before_install:
     - sudo apt-get -qq update
