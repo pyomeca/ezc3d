@@ -16,16 +16,6 @@ before_install:
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
 
-    # Compile Gtest
-    - sudo apt-get install cmake # install cmake
-    - sudo mkdir /usr/src/gtest/build
-    - cd /usr/src/gtest/build
-    - sudo cmake ..
-    - sudo make
-    - ls ../src
-    - sudo cp *.a /usr/lib
-    # - sudo cp -r /usr/src/gtest/include/gtest /usr/include/gtest
-
 install:
     - sudo pip install codecov
     
