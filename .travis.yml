@@ -1,0 +1,35 @@
+language: cpp
+matrix:
+  include:
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+      - COMPILER=g++-7
+    addons:
+      apt:
+        packages: [g++, valgrind, python-yaml, lcov, cmake]
+
+    
+before_install:
+    # Combine global build options with OS/compiler-dependent options
+    - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
+    - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+
+install:
+    - sudo pip install codecov
+    
+script:
+    ############################################################################
+    # Build main and tests
+    ############################################################################
+     - mkdir -p build
+     - cd build
+     - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF .. 
+     - make
+     - make ezc3d_coverage
+     - ctest
+
+
+after_success:
+- codecov -t c376990f-2ad6-4f7b-bbdb-5378a52e295c -X gcov

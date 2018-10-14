@@ -2,6 +2,7 @@
 #define __HEAEDER_H__
 
 #include <fstream>
+#include <memory>
 
 #include "ezc3d.h"
 
