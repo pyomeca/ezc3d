@@ -10,13 +10,14 @@ matrix:
   include:
     - os: linux
         dist: trusty
+        sudo: true
         compiler: gcc
-        env:
-          - COMPILER=g++-7
-        addons:
-          apt:
-            sources: ['ubuntu-toolchain-r-test']
-            packages: [g++, valgrind]
+#        env:
+#          - COMPILER=g++-7
+#        addons:
+#          apt:
+#            sources: ['ubuntu-toolchain-r-test']
+#            packages: [g++, valgrind]
 
 before_install:
     - sudo apt-get -qq update
