@@ -1,28 +1,69 @@
 language: cpp
-
-env:
-  global:
-    # Ubuntu version
-    - LINUX_DIST=trusty
-    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
-    # Global build options and C++ flags
-    #- CXX_FLAGS="-Wall -pedantic -Werror"
-
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      sudo: true
-      compiler: gcc
-      addons:
-       apt:
-         packages: &precise_latest_boost_packages
-           - g++
-           - valgrind
-           - python-yaml
-           - lcov
-           - libgtest-dev
-           - cmake
+#  - os: linux
+#    dist: trusty
+#    compiler: clang
+#    before_install:
+#    - sudo add-apt-repository ppa:kubuntu-ppa/backports -y
+#    - sudo apt-get -qq update
+#    - sudo apt-get install -y libgtest-dev valgrind cmake
+#    - sudo apt-get install --only-upgrade cmake
+#    - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+#    - sudo tar xf release-1.7.0.tar.gz
+#    - cd googletest-release-1.7.0
+#    - sudo cmake -DBUILD_SHARED_LIBS=ON .
+#    - sudo make
+#    - sudo cp -a include/gtest /usr/include
+#    - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+#    - g++ -v
+
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+      - COMPILER=g++-4.8
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: [g++-4.8, valgrind]
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+      - COMPILER=g++-4.9
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: [g++-4.9, valgrind]
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+      - COMPILER=g++-5
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: [g++-5, valgrind]
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+      - COMPILER=g++-6
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: [g++-6, valgrind]
+  - os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+      - COMPILER=g++-7
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: [g++-7, valgrind]
+
     
 before_install:
     # Combine global build options with OS/compiler-dependent options
@@ -39,6 +80,13 @@ before_install:
     - which valgrind
     - cd "${TRAVIS_BUILD_DIR}"
 
+
+#           - g++
+ #          - valgrind
+  #         - python-yaml
+   #        - lcov
+    #       - libgtest-dev
+     #      - cmake
 install:
     #- if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
     #- echo ${PATH}
