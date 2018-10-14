@@ -8,7 +8,7 @@ matrix:
       - COMPILER=g++-7
     addons:
       apt:
-        packages: [g++, valgrind, python-yaml, lcov, cmake, libgtest-dev]
+        packages: [g++, valgrind, python-yaml, lcov, cmake]
 
     
 before_install:
