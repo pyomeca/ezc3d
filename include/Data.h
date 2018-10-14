@@ -2,6 +2,7 @@
 #define __DATA_H__
 
 #include <sstream>
+#include <memory>
 #include "ezc3d.h"
 
 
