@@ -22,6 +22,7 @@ before_install:
     - cd /usr/src/gtest/build
     - sudo cmake ..
     - sudo make
+    - ls ../src
     - sudo cp *.a /usr/lib
     # - sudo cp -r /usr/src/gtest/include/gtest /usr/include/gtest
 
