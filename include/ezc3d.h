@@ -74,6 +74,7 @@ public:
 
     // Write the c3d to a file
     void write(const std::string &filePath) const;
+    void print() const;
 
     // Byte reading functions
     void readChar(unsigned int nByteToRead,
