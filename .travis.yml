@@ -16,9 +16,6 @@ before_install:
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
 
-# install:
-#     - sudo pip install codecov
-    
 script:
     ############################################################################
     # Build main and tests
@@ -32,10 +29,9 @@ script:
 
 
 after_success:
-#- codecov -t 74e6ad39-6ac5-4411-87ca-7a2ad75f5e20 -X gcov
 - cd ${TRAVIS_BUILD_DIR}
 - lcov --directory . --capture --output-file coverage.info # capture coverage info
-- lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
+- lcov --remove coverage.info '/usr/*' '' --output-file coverage.info # filter out system
 - lcov --list coverage.info #debug info
 # Uploading report to CodeCov
 - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
