@@ -182,6 +182,13 @@ void ezc3d::c3d::write(const std::string& filePath) const
     f.close();
 }
 
+void ezc3d::c3d::print() const
+{
+    header().print();
+    parameters().print();
+    data().print();
+}
+
 void ezc3d::removeSpacesOfAString(std::string& s){
     // Remove the spaces at the end of the strings
     for (int i = static_cast<int>(s.size()); i >= 0; --i)
