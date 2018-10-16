@@ -560,6 +560,20 @@ TEST(c3dModifier, addAnalogs) {
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 }
 
+
+TEST(c3dModifier, specificAnalog){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, false, true);
+
+    // Test for removing space at the end of a label
+    new_c3d.c3d.addAnalog("AnalogNameWithSpaceAtTheEnd ");
+    new_c3d.nAnalogs += 1;
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString()[new_c3d.nAnalogs - 1].c_str(), "AnalogNameWithSpaceAtTheEnd");
+
+}
+
+
 TEST(c3dModifier, addPointsAndAnalogs){
     // Create an empty c3d
     c3dTestStruct new_c3d;
