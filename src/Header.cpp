@@ -265,7 +265,7 @@ void ezc3d::Header::print() const{
     std::cout << "nbEvents = " << nbEvents() << std::endl;
     for (int i=0; i<static_cast<int>(eventsTime().size()); ++i)
         std::cout << "eventsTime[" << i << "] = " << eventsTime(i) << std::endl;
-    for (int i=0; i<static_cast<int>(eventsTime().size()); ++i)
+    for (int i=0; i<static_cast<int>(eventsDisplay().size()); ++i)
         std::cout << "eventsDisplay[" << i << "] = " << eventsDisplay(i) << std::endl;
     for (int i=0; i<static_cast<int>(eventsLabel().size()); ++i)
         std::cout << "eventsLabel[" << i << "] = " << eventsLabel(i) << std::endl;
