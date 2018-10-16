@@ -274,6 +274,11 @@ TEST(initialize, newC3D){
 }
 
 
+TEST(initialize, noC3D){
+    EXPECT_THROW(ezc3d::c3d("ThereIsNoC3dThere.c3d"), std::ios_base::failure);
+}
+
+
 TEST(wrongC3D, wrongChecksumHeader){
     // Create an empty c3d
     ezc3d::c3d new_c3d;
@@ -291,6 +296,7 @@ TEST(wrongC3D, wrongChecksumHeader){
     EXPECT_THROW(ezc3d::c3d new_c3d("temporary.c3d"), std::ios_base::failure);
     remove(savePath.c_str());
 }
+
 
 TEST(wrongC3D, wrongChecksumParameter){
     // Create an empty c3d
@@ -340,6 +346,62 @@ TEST(wrongC3D, wrongNextparamParameter){
 
     // Delete the file
     remove(savePath.c_str());
+}
+
+
+TEST(c3dModifier, specificParameters){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    // Test update parameter
+    EXPECT_THROW(new_c3d.c3d.updateParameters({"WrongPoint"}, {}), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.updateParameters({}, {"WrongAnalog"}), std::runtime_error);
+
+    // Get an erroneous group
+    EXPECT_THROW(new_c3d.c3d.parameters().group("ThisIsNotARealGroup"), std::invalid_argument);
+
+    // Lock and unlock a group
+    EXPECT_THROW(new_c3d.c3d.lockGroup("ThisIsNotARealGroup"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.unlockGroup("ThisIsNotARealGroup"), std::invalid_argument);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
+    EXPECT_NO_THROW(new_c3d.c3d.lockGroup("POINT"));
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), true);
+    EXPECT_NO_THROW(new_c3d.c3d.unlockGroup("POINT"));
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
+
+    // Add an erroneous parameter to a group
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::invalid_argument);
+    p.name("EmptyParam");
+    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::runtime_error);
+
+    // Create a new group
+    ezc3d::ParametersNS::GroupNS::Parameter p2;
+    p2.name("NewParam");
+    p2.set(std::vector<int>(), {0});
+    EXPECT_NO_THROW(new_c3d.c3d.addParameter("ThisIsANewRealGroup", p2));
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").type(), ezc3d::INT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").valuesAsInt().size(), 0);
+
+    // Get an out of range parameter
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(-1), std::out_of_range);
+    size_t nPointParams(new_c3d.c3d.parameters().group("POINT").parameters().size());
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(static_cast<int>(nPointParams)), std::out_of_range);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), -1);
+
+    // Try to read a parameter into the wrong format
+    EXPECT_THROW(p.valuesAsByte(), std::invalid_argument);
+    EXPECT_THROW(p.valuesAsInt(), std::invalid_argument);
+    EXPECT_THROW(p.valuesAsFloat(), std::invalid_argument);
+    EXPECT_THROW(p.valuesAsString(), std::invalid_argument);
+
+    // Lock and unlock a parameter
+    EXPECT_EQ(p.isLocked(), false);
+    p.lock();
+    EXPECT_EQ(p.isLocked(), true);
+    p.unlock();
+    EXPECT_EQ(p.isLocked(), false);
 }
 
 
@@ -737,58 +799,6 @@ TEST(c3dModifier, addPointsAndAnalogs){
 }
 
 
-TEST(c3dModifier, specificParameters){
-    // Create an empty c3d
-    c3dTestStruct new_c3d;
-    fillC3D(new_c3d, true, true);
-
-    // Get an erroneous group
-    EXPECT_THROW(new_c3d.c3d.parameters().group("ThisIsNotARealGroup"), std::invalid_argument);
-
-    // Lock and unlock a group
-    EXPECT_THROW(new_c3d.c3d.lockGroup("ThisIsNotARealGroup"), std::invalid_argument);
-    EXPECT_THROW(new_c3d.c3d.unlockGroup("ThisIsNotARealGroup"), std::invalid_argument);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
-    EXPECT_NO_THROW(new_c3d.c3d.lockGroup("POINT"));
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), true);
-    EXPECT_NO_THROW(new_c3d.c3d.unlockGroup("POINT"));
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
-
-    // Add an erroneous parameter to a group
-    ezc3d::ParametersNS::GroupNS::Parameter p;
-    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::invalid_argument);
-    p.name("EmptyParam");
-    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::runtime_error);
-
-    // Create a new group
-    ezc3d::ParametersNS::GroupNS::Parameter p2;
-    p2.name("NewParam");
-    p2.set(std::vector<int>(), {0});
-    EXPECT_NO_THROW(new_c3d.c3d.addParameter("ThisIsANewRealGroup", p2));
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").type(), ezc3d::INT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").valuesAsInt().size(), 0);
-
-    // Get an out of range parameter
-    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(-1), std::out_of_range);
-    size_t nPointParams(new_c3d.c3d.parameters().group("POINT").parameters().size());
-    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(static_cast<int>(nPointParams)), std::out_of_range);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), -1);
-
-    // Try to read a parameter into the wrong format
-    EXPECT_THROW(p.valuesAsByte(), std::invalid_argument);
-    EXPECT_THROW(p.valuesAsInt(), std::invalid_argument);
-    EXPECT_THROW(p.valuesAsFloat(), std::invalid_argument);
-    EXPECT_THROW(p.valuesAsString(), std::invalid_argument);
-
-    // Lock and unlock a parameter
-    EXPECT_EQ(p.isLocked(), false);
-    p.lock();
-    EXPECT_EQ(p.isLocked(), true);
-    p.unlock();
-    EXPECT_EQ(p.isLocked(), false);
-}
-
-
 TEST(c3dModifier, specificFrames){
     // Create an empty c3d
     c3dTestStruct new_c3d;
@@ -796,7 +806,23 @@ TEST(c3dModifier, specificFrames){
 
     // Create impossible points
     ezc3d::DataNS::Points3dNS::Points p(4);
-    EXPECT_THROW( ezc3d::DataNS::Points3dNS::Points p_stupid(-1), std::out_of_range);
+    EXPECT_THROW( ezc3d::DataNS::Points3dNS::Points stupidPoint(-1), std::out_of_range);
+
+    // Add an impossible frame
+    ezc3d::DataNS::Frame stupidFrame;
+    // Wrong number of points
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrame), std::runtime_error);
+
+    // Wrong number of frames
+    ezc3d::DataNS::Points3dNS::Points stupidPoints(new_c3d.c3d.data().frame(0).points());
+    stupidFrame.add(stupidPoints);
+    new_c3d.c3d.addFrame(stupidFrame);
+
+    // Wrong name of points
+    stupidPoints.points_nonConst()[0].name("WrongName"); // Change the name of a marker
+    stupidFrame.add(stupidPoints);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrame), std::runtime_error);
+
 
     // Replace existing frame
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
