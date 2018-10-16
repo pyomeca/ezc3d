@@ -43,7 +43,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
         c3dStruc.nMarkers = c3dStruc.markerNames.size();
         // Add markers to the new c3d
         for (size_t m = 0; m < c3dStruc.nMarkers; ++m)
-            c3dStruc.c3d.addMarker(c3dStruc.markerNames[m]);
+            c3dStruc.c3d.addPoint(c3dStruc.markerNames[m]);
     }
 
     c3dStruc.analogNames.clear();
@@ -322,6 +322,26 @@ TEST(wrongC3D, wrongChecksumParameter){
     remove(savePath.c_str());
 }
 
+TEST(wrongC3D, wrongNextparamParameter){
+    // Create an empty c3d
+    ezc3d::c3d new_c3d;
+    std::string savePath("temporary.c3d");
+    new_c3d.write(savePath.c_str());
+
+    // If a 0 is also on the byte before the checksum, this is a Qualisys C3D and should be read even if checksum si wrong
+    std::ofstream c3d_file(savePath.c_str(), std::ofstream::in);
+    c3d_file.seekp(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1)); // move to the parameter checksum
+    int parameterStart(0x0);
+    c3d_file.write(reinterpret_cast<const char*>(&parameterStart), ezc3d::BYTE);
+    c3d_file.close();
+
+    // Read the erroneous file
+    EXPECT_THROW(ezc3d::c3d new_c3d("temporary.c3d"), std::ios_base::failure);
+
+    // Delete the file
+    remove(savePath.c_str());
+}
+
 
 TEST(c3dModifier, addPoints) {
     // Create an empty c3d
@@ -378,12 +398,99 @@ TEST(c3dModifier, addPoints) {
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).residual(), 0);
+
+            std::vector<float> data(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).data());
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).x(), data[0]);
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).y(), data[1]);
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).z(), data[2]);
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).residual(), 0);
         }
     }
 }
 
 
 TEST(c3dModifier, specificPoint){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, false);
+
+    // test replacing points
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ezc3d::DataNS::Frame frame;
+
+        ezc3d::DataNS::Points3dNS::Points pts(new_c3d.c3d.data().frame(static_cast<int>(f)).points());
+        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+            ezc3d::DataNS::Points3dNS::Point pt;
+            pt.name(new_c3d.markerNames[m]);
+            // Generate some random data
+            pt.x(static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
+            pt.y(static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
+            pt.z(static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
+            pts.replace(static_cast<int>(m), pt);
+        }
+        frame.add(pts);
+        new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+    }
+
+    // Things that should have change
+    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
+    EXPECT_EQ(new_c3d.c3d.header().lastFrame(), new_c3d.nFrames - 1);
+    EXPECT_EQ(new_c3d.c3d.header().nbMaxInterpGap(), 10);
+    EXPECT_EQ(new_c3d.c3d.header().scaleFactor(), -1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.header().frameRate(), new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.header().nbFrames(), new_c3d.nFrames);
+
+    // PARAMETERS
+    // Things that should remain as default
+    defaultParametersTest(new_c3d.c3d, PARAMETER_TYPE::HEADER);
+    defaultParametersTest(new_c3d.c3d, PARAMETER_TYPE::ANALOG);
+    defaultParametersTest(new_c3d.c3d, PARAMETER_TYPE::FORCE_PLATFORM);
+
+    // Things that should have change
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nMarkers);
+    for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.markerNames[m].c_str());
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
+    }
+
+    // DATA
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).residual(), 0);
+        }
+    }
+
+    // Access a non-existant point
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).points().point(-1), std::out_of_range);
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).points().point(static_cast<int>(new_c3d.nMarkers)), std::out_of_range);
+
+    // Test for removing space at the end of a label
+    new_c3d.c3d.addPoint("PointNameWithSpaceAtTheEnd ");
+    new_c3d.nMarkers += 1;
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[new_c3d.nMarkers - 1].c_str(), "PointNameWithSpaceAtTheEnd");
 
 }
 
@@ -392,8 +499,6 @@ TEST(c3dModifier, addAnalogs) {
     // Create an empty c3d
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, false, true);
-
-
 
     // HEADER
     // Things that should remain as default
@@ -558,6 +663,47 @@ TEST(c3dModifier, addPointsAndAnalogs){
 }
 
 
+TEST(c3dModifier, specificParameters){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    // Get an erroneous group
+    EXPECT_THROW(new_c3d.c3d.parameters().group("ThisIsNotARealGroup"), std::invalid_argument);
+
+    // Lock and unlock a group
+    EXPECT_THROW(new_c3d.c3d.lockGroup("ThisIsNotARealGroup"), std::invalid_argument);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
+    EXPECT_NO_THROW(new_c3d.c3d.lockGroup("POINT"));
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), true);
+    EXPECT_NO_THROW(new_c3d.c3d.unlockGroup("POINT"));
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
+
+    // Add an erroneous parameter to a group
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::runtime_error);
+
+    // Get an out of range parameter
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(-1), std::out_of_range);
+    size_t nPointParams(new_c3d.c3d.parameters().group("POINT").parameters().size());
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(static_cast<int>(nPointParams)), std::out_of_range);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), -1);
+
+    // Try to read a parameter into the wrong format
+    EXPECT_THROW(p.valuesAsByte(), std::invalid_argument);
+    EXPECT_THROW(p.valuesAsInt(), std::invalid_argument);
+    EXPECT_THROW(p.valuesAsFloat(), std::invalid_argument);
+    EXPECT_THROW(p.valuesAsString(), std::invalid_argument);
+
+    // Lock and unlock a parameter
+    EXPECT_EQ(p.isLocked(), false);
+    p.lock();
+    EXPECT_EQ(p.isLocked(), true);
+    p.unlock();
+    EXPECT_EQ(p.isLocked(), false);
+}
+
+
 TEST(c3dModifier, specificFrames){
     // Create an empty c3d
     c3dTestStruct new_c3d;
@@ -677,6 +823,9 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     // Create an empty c3d fill it with data and reopen
     c3dTestStruct ref_c3d;
     fillC3D(ref_c3d, true, true);
+
+    // Lock Point parameter
+    ref_c3d.c3d.lockGroup("POINT");
 
     // Write the c3d on the disk
     std::string savePath("temporary.c3d");
