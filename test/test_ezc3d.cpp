@@ -490,6 +490,7 @@ TEST(c3dModifier, specificPoint){
     // Test for removing space at the end of a label
     new_c3d.c3d.addPoint("PointNameWithSpaceAtTheEnd ");
     new_c3d.nMarkers += 1;
+    new_c3d.markerNames.push_back("PointNameWithSpaceAtTheEnd");
     EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[new_c3d.nMarkers - 1].c_str(), "PointNameWithSpaceAtTheEnd");
 
 }
@@ -569,8 +570,67 @@ TEST(c3dModifier, specificAnalog){
     // Test for removing space at the end of a label
     new_c3d.c3d.addAnalog("AnalogNameWithSpaceAtTheEnd ");
     new_c3d.nAnalogs += 1;
+    new_c3d.analogNames.push_back("AnalogNameWithSpaceAtTheEnd");
     EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString()[new_c3d.nAnalogs - 1].c_str(), "AnalogNameWithSpaceAtTheEnd");
 
+    // Add analog by frames
+    std::vector<ezc3d::DataNS::Frame> frames;
+    // Wrong number of frames
+    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+
+    // Wrong number of subframes
+    frames.resize(new_c3d.nFrames);
+    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+
+    // Wrong number of channels
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ezc3d::DataNS::Frame frame;
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
+        for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
+            analogs.addSubframe(ezc3d::DataNS::AnalogsNS::SubFrame());
+        frame.add(analogs);
+        frames[f] = frame;
+    }
+    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+
+    // Already existing channels
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ezc3d::DataNS::Frame frame;
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
+        for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf){
+            ezc3d::DataNS::AnalogsNS::SubFrame subframes;
+            for (size_t c = 0; c < new_c3d.nAnalogs; ++c){
+                ezc3d::DataNS::AnalogsNS::Channel channel;
+                channel.name(new_c3d.analogNames[c]);
+                channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                subframes.addChannel(channel);
+            }
+            analogs.addSubframe(subframes);
+        }
+        frame.add(analogs);
+        frames[f] = frame;
+    }
+    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+
+    // No throw
+    std::vector<std::string> analogNames = {"NewAnalog1", "NewAnalog2", "NewAnalog3", "NewAnalog4"};
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ezc3d::DataNS::Frame frame;
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
+        for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf){
+            ezc3d::DataNS::AnalogsNS::SubFrame subframes;
+            for (size_t c = 0; c < analogNames.size(); ++c){
+                ezc3d::DataNS::AnalogsNS::Channel channel;
+                channel.name(analogNames[c]);
+                channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                subframes.addChannel(channel);
+            }
+            analogs.addSubframe(subframes);
+        }
+        frame.add(analogs);
+        frames[f] = frame;
+    }
+    EXPECT_NO_THROW(new_c3d.c3d.addAnalog(frames));
 }
 
 
