@@ -85,7 +85,7 @@ const std::vector<std::string>& ezc3d::Header::eventsLabel() const
 }
 const std::string& ezc3d::Header::eventsLabel(int idx) const
 {
-    if (idx < 0)
+    if (idx < 0 || static_cast<size_t>(idx) >= _eventsLabel.size())
         throw std::invalid_argument("Event label not found");
     return _eventsLabel[static_cast<unsigned int>(idx)];
 }
@@ -98,7 +98,7 @@ std::vector<int> ezc3d::Header::eventsDisplay() const
     return _eventsDisplay;
 }
 int ezc3d::Header::eventsDisplay(int idx) const{
-    if (idx < 0)
+    if (idx < 0 || static_cast<size_t>(idx) >= _eventsDisplay.size())
         throw std::invalid_argument("Event display not found");
     return _eventsDisplay[static_cast<unsigned int>(idx)];
 }
@@ -108,7 +108,7 @@ const std::vector<float>& ezc3d::Header::eventsTime() const
 }
 float ezc3d::Header::eventsTime(int idx) const
 {
-    if (idx < 0)
+    if (idx < 0 || static_cast<size_t>(idx) >= _eventsTime.size())
         throw std::invalid_argument("Event time not found");
     return _eventsTime[static_cast<unsigned int>(idx)];
 }
