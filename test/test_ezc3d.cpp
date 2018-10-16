@@ -311,8 +311,13 @@ TEST(c3dModifier, addPoints) {
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
         }
     }
+}
+
+
+TEST(c3dModifier, specificPoint){
 
 }
+
 
 TEST(c3dModifier, addAnalogs) {
     // Create an empty c3d
@@ -483,6 +488,122 @@ TEST(c3dModifier, addPointsAndAnalogs){
 
 }
 
+
+TEST(c3dModifier, specificFrames){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, false);
+
+    // Create impossible points
+    ezc3d::DataNS::Points3dNS::Points p(4);
+    EXPECT_THROW( ezc3d::DataNS::Points3dNS::Points p_stupid(-1), std::out_of_range);
+
+    // Replace existing frame
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ezc3d::DataNS::Points3dNS::Points pts;
+        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+            ezc3d::DataNS::Points3dNS::Point pt;
+            pt.name(new_c3d.markerNames[m]);
+            // Generate some random data
+            pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
+            pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
+            pt.z(static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+            pts.add(pt);
+        }
+        ezc3d::DataNS::Frame frame;
+        frame.add(pts);
+        new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+    }
+
+    // Add a new frame at 2 spaces after the last frame
+    {
+        size_t f(new_c3d.nFrames + 1);
+        ezc3d::DataNS::Points3dNS::Points pts;
+        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+            ezc3d::DataNS::Points3dNS::Point pt;
+            pt.name(new_c3d.markerNames[m]);
+            // Generate some random data
+            pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
+            pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
+            pt.z(static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+            pts.add(pt);
+        }
+        ezc3d::DataNS::Frame frame;
+        frame.add(pts);
+        new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+    }
+    new_c3d.nFrames += 2;
+
+    // Get a frame and some inexistant one
+    EXPECT_THROW(new_c3d.c3d.data().frame(-1), std::out_of_range);
+    EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(new_c3d.nFrames)), std::out_of_range);
+
+
+    // HEADER
+    // Things that should remain as default
+    defaultHeaderTest(new_c3d.c3d, HEADER_TYPE::ANALOG_AND_EVENT);
+
+    // Things that should have change
+    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
+    EXPECT_EQ(new_c3d.c3d.header().lastFrame(), new_c3d.nFrames - 1);
+    EXPECT_EQ(new_c3d.c3d.header().nbMaxInterpGap(), 10);
+    EXPECT_EQ(new_c3d.c3d.header().scaleFactor(), -1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.header().frameRate(), new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.header().nbFrames(), new_c3d.nFrames);
+
+    // PARAMETERS
+    // Things that should remain as default
+    defaultParametersTest(new_c3d.c3d, PARAMETER_TYPE::HEADER);
+    defaultParametersTest(new_c3d.c3d, PARAMETER_TYPE::ANALOG);
+    defaultParametersTest(new_c3d.c3d, PARAMETER_TYPE::FORCE_PLATFORM);
+
+    // Things that should have change
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nMarkers);
+    for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.markerNames[m].c_str());
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
+    }
+
+    // DATA
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        if (f != new_c3d.nFrames - 2) { // Where no actual frames where added
+            for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+            }
+        } else {
+            for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+                EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).x(), std::invalid_argument);
+                EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).y(), std::invalid_argument);
+                EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).z(), std::invalid_argument);
+            }
+        }
+    }
+}
+
+
+
+
 TEST(c3dFileIO, CreateWriteAndReadBack){
     // Create an empty c3d fill it with data and reopen
     c3dTestStruct ref_c3d;
@@ -598,6 +719,6 @@ TEST(c3dShow, printIt){
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, true, true);
 
-    EXPECT_NO_THROW(new_c3d.c3d.print());
+//    EXPECT_NO_THROW(new_c3d.c3d.print());
 }
 
