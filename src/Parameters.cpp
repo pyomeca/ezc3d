@@ -172,6 +172,8 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
         _parametersStart = 1;
         _checksum = 0x50;
     }
+    if (_checksum != 0x50) // If checkbyte is wrong
+        throw std::ios_base::failure("File must be a valid c3d file");
 
     // Read parameter or group
     std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + _parametersStart - ezc3d::DATA_TYPE::BYTE);
@@ -233,7 +235,8 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
 {
     // Write the header of parameters
     f.write(reinterpret_cast<const char*>(&_parametersStart), ezc3d::BYTE);
-    f.write(reinterpret_cast<const char*>(&_checksum), ezc3d::BYTE);
+    int checksum(0x50);
+    f.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
     // Leave a blank space which will be later fill
     // (number of block can't be known before writing them)
     std::streampos pos(f.tellg()); // remember where to input this value later
