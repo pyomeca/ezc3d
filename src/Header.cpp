@@ -29,7 +29,7 @@ ezc3d::Header::Header():
 
 ezc3d::Header::Header(ezc3d::c3d &file) :
     _parametersAddress(2),
-    _checksum(0x50),
+    _checksum(0),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
     _firstFrame(0),
@@ -208,7 +208,7 @@ void ezc3d::Header::read(ezc3d::c3d &file)
     // Parameter address
     _parametersAddress = file.readInt(1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
     _checksum = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
-    if (_checksum != 80) // If checkbyte is wrong
+    if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
     // Number of data
@@ -276,7 +276,8 @@ void ezc3d::Header::write(std::fstream &f) const
 {
     // write the checksum byte and the start point of header
     f.write(reinterpret_cast<const char*>(&_parametersAddress), ezc3d::BYTE);
-    f.write(reinterpret_cast<const char*>(&_checksum), ezc3d::BYTE);
+    int checksum(0x50);
+    f.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
 
     // Number of data
     f.write(reinterpret_cast<const char*>(&_nb3dPoints), 1*ezc3d::DATA_TYPE::WORD);
