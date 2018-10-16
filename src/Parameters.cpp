@@ -493,6 +493,11 @@ bool ezc3d::ParametersNS::GroupNS::Parameter::isLocked() const
 {
     return _isLocked;
 }
+
+void ezc3d::ParametersNS::GroupNS::Parameter::name(const std::string paramName)
+{
+    _name = paramName;
+}
 const std::string& ezc3d::ParametersNS::GroupNS::Parameter::description() const
 {
     return _description;
