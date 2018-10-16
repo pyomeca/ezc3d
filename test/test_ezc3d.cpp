@@ -150,15 +150,25 @@ void defaultHeaderTest(const ezc3d::c3d& new_c3d, HEADER_TYPE type = HEADER_TYPE
             type == HEADER_TYPE::ANALOG_AND_EVENT ||
             type == HEADER_TYPE::ALL){
         EXPECT_EQ(new_c3d.header().nbEvents(), 0);
+
         EXPECT_EQ(new_c3d.header().eventsTime().size(), 18);
+        EXPECT_THROW(new_c3d.header().eventsTime(-1), std::invalid_argument);
         for (int e = 0; e < static_cast<int>(new_c3d.header().eventsTime().size()); ++e)
             EXPECT_FLOAT_EQ(new_c3d.header().eventsTime(e), 0);
+        EXPECT_THROW(new_c3d.header().eventsTime(static_cast<int>(new_c3d.header().eventsTime().size())), std::invalid_argument);
+
         EXPECT_EQ(new_c3d.header().eventsLabel().size(), 18);
-        for (int e = 0; e < static_cast<int>(new_c3d.header().eventsDisplay().size()); ++e)
+        EXPECT_THROW(new_c3d.header().eventsLabel(-1), std::invalid_argument);
+        for (int e = 0; e < static_cast<int>(new_c3d.header().eventsLabel().size()); ++e)
             EXPECT_STREQ(new_c3d.header().eventsLabel(e).c_str(), "");
+        EXPECT_THROW(new_c3d.header().eventsLabel(static_cast<int>(new_c3d.header().eventsLabel().size())), std::invalid_argument);
+
         EXPECT_EQ(new_c3d.header().eventsDisplay().size(), 9);
+        EXPECT_THROW(new_c3d.header().eventsDisplay(-1), std::invalid_argument);
         for (int e = 0; e < static_cast<int>(new_c3d.header().eventsDisplay().size()); ++e)
             EXPECT_EQ(new_c3d.header().eventsDisplay(e), 0);
+        EXPECT_THROW(new_c3d.header().eventsDisplay(static_cast<int>(new_c3d.header().eventsDisplay().size())), std::invalid_argument);
+
     }
 
     if (type == HEADER_TYPE::ALL){
