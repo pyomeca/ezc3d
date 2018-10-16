@@ -799,14 +799,14 @@ TEST(c3dModifier, addPointsAndAnalogs){
 }
 
 
-TEST(c3dModifier, specificFrames){
+TEST(c3dModifier, addFrames){
     // Create an empty c3d
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, true, false);
 
     // Create impossible points
     ezc3d::DataNS::Points3dNS::Points p(4);
-    EXPECT_THROW( ezc3d::DataNS::Points3dNS::Points stupidPoint(-1), std::out_of_range);
+    EXPECT_THROW(ezc3d::DataNS::Points3dNS::Points stupidPoint(-1), std::out_of_range);
 
     // Add an impossible frame
     ezc3d::DataNS::Frame stupidFrame;
@@ -822,6 +822,13 @@ TEST(c3dModifier, specificFrames){
     stupidPoints.points_nonConst()[0].name("WrongName"); // Change the name of a marker
     stupidFrame.add(stupidPoints);
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrame), std::runtime_error);
+}
+
+
+TEST(c3dModifier, specificFrames){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, false);
 
 
     // Replace existing frame
