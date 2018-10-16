@@ -398,11 +398,16 @@ void ezc3d::c3d::unlockGroup(const std::string &groupName)
 
 void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
+    if (!p.name().compare("")){
+        throw std::invalid_argument("Parameter must have a name");
+    }
+
     int idx(parameters().groupIdx(groupName));
     if (idx < 0){
         _parameters->addGroup(ezc3d::ParametersNS::GroupNS::Group(groupName));
         idx = static_cast<int>(parameters().groups().size()-1);
     }
+
     _parameters->group_nonConst(idx).addParameter(p);
 
     // Do a sanity check on the header if important stuff like number of frames or number of elements is changed

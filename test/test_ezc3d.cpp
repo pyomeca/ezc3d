@@ -673,6 +673,7 @@ TEST(c3dModifier, specificParameters){
 
     // Lock and unlock a group
     EXPECT_THROW(new_c3d.c3d.lockGroup("ThisIsNotARealGroup"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.unlockGroup("ThisIsNotARealGroup"), std::invalid_argument);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), false);
     EXPECT_NO_THROW(new_c3d.c3d.lockGroup("POINT"));
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").isLocked(), true);
@@ -681,7 +682,17 @@ TEST(c3dModifier, specificParameters){
 
     // Add an erroneous parameter to a group
     ezc3d::ParametersNS::GroupNS::Parameter p;
+    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::invalid_argument);
+    p.name("EmptyParam");
     EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::runtime_error);
+
+    // Create a new group
+    ezc3d::ParametersNS::GroupNS::Parameter p2;
+    p2.name("NewParam");
+    p2.set(std::vector<int>(), {0});
+    EXPECT_NO_THROW(new_c3d.c3d.addParameter("ThisIsANewRealGroup", p2));
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").type(), ezc3d::INT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").valuesAsInt().size(), 0);
 
     // Get an out of range parameter
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(-1), std::out_of_range);
