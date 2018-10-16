@@ -273,6 +273,56 @@ TEST(initialize, newC3D){
     EXPECT_EQ(new_c3d.data().frames().size(), 0);
 }
 
+
+TEST(wrongC3D, wrongChecksumHeader){
+    // Create an empty c3d
+    ezc3d::c3d new_c3d;
+    std::string savePath("temporary.c3d");
+    new_c3d.write(savePath.c_str());
+
+    // Modify the header checksum byte
+    std::ofstream c3d_file(savePath.c_str(), std::ofstream::in);
+    c3d_file.seekp(ezc3d::BYTE);
+    int checksum(0x0);
+    c3d_file.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
+    c3d_file.close();
+
+    // Read the erroneous file
+    EXPECT_THROW(ezc3d::c3d new_c3d("temporary.c3d"), std::ios_base::failure);
+    remove(savePath.c_str());
+}
+
+TEST(wrongC3D, wrongChecksumParameter){
+    // Create an empty c3d
+    ezc3d::c3d new_c3d;
+    std::string savePath("temporary.c3d");
+    new_c3d.write(savePath.c_str());
+
+    // Modify the header checksum byte
+    std::ofstream c3d_file(savePath.c_str(), std::ofstream::in);
+    c3d_file.seekp(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1) + 1); // move to the parameter checksum
+    int checksum(0x0);
+    c3d_file.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
+    c3d_file.close();
+
+    // Read the erroneous file
+    EXPECT_THROW(ezc3d::c3d new_c3d("temporary.c3d"), std::ios_base::failure);
+
+    // If a 0 is also on the byte before the checksum, this is a Qualisys C3D and should be read even if checksum si wrong
+    std::ofstream c3d_file2(savePath.c_str(), std::ofstream::in);
+    c3d_file2.seekp(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1)); // move to the parameter checksum
+    int parameterStart(0x0);
+    c3d_file2.write(reinterpret_cast<const char*>(&parameterStart), ezc3d::BYTE);
+    c3d_file2.close();
+
+    // Read the Qualisys file
+    EXPECT_NO_THROW(ezc3d::c3d new_c3d("temporary.c3d"));
+
+    // Delete the file
+    remove(savePath.c_str());
+}
+
+
 TEST(c3dModifier, addPoints) {
     // Create an empty c3d
     c3dTestStruct new_c3d;
