@@ -236,6 +236,15 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     }
 }
 
+TEST(c3dShow, printIt){
+    // Create an empty c3d and print it
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    EXPECT_NO_THROW(new_c3d.c3d.print());
+}
+
+
 TEST(initialize, newC3D){
     // Create an empty c3d and load a new one
     ezc3d::c3d new_c3d;
@@ -714,11 +723,4 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     }
 }
 
-TEST(c3dShow, printIt){
-    // Create an empty c3d and print it
-    c3dTestStruct new_c3d;
-    fillC3D(new_c3d, true, true);
-
-//    EXPECT_NO_THROW(new_c3d.c3d.print());
-}
 
