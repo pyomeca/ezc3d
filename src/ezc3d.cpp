@@ -380,6 +380,22 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const
     return *_data;
 }
 
+void ezc3d::c3d::lockGroup(const std::string &groupName)
+{
+    int idx(parameters().groupIdx(groupName));
+    if (idx < 0)
+        throw std::invalid_argument("Group not found");
+    _parameters->group_nonConst(idx).lock();
+}
+
+void ezc3d::c3d::unlockGroup(const std::string &groupName)
+{
+    int idx(parameters().groupIdx(groupName));
+    if (idx < 0)
+        throw std::invalid_argument("Group not found");
+    _parameters->group_nonConst(idx).unlock();
+}
+
 void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
     int idx(parameters().groupIdx(groupName));
@@ -428,7 +444,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     updateParameters();
 }
 
-void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
+void ezc3d::c3d::addPoint(const std::vector<ezc3d::DataNS::Frame>& frames)
 {
     if (frames.size() == 0 || frames.size() != data().frames().size())
         throw std::runtime_error("Frames must have the same number as the frame count");
@@ -447,7 +463,7 @@ void ezc3d::c3d::addMarker(const std::vector<ezc3d::DataNS::Frame>& frames)
     }
     updateParameters();
 }
-void ezc3d::c3d::addMarker(const std::string &name){
+void ezc3d::c3d::addPoint(const std::string &name){
     if (data().frames().size() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
@@ -458,7 +474,7 @@ void ezc3d::c3d::addMarker(const std::string &name){
         frame.add(dummy_pts);
         for (size_t f=0; f<data().frames().size(); ++f)
             dummy_frames.push_back(frame);
-        addMarker(dummy_frames);
+        addPoint(dummy_frames);
     } else {
         updateParameters({name});
     }
