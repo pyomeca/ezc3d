@@ -730,12 +730,17 @@ TEST(c3dModifier, specificAnalog){
         ezc3d::DataNS::AnalogsNS::SubFrame sfToBeReplaced;
         ezc3d::DataNS::AnalogsNS::SubFrame sfToReplace;
         analogs.addSubframe(sfToBeReplaced);
+
         EXPECT_THROW(analogs.replaceSubframe(-1, sfToReplace), std::out_of_range);
         EXPECT_THROW(analogs.replaceSubframe(static_cast<int>(analogs.subframes().size()), sfToReplace), std::out_of_range);
         EXPECT_NO_THROW(analogs.replaceSubframe(0, sfToReplace));
+
+        EXPECT_THROW(analogs.subframe(-1), std::out_of_range);
+        EXPECT_THROW(analogs.subframe(static_cast<int>(analogs.subframes().size())), std::out_of_range);
+        EXPECT_NO_THROW(analogs.subframe(0));
     }
 
-    // adding or replacing a channels
+    // adding/replacing channels and getting them
     {
         ezc3d::DataNS::AnalogsNS::Channel channelToBeReplaced;
         channelToBeReplaced.name("ToBeReplaced");
@@ -747,6 +752,10 @@ TEST(c3dModifier, specificAnalog){
         EXPECT_THROW(subframe.replaceChannel(-1, channelToReplace), std::out_of_range);
         EXPECT_THROW(subframe.replaceChannel(static_cast<int>(subframe.channels().size()), channelToReplace), std::out_of_range);
         EXPECT_NO_THROW(subframe.replaceChannel(0, channelToReplace));
+
+        EXPECT_THROW(subframe.channel(-1), std::out_of_range);
+        EXPECT_THROW(subframe.channel(static_cast<int>(subframe.channels().size())), std::out_of_range);
+        EXPECT_NO_THROW(subframe.channel(0));
 
         ezc3d::DataNS::AnalogsNS::SubFrame new_subframe;
         EXPECT_NO_THROW(new_subframe.addChannels(subframe.channels()));
