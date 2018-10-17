@@ -491,8 +491,23 @@ TEST(c3dModifier, specificPoint){
             pt.z(static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
             pts.replace(static_cast<int>(m), pt);
         }
+
         frame.add(pts);
         new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+    }
+
+    // failed test replacing a point
+    {
+        ezc3d::DataNS::Points3dNS::Point ptToBeReplaced;
+        ptToBeReplaced.name("ToBeReplaced");
+        ezc3d::DataNS::Points3dNS::Point ptToReplace;
+        ptToReplace.name("ToReplace");
+
+        ezc3d::DataNS::Points3dNS::Points pts;
+        pts.add(ptToBeReplaced);
+        EXPECT_THROW(pts.replace(-1, ptToReplace), std::out_of_range);
+        EXPECT_THROW(pts.replace(static_cast<int>(pts.points().size()), ptToReplace), std::out_of_range);
+        EXPECT_NO_THROW(pts.replace(0, ptToReplace));
     }
 
     // Things that should have change
@@ -645,6 +660,8 @@ TEST(c3dModifier, specificAnalog){
     EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
 
     // Wrong number of channels
+    EXPECT_THROW(ezc3d::DataNS::AnalogsNS::SubFrame(-1), std::out_of_range);
+    EXPECT_NO_THROW(ezc3d::DataNS::AnalogsNS::SubFrame(0));
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
@@ -693,6 +710,47 @@ TEST(c3dModifier, specificAnalog){
         frames[f] = frame;
     }
     EXPECT_NO_THROW(new_c3d.c3d.addAnalog(frames));
+
+    // Get channel names
+    for (size_t c = 0; c < new_c3d.analogNames.size(); ++c)
+        EXPECT_NO_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel(new_c3d.analogNames[c]));
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel("ThisIsNotARealChannel"), std::invalid_argument);
+
+    // Get a subframe
+    {
+        EXPECT_THROW(new_c3d.c3d.data().frame(-1), std::out_of_range);
+        EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(new_c3d.c3d.data().frames().size())), std::out_of_range);
+        EXPECT_NO_THROW(new_c3d.c3d.data().frame(0));
+    }
+
+    // Create an analog and replace the subframes
+    {
+        EXPECT_THROW(ezc3d::DataNS::AnalogsNS::Analogs(-1), std::out_of_range);
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
+        ezc3d::DataNS::AnalogsNS::SubFrame sfToBeReplaced;
+        ezc3d::DataNS::AnalogsNS::SubFrame sfToReplace;
+        analogs.addSubframe(sfToBeReplaced);
+        EXPECT_THROW(analogs.replaceSubframe(-1, sfToReplace), std::out_of_range);
+        EXPECT_THROW(analogs.replaceSubframe(static_cast<int>(analogs.subframes().size()), sfToReplace), std::out_of_range);
+        EXPECT_NO_THROW(analogs.replaceSubframe(0, sfToReplace));
+    }
+
+    // adding or replacing a channels
+    {
+        ezc3d::DataNS::AnalogsNS::Channel channelToBeReplaced;
+        channelToBeReplaced.name("ToBeReplaced");
+        ezc3d::DataNS::AnalogsNS::Channel channelToReplace;
+        channelToReplace.name("ToReplace");
+
+        ezc3d::DataNS::AnalogsNS::SubFrame subframe;
+        subframe.addChannel(channelToBeReplaced);
+        EXPECT_THROW(subframe.replaceChannel(-1, channelToReplace), std::out_of_range);
+        EXPECT_THROW(subframe.replaceChannel(static_cast<int>(subframe.channels().size()), channelToReplace), std::out_of_range);
+        EXPECT_NO_THROW(subframe.replaceChannel(0, channelToReplace));
+
+        ezc3d::DataNS::AnalogsNS::SubFrame new_subframe;
+        EXPECT_NO_THROW(new_subframe.addChannels(subframe.channels()));
+    }
 }
 
 
