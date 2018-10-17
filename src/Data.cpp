@@ -70,7 +70,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 
         }
         else
-            throw std::invalid_argument("Points were recorded using int number which is not implemented yet"); // @codeCoverageIgnore
+            throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
     }
 }
 void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &f, int j)
