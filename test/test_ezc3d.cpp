@@ -414,6 +414,17 @@ TEST(c3dModifier, specificParameters){
     EXPECT_THROW(p.set(std::vector<std::string>()={}, {1}), std::range_error);
     EXPECT_THROW(p.set(std::vector<std::string>()={""}, {0}), std::range_error);
     p.dimension();
+
+    // Add twice the same group (That should not be needed for a user API since he should use new_c3d.c3d.addParameter() )
+    {
+        ezc3d::ParametersNS::Parameters params;
+        ezc3d::ParametersNS::GroupNS::Group groupToBeAddedTwice;
+        ezc3d::ParametersNS::GroupNS::Parameter p("UselessParameter");
+        p.set(std::vector<int>()={}, {0});
+        groupToBeAddedTwice.addParameter(p);
+        EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
+        EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
+    }
 }
 
 
