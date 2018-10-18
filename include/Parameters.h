@@ -84,6 +84,7 @@ public:
     void lock();
     void unlock();
     bool isLocked() const;
+    void name(const std::string paramName);
     const std::string& name() const;
     const std::string& description() const;
 
