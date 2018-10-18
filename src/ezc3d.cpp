@@ -59,13 +59,18 @@ void ezc3d::c3d::updateHeader()
         if (data().frame(0).analogs().subframes().size() != static_cast<size_t>(header().nbAnalogByFrame()))
             _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().subframes().size()));
     } else {
-        if (parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate  != static_cast<size_t>(header().nbAnalogByFrame()))
-            _header->nbAnalogByFrame(static_cast<int>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
+        // Should always be greater than 0, but we have to take in account Optotrak lazyness
+        if (parameters().group("ANALOG").parameters().size())
+            if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
+                _header->nbAnalogByFrame(static_cast<int>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
     }
 
-    if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0] != header().nbAnalogs()){
-        _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
-    }
+    // Should always be greater than 0, but we have to take in account Optotrak lazyness
+    if (parameters().group("ANALOG").parameters().size()){
+        if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0] != header().nbAnalogs())
+            _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
+    } else
+        _header->nbAnalogs(0);
 }
 
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, const std::vector<std::string> &newAnalogs)

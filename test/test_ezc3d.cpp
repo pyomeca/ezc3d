@@ -496,7 +496,7 @@ TEST(c3dModifier, addPoints) {
     // Try adding an already existing point
     for (size_t f = 0; f < new_c3d.c3d.data().frames().size(); ++f){
         ezc3d::DataNS::Points3dNS::Points pts;
-        ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(f).points().point(0));
+        ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(0));
         pts.add(pt);
         new_frames[f].add(pts);
     }
@@ -1188,6 +1188,334 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 }
 
 
-//TEST(c3dFileIO, CreateWriteAndReadBack){
+TEST(c3dFileIO, readViconC3D){
+    ezc3d::c3d Vicon("c3dTestFiles/Vicon.c3d");
 
-//}
+    // Header test
+    // Generic stuff
+    EXPECT_EQ(Vicon.header().checksum(), 80);
+    EXPECT_EQ(Vicon.header().keyLabelPresent(), 0);
+    EXPECT_EQ(Vicon.header().firstBlockKeyLabel(), 0);
+    EXPECT_EQ(Vicon.header().fourCharPresent(), 12345);
+    EXPECT_EQ(Vicon.header().emptyBlock1(), 0);
+    EXPECT_EQ(Vicon.header().emptyBlock2(), 0);
+    EXPECT_EQ(Vicon.header().emptyBlock3(), 0);
+    EXPECT_EQ(Vicon.header().emptyBlock4(), 0);
+
+    // Point stuff
+    EXPECT_EQ(Vicon.header().nb3dPoints(), 51);
+    EXPECT_EQ(Vicon.header().nbMaxInterpGap(), 0);
+    EXPECT_EQ(Vicon.header().scaleFactor(), -1138501878);
+    EXPECT_FLOAT_EQ(Vicon.header().frameRate(), 100);
+
+    // Analog stuff
+    EXPECT_EQ(Vicon.header().nbAnalogsMeasurement(), 760);
+    EXPECT_EQ(Vicon.header().nbAnalogByFrame(), 20);
+    EXPECT_EQ(Vicon.header().nbAnalogs(), 38);
+
+    // Event stuff
+    EXPECT_EQ(Vicon.header().nbEvents(), 0);
+
+    EXPECT_EQ(Vicon.header().eventsTime().size(), 18);
+    EXPECT_THROW(Vicon.header().eventsTime(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Vicon.header().eventsTime().size()); ++e)
+        EXPECT_FLOAT_EQ(Vicon.header().eventsTime(e), 0);
+    EXPECT_THROW(Vicon.header().eventsTime(static_cast<int>(Vicon.header().eventsTime().size())), std::invalid_argument);
+
+    EXPECT_EQ(Vicon.header().eventsLabel().size(), 18);
+    EXPECT_THROW(Vicon.header().eventsLabel(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Vicon.header().eventsLabel().size()); ++e)
+        EXPECT_STREQ(Vicon.header().eventsLabel(e).c_str(), "");
+    EXPECT_THROW(Vicon.header().eventsLabel(static_cast<int>(Vicon.header().eventsLabel().size())), std::invalid_argument);
+
+    EXPECT_EQ(Vicon.header().eventsDisplay().size(), 9);
+    EXPECT_THROW(Vicon.header().eventsDisplay(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Vicon.header().eventsDisplay().size()); ++e)
+        EXPECT_EQ(Vicon.header().eventsDisplay(e), 0);
+    EXPECT_THROW(Vicon.header().eventsDisplay(static_cast<int>(Vicon.header().eventsDisplay().size())), std::invalid_argument);
+
+
+    EXPECT_EQ(Vicon.header().firstFrame(), 0);
+    EXPECT_EQ(Vicon.header().lastFrame(), 579);
+    EXPECT_EQ(Vicon.header().nbFrames(), 580);
+
+
+    // Parameter tests
+    EXPECT_EQ(Vicon.parameters().checksum(), 80);
+    EXPECT_EQ(Vicon.parameters().groups().size(), 9);
+
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 51);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-0.0099999998));
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 100);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 580); // ignore because it changes if analog is present
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 51);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), 51);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), 1);
+
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("USED").valuesAsInt()[0], 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 2000);
+
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt()[0], 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("TYPE").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("TYPE").valuesAsInt().size(), 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ZERO").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt().size(), 2);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 1);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 0);
+
+    EXPECT_STREQ(Vicon.parameters().group("MANUFACTURER").parameter("COMPANY").valuesAsString()[0].c_str(), "Vicon");
+    EXPECT_STREQ(Vicon.parameters().group("MANUFACTURER").parameter("SOFTWARE").valuesAsString()[0].c_str(), "Vicon Nexus");
+    EXPECT_STREQ(Vicon.parameters().group("MANUFACTURER").parameter("VERSION_LABEL").valuesAsString()[0].c_str(), "2.4.0.91647h");
+
+    // DATA
+    for (size_t f = 0; f < 580; ++f){
+        EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).points().points().size(), 51);
+        for (size_t sf = 0; sf < 10; ++sf)
+            EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).channels().size(), 38);
+    }
+}
+
+
+TEST(c3dFileIO, readQualisysC3D){
+    ezc3d::c3d Qualisys("c3dTestFiles/Qualisys.c3d");
+
+    // Header test
+    // Generic stuff
+    EXPECT_EQ(Qualisys.header().checksum(), 80);
+    EXPECT_EQ(Qualisys.header().keyLabelPresent(), 0);
+    EXPECT_EQ(Qualisys.header().firstBlockKeyLabel(), 0);
+    EXPECT_EQ(Qualisys.header().fourCharPresent(), 0);
+    EXPECT_EQ(Qualisys.header().emptyBlock1(), 0);
+    EXPECT_EQ(Qualisys.header().emptyBlock2(), 0);
+    EXPECT_EQ(Qualisys.header().emptyBlock3(), 0);
+    EXPECT_EQ(Qualisys.header().emptyBlock4(), 0);
+
+    // Point stuff
+    EXPECT_EQ(Qualisys.header().nb3dPoints(), 55);
+    EXPECT_EQ(Qualisys.header().nbMaxInterpGap(), 10);
+    EXPECT_EQ(Qualisys.header().scaleFactor(), -1113841752);
+    EXPECT_FLOAT_EQ(Qualisys.header().frameRate(), 200);
+
+    // Analog stuff
+    EXPECT_EQ(Qualisys.header().nbAnalogsMeasurement(), 690);
+    EXPECT_EQ(Qualisys.header().nbAnalogByFrame(), 10);
+    EXPECT_EQ(Qualisys.header().nbAnalogs(), 69);
+
+    // Event stuff
+    EXPECT_EQ(Qualisys.header().nbEvents(), 0);
+
+    EXPECT_EQ(Qualisys.header().eventsTime().size(), 18);
+    EXPECT_THROW(Qualisys.header().eventsTime(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Qualisys.header().eventsTime().size()); ++e)
+        EXPECT_FLOAT_EQ(Qualisys.header().eventsTime(e), 0);
+    EXPECT_THROW(Qualisys.header().eventsTime(static_cast<int>(Qualisys.header().eventsTime().size())), std::invalid_argument);
+
+    EXPECT_EQ(Qualisys.header().eventsLabel().size(), 18);
+    EXPECT_THROW(Qualisys.header().eventsLabel(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Qualisys.header().eventsLabel().size()); ++e)
+        EXPECT_STREQ(Qualisys.header().eventsLabel(e).c_str(), "");
+    EXPECT_THROW(Qualisys.header().eventsLabel(static_cast<int>(Qualisys.header().eventsLabel().size())), std::invalid_argument);
+
+    EXPECT_EQ(Qualisys.header().eventsDisplay().size(), 9);
+    EXPECT_THROW(Qualisys.header().eventsDisplay(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Qualisys.header().eventsDisplay().size()); ++e)
+        EXPECT_EQ(Qualisys.header().eventsDisplay(e), 257);
+    EXPECT_THROW(Qualisys.header().eventsDisplay(static_cast<int>(Qualisys.header().eventsDisplay().size())), std::invalid_argument);
+
+
+    EXPECT_EQ(Qualisys.header().firstFrame(), 704);
+    EXPECT_EQ(Qualisys.header().lastFrame(), 1043);
+    EXPECT_EQ(Qualisys.header().nbFrames(), 340);
+
+
+    // Parameter tests
+    EXPECT_EQ(Qualisys.parameters().checksum(), 80);
+    EXPECT_EQ(Qualisys.parameters().groups().size(), 7);
+
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 55);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-0.076232255));
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 200);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 340); // ignore because it changes if analog is present
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 55);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), 55);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), 1);
+
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("USED").valuesAsInt()[0], 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 2000);
+
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt()[0], 2);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("TYPE").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("TYPE").valuesAsInt().size(), 2);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ZERO").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt().size(), 2);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 0);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 24);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 6);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 12);
+
+    EXPECT_STREQ(Qualisys.parameters().group("MANUFACTURER").parameter("COMPANY").valuesAsString()[0].c_str(), "Qualisys");
+    EXPECT_STREQ(Qualisys.parameters().group("MANUFACTURER").parameter("SOFTWARE").valuesAsString()[0].c_str(), "Qualisys Track Manager");
+    EXPECT_EQ(Qualisys.parameters().group("MANUFACTURER").parameter("VERSION").valuesAsInt().size(), 3);
+    EXPECT_EQ(Qualisys.parameters().group("MANUFACTURER").parameter("VERSION").valuesAsInt()[0], 2);
+    EXPECT_EQ(Qualisys.parameters().group("MANUFACTURER").parameter("VERSION").valuesAsInt()[1], 17);
+    EXPECT_EQ(Qualisys.parameters().group("MANUFACTURER").parameter("VERSION").valuesAsInt()[2], 3720);
+
+    // DATA
+    for (size_t f = 0; f < 340; ++f){
+        EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).points().points().size(), 55);
+        for (size_t sf = 0; sf < 10; ++sf)
+            EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).channels().size(), 69);
+    }
+}
+
+
+TEST(c3dFileIO, readOptotrakC3D){
+    ezc3d::c3d Optotrak("c3dTestFiles/Optotrak.c3d");
+
+    // Header test
+    // Generic stuff
+    EXPECT_EQ(Optotrak.header().checksum(), 80);
+    EXPECT_EQ(Optotrak.header().keyLabelPresent(), 0);
+    EXPECT_EQ(Optotrak.header().firstBlockKeyLabel(), 0);
+    EXPECT_EQ(Optotrak.header().fourCharPresent(), 12345);
+    EXPECT_EQ(Optotrak.header().emptyBlock1(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock2(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock3(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock4(), 0);
+
+    // Point stuff
+    EXPECT_EQ(Optotrak.header().nb3dPoints(), 54);
+    EXPECT_EQ(Optotrak.header().nbMaxInterpGap(), 0);
+    EXPECT_EQ(Optotrak.header().scaleFactor(), -1057245329);
+    EXPECT_FLOAT_EQ(Optotrak.header().frameRate(), 30);
+
+    // Analog stuff
+    EXPECT_EQ(Optotrak.header().nbAnalogsMeasurement(), 0);
+    EXPECT_EQ(Optotrak.header().nbAnalogByFrame(), 0);
+    EXPECT_EQ(Optotrak.header().nbAnalogs(), 0);
+
+    // Event stuff
+    EXPECT_EQ(Optotrak.header().nbEvents(), 0);
+
+    EXPECT_EQ(Optotrak.header().eventsTime().size(), 18);
+    EXPECT_THROW(Optotrak.header().eventsTime(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Optotrak.header().eventsTime().size()); ++e)
+        EXPECT_FLOAT_EQ(Optotrak.header().eventsTime(e), 0);
+    EXPECT_THROW(Optotrak.header().eventsTime(static_cast<int>(Optotrak.header().eventsTime().size())), std::invalid_argument);
+
+    EXPECT_EQ(Optotrak.header().eventsLabel().size(), 18);
+    EXPECT_THROW(Optotrak.header().eventsLabel(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Optotrak.header().eventsLabel().size()); ++e)
+        EXPECT_STREQ(Optotrak.header().eventsLabel(e).c_str(), "");
+    EXPECT_THROW(Optotrak.header().eventsLabel(static_cast<int>(Optotrak.header().eventsLabel().size())), std::invalid_argument);
+
+    EXPECT_EQ(Optotrak.header().eventsDisplay().size(), 9);
+    EXPECT_THROW(Optotrak.header().eventsDisplay(-1), std::invalid_argument);
+    for (int e = 0; e < static_cast<int>(Optotrak.header().eventsDisplay().size()); ++e)
+        EXPECT_EQ(Optotrak.header().eventsDisplay(e), 0);
+    EXPECT_THROW(Optotrak.header().eventsDisplay(static_cast<int>(Optotrak.header().eventsDisplay().size())), std::invalid_argument);
+
+
+    EXPECT_EQ(Optotrak.header().firstFrame(), 0);
+    EXPECT_EQ(Optotrak.header().lastFrame(), 1148);
+    EXPECT_EQ(Optotrak.header().nbFrames(), 1149);
+
+
+    // Parameter tests
+    EXPECT_EQ(Optotrak.parameters().checksum(), 80);
+    EXPECT_EQ(Optotrak.parameters().groups().size(), 3);
+
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 54);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-7.8661418));
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 30);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 1149); // ignore because it changes if analog is present
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 54);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), 54);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), 54);
+
+    EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt()[0], 0);
+
+    // DATA
+    for (size_t f = 0; f < 1149; ++f)
+        EXPECT_EQ(Optotrak.data().frame(static_cast<int>(f)).points().points().size(), 54);
+}
