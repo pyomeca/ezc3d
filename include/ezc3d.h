@@ -74,12 +74,9 @@ public:
 
     // Write the c3d to a file
     void write(const std::string &filePath) const;
+    void print() const;
 
     // Byte reading functions
-    void readChar(unsigned int nByteToRead,
-                  char * c,
-                  int nByteFromPrevious = 0,
-                  const  std::ios_base::seekdir &pos = std::ios::cur);
     std::string readString(unsigned int nByteToRead, int nByteFromPrevious = 0,
                            const std::ios_base::seekdir &pos = std::ios::cur);
     int readInt(unsigned int nByteToRead,
@@ -105,10 +102,12 @@ public:
     const ezc3d::DataNS::Data& data() const;
 
     // Public C3D modifiation interface
+    void lockGroup(const std::string &groupName);
+    void unlockGroup(const std::string &groupName);
     void addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p);
     void addFrame(const ezc3d::DataNS::Frame &f, int j = -1);
-    void addMarker(const std::vector<ezc3d::DataNS::Frame> &frames);
-    void addMarker(const std::string &name);
+    void addPoint(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void addPoint(const std::string &name);
     void addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames);
     void addAnalog(const std::string &name);
 
@@ -141,7 +140,6 @@ protected:
     // Converting functions
     unsigned int hex2uint(const char * val, unsigned int len);
     int hex2int(const char * val, unsigned int len);
-    int hex2long(const char * val, int len);
 };
 #include "Header.h"
 #include "Data.h"
