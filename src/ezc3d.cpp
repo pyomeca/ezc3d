@@ -54,9 +54,15 @@ void ezc3d::c3d::updateHeader()
         _header->nb3dPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     }
 
-    if (_data != nullptr && data().frames().size() > 0 && data().frame(0).analogs().subframes().size() != static_cast<size_t>(header().nbAnalogByFrame())){
-        _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().subframes().size()));
+    // Compare the subframe with data when possible, otherwise go with the parameters
+    if (_data != nullptr && data().frames().size() > 0 && data().frame(0).analogs().subframes().size() != 0) {
+        if (data().frame(0).analogs().subframes().size() != static_cast<size_t>(header().nbAnalogByFrame()))
+            _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().subframes().size()));
+    } else {
+        if (parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate  != static_cast<size_t>(header().nbAnalogByFrame()))
+            _header->nbAnalogByFrame(static_cast<int>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
     }
+
     if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0] != header().nbAnalogs()){
         _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
     }
@@ -230,13 +236,6 @@ int ezc3d::c3d::hex2int(const char * val, unsigned int len){
     return out;
 }
 
-int ezc3d::c3d::hex2long(const char * val, int len){
-    long ret(0);
-    for (int i=0; i<len; i++)
-        ret |= static_cast<long>(static_cast<unsigned char>(val[i])) * static_cast<long>(pow(0x100, i));
-    return static_cast<int>(ret);
-}
-
 void ezc3d::c3d::readFile(unsigned int nByteToRead, char * c, int nByteFromPrevious,
                      const  std::ios_base::seekdir &pos)
 {
@@ -244,12 +243,6 @@ void ezc3d::c3d::readFile(unsigned int nByteToRead, char * c, int nByteFromPrevi
         this->seekg (nByteFromPrevious, pos); // Move to number analogs
     this->read (c, nByteToRead);
     c[nByteToRead] = '\0'; // Make sure last char is NULL
-}
-void ezc3d::c3d::readChar(unsigned int nByteToRead, char * c,int nByteFromPrevious,
-                     const  std::ios_base::seekdir &pos)
-{
-    c = new char[nByteToRead + 1];
-    readFile(nByteToRead, c, nByteFromPrevious, pos);
 }
 
 std::string ezc3d::c3d::readString(unsigned int nByteToRead, int nByteFromPrevious,
@@ -417,16 +410,14 @@ void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::Paramet
 void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 {
     // Make sure f.points().points() is the same as data.f[ANY].points()
-    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    if (labels.size() != 0 && f.points().points().size() != labels.size())
-        throw std::runtime_error("Points in frame and already existing must be the same");
-    for (size_t i=0; i<labels.size(); ++i)
-        if (f.points().pointIdx(labels[i]) < 0)
-            throw std::runtime_error("All markers must appears in the frames and points");
-
     int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     if (nPoints != 0 && static_cast<int>(f.points().points().size()) != nPoints)
         throw std::runtime_error("Points must be consistent in terms of number of points");
+
+    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
+    for (size_t i=0; i<labels.size(); ++i)
+        if (f.points().pointIdx(labels[i]) < 0)
+            throw std::runtime_error("All markers must appears in the frames and points");
 
     if (f.points().points().size() > 0 && static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0){
         throw std::runtime_error("Analogs frame rate must be specified if you add some");
@@ -440,7 +431,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     if (subSize != 0){
         int nChannel(static_cast<int>(f.analogs().subframes()[0].channels().size()));
         int nAnalogByFrames(header().nbAnalogByFrame());
-        if (!(nAnalogs==0 && nAnalogByFrames==0) && ((nAnalogs != 0 && subSize == 0) || (nChannel != nAnalogs && subSize != nAnalogByFrames )))
+        if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs && subSize != nAnalogByFrames )
             throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
     }
 
