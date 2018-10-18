@@ -54,7 +54,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxSetFieldByNumber(headerStruct, 0, 0, markersStruct);
 
                 fillMatlabField(markersStruct, 0, c3d->header().nb3dPoints());
-                fillMatlabField(markersStruct, 1, c3d->header().frameRate());
+                fillMatlabField(markersStruct, 1, static_cast<mxDouble>(c3d->header().frameRate()));
                 fillMatlabField(markersStruct, 2, c3d->header().firstFrame()+1);
                 fillMatlabField(markersStruct, 3, c3d->header().lastFrame()+1);
             }
@@ -66,7 +66,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxSetFieldByNumber(headerStruct, 0, 1, analogsStruct);
 
                 fillMatlabField(analogsStruct, 0, c3d->header().nbAnalogs());
-                fillMatlabField(analogsStruct, 1, c3d->header().nbAnalogByFrame() * c3d->header().frameRate() );
+                fillMatlabField(analogsStruct, 1, static_cast<mxDouble>(c3d->header().nbAnalogByFrame() * c3d->header().frameRate()) );
                 fillMatlabField(analogsStruct, 2, c3d->header().nbAnalogByFrame() * c3d->header().firstFrame()+1);
                 fillMatlabField(analogsStruct, 3, c3d->header().nbAnalogByFrame() * (c3d->header().lastFrame()+1));
             }
@@ -78,39 +78,38 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxArray * eventsStruct = mxCreateStructArray(2, eventsFieldsDims, sizeof(eventsFieldsNames)/sizeof(*eventsFieldsNames), eventsFieldsNames);
                 mxSetFieldByNumber(headerStruct, 0, 2, eventsStruct);
 
-                fillMatlabField(eventsStruct, 0, (int)c3d->header().eventsTime().size());
+                fillMatlabField(eventsStruct, 0, static_cast<int>(c3d->header().eventsTime().size()));
                 fillMatlabField(eventsStruct, 1, c3d->header().eventsTime());
                 fillMatlabField(eventsStruct, 2, c3d->header().eventsLabel());
             }
         }
 
-
         // Fill the parameters
         {
         const std::vector<ezc3d::ParametersNS::GroupNS::Group> groups = c3d->parameters().groups();
         char **groupsFieldsNames = new char *[groups.size()];
-        for (int g = 0; g < groups.size(); ++g){
+        for (size_t g = 0; g < groups.size(); ++g){
             groupsFieldsNames[g] = new char[groups[g].name().length() + 1];
             strcpy( groupsFieldsNames[g], groups[g].name().c_str());
         }
         mwSize groupsFieldsDims[2] = {1, 1};
-        mxArray * groupsStruct = mxCreateStructArray(2, groupsFieldsDims, groups.size(), (const char**)groupsFieldsNames);
+        mxArray * groupsStruct = mxCreateStructArray(2, groupsFieldsDims, static_cast<int>(groups.size()), const_cast<const char**>(groupsFieldsNames));
         mxSetFieldByNumber(plhs[0], 0, parameterIdx, groupsStruct);
 
             // Parse each parameters
-            for (int g = 0; g < groups.size(); ++g){
+            for (size_t g = 0; g < groups.size(); ++g){
                 const std::vector<ezc3d::ParametersNS::GroupNS::Parameter> parameters = groups[g].parameters();
                 char **parametersFieldsNames = new char *[parameters.size()];
-                for (int p = 0; p < parameters.size(); ++p){
+                for (size_t p = 0; p < parameters.size(); ++p){
                     parametersFieldsNames[p] = new char[parameters[p].name().length() + 1];
                     strcpy( parametersFieldsNames[p], parameters[p].name().c_str());
                 }
                 mwSize parametersFieldsDims[2] = {1, 1};
-                mxArray * parametersStruct = mxCreateStructArray(2, parametersFieldsDims, parameters.size(), (const char**)parametersFieldsNames);
-                mxSetFieldByNumber(groupsStruct, 0, g, parametersStruct);
+                mxArray * parametersStruct = mxCreateStructArray(2, parametersFieldsDims, static_cast<int>(parameters.size()), const_cast<const char**>(parametersFieldsNames));
+                mxSetFieldByNumber(groupsStruct, 0, static_cast<int>(g), parametersStruct);
 
                 // Fill each parameters
-                for (int p = 0; p < parameters.size(); ++p){
+                for (size_t p = 0; p < parameters.size(); ++p){
                     ezc3d::ParametersNS::GroupNS::Parameter param = parameters[p];
                     if (param.type() == ezc3d::DATA_TYPE::INT)
                         fillMatlabField(parametersStruct, p, param.valuesAsInt(), param.dimension());
@@ -132,35 +131,35 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
             // Fill the point data and analogous data
             {
-            mwSize nFramesPoints(c3d->header().lastFrame() - c3d->header().firstFrame() + 1);
-            mwSize nPoints(c3d->header().nb3dPoints());
+            mwSize nFramesPoints(static_cast<mwSize>(c3d->header().nbFrames()));
+            mwSize nPoints(static_cast<mwSize>(c3d->header().nb3dPoints()));
             mwSize dataPointsFieldsDims[3] = {3, nPoints, nFramesPoints};
             mxArray * dataPoints = mxCreateNumericArray(3, dataPointsFieldsDims, mxDOUBLE_CLASS, mxREAL);
             double * valPoints = mxGetPr(dataPoints);
 
-            int nFramesAnalogs(nFramesPoints * c3d->header().nbAnalogByFrame());
+            int nFramesAnalogs(static_cast<int>(nFramesPoints) * c3d->header().nbAnalogByFrame());
             int nAnalogs(c3d->header().nbAnalogs());
-            int nSubFrames(c3d->header().nbAnalogByFrame());
-            mxArray * dataAnalogs = mxCreateDoubleMatrix(nFramesAnalogs, nAnalogs, mxREAL);
+            size_t nSubFrames(static_cast<size_t>(c3d->header().nbAnalogByFrame()));
+            mxArray * dataAnalogs = mxCreateDoubleMatrix(static_cast<mwSize>(nFramesAnalogs), static_cast<mwSize>(nAnalogs), mxREAL);
             double * valAnalogs = mxGetPr(dataAnalogs);
 
-            for (int f=0; f<nFramesPoints; ++f){
-                ezc3d::DataNS::Frame frame(c3d->data().frame(f));
+            for (size_t f=0; f<nFramesPoints; ++f){
+                ezc3d::DataNS::Frame frame(c3d->data().frame(static_cast<int>(f)));
                 // Points side
                 const std::vector<ezc3d::DataNS::Points3dNS::Point>& points(frame.points().points());
-                for (int p=0; p<points.size(); ++p){
+                for (size_t p=0; p<points.size(); ++p){
                     ezc3d::DataNS::Points3dNS::Point point(points[p]);
-                    valPoints[f*nPoints*3+3*p+0] = point.x();
-                    valPoints[f*nPoints*3+3*p+1] = point.y();
-                    valPoints[f*nPoints*3+3*p+2] = point.z();
+                    valPoints[f*nPoints*3+3*p+0] = static_cast<double>(point.x());
+                    valPoints[f*nPoints*3+3*p+1] = static_cast<double>(point.y());
+                    valPoints[f*nPoints*3+3*p+2] = static_cast<double>(point.z());
                 }
 
                 // Analogs side
                 const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes(frame.analogs().subframes());
-                for (int sf=0; sf<subframes.size(); ++sf){
+                for (size_t sf=0; sf<subframes.size(); ++sf){
                     const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels(subframes[sf].channels());
-                    for (int c=0; c<channels.size(); ++c){
-                        valAnalogs[c*nSubFrames*nFramesPoints + sf + f*nSubFrames]= channels[c].value();
+                    for (size_t c=0; c<channels.size(); ++c){
+                        valAnalogs[c*nSubFrames*nFramesPoints + sf + f*nSubFrames] = static_cast<double>(channels[c].value());
                     }
                 }
             }
