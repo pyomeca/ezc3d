@@ -77,10 +77,6 @@ public:
     void print() const;
 
     // Byte reading functions
-    void readChar(unsigned int nByteToRead,
-                  char * c,
-                  int nByteFromPrevious = 0,
-                  const  std::ios_base::seekdir &pos = std::ios::cur);
     std::string readString(unsigned int nByteToRead, int nByteFromPrevious = 0,
                            const std::ios_base::seekdir &pos = std::ios::cur);
     int readInt(unsigned int nByteToRead,
@@ -144,7 +140,6 @@ protected:
     // Converting functions
     unsigned int hex2uint(const char * val, unsigned int len);
     int hex2int(const char * val, unsigned int len);
-    int hex2long(const char * val, int len);
 };
 #include "Header.h"
 #include "Data.h"
