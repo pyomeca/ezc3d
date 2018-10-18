@@ -118,6 +118,11 @@ if (BUILD_TESTS)
         SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
         SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
+
+    # Copy the c3d of the example
+    file(GLOB C3D_TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/*.c3d)
+    file(COPY ${C3D_TEST_FILES}
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
 endif()
 
 
