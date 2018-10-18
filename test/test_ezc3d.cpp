@@ -469,6 +469,36 @@ TEST(c3dModifier, addPoints) {
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(new_c3d.markerNames[m]).residual(), 0);
         }
     }
+
+    // Add frame with a new marker with not enough frames
+    std::vector<ezc3d::DataNS::Frame> new_frames;
+    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+    for (size_t f = 0; f < new_c3d.c3d.data().frames().size() - 1; ++f)
+        new_frames.push_back(ezc3d::DataNS::Frame());
+    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+
+    // Not enough points
+    new_frames.push_back(ezc3d::DataNS::Frame());
+    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+
+    // Try adding an already existing point
+    for (size_t f = 0; f < new_c3d.c3d.data().frames().size(); ++f){
+        ezc3d::DataNS::Points3dNS::Points pts;
+        ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(f).points().point(0));
+        pts.add(pt);
+        new_frames[f].add(pts);
+    }
+    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+
+    // Adding it properly
+    for (size_t f = 0; f < new_c3d.c3d.data().frames().size(); ++f){
+        ezc3d::DataNS::Points3dNS::Points pts;
+        ezc3d::DataNS::Points3dNS::Point pt;
+        pts.add(pt);
+        new_frames[f].add(pts);
+    }
+    EXPECT_NO_THROW(new_c3d.c3d.addPoint(new_frames));
+
 }
 
 
@@ -876,19 +906,50 @@ TEST(c3dModifier, addFrames){
     EXPECT_THROW(ezc3d::DataNS::Points3dNS::Points stupidPoint(-1), std::out_of_range);
 
     // Add an impossible frame
-    ezc3d::DataNS::Frame stupidFrame;
+    ezc3d::DataNS::Frame stupidFramePoint;
     // Wrong number of points
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrame), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFramePoint), std::runtime_error);
 
     // Wrong number of frames
     ezc3d::DataNS::Points3dNS::Points stupidPoints(new_c3d.c3d.data().frame(0).points());
-    stupidFrame.add(stupidPoints);
-    new_c3d.c3d.addFrame(stupidFrame);
+    stupidFramePoint.add(stupidPoints);
+    new_c3d.c3d.addFrame(stupidFramePoint);
 
     // Wrong name of points
-    stupidPoints.points_nonConst()[0].name("WrongName"); // Change the name of a marker
-    stupidFrame.add(stupidPoints);
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrame), std::runtime_error);
+    ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(0).points().point(0));
+    std::string realPointName(pt.name());
+    pt.name("WrongName");
+    stupidPoints.replace(0, pt);
+    stupidFramePoint.add(stupidPoints);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFramePoint), std::runtime_error);
+
+    // Put back the good name
+    pt.name(realPointName);
+    stupidPoints.replace(0, pt);
+
+    // Add Analogs
+    new_c3d.nAnalogs = 3;
+    ezc3d::ParametersNS::GroupNS::Parameter analogUsed(new_c3d.c3d.parameters().group("ANALOG").parameter("USED"));
+    analogUsed.set(std::vector<int>()={static_cast<int>(new_c3d.nAnalogs)}, {1});
+    new_c3d.c3d.addParameter("ANALOG", analogUsed);
+
+    ezc3d::DataNS::Frame stupidFrameAnalog;
+    ezc3d::DataNS::AnalogsNS::Analogs stupidAnalogs(new_c3d.c3d.data().frame(0).analogs());
+    ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe(static_cast<int>(new_c3d.nAnalogs));
+    stupidAnalogs.addSubframe(stupidSubframe);
+    stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
+
+    ezc3d::ParametersNS::GroupNS::Parameter analogRate(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE"));
+    analogRate.set(std::vector<float>()={100}, {1});
+    new_c3d.c3d.addParameter("ANALOG", analogRate);
+    EXPECT_NO_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog));
+
+    // Remove point frame rate and then
+    ezc3d::ParametersNS::GroupNS::Parameter pointRate(new_c3d.c3d.parameters().group("POINT").parameter("RATE"));
+    pointRate.set(std::vector<float>()={0}, {1});
+    new_c3d.c3d.addParameter("POINT", pointRate);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
 }
 
 
