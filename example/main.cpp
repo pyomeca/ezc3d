@@ -25,7 +25,7 @@ int main()
         ezc3d::c3d c3d("markers_analogs.c3d");
 
         // Add two new markers to the c3d (one filled with zeros, the other one with data)
-        c3d.addMarker("new_marker1"); // Add empty
+        c3d.addPoint("new_marker1"); // Add empty
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
@@ -39,7 +39,7 @@ int main()
             frame.add(pts_new);
             frames_point.push_back(frame);
         }
-        c3d.addMarker(frames_point); // Add the previously created
+        c3d.addPoint(frames_point); // Add the previously created
 
         // Add a new analog to the c3d (one filled with zeros, the other one with data)
         c3d.addAnalog("new_analog1"); // add the empty
@@ -117,8 +117,8 @@ int main()
         analogRate.set(std::vector<float>() = {1000}, {1});
         c3d_empty.addParameter("ANALOG", analogRate);
 
-        c3d_empty.addMarker("new_marker1"); // Add empty
-        c3d_empty.addMarker("new_marker2"); // Add empty
+        c3d_empty.addPoint("new_marker1"); // Add empty
+        c3d_empty.addPoint("new_marker2"); // Add empty
         c3d_empty.addAnalog("new_analog1"); // add the empty
         c3d_empty.addAnalog("new_analog2"); // add the empty
         // Add a new frame
@@ -164,7 +164,7 @@ int main()
         ezc3d::c3d c3d("markers_analogs.c3d");
 
         // Add two new markers to the c3d (one filled with zeros, the other one with data)
-        c3d.addMarker("new_marker1"); // Add empty
+        c3d.addPoint("new_marker1"); // Add empty
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
@@ -178,7 +178,7 @@ int main()
             frame.add(pts_new);
             frames_point.push_back(frame);
         }
-        c3d.addMarker(frames_point); // Add the previously created
+        c3d.addPoint(frames_point); // Add the previously created
 
         // Add a new analog to the c3d (one filled with zeros, the other one with data)
         c3d.addAnalog("new_analog1"); // add the empty
@@ -257,8 +257,8 @@ int main()
         analogRate.set(std::vector<float>() = {1000}, {1});
         c3d_empty.addParameter("ANALOG", analogRate);
 
-        c3d_empty.addMarker("new_marker1"); // Add empty
-        c3d_empty.addMarker("new_marker2"); // Add empty
+        c3d_empty.addPoint("new_marker1"); // Add empty
+        c3d_empty.addPoint("new_marker2"); // Add empty
         c3d_empty.addAnalog("new_analog1"); // add the empty
         c3d_empty.addAnalog("new_analog2"); // add the empty
         // Add a new frame
