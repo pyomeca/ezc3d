@@ -376,6 +376,9 @@ TEST(c3dModifier, specificParameters){
     p.name("EmptyParam");
     EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::runtime_error);
 
+    // Get an erroneous parameter
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter("ThisIsNotARealParamter"), std::invalid_argument);
+
     // Create a new group
     ezc3d::ParametersNS::GroupNS::Parameter p2;
     p2.name("NewParam");
@@ -402,6 +405,15 @@ TEST(c3dModifier, specificParameters){
     EXPECT_EQ(p.isLocked(), true);
     p.unlock();
     EXPECT_EQ(p.isLocked(), false);
+
+    // Fill the parameter improperly
+    EXPECT_THROW(p.set(std::vector<int>()={}, {1}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<int>()={1}, {0}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<float>()={}, {1}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<float>()={1}, {0}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<std::string>()={}, {1}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<std::string>()={""}, {0}), std::range_error);
+    p.dimension();
 }
 
 
@@ -892,7 +904,6 @@ TEST(c3dModifier, addPointsAndAnalogs){
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 
     }
-
 }
 
 
@@ -1063,9 +1074,6 @@ TEST(c3dModifier, specificFrames){
 }
 
 
-
-
-
 TEST(c3dFileIO, CreateWriteAndReadBack){
     // Create an empty c3d fill it with data and reopen
     c3dTestStruct ref_c3d;
@@ -1180,3 +1188,6 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 }
 
 
+//TEST(c3dFileIO, CreateWriteAndReadBack){
+
+//}
