@@ -946,7 +946,7 @@ TEST(c3dModifier, addFrames){
 
     ezc3d::DataNS::Frame stupidFrameAnalog;
     ezc3d::DataNS::AnalogsNS::Analogs stupidAnalogs(new_c3d.c3d.data().frame(0).analogs());
-    ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe(static_cast<int>(new_c3d.nAnalogs));
+    ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe(static_cast<int>(new_c3d.nAnalogs)-1);
     stupidAnalogs.addSubframe(stupidSubframe);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
@@ -954,6 +954,11 @@ TEST(c3dModifier, addFrames){
     ezc3d::ParametersNS::GroupNS::Parameter analogRate(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE"));
     analogRate.set(std::vector<float>()={100}, {1});
     new_c3d.c3d.addParameter("ANALOG", analogRate);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
+
+    ezc3d::DataNS::AnalogsNS::SubFrame notSoStupidSubframe(static_cast<int>(new_c3d.nAnalogs));
+    stupidAnalogs.replaceSubframe(0, notSoStupidSubframe);
+    stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
     EXPECT_NO_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog));
 
     // Remove point frame rate and then

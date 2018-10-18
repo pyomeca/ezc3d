@@ -436,7 +436,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     if (subSize != 0){
         int nChannel(static_cast<int>(f.analogs().subframes()[0].channels().size()));
         int nAnalogByFrames(header().nbAnalogByFrame());
-        if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs && subSize != nAnalogByFrames )
+        if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs )
             throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
     }
 
