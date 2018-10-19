@@ -203,7 +203,7 @@ void ezc3d::c3d::print() const
 void ezc3d::removeSpacesOfAString(std::string& s){
     // Remove the spaces at the end of the strings
     for (int i = static_cast<int>(s.size()); i >= 0; --i)
-        if (s[s.size()-1] == ' ')
+        if (s.size() > 0 && s[s.size()-1] == ' ')
             s.pop_back();
         else
             break;
