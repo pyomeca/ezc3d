@@ -43,19 +43,26 @@ if (NOT NUMPY_FOUND)
     ##__________________________________________________________________________
     ## Check for the header files
 
-    ## Use Python to determine the include directory
-    execute_process (
-        COMMAND ${Python3_EXECUTABLE} -c "import numpy as np; print(np.get_include())"
-        ERROR_VARIABLE NUMPY_FIND_ERROR
-        RESULT_VARIABLE NUMPY_FIND_RESULT
-        OUTPUT_VARIABLE NUMPY_FIND_OUTPUT
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
+    ## If the link is given by the python installation
+	if(EXISTS ${Python3_SITELIB}/numpy/core/include)
+		set (NUMPY_INCLUDES ${Python3_SITELIB}/numpy/core/include)
+	else()
+		## Use Python to determine the include directory
+		execute_process (
+			COMMAND ${Python3_EXECUTABLE} -c "import numpy as np; print(np.get_include())"
+			ERROR_VARIABLE NUMPY_FIND_ERROR
+			RESULT_VARIABLE NUMPY_FIND_RESULT
+			OUTPUT_VARIABLE NUMPY_FIND_OUTPUT
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+			
+		## process the output from the execution of the command
+		if (NOT NUMPY_FIND_RESULT)
+			set (NUMPY_INCLUDES ${NUMPY_FIND_OUTPUT})
+		endif (NOT NUMPY_FIND_RESULT)
+	endif()
 
-    ## process the output from the execution of the command
-    if (NOT NUMPY_FIND_RESULT)
-        set (NUMPY_INCLUDES ${NUMPY_FIND_OUTPUT})
-    endif (NOT NUMPY_FIND_RESULT)
+    
     ##__________________________________________________________________________
     ## Check for the library
     unset (NUMPY_LIBRARIES)
