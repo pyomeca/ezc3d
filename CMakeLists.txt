@@ -1,8 +1,9 @@
 project(ezc3d)
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
+set(CMAKE_CXX_STANDARD 11)
 
 set (${PROJECT_NAME}_VERSION_MAJOR 0)
-set (${PROJECT_NAME}_VERSION_MINOR 2)
+set (${PROJECT_NAME}_VERSION_MINOR 3)
 
 # Set some variables
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
@@ -66,20 +67,40 @@ endif(NOT WIN32)
 option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
 
 if (BUILD_TESTS)
-    enable_testing()
-    find_package(GTest REQUIRED)
+    # Download and unpack googletest at configure time
+    configure_file(test/CMakeLists.txt.in googletest-download/CMakeLists.txt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+      RESULT_VARIABLE result
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+    if(result)
+      message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+    endif()
+    execute_process(COMMAND ${CMAKE_COMMAND} --build .
+      RESULT_VARIABLE result
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+    if(result)
+      message(FATAL_ERROR "Build step for googletest failed: ${result}")
+    endif()
+
+    # Prevent overriding the parent project's compiler/linker
+    # settings on Windows
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+    # Add googletest directly to our build. This defines
+    # the gtest and gtest_main targets.
+    add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
+                     ${CMAKE_BINARY_DIR}/googletest-build
+                     EXCLUDE_FROM_ALL)
 
     ##############
     # Unit Tests
     ##############
+    enable_testing()
     file(GLOB TEST_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp)
     add_executable(runUnitTests ${TEST_SRC_FILES})
 
-    # Include the gtest library.
-    target_include_directories(runUnitTests PUBLIC ${GTEST_INCLUDE_DIRS})
-
     # Standard linking to gtest stuff.
-    target_link_libraries(runUnitTests ${GTEST_BOTH_LIBRARIES} pthread)
+    target_link_libraries(runUnitTests gtest_main)
 
     # Extra linking for the project.
     target_link_libraries(runUnitTests ${PROJECT_NAME})
@@ -97,6 +118,11 @@ if (BUILD_TESTS)
         SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
         SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
+
+    # Copy the c3d of the example
+    file(GLOB C3D_TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/*.c3d)
+    file(COPY ${C3D_TEST_FILES}
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
 endif()
 
 

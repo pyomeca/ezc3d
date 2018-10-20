@@ -29,7 +29,7 @@ ezc3d::Header::Header():
 
 ezc3d::Header::Header(ezc3d::c3d &file) :
     _parametersAddress(2),
-    _checksum(0x50),
+    _checksum(0),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
     _firstFrame(0),
@@ -85,7 +85,7 @@ const std::vector<std::string>& ezc3d::Header::eventsLabel() const
 }
 const std::string& ezc3d::Header::eventsLabel(int idx) const
 {
-    if (idx < 0)
+    if (idx < 0 || static_cast<size_t>(idx) >= _eventsLabel.size())
         throw std::invalid_argument("Event label not found");
     return _eventsLabel[static_cast<unsigned int>(idx)];
 }
@@ -98,7 +98,7 @@ std::vector<int> ezc3d::Header::eventsDisplay() const
     return _eventsDisplay;
 }
 int ezc3d::Header::eventsDisplay(int idx) const{
-    if (idx < 0)
+    if (idx < 0 || static_cast<size_t>(idx) >= _eventsDisplay.size())
         throw std::invalid_argument("Event display not found");
     return _eventsDisplay[static_cast<unsigned int>(idx)];
 }
@@ -108,7 +108,7 @@ const std::vector<float>& ezc3d::Header::eventsTime() const
 }
 float ezc3d::Header::eventsTime(int idx) const
 {
-    if (idx < 0)
+    if (idx < 0 || static_cast<size_t>(idx) >= _eventsTime.size())
         throw std::invalid_argument("Event time not found");
     return _eventsTime[static_cast<unsigned int>(idx)];
 }
@@ -208,7 +208,7 @@ void ezc3d::Header::read(ezc3d::c3d &file)
     // Parameter address
     _parametersAddress = file.readInt(1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
     _checksum = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
-    if (_checksum != 80) // If checkbyte is wrong
+    if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
     // Number of data
@@ -265,7 +265,7 @@ void ezc3d::Header::print() const{
     std::cout << "nbEvents = " << nbEvents() << std::endl;
     for (int i=0; i<static_cast<int>(eventsTime().size()); ++i)
         std::cout << "eventsTime[" << i << "] = " << eventsTime(i) << std::endl;
-    for (int i=0; i<static_cast<int>(eventsTime().size()); ++i)
+    for (int i=0; i<static_cast<int>(eventsDisplay().size()); ++i)
         std::cout << "eventsDisplay[" << i << "] = " << eventsDisplay(i) << std::endl;
     for (int i=0; i<static_cast<int>(eventsLabel().size()); ++i)
         std::cout << "eventsLabel[" << i << "] = " << eventsLabel(i) << std::endl;
@@ -276,7 +276,8 @@ void ezc3d::Header::write(std::fstream &f) const
 {
     // write the checksum byte and the start point of header
     f.write(reinterpret_cast<const char*>(&_parametersAddress), ezc3d::BYTE);
-    f.write(reinterpret_cast<const char*>(&_checksum), ezc3d::BYTE);
+    int checksum(0x50);
+    f.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
 
     // Number of data
     f.write(reinterpret_cast<const char*>(&_nb3dPoints), 1*ezc3d::DATA_TYPE::WORD);
