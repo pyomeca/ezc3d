@@ -8,12 +8,12 @@
 int parseParam(mxDouble* data, const std::vector<int> &dimension,
                std::vector<int> &param_data, int idxInData=0, int currentIdx=0)
 {
-    if (dimension[currentIdx] == 0)
+    if (dimension[static_cast<size_t>(currentIdx)] == 0)
         return -1;
 
-    for (int i=0; i<dimension[currentIdx]; ++i){
-        if (currentIdx == dimension.size()-1){
-            param_data.push_back (data[idxInData]);
+    for (int i=0; i<dimension[static_cast<size_t>(currentIdx)]; ++i){
+        if (currentIdx == static_cast<int>(dimension.size()-1)){
+            param_data.push_back (static_cast<int>(data[idxInData]));
             ++idxInData;
         }
         else
@@ -24,12 +24,12 @@ int parseParam(mxDouble* data, const std::vector<int> &dimension,
 int parseParam(mxDouble* data, const std::vector<int> &dimension,
                std::vector<float> &param_data, int idxInData=0, int currentIdx=0)
 {
-    if (dimension[currentIdx] == 0)
+    if (dimension[static_cast<size_t>(currentIdx)] == 0)
         return -1;
 
-    for (int i=0; i<dimension[currentIdx]; ++i){
-        if (currentIdx == dimension.size()-1){
-            param_data.push_back (data[idxInData]);
+    for (int i=0; i<dimension[static_cast<size_t>(currentIdx)]; ++i){
+        if (currentIdx == static_cast<int>(dimension.size()-1)){
+            param_data.push_back (static_cast<float>(data[idxInData]));
             ++idxInData;
         }
         else
@@ -40,12 +40,12 @@ int parseParam(mxDouble* data, const std::vector<int> &dimension,
 int parseParam(mxArray* data, const std::vector<int> &dimension,
                std::vector<std::string> &param_data, int idxInData=0, int currentIdx=0)
 {
-    if (dimension[currentIdx] == 0)
+    if (dimension[static_cast<size_t>(currentIdx)] == 0)
         return -1;
 
-    for (int i=0; i<dimension[currentIdx]; ++i){
-        if (currentIdx == dimension.size()-1){
-            mxArray *cell(mxGetCell(data, idxInData));
+    for (int i=0; i<dimension[static_cast<size_t>(currentIdx)]; ++i){
+        if (currentIdx == static_cast<int>(dimension.size()-1)){
+            mxArray *cell(mxGetCell(data, static_cast<mwIndex>(idxInData)));
             mwSize pathlen = mxGetNumberOfElements(cell) + 1;
             char *path_tp = new char[pathlen];
             mxGetString(cell, path_tp, pathlen);
@@ -59,9 +59,9 @@ int parseParam(mxArray* data, const std::vector<int> &dimension,
     }
     return idxInData;
 }
-int checkLongestStrParam(const std::vector<std::string> &param_data){
-    int longest(0);
-    for (int i=0; i<param_data.size(); ++i){
+size_t checkLongestStrParam(const std::vector<std::string> &param_data){
+    size_t longest(0);
+    for (size_t i=0; i<param_data.size(); ++i){
         if (param_data[i].size() > longest)
             longest = param_data[i].size();
     }
@@ -69,7 +69,7 @@ int checkLongestStrParam(const std::vector<std::string> &param_data){
 }
 
 
-void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
+void mexFunction(int nlhs,mxArray *[],int nrhs,const mxArray *prhs[])
 {
     // Check inputs and outputs
     if (nrhs != 2)
@@ -114,8 +114,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         nFramesPoints = dimsPoints[2];
     else if (mxGetNumberOfDimensions(dataPoints) == 2)
         nFramesPoints = 1;
-    else
+    else {
+        nFramesPoints = INT_MAX;
         mexErrMsgTxt("'data.points' should be in format XYZ x nPoints x nFrames.");
+    }
     size_t nPointsComponents(dimsPoints[0]);
     size_t nPoints(dimsPoints[1]);
     if (nPointsComponents < 3 || nPointsComponents > 4)
@@ -151,7 +153,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     if (nPoints != mxGetM(parameterPointsLabels) * mxGetN(parameterPointsLabels))
         mexErrMsgTxt("'parameter.POINT.LABELS' must have the same length as nPoints of the data.");
     std::vector<std::string> pointLabels;
-    for (int i=0; i<nPoints; ++i){
+    for (size_t i=0; i<nPoints; ++i){
         mxArray *pointLabelsPtr = mxGetCell(parameterPointsLabels, i);
         mwSize namelen = mxGetNumberOfElements(pointLabelsPtr) + 1;
         char *name = new char[namelen];
@@ -160,8 +162,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         delete[] name;
     }
     // Add them to the c3d
-    for (int i=0; i<pointLabels.size(); ++i)
-        c3d.addMarker(pointLabels[i]);
+    for (size_t i=0; i<pointLabels.size(); ++i)
+        c3d.addPoint(pointLabels[i]);
 
     // Get the names of the analogs
     mxArray *parameterAnalogs = mxGetField(parameter, 0, "ANALOG");
@@ -173,7 +175,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     if (nAnalogs != mxGetN(parameterAnalogsLabels) * mxGetM(parameterAnalogsLabels))
         mexErrMsgTxt("'parameter.ANALOG.LABELS' must have the same length as nAnalogs of the data.");
     std::vector<std::string> analogsLabels;
-    for (int i=0; i<nAnalogs; ++i){
+    for (size_t i=0; i<nAnalogs; ++i){
         mxArray *analogsLabelsPtr = mxGetCell(parameterAnalogsLabels, i);
         mwSize namelen = mxGetNumberOfElements(analogsLabelsPtr) + 1;
         char *name = new char[namelen];
@@ -182,7 +184,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         delete[] name;
     }
     // Add them to the c3d
-    for (int i=0; i<analogsLabels.size(); ++i)
+    for (size_t i=0; i<analogsLabels.size(); ++i)
         c3d.addAnalog(analogsLabels[i]);
 
     //  Fill the parameters
@@ -208,7 +210,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 if (!paramField)
                     nDim = 0;
                 else
-                    nDim =(mxGetNumberOfDimensions(paramField));
+                    nDim =(static_cast<int>(mxGetNumberOfDimensions(paramField)));
                 if (nDim == 0)
                     dimension.push_back(0);
                 else if (nDim == 2 && mxGetDimensions(paramField)[0] * mxGetDimensions(paramField)[1] == 0)
@@ -217,12 +219,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                     dimension.push_back(1);
                 else
                     for (int i=0; i<nDim; ++i)
-                        dimension.push_back(mxGetDimensions(paramField)[i]);
+                        dimension.push_back(static_cast<int>(mxGetDimensions(paramField)[i]));
 
                 // Special cases
-                if ( (!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != nPoints)
+                if ( (!groupName.compare("POINT") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != static_cast<int>(nPoints))
                     continue;
-                if ( (!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != nAnalogs)
+                if ( (!groupName.compare("ANALOG") && !paramName.compare("DESCRIPTIONS")) && dimension[0] != static_cast<int>(nAnalogs))
                     continue;
 
                 ezc3d::ParametersNS::GroupNS::Parameter newParam(paramName);
@@ -275,24 +277,24 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     // Fill the data
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
-    for (int f=0; f<nFramesPoints; ++f){
+    for (size_t f=0; f<nFramesPoints; ++f){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (int i=0; i<nPoints; ++i){
+        for (size_t i=0; i<nPoints; ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             pt.name(pointLabels[i]);
-            pt.x(allDataPoints[nPointsComponents*i+0+f*3*nPoints]);
-            pt.y(allDataPoints[nPointsComponents*i+1+f*3*nPoints]);
-            pt.z(allDataPoints[nPointsComponents*i+2+f*3*nPoints]);
+            pt.x(static_cast<float>(allDataPoints[nPointsComponents*i+0+f*3*nPoints]));
+            pt.y(static_cast<float>(allDataPoints[nPointsComponents*i+1+f*3*nPoints]));
+            pt.z(static_cast<float>(allDataPoints[nPointsComponents*i+2+f*3*nPoints]));
             pts.add(pt);
         }
 
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
-        for (int sf=0; sf<nSubframes; ++sf){
+        for (size_t sf=0; sf<nSubframes; ++sf){
             ezc3d::DataNS::AnalogsNS::SubFrame subframe;
-            for (int i=0; i<nAnalogs; ++i){
+            for (size_t i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
-                c.value(allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]);
+                c.value(static_cast<float>(allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]));
                 c.name(analogsLabels[i]);
                 subframe.addChannel(c);
             }

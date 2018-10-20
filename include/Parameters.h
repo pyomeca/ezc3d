@@ -2,6 +2,8 @@
 #define __PARAMETERS_H__
 
 #include <stdexcept>
+#include <memory>
+
 #include "ezc3d.h"
 
 class EZC3D_API ezc3d::ParametersNS::Parameters{
@@ -82,6 +84,7 @@ public:
     void lock();
     void unlock();
     bool isLocked() const;
+    void name(const std::string paramName);
     const std::string& name() const;
     const std::string& description() const;
 

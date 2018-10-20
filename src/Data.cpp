@@ -77,8 +77,11 @@ void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &f, int j)
 {
     if (j < 0)
         _frames.push_back(f);
-    else
+    else{
+        if (j >= _frames.size())
+            _frames.resize(j+1);
         _frames[static_cast<size_t>(j)].add(f);
+    }
 }
 std::vector<ezc3d::DataNS::Frame> &ezc3d::DataNS::Data::frames_nonConst()
 {
