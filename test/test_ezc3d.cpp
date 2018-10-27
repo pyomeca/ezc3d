@@ -83,7 +83,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
                 pt.x(static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
                 pt.y(static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
                 pt.z(static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
-                pts.add(pt);
+                pts.point(pt);
             }
         }
 
@@ -508,7 +508,7 @@ TEST(c3dModifier, addPoints) {
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
         ezc3d::DataNS::Points3dNS::Points pts;
         ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(0));
-        pts.add(pt);
+        pts.point(pt);
         new_frames[f].add(pts);
     }
     EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
@@ -517,7 +517,7 @@ TEST(c3dModifier, addPoints) {
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
         ezc3d::DataNS::Points3dNS::Points pts;
         ezc3d::DataNS::Points3dNS::Point pt;
-        pts.add(pt);
+        pts.point(pt);
         new_frames[f].add(pts);
     }
     EXPECT_NO_THROW(new_c3d.c3d.addPoint(new_frames));
@@ -542,7 +542,7 @@ TEST(c3dModifier, specificPoint){
             pt.x(static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
             pt.y(static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
             pt.z(static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
-            pts.replace(static_cast<int>(m), pt);
+            pts.point(pt, m);
         }
 
         frame.add(pts);
@@ -557,10 +557,11 @@ TEST(c3dModifier, specificPoint){
         ptToReplace.name("ToReplace");
 
         ezc3d::DataNS::Points3dNS::Points pts;
-        pts.add(ptToBeReplaced);
-        EXPECT_THROW(pts.replace(-1, ptToReplace), std::out_of_range);
-        EXPECT_THROW(pts.replace(static_cast<int>(pts.points().size()), ptToReplace), std::out_of_range);
-        EXPECT_NO_THROW(pts.replace(0, ptToReplace));
+        pts.point(ptToBeReplaced);
+        size_t previousNbPoints(pts.nbPoints());
+        EXPECT_NO_THROW(pts.point(ptToReplace, pts.nbPoints()+2));
+        EXPECT_EQ(pts.nbPoints(), previousNbPoints + 3);
+        EXPECT_NO_THROW(pts.point(ptToReplace, 0));
     }
 
     // Things that should have change
@@ -925,7 +926,6 @@ TEST(c3dModifier, addFrames){
 
     // Create impossible points
     ezc3d::DataNS::Points3dNS::Points p(4);
-    EXPECT_THROW(ezc3d::DataNS::Points3dNS::Points stupidPoint(-1), std::out_of_range);
 
     // Add an impossible frame
     ezc3d::DataNS::Frame stupidFramePoint;
@@ -941,13 +941,13 @@ TEST(c3dModifier, addFrames){
     ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(0).points().point(0));
     std::string realPointName(pt.name());
     pt.name("WrongName");
-    stupidPoints.replace(0, pt);
+    stupidPoints.point(pt, 0);
     stupidFramePoint.add(stupidPoints);
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFramePoint), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFramePoint), std::invalid_argument);
 
     // Put back the good name
     pt.name(realPointName);
-    stupidPoints.replace(0, pt);
+    stupidPoints.point(pt, 0);
 
     // Add Analogs
     new_c3d.nAnalogs = 3;
@@ -996,7 +996,7 @@ TEST(c3dModifier, specificFrames){
             pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
             pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
             pt.z(static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
-            pts.add(pt);
+            pts.point(pt);
         }
         ezc3d::DataNS::Frame frame;
         frame.add(pts);
@@ -1014,7 +1014,7 @@ TEST(c3dModifier, specificFrames){
             pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
             pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
             pt.z(static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
-            pts.add(pt);
+            pts.point(pt);
         }
         ezc3d::DataNS::Frame frame;
         frame.add(pts);
@@ -1320,7 +1320,7 @@ TEST(c3dFileIO, readViconC3D){
 
     // DATA
     for (size_t f = 0; f < 580; ++f){
-        EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).points().points().size(), 51);
+        EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).points().nbPoints(), 51);
         for (size_t sf = 0; sf < 10; ++sf)
             EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).channels().size(), 38);
     }
@@ -1446,7 +1446,7 @@ TEST(c3dFileIO, readQualisysC3D){
 
     // DATA
     for (size_t f = 0; f < 340; ++f){
-        EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).points().points().size(), 55);
+        EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).points().nbPoints(), 55);
         for (size_t sf = 0; sf < 10; ++sf)
             EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).channels().size(), 69);
     }
@@ -1533,5 +1533,5 @@ TEST(c3dFileIO, readOptotrakC3D){
 
     // DATA
     for (size_t f = 0; f < 1149; ++f)
-        EXPECT_EQ(Optotrak.data().frame(static_cast<int>(f)).points().points().size(), 54);
+        EXPECT_EQ(Optotrak.data().frame(static_cast<int>(f)).points().nbPoints(), 54);
 }
