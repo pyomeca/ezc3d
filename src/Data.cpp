@@ -31,20 +31,20 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
         if (file.header().scaleFactor() < 0){ // if it is float
             // Read point 3d
             ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(file.header().nb3dPoints());
-            std::vector<ezc3d::DataNS::Points3dNS::Point>& pts_tp(ptsAtAFrame.points_nonConst());
             for (size_t i = 0; i < static_cast<size_t>(file.header().nb3dPoints()); ++i){
-                pts_tp[i].x(file.readFloat());
-                pts_tp[i].y(file.readFloat());
-                pts_tp[i].z(file.readFloat());
-                pts_tp[i].residual(file.readFloat());
+                ezc3d::DataNS::Points3dNS::Point pt;
+                pt.x(file.readFloat());
+                pt.y(file.readFloat());
+                pt.z(file.readFloat());
+                pt.residual(file.readFloat());
                 if (i < pointNames.size())
-                    pts_tp[i].name(pointNames[i]);
+                    pt.name(pointNames[i]);
                 else {
                     std::stringstream unlabel;
                     unlabel << "unlabeled_point_" << i;
-                    pts_tp[i].name(unlabel.str());
+                    pt.name(unlabel.str());
                 }
-
+                ptsAtAFrame.point(pt, i);
             }
             _frames[j].add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
 
@@ -122,75 +122,6 @@ void ezc3d::DataNS::Data::write(std::fstream &f) const
 
 
 
-// Point3d data
-ezc3d::DataNS::Points3dNS::Points::Points()
-{
-
-}
-
-ezc3d::DataNS::Points3dNS::Points::Points(int nMarkers)
-{
-    if (nMarkers < 0)
-        throw std::out_of_range("Wrong number of markers");
-    _points.resize(static_cast<size_t>(nMarkers));
-}
-
-void ezc3d::DataNS::Points3dNS::Points::add(const ezc3d::DataNS::Points3dNS::Point &p)
-{
-    _points.push_back(p);
-}
-
-void ezc3d::DataNS::Points3dNS::Points::replace(int idx, const ezc3d::DataNS::Points3dNS::Point &p)
-{
-    if (idx < 0 || idx >= static_cast<int>(points().size()))
-        throw std::out_of_range("Wrong number of idx");
-    _points[static_cast<size_t>(idx)] = p;
-}
-void ezc3d::DataNS::Points3dNS::Points::print() const
-{
-    for (int i = 0; i < static_cast<int>(points().size()); ++i)
-        point(i).print();
-}
-
-void ezc3d::DataNS::Points3dNS::Points::write(std::fstream &f) const
-{
-    for (int i=0; i<static_cast<int>(points().size()); ++i){
-        point(i).write(f);
-    }
-}
-
-const std::vector<ezc3d::DataNS::Points3dNS::Point>& ezc3d::DataNS::Points3dNS::Points::points() const
-{
-    return _points;
-}
-std::vector<ezc3d::DataNS::Points3dNS::Point> &ezc3d::DataNS::Points3dNS::Points::points_nonConst()
-{
-    return _points;
-}
-int ezc3d::DataNS::Points3dNS::Points::pointIdx(const std::string &pointName) const
-{
-    for (int i = 0; i<static_cast<int>(points().size()); ++i)
-        if (!point(i).name().compare(pointName))
-            return i;
-    return -1;
-}
-const ezc3d::DataNS::Points3dNS::Point& ezc3d::DataNS::Points3dNS::Points::point(int idx) const
-{
-    if (idx < 0 || idx >= static_cast<int>(points().size()))
-        throw std::out_of_range("Tried to access wrong index for points data");
-    return _points[static_cast<size_t>(idx)];
-}
-const ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point(const std::string &pointName) const
-{
-    int idx(pointIdx(pointName));
-    if (idx < 0)
-        throw std::invalid_argument("Point name was not found within the points");
-    return point(idx);
-}
-void ezc3d::DataNS::Points3dNS::Point::print() const
-{
-    std::cout << name() << " = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
-}
 
 
 
@@ -262,9 +193,6 @@ void ezc3d::DataNS::Points3dNS::Point::name(const std::string &name)
     ezc3d::removeSpacesOfAString(name_copy);
     _name = name_copy;
 }
-
-
-
 
 // Analog data
 ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame()

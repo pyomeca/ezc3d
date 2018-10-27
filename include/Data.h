@@ -44,7 +44,7 @@ public:
     void print() const;
 
     ///
-    /// \brief Write to an opened file all the data
+    /// \brief Write all the data to an opened file
     /// \param f Already opened fstream file with write access
     ///
     /// Write all the data to a file by calling sequentially all the write method for all the frames
@@ -84,33 +84,13 @@ public:
     ///
     /// Add or replace a particular frame to the data set.
     ///
-    /// If no idx is sent, then
-    /// the frame is append to the data set. If the idx correspond to a specific frame, it replaces it.
+    /// If no idx is sent, then the frame is append to the data set.
+    /// If the idx correspond to a specific frame, it replaces it.
     /// If idx is outside the data set, it resize the data set accordingly and add the frame where it belongs
     /// but leaves the other created frames empty.
     ///
     void frame(const ezc3d::DataNS::Frame& frame, size_t idx = SIZE_MAX);
 
-};
-
-class EZC3D_API ezc3d::DataNS::Points3dNS::Points{
-public:
-    Points();
-    Points(int nMarkers);
-
-    void add(const ezc3d::DataNS::Points3dNS::Point& p);
-    void replace(int idx, const ezc3d::DataNS::Points3dNS::Point& p);
-    void print() const;
-    void write(std::fstream &f) const;
-
-    const std::vector<ezc3d::DataNS::Points3dNS::Point>& points() const;
-    std::vector<ezc3d::DataNS::Points3dNS::Point>& points_nonConst();
-    int pointIdx(const std::string& pointName) const;
-    const ezc3d::DataNS::Points3dNS::Point& point(int idx) const;
-    const ezc3d::DataNS::Points3dNS::Point& point(const std::string& pointName) const;
-
-protected:
-    std::vector<ezc3d::DataNS::Points3dNS::Point> _points;
 };
 
 class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
