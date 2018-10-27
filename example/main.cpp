@@ -1,13 +1,13 @@
 
-//#define BUILD_SANDBOX
+#define BUILD_SANDBOX
 #include <vector>
 #include "ezc3d.h"
 
 
 
+// SANDBOX FOR DEVELOPER
 #ifdef BUILD_SANDBOX
 #include <chrono>
- // SANDBOX FOR DEVELOPER
 int main()
 {
     {
@@ -34,7 +34,7 @@ int main()
         pt_new.y(2.0);
         pt_new.z(3.0);
         pts_new.add(pt_new);
-        for (size_t i=0; i<c3d.data().frames().size(); ++i){
+        for (size_t i=0; i<c3d.data().nbFrames(); ++i){
             ezc3d::DataNS::Frame frame;
             frame.add(pts_new);
             frames_point.push_back(frame);
@@ -53,7 +53,7 @@ int main()
             subframes_analog.channels_nonConst()[0].value(sf+1);
             frame.analogs_nonConst().addSubframe(subframes_analog);
         }
-        for (size_t f=0; f<c3d.data().frames().size(); ++f)
+        for (size_t f=0; f<c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
         c3d.addAnalog(frames_analog);
 
@@ -173,7 +173,7 @@ int main()
         pt_new.y(2.0);
         pt_new.z(3.0);
         pts_new.add(pt_new);
-        for (size_t i=0; i<c3d.data().frames().size(); ++i){
+        for (size_t i=0; i<c3d.data().nbFrames(); ++i){
             ezc3d::DataNS::Frame frame;
             frame.add(pts_new);
             frames_point.push_back(frame);
@@ -192,7 +192,7 @@ int main()
             subframes_analog.channels_nonConst()[0].value(sf+1);
             frame.analogs_nonConst().addSubframe(subframes_analog);
         }
-        for (size_t f=0; f<c3d.data().frames().size(); ++f)
+        for (size_t f=0; f<c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
         c3d.addAnalog(frames_analog);
 
