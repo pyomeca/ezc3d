@@ -10,9 +10,10 @@
 
 #include <sstream>
 #include <memory>
-#include "ezc3d.h"
+#include <ezc3d.h>
+#include <Points.h>
 
-//
+///
 /// \brief Frame holder for C3D data
 ///
 class EZC3D_API ezc3d::DataNS::Frame{
@@ -35,10 +36,10 @@ public:
     void print() const;
 
     ///
-    /// \brief Write to an opened file a frame
+    /// \brief Write a frame to an opened file
     /// \param f Already opened fstream file with write access
     ///
-    /// Write the frame to a file by calling sequentially the print method for points and analogs
+    /// Write the frame to a file by calling sequentially the write method for points and analogs
     ///
     void write(std::fstream &f) const;
 
