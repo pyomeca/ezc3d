@@ -1,5 +1,5 @@
-#ifndef __EZC3D_H__
-#define __EZC3D_H__
+#ifndef EZC3D_H
+#define EZC3D_H
 
 #ifdef _WIN32
 #  ifdef EZC3D_API_EXPORTS
