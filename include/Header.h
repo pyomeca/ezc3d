@@ -1,5 +1,5 @@
-#ifndef __HEAEDER_H__
-#define __HEAEDER_H__
+#ifndef HEAEDER_H
+#define HEAEDER_H
 
 #include <fstream>
 #include <memory>

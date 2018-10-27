@@ -357,55 +357,7 @@ void ezc3d::DataNS::AnalogsNS::Channel::name(const std::string &name)
 
 
 
-// Frame data
-ezc3d::DataNS::Frame::Frame()
-{
-    _points = std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>(new ezc3d::DataNS::Points3dNS::Points());
-    _analogs = std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs>(new ezc3d::DataNS::AnalogsNS::Analogs());
-}
-void ezc3d::DataNS::Frame::print() const
-{
-    points().print();
-    analogs().print();
-}
-void ezc3d::DataNS::Frame::write(std::fstream &f) const
-{
-    points().write(f);
-    analogs().write(f);
-}
-ezc3d::DataNS::Points3dNS::Points &ezc3d::DataNS::Frame::points_nonConst() const
-{
-    return *_points;
-}
-const ezc3d::DataNS::Points3dNS::Points& ezc3d::DataNS::Frame::points() const
-{
-    return *_points;
-}
-ezc3d::DataNS::AnalogsNS::Analogs &ezc3d::DataNS::Frame::analogs_nonConst() const
-{
-    return *_analogs;
-}
-const ezc3d::DataNS::AnalogsNS::Analogs& ezc3d::DataNS::Frame::analogs() const
-{
-    return *_analogs;
-}
-void ezc3d::DataNS::Frame::add(const ezc3d::DataNS::AnalogsNS::Analogs &analogs_frame)
-{
-    _analogs = std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs>(new ezc3d::DataNS::AnalogsNS::Analogs(analogs_frame));
-}
-void ezc3d::DataNS::Frame::add(const ezc3d::DataNS::Points3dNS::Points &point3d_frame)
-{
-    _points = std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>(new ezc3d::DataNS::Points3dNS::Points(point3d_frame));
-}
-void ezc3d::DataNS::Frame::add(const ezc3d::DataNS::Frame &frame)
-{
-    add(frame.points(), frame.analogs());
-}
-void ezc3d::DataNS::Frame::add(const ezc3d::DataNS::Points3dNS::Points &point3d_frame, const ezc3d::DataNS::AnalogsNS::Analogs &analog_frame)
-{
-    add(point3d_frame);
-    add(analog_frame);
-}
+
 const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& ezc3d::DataNS::AnalogsNS::Analogs::subframes() const
 {
     return _subframe;
