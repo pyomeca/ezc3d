@@ -93,7 +93,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     // If points has been added
     int nPoints;
     if (data().nbFrames() > 0)
-        nPoints = static_cast<int>(data().frame(0).points().points().size());
+        nPoints = static_cast<int>(data().frame(0).points().nbPoints());
     else
         nPoints = static_cast<int>(parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size());
     if (nPoints != grpPoint.parameter("USED").valuesAsInt()[0]){
@@ -418,15 +418,18 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 {
     // Make sure f.points().points() is the same as data.f[ANY].points()
     int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
-    if (nPoints != 0 && static_cast<int>(f.points().points().size()) != nPoints)
+    if (nPoints != 0 && static_cast<int>(f.points().nbPoints()) != nPoints)
         throw std::runtime_error("Points must be consistent in terms of number of points");
 
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
     for (size_t i=0; i<labels.size(); ++i)
-        if (f.points().pointIdx(labels[i]) < 0)
-            throw std::runtime_error("All markers must appears in the frames and points");
+        try {
+            f.points().pointIdx(labels[i]);
+        } catch (std::invalid_argument) {
+            throw std::invalid_argument("All points must be previously defined in the frames and points");
+        }
 
-    if (f.points().points().size() > 0 && static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0){
+    if (f.points().nbPoints() > 0 && static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0){
         throw std::runtime_error("Analogs frame rate must be specified if you add some");
     }
     if (f.analogs().subframes().size() > 0 && static_cast<double>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]) == 0.0){
@@ -451,18 +454,18 @@ void ezc3d::c3d::addPoint(const std::vector<ezc3d::DataNS::Frame>& frames)
 {
     if (frames.size() == 0 || frames.size() != data().nbFrames())
         throw std::runtime_error("Frames must have the same number as the frame count");
-    if (frames[0].points().points().size() == 0)
+    if (frames[0].points().nbPoints() == 0)
         throw std::runtime_error("Points cannot be empty");
 
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    for (int idx = 0; idx<static_cast<int>(frames[0].points().points().size()); ++idx){
+    for (int idx = 0; idx<static_cast<int>(frames[0].points().nbPoints()); ++idx){
         const std::string &name(frames[0].points().point(idx).name());
         for (size_t i=0; i<labels.size(); ++i)
             if (!name.compare(labels[i]))
                 throw std::runtime_error("Marker already exists");
 
         for (size_t f=0; f<data().nbFrames(); ++f)
-            _data->frame_nonConst(f).points_nonConst().add(frames[f].points().point(idx));
+            _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
     }
     updateParameters();
 }
@@ -472,7 +475,7 @@ void ezc3d::c3d::addPoint(const std::string &name){
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
         ezc3d::DataNS::Points3dNS::Point emptyPoint;
         emptyPoint.name(name);
-        dummy_pts.add(emptyPoint);
+        dummy_pts.point(emptyPoint);
         ezc3d::DataNS::Frame frame;
         frame.add(dummy_pts);
         for (size_t f=0; f<data().nbFrames(); ++f)
