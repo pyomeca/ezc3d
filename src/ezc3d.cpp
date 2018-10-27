@@ -30,12 +30,14 @@ ezc3d::c3d::c3d(const std::string &filePath):
 
     // Now read the actual data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this));
+
+    // Close the file
+    close();
 }
 
 ezc3d::c3d::~c3d()
 {
     delete c_float;
-    close();
 }
 
 void ezc3d::c3d::updateHeader()
@@ -55,7 +57,7 @@ void ezc3d::c3d::updateHeader()
     }
 
     // Compare the subframe with data when possible, otherwise go with the parameters
-    if (_data != nullptr && data().frames().size() > 0 && data().frame(0).analogs().subframes().size() != 0) {
+    if (_data != nullptr && data().nbFrames() > 0 && data().frame(0).analogs().subframes().size() != 0) {
         if (data().frame(0).analogs().subframes().size() != static_cast<size_t>(header().nbAnalogByFrame()))
             _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().subframes().size()));
     } else {
@@ -75,14 +77,14 @@ void ezc3d::c3d::updateHeader()
 
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, const std::vector<std::string> &newAnalogs)
 {
-    if (data().frames().size() != 0 && newMarkers.size() > 0)
+    if (data().nbFrames() != 0 && newMarkers.size() > 0)
         throw std::runtime_error("newMarkers in updateParameters should only be called on empty c3d");
-    if (data().frames().size() != 0 && newAnalogs.size() > 0)
+    if (data().nbFrames() != 0 && newAnalogs.size() > 0)
         throw std::runtime_error("newAnalogs in updateParameters should only be called on empty c3d");
 
     // If frames has been added
     ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
-    int nFrames(static_cast<int>(data().frames().size()));
+    int nFrames(static_cast<int>(data().nbFrames()));
     if (nFrames != grpPoint.parameter("FRAMES").valuesAsInt()[0]){
         int idx(grpPoint.parameterIdx("FRAMES"));
         grpPoint.parameters_nonConst()[static_cast<size_t>(idx)].set(std::vector<int>() = {nFrames}, {1});
@@ -90,7 +92,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
 
     // If points has been added
     int nPoints;
-    if (data().frames().size() > 0)
+    if (data().nbFrames() > 0)
         nPoints = static_cast<int>(data().frame(0).points().points().size());
     else
         nPoints = static_cast<int>(parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size());
@@ -105,7 +107,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         std::vector<std::string> units;
         for (int i = 0; i<nPoints; ++i){
             std::string name;
-            if (data().frames().size() == 0){
+            if (data().nbFrames() == 0){
                 if (i < static_cast<int>(parameters().group("POINT").parameter("LABELS").valuesAsString().size()))
                     name = parameters().group("POINT").parameter("LABELS").valuesAsString()[static_cast<size_t>(i)];
                 else
@@ -125,7 +127,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     // If analogous data has been added
     ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
     int nAnalogs;
-    if (data().frames().size() > 0){
+    if (data().nbFrames() > 0){
         if (data().frame(0).analogs().subframes().size() > 0)
             nAnalogs = static_cast<int>(data().frame(0).analogs().subframe(0).channels().size());
         else
@@ -141,7 +143,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         std::vector<std::string> descriptions;
         for (int i = 0; i<nAnalogs; ++i){
             std::string name;
-            if (data().frames().size() == 0){
+            if (data().nbFrames() == 0){
                 if (i < static_cast<int>(parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()))
                     name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[static_cast<size_t>(i)];
                 else
@@ -447,7 +449,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
 
 void ezc3d::c3d::addPoint(const std::vector<ezc3d::DataNS::Frame>& frames)
 {
-    if (frames.size() == 0 || frames.size() != data().frames().size())
+    if (frames.size() == 0 || frames.size() != data().nbFrames())
         throw std::runtime_error("Frames must have the same number as the frame count");
     if (frames[0].points().points().size() == 0)
         throw std::runtime_error("Points cannot be empty");
@@ -459,13 +461,13 @@ void ezc3d::c3d::addPoint(const std::vector<ezc3d::DataNS::Frame>& frames)
             if (!name.compare(labels[i]))
                 throw std::runtime_error("Marker already exists");
 
-        for (size_t f=0; f<data().frames().size(); ++f)
-            _data->frames_nonConst()[f].points_nonConst().add(frames[f].points().point(idx));
+        for (size_t f=0; f<data().nbFrames(); ++f)
+            _data->frame_nonConst(f).points_nonConst().add(frames[f].points().point(idx));
     }
     updateParameters();
 }
 void ezc3d::c3d::addPoint(const std::string &name){
-    if (data().frames().size() > 0){
+    if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
         ezc3d::DataNS::Points3dNS::Point emptyPoint;
@@ -473,7 +475,7 @@ void ezc3d::c3d::addPoint(const std::string &name){
         dummy_pts.add(emptyPoint);
         ezc3d::DataNS::Frame frame;
         frame.add(dummy_pts);
-        for (size_t f=0; f<data().frames().size(); ++f)
+        for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
         addPoint(dummy_frames);
     } else {
@@ -483,7 +485,7 @@ void ezc3d::c3d::addPoint(const std::string &name){
 
 void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 {
-    if (frames.size() != data().frames().size())
+    if (frames.size() != data().nbFrames())
         throw std::runtime_error("Frames must have the same number of frames");
     if (static_cast<int>(frames[0].analogs().subframes().size()) != header().nbAnalogByFrame())
         throw std::runtime_error("Subrames must have the same number of subframes");
@@ -497,9 +499,9 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
             if (!name.compare(labels[i]))
                 throw std::runtime_error("Analog channel already exists");
 
-        for (int f=0; f<static_cast<int>(data().frames().size()); ++f){
+        for (int f=0; f<static_cast<int>(data().nbFrames()); ++f){
             for (int sf=0; sf<header().nbAnalogByFrame(); ++sf){
-                _data->frames_nonConst()[static_cast<size_t>(f)].analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].addChannel(frames[static_cast<size_t>(f)].analogs().subframe(sf).channel(idx));
+                _data->frame_nonConst(f).analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].addChannel(frames[static_cast<size_t>(f)].analogs().subframe(sf).channel(idx));
             }
         }
     }
@@ -508,7 +510,7 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 
 void ezc3d::c3d::addAnalog(const std::string &name)
 {
-    if (data().frames().size() > 0){
+    if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
@@ -518,7 +520,7 @@ void ezc3d::c3d::addAnalog(const std::string &name)
         dummy_subframes.channels_nonConst().push_back(emptyChannel);
         for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
             frame.analogs_nonConst().addSubframe(dummy_subframes);
-        for (size_t f=0; f<data().frames().size(); ++f)
+        for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
         addAnalog(dummy_frames);
     } else {
