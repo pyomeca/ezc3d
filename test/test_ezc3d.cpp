@@ -270,7 +270,7 @@ TEST(initialize, newC3D){
     defaultParametersTest(new_c3d, PARAMETER_TYPE::FORCE_PLATFORM);
 
     // DATA
-    EXPECT_EQ(new_c3d.data().frames().size(), 0);
+    EXPECT_EQ(new_c3d.data().nbFrames(), 0);
 }
 
 
@@ -496,7 +496,7 @@ TEST(c3dModifier, addPoints) {
     // Add frame with a new marker with not enough frames
     std::vector<ezc3d::DataNS::Frame> new_frames;
     EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
-    for (size_t f = 0; f < new_c3d.c3d.data().frames().size() - 1; ++f)
+    for (size_t f = 0; f < new_c3d.c3d.data().nbFrames() - 1; ++f)
         new_frames.push_back(ezc3d::DataNS::Frame());
     EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
 
@@ -505,7 +505,7 @@ TEST(c3dModifier, addPoints) {
     EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
 
     // Try adding an already existing point
-    for (size_t f = 0; f < new_c3d.c3d.data().frames().size(); ++f){
+    for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
         ezc3d::DataNS::Points3dNS::Points pts;
         ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(static_cast<int>(f)).points().point(0));
         pts.add(pt);
@@ -514,7 +514,7 @@ TEST(c3dModifier, addPoints) {
     EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
 
     // Adding it properly
-    for (size_t f = 0; f < new_c3d.c3d.data().frames().size(); ++f){
+    for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
         ezc3d::DataNS::Points3dNS::Points pts;
         ezc3d::DataNS::Points3dNS::Point pt;
         pts.add(pt);
@@ -772,7 +772,7 @@ TEST(c3dModifier, specificAnalog){
     // Get a subframe
     {
         EXPECT_THROW(new_c3d.c3d.data().frame(-1), std::out_of_range);
-        EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(new_c3d.c3d.data().frames().size())), std::out_of_range);
+        EXPECT_THROW(new_c3d.c3d.data().frame(static_cast<int>(new_c3d.c3d.data().nbFrames())), std::out_of_range);
         EXPECT_NO_THROW(new_c3d.c3d.data().frame(0));
     }
 

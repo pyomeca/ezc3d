@@ -1,27 +1,94 @@
 #ifndef __DATA_H__
 #define __DATA_H__
+///
+/// \file Data.h
+/// \brief Declaration of data class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
 #include <sstream>
 #include <memory>
 #include "ezc3d.h"
 
-
-
+///
+/// \brief Actual data of the C3D file
+///
+/// The class stores all the data frames of a given or create C3D into a STL vector of frame.
+///
 class EZC3D_API ezc3d::DataNS::Data{
 public:
+    //---- CONSTRUCTORS ----//
+    ///
+    /// \brief Create a ready to fill Data class
+    ///
     Data();
+
+    ///
+    /// \brief Create a filled Data class from a given file
+    /// \param file File to copy the data from
+    ///
     Data(ezc3d::c3d &file);
+
+
+    //---- STREAM ----//
+    ///
+    ///
+    /// \brief Print the data
+    ///
+    /// Print all the data to the console by calling sequentially all the print method for all the frames
+    ///
     void print() const;
+
+    ///
+    /// \brief Write to an opened file all the data
+    /// \param f Already opened fstream file with write access
+    ///
+    /// Write all the data to a file by calling sequentially all the write method for all the frames
+    ///
     void write(std::fstream &f) const;
 
-    // Getter
-    void frame(const ezc3d::DataNS::Frame& f, int j = -1);
-    std::vector<ezc3d::DataNS::Frame>& frames_nonConst();
-    const std::vector<ezc3d::DataNS::Frame>& frames() const;
-    const ezc3d::DataNS::Frame& frame(int idx) const;
 
+    //---- FRAME ----//
 protected:
-    std::vector<ezc3d::DataNS::Frame> _frames;
+    std::vector<ezc3d::DataNS::Frame> _frames; ///< Storage of the data
+public:
+    ///
+    /// \brief Get the number of frames in the data structure
+    /// \return The number of frames
+    ///
+    size_t nbFrames() const;
+
+    ///
+    /// \brief Return a frame
+    /// \return A const reference to a particular data frame
+    ///
+    const ezc3d::DataNS::Frame& frame(size_t idx) const;
+
+    ///
+    /// \brief Return a frame in order to be modified by the caller
+    /// \return A non-const reference to a particular data frame
+    ///
+    /// This method returns a frame in the form of a non-const reference.
+    /// The user can thereafter modify this frame at will, but with the caution it requires.
+    ///
+    ezc3d::DataNS::Frame& frame_nonConst(size_t idx);
+
+    ///
+    /// \brief Add/replace a frame to the data set
+    /// \param frame the actual frame
+    /// \param idx the index of the frame
+    ///
+    /// Add or replace a particular frame to the data set.
+    ///
+    /// If no idx is sent, then
+    /// the frame is append to the data set. If the idx correspond to a specific frame, it replaces it.
+    /// If idx is outside the data set, it resize the data set accordingly and add the frame where it belongs
+    /// but leaves the other created frames empty.
+    ///
+    void frame(const ezc3d::DataNS::Frame& frame, size_t idx = SIZE_MAX);
+
 };
 
 class EZC3D_API ezc3d::DataNS::Frame{
