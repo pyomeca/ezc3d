@@ -33,7 +33,7 @@ int main()
         pt_new.x(1.0);
         pt_new.y(2.0);
         pt_new.z(3.0);
-        pts_new.add(pt_new);
+        pts_new.point(pt_new);
         for (size_t i=0; i<c3d.data().nbFrames(); ++i){
             ezc3d::DataNS::Frame frame;
             frame.add(pts_new);
@@ -68,7 +68,7 @@ int main()
             pt.x(1.0);
             pt.y(2.0);
             pt.z(3.0);
-            pts.add(pt);
+            pts.point(pt);
         }
         ezc3d::DataNS::AnalogsNS::Analogs analog;
         ezc3d::DataNS::AnalogsNS::SubFrame subframe;
@@ -132,7 +132,7 @@ int main()
             pt.x(1.0);
             pt.y(2.0);
             pt.z(3.0);
-            pts.add(pt);
+            pts.point(pt);
         }
         ezc3d::DataNS::AnalogsNS::Analogs analog;
         ezc3d::DataNS::AnalogsNS::SubFrame subframe;
