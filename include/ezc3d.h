@@ -64,6 +64,9 @@ namespace ezc3d {
     }
 }
 
+///
+/// \brief Main class for C3D holder
+///
 class EZC3D_API ezc3d::c3d : public std::fstream {
 public:
     c3d();
