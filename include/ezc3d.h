@@ -34,7 +34,7 @@ namespace ezc3d {
         FLOAT = 4,
         NONE = 10000
     };
-    EZC3D_API void removeSpacesOfAString(std::string& s);
+    EZC3D_API void removeSpacesTrailOfAString(std::string& s);
     EZC3D_API std::string toUpper(const std::string &str);
 
     class c3d;

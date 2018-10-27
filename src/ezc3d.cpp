@@ -202,7 +202,7 @@ void ezc3d::c3d::print() const
     data().print();
 }
 
-void ezc3d::removeSpacesOfAString(std::string& s){
+void ezc3d::removeSpacesTrailOfAString(std::string& s){
     // Remove the spaces at the end of the strings
     for (int i = static_cast<int>(s.size()); i >= 0; --i)
         if (s.size() > 0 && s[s.size()-1] == ' ')
@@ -327,7 +327,7 @@ void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
             std::string tp;
             for (int j = 0; j < dimension[0]; ++j)
                 tp += param_data_string_tp[static_cast<size_t>(j)];
-            ezc3d::removeSpacesOfAString(tp);
+            ezc3d::removeSpacesTrailOfAString(tp);
             param_data_string.push_back(tp);
         }
     }
@@ -357,7 +357,7 @@ size_t ezc3d::c3d::_dispatchMatrix(const std::vector<int> &dimension,
                 tp += param_data_in[idxInParam];
                 ++idxInParam;
             }
-            ezc3d::removeSpacesOfAString(tp);
+            ezc3d::removeSpacesTrailOfAString(tp);
             param_data_out.push_back(tp);
         }
         else

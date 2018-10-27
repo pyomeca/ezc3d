@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <memory>
 
-#include "ezc3d.h"
+#include <ezc3d.h>
 
 class EZC3D_API ezc3d::ParametersNS::Parameters{
 public:
