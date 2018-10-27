@@ -1,5 +1,5 @@
-#ifndef __PARAMETERS_H__
-#define __PARAMETERS_H__
+#ifndef PARAMETERS_H
+#define PARAMETERS_H
 
 #include <stdexcept>
 #include <memory>
