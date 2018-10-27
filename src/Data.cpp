@@ -107,7 +107,7 @@ size_t ezc3d::DataNS::Data::nbFrames() const
 }
 void ezc3d::DataNS::Data::print() const
 {
-    for (int i = 0; i < static_cast<int>(nbFrames()); ++i){
+    for (size_t i = 0; i < nbFrames(); ++i){
         std::cout << "Frame " << i << std::endl;
         frame(i).print();
         std::cout << std::endl;
@@ -116,9 +116,8 @@ void ezc3d::DataNS::Data::print() const
 
 void ezc3d::DataNS::Data::write(std::fstream &f) const
 {
-    for (int i=0; i<static_cast<int>(nbFrames()); ++i){
+    for (size_t i = 0; i < nbFrames(); ++i)
         frame(i).write(f);
-    }
 }
 
 
