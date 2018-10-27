@@ -1,5 +1,5 @@
-#ifndef __DATA_H__
-#define __DATA_H__
+#ifndef DATA_H
+#define DATA_H
 ///
 /// \file Data.h
 /// \brief Declaration of data class
@@ -10,7 +10,8 @@
 
 #include <sstream>
 #include <memory>
-#include "ezc3d.h"
+#include <ezc3d.h>
+#include <Frame.h>
 
 ///
 /// \brief Actual data of the C3D file
@@ -18,8 +19,8 @@
 /// The class stores all the data frames of a given or create C3D into a STL vector of frame.
 ///
 class EZC3D_API ezc3d::DataNS::Data{
-public:
     //---- CONSTRUCTORS ----//
+public:
     ///
     /// \brief Create a ready to fill Data class
     ///
@@ -33,6 +34,7 @@ public:
 
 
     //---- STREAM ----//
+public:
     ///
     ///
     /// \brief Print the data
@@ -89,28 +91,6 @@ public:
     ///
     void frame(const ezc3d::DataNS::Frame& frame, size_t idx = SIZE_MAX);
 
-};
-
-class EZC3D_API ezc3d::DataNS::Frame{
-public:
-    Frame();
-    void print() const;
-    void write(std::fstream &f) const;
-
-    void add(const ezc3d::DataNS::AnalogsNS::Analogs &analog_frame);
-    void add(const ezc3d::DataNS::Points3dNS::Points &point3d_frame);
-    void add(const ezc3d::DataNS::Frame &frame);
-    void add(const ezc3d::DataNS::Points3dNS::Points &point3d_frame, const ezc3d::DataNS::AnalogsNS::Analogs &analog_frame);
-
-    ezc3d::DataNS::Points3dNS::Points& points_nonConst() const;
-    const ezc3d::DataNS::Points3dNS::Points& points() const;
-    ezc3d::DataNS::AnalogsNS::Analogs& analogs_nonConst() const;
-    const ezc3d::DataNS::AnalogsNS::Analogs& analogs() const;
-
-protected:
-
-    std::shared_ptr<ezc3d::DataNS::Points3dNS::Points> _points; // All points for this frame
-    std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs> _analogs; // All subframe for all analogs
 };
 
 class EZC3D_API ezc3d::DataNS::Points3dNS::Points{
