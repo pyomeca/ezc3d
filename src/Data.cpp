@@ -73,33 +73,41 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
             throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
     }
 }
-void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &f, int j)
+void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &frame, size_t idx)
 {
-    if (j < 0)
-        _frames.push_back(f);
+    if (idx == SIZE_MAX)
+        _frames.push_back(frame);
     else{
-        if (j >= _frames.size())
-            _frames.resize(j+1);
-        _frames[static_cast<size_t>(j)].add(f);
+        if (idx >= _frames.size())
+            _frames.resize(idx+1);
+        _frames[static_cast<size_t>(idx)].add(frame);
     }
 }
-std::vector<ezc3d::DataNS::Frame> &ezc3d::DataNS::Data::frames_nonConst()
+ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame_nonConst(size_t idx)
 {
-    return _frames;
-}
-const std::vector<ezc3d::DataNS::Frame>& ezc3d::DataNS::Data::frames() const
-{
-    return _frames;
-}
-const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(int idx) const
-{
-    if (idx < 0 || idx >= static_cast<int>(frames().size()))
+    try{
+        return _frames.at(idx);
+    } catch(std::out_of_range) {
         throw std::out_of_range("Wrong number of frames");
-    return _frames[static_cast<size_t>(idx)];
+    }
+}
+
+const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(size_t idx) const
+{
+    try{
+        return _frames.at(idx);
+    } catch(std::out_of_range) {
+        throw std::out_of_range("Wrong number of frames");
+    }
+}
+
+size_t ezc3d::DataNS::Data::nbFrames() const
+{
+    return _frames.size();
 }
 void ezc3d::DataNS::Data::print() const
 {
-    for (int i = 0; i < static_cast<int>(frames().size()); ++i){
+    for (int i = 0; i < static_cast<int>(nbFrames()); ++i){
         std::cout << "Frame " << i << std::endl;
         frame(i).print();
         std::cout << std::endl;
@@ -108,7 +116,7 @@ void ezc3d::DataNS::Data::print() const
 
 void ezc3d::DataNS::Data::write(std::fstream &f) const
 {
-    for (int i=0; i<static_cast<int>(frames().size()); ++i){
+    for (int i=0; i<static_cast<int>(nbFrames()); ++i){
         frame(i).write(f);
     }
 }
