@@ -93,33 +93,6 @@ public:
 
 };
 
-class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
-public:
-    void print() const;
-    Point();
-    Point(const ezc3d::DataNS::Points3dNS::Point&);
-    void write(std::fstream &f) const;
-
-    float x() const;
-    void x(float x);
-
-    float y() const;
-    void y(float y);
-
-    float z() const;
-    void z(float z);
-
-	const std::vector<float> data() const;
-
-    float residual() const;
-    void residual(float residual);
-    const std::string& name() const;
-    void name(const std::string &name);
-
-protected:
-	std::vector<float> _data;
-    std::string _name;
-};
 
 class EZC3D_API ezc3d::DataNS::AnalogsNS::Analogs{
 public:

@@ -1,7 +1,7 @@
 #ifndef POINTS_H
 #define POINTS_H
 ///
-/// \file Frame.h
+/// \file Points.h
 /// \brief Declaration of Points class
 /// \author Pariterre
 /// \version 1.0
@@ -10,7 +10,8 @@
 
 #include <sstream>
 #include <memory>
-#include "ezc3d.h"
+#include <ezc3d.h>
+#include <Point.h>
 
 ///
 /// \brief Points holder for C3D data 3D points data
@@ -33,7 +34,7 @@ public:
 public:
     ///
     ///
-    /// \brief Print the frame
+    /// \brief Print the points
     ///
     /// Print the points to the console by calling sequentially the print method for all the points
     ///
