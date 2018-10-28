@@ -12,6 +12,7 @@
 #include <memory>
 #include <ezc3d.h>
 #include <Frame.h>
+#include <Subframe.h>
 
 ///
 /// \brief Actual data of the C3D file
@@ -84,7 +85,7 @@ public:
     ///
     /// Add or replace a particular frame to the data set.
     ///
-    /// If no idx is sent, then the frame is append to the data set.
+    /// If no idx is sent, then the frame is appended to the data set.
     /// If the idx correspond to a specific frame, it replaces it.
     /// If idx is outside the data set, it resize the data set accordingly and add the frame where it belongs
     /// but leaves the other created frames empty.
@@ -111,23 +112,6 @@ protected:
     std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe;
 };
 
-class EZC3D_API ezc3d::DataNS::AnalogsNS::SubFrame{
-public:
-    SubFrame();
-    SubFrame(int nChannels);
-    void print() const;
-    void write(std::fstream &f) const;
-
-    void addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel);
-    void replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel& channel);
-    void addChannels(const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& allChannelsData);
-    std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels_nonConst();
-    const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels() const;
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(int idx) const;
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(std::string channelName) const;
-protected:
-    std::vector<ezc3d::DataNS::AnalogsNS::Channel> _channels;
-};
 
 class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
 public:

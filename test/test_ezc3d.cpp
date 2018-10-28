@@ -95,7 +95,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
                     ezc3d::DataNS::AnalogsNS::Channel channel;
                     channel.name(c3dStruc.analogNames[c]);
                     channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
-                    subframes.addChannel(channel);
+                    subframes.channel(channel);
                 }
                 analogs.addSubframe(subframes);
             }
@@ -714,7 +714,6 @@ TEST(c3dModifier, specificAnalog){
     EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
 
     // Wrong number of channels
-    EXPECT_THROW(ezc3d::DataNS::AnalogsNS::SubFrame(-1), std::out_of_range);
     EXPECT_NO_THROW(ezc3d::DataNS::AnalogsNS::SubFrame(0));
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         ezc3d::DataNS::Frame frame;
@@ -736,7 +735,7 @@ TEST(c3dModifier, specificAnalog){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
                 channel.name(new_c3d.analogNames[c]);
                 channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
-                subframes.addChannel(channel);
+                subframes.channel(channel);
             }
             analogs.addSubframe(subframes);
         }
@@ -756,7 +755,7 @@ TEST(c3dModifier, specificAnalog){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
                 channel.name(analogNames[c]);
                 channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
-                subframes.addChannel(channel);
+                subframes.channel(channel);
             }
             analogs.addSubframe(subframes);
         }
@@ -802,17 +801,15 @@ TEST(c3dModifier, specificAnalog){
         channelToReplace.name("ToReplace");
 
         ezc3d::DataNS::AnalogsNS::SubFrame subframe;
-        subframe.addChannel(channelToBeReplaced);
-        EXPECT_THROW(subframe.replaceChannel(-1, channelToReplace), std::out_of_range);
-        EXPECT_THROW(subframe.replaceChannel(static_cast<int>(subframe.channels().size()), channelToReplace), std::out_of_range);
-        EXPECT_NO_THROW(subframe.replaceChannel(0, channelToReplace));
+        subframe.channel(channelToBeReplaced);
+        size_t nbChannelOld(subframe.nbChannels());
+        EXPECT_NO_THROW(subframe.channel(channelToReplace, subframe.nbChannels()+2));
+        EXPECT_EQ(subframe.nbChannels(), nbChannelOld + 3);
+        EXPECT_NO_THROW(subframe.channel(channelToReplace, 0));
 
         EXPECT_THROW(subframe.channel(-1), std::out_of_range);
-        EXPECT_THROW(subframe.channel(static_cast<int>(subframe.channels().size())), std::out_of_range);
+        EXPECT_THROW(subframe.channel(static_cast<int>(subframe.nbChannels())), std::out_of_range);
         EXPECT_NO_THROW(subframe.channel(0));
-
-        ezc3d::DataNS::AnalogsNS::SubFrame new_subframe;
-        EXPECT_NO_THROW(new_subframe.addChannels(subframe.channels()));
     }
 }
 
@@ -1322,7 +1319,7 @@ TEST(c3dFileIO, readViconC3D){
     for (size_t f = 0; f < 580; ++f){
         EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).points().nbPoints(), 51);
         for (size_t sf = 0; sf < 10; ++sf)
-            EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).channels().size(), 38);
+            EXPECT_EQ(Vicon.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).nbChannels(), 38);
     }
 }
 
@@ -1448,7 +1445,7 @@ TEST(c3dFileIO, readQualisysC3D){
     for (size_t f = 0; f < 340; ++f){
         EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).points().nbPoints(), 55);
         for (size_t sf = 0; sf < 10; ++sf)
-            EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).channels().size(), 69);
+            EXPECT_EQ(Qualisys.data().frame(static_cast<int>(f)).analogs().subframe(static_cast<int>(sf)).nbChannels(), 69);
     }
 }
 
