@@ -1,6 +1,6 @@
 #define EZC3D_API_EXPORTS
 #include "Point.h"
-// Implementation of Points class
+// Implementation of Point class
 
 ezc3d::DataNS::Points3dNS::Point::Point() :
     _name("")
