@@ -56,7 +56,7 @@ public:
     ///
     /// \brief Read and store a parameter from an opened C3D file
     /// \param file The file stream already opened with read access
-    /// \param nbCharInName The number of character in the parameter's name
+    /// \param nbCharInName The number of character of the parameter name
     /// \return The position in the file of the next Group/Parameter
     ///
     int read(ezc3d::c3d &file, int nbCharInName);
@@ -199,6 +199,14 @@ public:
     /// Set the scalar value for a parameter assuming this value is an integer.
     ///
     void set(int data);
+
+    ///
+    /// \brief Set the size_t scalar value as integer for the parameter
+    /// \param data The size_t scalar data
+    ///
+    /// Set the scalar value as integer for a parameter assuming this value is an size_t.
+    ///
+    void set(size_t data);
 
     ///
     /// \brief Set the integer vector of values for the parameter

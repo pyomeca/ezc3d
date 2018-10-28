@@ -253,6 +253,11 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(int data)
     set(std::vector<int>()={data});
 }
 
+void ezc3d::ParametersNS::GroupNS::Parameter::set(size_t data)
+{
+    set(static_cast<int>(data));
+}
+
 void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<int> &data, const std::vector<size_t> &dimension)
 {
     std::vector<size_t> dimensionCopy;
