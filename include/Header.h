@@ -1,9 +1,6 @@
 #ifndef HEAEDER_H
 #define HEAEDER_H
 
-#include <fstream>
-#include <memory>
-
 #include <ezc3d.h>
 
 class EZC3D_API ezc3d::Header{

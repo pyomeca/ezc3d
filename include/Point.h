@@ -8,8 +8,6 @@
 /// \date October 17th, 2018
 ///
 
-#include <sstream>
-#include <memory>
 #include <ezc3d.h>
 
 ///
