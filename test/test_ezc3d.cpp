@@ -388,10 +388,9 @@ TEST(c3dModifier, specificParameters){
     EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").valuesAsInt().size(), 0);
 
     // Get an out of range parameter
-    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(-1), std::out_of_range);
-    size_t nPointParams(new_c3d.c3d.parameters().group("POINT").parameters().size());
-    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(static_cast<int>(nPointParams)), std::out_of_range);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), -1);
+    size_t nPointParams(new_c3d.c3d.parameters().group("POINT").nbParameters());
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(nPointParams), std::out_of_range);
+    EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), std::invalid_argument);
 
     // Try to read a parameter into the wrong format
     EXPECT_THROW(p.valuesAsByte(), std::invalid_argument);
@@ -421,7 +420,7 @@ TEST(c3dModifier, specificParameters){
         ezc3d::ParametersNS::GroupNS::Group groupToBeAddedTwice;
         ezc3d::ParametersNS::GroupNS::Parameter p("UselessParameter");
         p.set(std::vector<int>()={});
-        groupToBeAddedTwice.addParameter(p);
+        groupToBeAddedTwice.parameter(p);
         EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
         EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
     }
@@ -687,7 +686,7 @@ TEST(c3dModifier, addAnalogs) {
     for (size_t f = 0; f < new_c3d.nFrames; ++f)
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).data(),
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 }
 
@@ -905,7 +904,7 @@ TEST(c3dModifier, addPointsAndAnalogs){
 
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).data(),
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 
     }
@@ -1189,7 +1188,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
         for (size_t sf = 0; sf < ref_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < ref_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(read_c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).data(),
+                EXPECT_FLOAT_EQ(read_c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 
     }
@@ -1314,7 +1313,7 @@ TEST(c3dFileIO, readViconC3D){
     for (size_t f = 0; f < 580; ++f){
         EXPECT_EQ(Vicon.data().frame(f).points().nbPoints(), 51);
         for (size_t sf = 0; sf < 10; ++sf)
-            EXPECT_EQ(Vicon.data().frame(f).analogs().subframe(static_cast<int>(sf)).nbChannels(), 38);
+            EXPECT_EQ(Vicon.data().frame(f).analogs().subframe(sf).nbChannels(), 38);
     }
 }
 
