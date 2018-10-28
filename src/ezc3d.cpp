@@ -402,10 +402,12 @@ void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::Paramet
         throw std::invalid_argument("Parameter must have a name");
     }
 
-    int idx(parameters().groupIdx(groupName));
-    if (idx < 0){
-        _parameters->addGroup(ezc3d::ParametersNS::GroupNS::Group(groupName));
-        idx = static_cast<int>(parameters().groups().size()-1);
+    size_t idx;
+    try {
+        idx = parameters().groupIdx(groupName);
+    } catch (std::invalid_argument) {
+        _parameters->group(ezc3d::ParametersNS::GroupNS::Group(groupName));
+        idx = parameters().groupIdx(groupName);
     }
 
     _parameters->group_nonConst(idx).parameter(p);

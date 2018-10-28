@@ -14,7 +14,6 @@
 /// \brief Group of parameter of a C3D file
 ///
 class EZC3D_API ezc3d::ParametersNS::GroupNS::Group{
-public:
     //---- CONSTRUCTOR ----//
 public:
     ///
@@ -108,11 +107,11 @@ public:
     size_t nbParameters() const;
 
     ///
-    /// \brief Get the index of a parameter in the group holder
+    /// \brief Get the index of a parameter in the group
     /// \param parameterName Name of the parameter
     /// \return The index of the parameter
     ///
-    /// Search for the index of a parameter into group holder by the name of this parameter.
+    /// Search for the index of a parameter into the group by the name of this parameter.
     ///
     /// Throw a std::invalid_argument if parameterName is not found
     ///
@@ -143,7 +142,7 @@ public:
 
     ///
     /// \brief Get a particular parameter with the name parameterName from the group
-    /// \param pointName The name of the parameter
+    /// \param parameterName The name of the parameter
     /// \return The parameter
     ///
     /// Throw a std::invalid_argument if parameterName is not found
@@ -152,7 +151,7 @@ public:
 
     ///
     /// \brief Get a particular parameter with the name parameterName from the group in the form of a non-const reference.
-    /// \param pointName The name of the parameter
+    /// \param parameterName The name of the parameter
     /// \return The parameter
     ///
     /// Get a particular parameterwith the name parameterName from the group in the form of a non-const reference.
