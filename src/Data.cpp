@@ -64,7 +64,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                     }
                     sub.channel(c, i);
                 }
-                analog.replaceSubframe(k, sub);
+                analog.subframe(sub, k);
             }
             _frames[j].add(analog);
 
@@ -77,7 +77,7 @@ void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &frame, size_t idx)
 {
     if (idx == SIZE_MAX)
         _frames.push_back(frame);
-    else{
+    else {
         if (idx >= _frames.size())
             _frames.resize(idx+1);
         _frames[static_cast<size_t>(idx)].add(frame);
@@ -85,19 +85,25 @@ void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &frame, size_t idx)
 }
 ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame_nonConst(size_t idx)
 {
-    try{
+    try {
         return _frames.at(idx);
     } catch(std::out_of_range) {
-        throw std::out_of_range("Wrong number of frames");
+        throw std::out_of_range("Data::frame method is trying to access the frame "
+                                + std::to_string(idx) +
+                                " while the maximum number of frames is "
+                                + std::to_string(nbFrames()) + ".");
     }
 }
 
 const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(size_t idx) const
 {
-    try{
+    try {
         return _frames.at(idx);
     } catch(std::out_of_range) {
-        throw std::out_of_range("Wrong number of frames");
+        throw std::out_of_range("Data::frame method is trying to access the frame "
+                                + std::to_string(idx) +
+                                " while the maximum number of frame is "
+                                + std::to_string(nbFrames()) + ".");
     }
 }
 
@@ -160,53 +166,4 @@ void ezc3d::DataNS::AnalogsNS::Channel::name(const std::string &name)
 
 
 
-const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& ezc3d::DataNS::AnalogsNS::Analogs::subframes() const
-{
-    return _subframe;
-}
-std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> &ezc3d::DataNS::AnalogsNS::Analogs::subframes_nonConst()
-{
-    return _subframe;
-}
-const ezc3d::DataNS::AnalogsNS::SubFrame& ezc3d::DataNS::AnalogsNS::Analogs::subframe(int idx) const
-{
-    if (idx < 0 || idx >= static_cast<int>(_subframe.size()))
-        throw std::out_of_range("Tried to access wrong subframe index for analog data");
-    return _subframe[static_cast<size_t>(idx)];
-}
 
-
-ezc3d::DataNS::AnalogsNS::Analogs::Analogs()
-{
-
-}
-ezc3d::DataNS::AnalogsNS::Analogs::Analogs(int nSubframes)
-{
-    if (nSubframes < 0)
-        throw std::out_of_range("Number of subframes can't be under 0");
-    _subframe.resize(static_cast<size_t>(nSubframes));
-}
-void ezc3d::DataNS::AnalogsNS::Analogs::print() const
-{
-    for (int i = 0; i < static_cast<int>(subframes().size()); ++i){
-        std::cout << "Subframe = " << i << std::endl;
-        subframe(i).print();
-        std::cout << std::endl;
-    }
-}
-void ezc3d::DataNS::AnalogsNS::Analogs::write(std::fstream &f) const
-{
-    for (int i = 0; i < static_cast<int>(subframes().size()); ++i){
-        subframe(i).write(f);
-    }
-}
-void ezc3d::DataNS::AnalogsNS::Analogs::addSubframe(const ezc3d::DataNS::AnalogsNS::SubFrame& subframe)
-{
-    _subframe.push_back(subframe);
-}
-void ezc3d::DataNS::AnalogsNS::Analogs::replaceSubframe(int idx, const ezc3d::DataNS::AnalogsNS::SubFrame& subframe)
-{
-    if (idx < 0 || idx >= static_cast<int>(_subframe.size()))
-        throw std::out_of_range("Tried to access wrong subframe index for analog data");
-    _subframe[static_cast<size_t>(idx)] = subframe;
-}

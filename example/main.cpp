@@ -11,6 +11,10 @@
 int main()
 {
     {
+        ezc3d::c3d c;
+        c.data().frame(1);
+    }
+    {
         // Speed test
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < 50; ++i){
@@ -53,7 +57,7 @@ int main()
             ezc3d::DataNS::AnalogsNS::Channel c(subframes_analog.channel(0));
             c.value(sf + 1);
             subframes_analog.channel(c, 0);
-            frame.analogs_nonConst().addSubframe(subframes_analog);
+            frame.analogs_nonConst().subframe(subframes_analog);
         }
         for (size_t f=0; f<c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
@@ -80,7 +84,7 @@ int main()
             subframe.channel(c);
         }
         for (int i=0; i<c3d.header().nbAnalogByFrame(); ++i)
-            analog.addSubframe(subframe);
+            analog.subframe(subframe);
         f.add(pts, analog);
         c3d.addFrame(f);
 
@@ -144,7 +148,7 @@ int main()
             subframe.channel(c);
         }
         for (int i=0; i<c3d_empty.header().nbAnalogByFrame(); ++i)
-            analog.addSubframe(subframe);
+            analog.subframe(subframe);
         f.add(pts, analog);
         c3d_empty.addFrame(f);
         c3d_empty.addFrame(f);

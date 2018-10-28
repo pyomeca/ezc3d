@@ -65,6 +65,7 @@ public:
     /// \return The index of the analog channel
     ///
     /// Search for the index of a analog channel into subframe by the name of this channel.
+    ///
     /// Throw a std::invalid_argument if channelName is not found
     ///
     size_t channelIdx(const std::string& channelName) const;
@@ -74,14 +75,11 @@ public:
     /// \param idx Index of the analog channel
     /// \return The analog channel
     ///
+    /// Get a particular analog channel of index idx from the analogous data.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of channels
+    ///
     const ezc3d::DataNS::AnalogsNS::Channel& channel(size_t idx) const;
-
-    ///
-    /// \brief Get a particular analog channel with the name channelName from the analogous data
-    /// \param channelName
-    /// \return The analog channel
-    ///
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(const std::string& channelName) const;
 
     ///
     /// \brief Get a particular analog channel of index idx from the analogous data with write access
@@ -91,7 +89,20 @@ public:
     /// Get a particular analog channel of index idx from the analogous in the form of a non-const reference.
     /// The user can thereafter modify this analog channel at will, but with the caution it requires.
     ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of channels
+    ///
     ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(size_t idx);
+
+    ///
+    /// \brief Get a particular analog channel with the name channelName from the analogous data
+    /// \param channelName
+    /// \return The analog channel
+    ///
+    /// Get a particular analog channel with the name channelName from the analogous data.
+    ///
+    /// Throw a std::invalid_argument if channelName is not found
+    ///
+    const ezc3d::DataNS::AnalogsNS::Channel& channel(const std::string& channelName) const;
 
     ///
     /// \brief Get a particular analog channel with the name channelName from the analogous data
@@ -100,6 +111,8 @@ public:
     ///
     /// Get a particular analog channel with the name channelName from the analogous in the form of a non-const reference.
     /// The user can thereafter modify this analog channel at will, but with the caution it requires.
+    ///
+    /// Throw a std::invalid_argument if channelName is not found
     ///
     ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(const std::string& channelName);
 
