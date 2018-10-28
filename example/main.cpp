@@ -48,9 +48,11 @@ int main()
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
         emptyChannel.name("new_analog2");
         ezc3d::DataNS::Frame frame;
-        subframes_analog.channels_nonConst().push_back(emptyChannel);
+        subframes_analog.channel(emptyChannel);
         for (int sf=0; sf<c3d.header().nbAnalogByFrame(); ++sf){
-            subframes_analog.channels_nonConst()[0].value(sf+1);
+            ezc3d::DataNS::AnalogsNS::Channel c(subframes_analog.channel(0));
+            c.value(sf + 1);
+            subframes_analog.channel(c, 0);
             frame.analogs_nonConst().addSubframe(subframes_analog);
         }
         for (size_t f=0; f<c3d.data().nbFrames(); ++f)
@@ -75,7 +77,7 @@ int main()
         for (int i=0; i<c3d.header().nbAnalogs(); ++i){
             ezc3d::DataNS::AnalogsNS::Channel c;
             c.value(i+1);
-            subframe.addChannel(c);
+            subframe.channel(c);
         }
         for (int i=0; i<c3d.header().nbAnalogByFrame(); ++i)
             analog.addSubframe(subframe);
@@ -139,7 +141,7 @@ int main()
         for (int i=0; i<c3d_empty.header().nbAnalogs(); ++i){
             ezc3d::DataNS::AnalogsNS::Channel c;
             c.value(i+1);
-            subframe.addChannel(c);
+            subframe.channel(c);
         }
         for (int i=0; i<c3d_empty.header().nbAnalogByFrame(); ++i)
             analog.addSubframe(subframe);

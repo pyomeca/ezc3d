@@ -129,7 +129,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     int nAnalogs;
     if (data().nbFrames() > 0){
         if (data().frame(0).analogs().subframes().size() > 0)
-            nAnalogs = static_cast<int>(data().frame(0).analogs().subframe(0).channels().size());
+            nAnalogs = static_cast<int>(data().frame(0).analogs().subframe(0).nbChannels());
         else
             nAnalogs = 0;
     } else
@@ -439,7 +439,7 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     int nAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
     int subSize(static_cast<int>(f.analogs().subframes().size()));
     if (subSize != 0){
-        int nChannel(static_cast<int>(f.analogs().subframes()[0].channels().size()));
+        int nChannel(static_cast<int>(f.analogs().subframes()[0].nbChannels()));
         int nAnalogByFrames(header().nbAnalogByFrame());
         if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs )
             throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
@@ -492,11 +492,11 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
         throw std::runtime_error("Frames must have the same number of frames");
     if (static_cast<int>(frames[0].analogs().subframes().size()) != header().nbAnalogByFrame())
         throw std::runtime_error("Subrames must have the same number of subframes");
-    if (frames[0].analogs().subframe(0).channels().size() == 0)
+    if (frames[0].analogs().subframe(0).nbChannels() == 0)
         throw std::runtime_error("Channels cannot be empty");
 
     std::vector<std::string> labels(parameters().group("ANALOG").parameter("LABELS").valuesAsString());
-    for (int idx = 0; idx<static_cast<int>(frames[0].analogs().subframe(0).channels().size()); ++idx){
+    for (int idx = 0; idx<static_cast<int>(frames[0].analogs().subframe(0).nbChannels()); ++idx){
         const std::string &name(frames[0].analogs().subframe(0).channel(idx).name());
         for (size_t i=0; i<labels.size(); ++i)
             if (!name.compare(labels[i]))
@@ -504,7 +504,7 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 
         for (int f=0; f<static_cast<int>(data().nbFrames()); ++f){
             for (int sf=0; sf<header().nbAnalogByFrame(); ++sf){
-                _data->frame_nonConst(f).analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].addChannel(frames[static_cast<size_t>(f)].analogs().subframe(sf).channel(idx));
+                _data->frame_nonConst(f).analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].channel(frames[static_cast<size_t>(f)].analogs().subframe(sf).channel(idx));
             }
         }
     }
@@ -520,7 +520,7 @@ void ezc3d::c3d::addAnalog(const std::string &name)
         emptyChannel.name(name);
         emptyChannel.value(0);
         ezc3d::DataNS::Frame frame;
-        dummy_subframes.channels_nonConst().push_back(emptyChannel);
+        dummy_subframes.channel(emptyChannel);
         for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
             frame.analogs_nonConst().addSubframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
