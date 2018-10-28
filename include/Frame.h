@@ -12,6 +12,7 @@
 #include <memory>
 #include <ezc3d.h>
 #include <Points.h>
+#include <Analogs.h>
 
 ///
 /// \brief Frame holder for C3D data

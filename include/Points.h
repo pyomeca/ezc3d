@@ -49,6 +49,7 @@ public:
     ///
     void write(std::fstream &f) const;
 
+
     //---- POINT ----//
 protected:
     std::vector<ezc3d::DataNS::Points3dNS::Point> _points; ///< Holder of the 3D points
@@ -65,6 +66,7 @@ public:
     /// \return The index of the point
     ///
     /// Search for the index of a point into points data by the name of this point.
+    ///
     /// Throw a std::invalid_argument if pointName is not found
     ///
     size_t pointIdx(const std::string& pointName) const;
@@ -73,6 +75,8 @@ public:
     /// \brief Get a particular point of index idx from the 3D points data
     /// \param idx The index of the point
     /// \return The point
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
     const ezc3d::DataNS::Points3dNS::Point& point(size_t idx) const;
 
@@ -84,12 +88,16 @@ public:
     /// Get a particular point of index idx from the 3D points data in the form of a non-const reference.
     /// The user can thereafter modify these points at will, but with the caution it requires.
     ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of frames
+    ///
     ezc3d::DataNS::Points3dNS::Point& point_nonConst(size_t idx);
 
     ///
     /// \brief Get a particular point with the name pointName from the 3D points data
     /// \param pointName The name of the point
     /// \return The point
+    ///
+    /// Throw a std::invalid_argument if pointName is not found
     ///
     const ezc3d::DataNS::Points3dNS::Point& point(const std::string& pointName) const;
 
@@ -101,12 +109,14 @@ public:
     /// Get a particular point with the name pointName from the 3D points data in the form of a non-const reference.
     /// The user can thereafter modify these points at will, but with the caution it requires.
     ///
+    /// Throw a std::invalid_argument if pointName is not found
+    ///
     ezc3d::DataNS::Points3dNS::Point& point_nonConst(const std::string& pointName);
 
     ///
     /// \brief Add/replace a point to the points data set
-    /// \param point the actual point to add
-    /// \param idx the index of the point in the points data set
+    /// \param point The actual point to add
+    /// \param idx The index of the point in the points data set
     ///
     /// Add or replace a particular point to the points data set.
     ///
