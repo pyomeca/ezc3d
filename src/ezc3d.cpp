@@ -87,7 +87,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     int nFrames(static_cast<int>(data().nbFrames()));
     if (nFrames != grpPoint.parameter("FRAMES").valuesAsInt()[0]){
         int idx(grpPoint.parameterIdx("FRAMES"));
-        grpPoint.parameters_nonConst()[static_cast<size_t>(idx)].set(std::vector<int>() = {nFrames}, {1});
+        grpPoint.parameters_nonConst()[static_cast<size_t>(idx)].set(std::vector<int>() = {nFrames});
     }
 
     // If points has been added
@@ -97,7 +97,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     else
         nPoints = static_cast<int>(parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size());
     if (nPoints != grpPoint.parameter("USED").valuesAsInt()[0]){
-        grpPoint.parameters_nonConst()[static_cast<size_t>(grpPoint.parameterIdx("USED"))].set(std::vector<int>() = {nPoints}, {1});
+        grpPoint.parameters_nonConst()[static_cast<size_t>(grpPoint.parameterIdx("USED"))].set(std::vector<int>() = {nPoints});
 
         size_t idxLabels(static_cast<size_t>(grpPoint.parameterIdx("LABELS")));
         size_t idxDescriptions(static_cast<size_t>(grpPoint.parameterIdx("DESCRIPTIONS")));
@@ -119,9 +119,9 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             descriptions.push_back("");
             units.push_back("mm");
         }
-        grpPoint.parameters_nonConst()[idxLabels].set(labels, {nPoints});
-        grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions, {nPoints});
-        grpPoint.parameters_nonConst()[idxUnits].set(units, {nPoints});
+        grpPoint.parameters_nonConst()[idxLabels].set(labels);
+        grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions);
+        grpPoint.parameters_nonConst()[idxUnits].set(units);
     }
 
     // If analogous data has been added
@@ -135,7 +135,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     } else
         nAnalogs = static_cast<int>(parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() + newAnalogs.size());
     if (nAnalogs != grpAnalog.parameter("USED").valuesAsInt()[0]){
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(grpAnalog.parameterIdx("USED"))].set(std::vector<int>() = {nAnalogs}, {1});
+        grpAnalog.parameters_nonConst()[static_cast<size_t>(grpAnalog.parameterIdx("USED"))].set(std::vector<int>() = {nAnalogs});
 
         size_t idxLabels(static_cast<size_t>(grpAnalog.parameterIdx("LABELS")));
         size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
@@ -154,26 +154,26 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             labels.push_back(name);
             descriptions.push_back("");
         }
-        grpAnalog.parameters_nonConst()[idxLabels].set(labels, {nAnalogs});
-        grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions, {nAnalogs});
+        grpAnalog.parameters_nonConst()[idxLabels].set(labels);
+        grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions);
 
         int idxScale(static_cast<int>(grpAnalog.parameterIdx("SCALE")));
         std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
         for (int i = static_cast<int>(grpAnalog.parameter(idxScale).valuesAsFloat().size()); i<nAnalogs; ++i)
             scales.push_back(1);
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxScale)].set(scales, {int(scales.size())});
+        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxScale)].set(scales);
 
         int idxOffset(grpAnalog.parameterIdx("OFFSET"));
         std::vector<int> offset(grpAnalog.parameter(idxOffset).valuesAsInt());
         for (int i = static_cast<int>(grpAnalog.parameter(idxOffset).valuesAsInt().size()); i<nAnalogs; ++i)
             offset.push_back(0);
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxOffset)].set(offset, {int(offset.size())});
+        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxOffset)].set(offset);
 
         int idxUnits(grpAnalog.parameterIdx("UNITS"));
         std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
         for (int i = static_cast<int>(grpAnalog.parameter(idxUnits).valuesAsString().size()); i<nAnalogs; ++i)
             units.push_back("V");
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxUnits)].set(units, {int(units.size())});
+        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxUnits)].set(units);
 
     }
     updateHeader();
@@ -274,14 +274,14 @@ int ezc3d::c3d::readInt(unsigned int nByteToRead, int nByteFromPrevious,
     return out;
 }
 
-int ezc3d::c3d::readUint(unsigned int nByteToRead, int nByteFromPrevious,
+size_t ezc3d::c3d::readUint(unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char* c = new char[nByteToRead + 1];
     readFile(nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
-    int out(static_cast<int>(hex2uint(c, nByteToRead)));
+    size_t out(hex2uint(c, nByteToRead));
     delete[] c;
     return out;
 }
@@ -294,7 +294,7 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
     return out;
 }
 
-void ezc3d::c3d::readMatrix(unsigned int dataLenghtInBytes, const std::vector<int> &dimension,
+void ezc3d::c3d::readMatrix(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
                        std::vector<int> &param_data, size_t currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -304,7 +304,7 @@ void ezc3d::c3d::readMatrix(unsigned int dataLenghtInBytes, const std::vector<in
             readMatrix(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
+void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
                        std::vector<float> &param_data, size_t currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -314,7 +314,7 @@ void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
             readMatrix(dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
+void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
                        std::vector<std::string> &param_data_string)
 {
     std::vector<std::string> param_data_string_tp;
@@ -335,7 +335,7 @@ void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
         _dispatchMatrix(dimension, param_data_string_tp, param_data_string);
 }
 
-void ezc3d::c3d::_readMatrix(const std::vector<int> &dimension,
+void ezc3d::c3d::_readMatrix(const std::vector<size_t> &dimension,
                        std::vector<std::string> &param_data, size_t currentIdx)
 {
     for (int i=0; i<dimension[currentIdx]; ++i)
@@ -345,7 +345,7 @@ void ezc3d::c3d::_readMatrix(const std::vector<int> &dimension,
             _readMatrix(dimension, param_data, currentIdx + 1);
 }
 
-size_t ezc3d::c3d::_dispatchMatrix(const std::vector<int> &dimension,
+size_t ezc3d::c3d::_dispatchMatrix(const std::vector<size_t> &dimension,
                                  const std::vector<std::string> &param_data_in,
                                  std::vector<std::string> &param_data_out, size_t idxInParam,
                                  size_t currentIdx)

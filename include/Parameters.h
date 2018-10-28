@@ -1,10 +1,7 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
-#include <stdexcept>
-#include <memory>
-
-#include <ezc3d.h>
+#include <Parameter.h>
 
 class EZC3D_API ezc3d::ParametersNS::Parameters{
 public:
@@ -66,50 +63,5 @@ protected:
 
     std::vector<ezc3d::ParametersNS::GroupNS::Parameter> _parameters; // Holder for the parameters of the group
 };
-
-
-class EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter{
-public:
-    Parameter(const std::string &name = "", const std::string &description = "");
-
-    int read(ezc3d::c3d &file, int nbCharInName);
-    void set(const std::vector<int>& data, const std::vector<int>& dimension);
-    void set(const std::vector<float>& data, const std::vector<int>& dimension);
-    void set(const std::vector<std::string>& data, const std::vector<int>& dimension);
-    void print() const;
-    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
-
-    // Getter for the group
-    const std::vector<int> dimension() const;
-    void lock();
-    void unlock();
-    bool isLocked() const;
-    void name(const std::string paramName);
-    const std::string& name() const;
-    const std::string& description() const;
-
-    ezc3d::DATA_TYPE type() const;
-    const std::vector<std::string>& valuesAsString() const;
-    const std::vector<int>& valuesAsByte() const;
-    const std::vector<int>& valuesAsInt() const;
-    const std::vector<float>& valuesAsFloat() const;
-
-protected:
-
-    bool _isLocked; // If the group should not be modified
-    unsigned int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, unsigned int currentIdx=0, unsigned int cmp=0) const;
-    bool isDimensionConsistent(int dataSize, const std::vector<int>& dimension) const;
-
-    std::vector<int> _dimension; // Mapping of the data vector
-    ezc3d::DATA_TYPE _data_type; // What kind of data there is in the parameter
-    std::vector<int> _param_data_int; // Actual parameter
-    std::vector<float> _param_data_float; // Actual parameter
-    std::vector<std::string> _param_data_string; // Actual parameter
-
-    std::string _name;
-    std::string _description;
-};
-
-
 
 #endif

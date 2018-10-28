@@ -8,10 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include <sstream>
-#include <memory>
 #include <ezc3d.h>
-#include <Subframe.h>
 
 ///
 /// \brief Channel of an analogous data
