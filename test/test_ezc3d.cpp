@@ -60,7 +60,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
     c3dStruc.pointFrameRate = 100;
     if (withMarkers){
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
-        pointRate.set(std::vector<float>()={c3dStruc.pointFrameRate}, {1});
+        pointRate.set(std::vector<float>()={c3dStruc.pointFrameRate});
         c3dStruc.c3d.addParameter("POINT", pointRate);
     }
     if (withAnalogs){
@@ -68,7 +68,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
         c3dStruc.nSubframes = c3dStruc.analogFrameRate / c3dStruc.pointFrameRate;
 
         ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
-        analogRate.set(std::vector<float>()={c3dStruc.analogFrameRate}, {1});
+        analogRate.set(std::vector<float>()={c3dStruc.analogFrameRate});
         c3dStruc.c3d.addParameter("ANALOG", analogRate);
     }
     for (size_t f = 0; f < c3dStruc.nFrames; ++f){
@@ -382,7 +382,7 @@ TEST(c3dModifier, specificParameters){
     // Create a new group
     ezc3d::ParametersNS::GroupNS::Parameter p2;
     p2.name("NewParam");
-    p2.set(std::vector<int>(), {0});
+    p2.set(std::vector<int>());
     EXPECT_NO_THROW(new_c3d.c3d.addParameter("ThisIsANewRealGroup", p2));
     EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").valuesAsInt().size(), 0);
@@ -420,7 +420,7 @@ TEST(c3dModifier, specificParameters){
         ezc3d::ParametersNS::Parameters params;
         ezc3d::ParametersNS::GroupNS::Group groupToBeAddedTwice;
         ezc3d::ParametersNS::GroupNS::Parameter p("UselessParameter");
-        p.set(std::vector<int>()={}, {0});
+        p.set(std::vector<int>()={});
         groupToBeAddedTwice.addParameter(p);
         EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
         EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
@@ -945,7 +945,7 @@ TEST(c3dModifier, addFrames){
     // Add Analogs
     new_c3d.nAnalogs = 3;
     ezc3d::ParametersNS::GroupNS::Parameter analogUsed(new_c3d.c3d.parameters().group("ANALOG").parameter("USED"));
-    analogUsed.set(std::vector<int>()={static_cast<int>(new_c3d.nAnalogs)}, {1});
+    analogUsed.set(std::vector<int>()={static_cast<int>(new_c3d.nAnalogs)});
     new_c3d.c3d.addParameter("ANALOG", analogUsed);
 
     ezc3d::DataNS::Frame stupidFrameAnalog;
@@ -956,7 +956,7 @@ TEST(c3dModifier, addFrames){
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
 
     ezc3d::ParametersNS::GroupNS::Parameter analogRate(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE"));
-    analogRate.set(std::vector<float>()={100}, {1});
+    analogRate.set(std::vector<float>()={100});
     new_c3d.c3d.addParameter("ANALOG", analogRate);
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
 
@@ -967,7 +967,7 @@ TEST(c3dModifier, addFrames){
 
     // Remove point frame rate and then
     ezc3d::ParametersNS::GroupNS::Parameter pointRate(new_c3d.c3d.parameters().group("POINT").parameter("RATE"));
-    pointRate.set(std::vector<float>()={0}, {1});
+    pointRate.set(std::vector<float>()={0});
     new_c3d.c3d.addParameter("POINT", pointRate);
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
 }
