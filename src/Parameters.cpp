@@ -55,7 +55,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        addGroup(grp);
+        group(grp);
     }
     {
         ezc3d::ParametersNS::GroupNS::Group grp("ANALOG", "");
@@ -111,7 +111,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             p.set(std::vector<int>()={});
             grp.parameter(p);
         }
-        addGroup(grp);
+        group(grp);
     }
     {
         ezc3d::ParametersNS::GroupNS::Group grp("FORCE_PLATFORM", "");
@@ -150,7 +150,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
             p.set(std::vector<float>()={});
             grp.parameter(p);
         }
-        addGroup(grp);
+        group(grp);
     }
 }
 
@@ -195,27 +195,12 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
 
         // Group ID always negative for groups and positive parameter of group ID
         if (id < 0)
-            nextParamByteInFile = group_nonConst(abs(id)-1).read(file, nbCharInName);
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(file, nbCharInName);
         else
-            nextParamByteInFile = group_nonConst(id-1).parameter(file, nbCharInName);
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(file, nbCharInName);
     }
 }
-int ezc3d::ParametersNS::Parameters::processorType() const
-{
-    return _processorType;
-}
-int ezc3d::ParametersNS::Parameters::nbParamBlock() const
-{
-    return _nbParamBlock;
-}
-int ezc3d::ParametersNS::Parameters::checksum() const
-{
-    return _checksum;
-}
-int ezc3d::ParametersNS::Parameters::parametersStart() const
-{
-    return _parametersStart;
-}
+
 void ezc3d::ParametersNS::Parameters::print() const
 {
     std::cout << "Parameters header" << std::endl;
@@ -223,7 +208,7 @@ void ezc3d::ParametersNS::Parameters::print() const
     std::cout << "nbParamBlock = " << nbParamBlock() << std::endl;
     std::cout << "processorType = " << processorType() << std::endl;
 
-    for (int i = 0; i < static_cast<int>(groups().size()); ++i){
+    for (size_t i = 0; i < nbGroups(); ++i){
         std::cout << "Group " << i << std::endl;
         group(i).print();
         std::cout << std::endl;
@@ -247,8 +232,8 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
 
     // Write each groups
     std::streampos dataStartPosition; // Special parameter in POINT group
-    for (int i=0; i<static_cast<int>(groups().size()); ++i)
-        group(i).write(f, -(i+1), dataStartPosition);
+    for (size_t i=0; i < nbGroups(); ++i)
+        group(i).write(f, -static_cast<int>(i+1), dataStartPosition);
 
     // Move the cursor to a beginning of a block
     std::streampos actualPos(f.tellg());
@@ -273,44 +258,85 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
     f.seekg(actualPos);
 }
-void ezc3d::ParametersNS::Parameters::addGroup(const ezc3d::ParametersNS::GroupNS::Group &g)
+
+int ezc3d::ParametersNS::Parameters::parametersStart() const
+{
+    return _parametersStart;
+}
+
+int ezc3d::ParametersNS::Parameters::checksum() const
+{
+    return _checksum;
+}
+
+int ezc3d::ParametersNS::Parameters::nbParamBlock() const
+{
+    return _nbParamBlock;
+}
+
+int ezc3d::ParametersNS::Parameters::processorType() const
+{
+    return _processorType;
+}
+
+size_t ezc3d::ParametersNS::Parameters::nbGroups() const
+{
+    return _groups.size();
+}
+
+size_t ezc3d::ParametersNS::Parameters::groupIdx(const std::string &groupName) const
+{
+    for (size_t i = 0; i < nbGroups(); ++i)
+        if (!group(i).name().compare(groupName))
+            return i;
+    throw std::invalid_argument("Parameters::groupIdx could not find " + groupName);
+}
+
+const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(size_t idx) const
+{
+    try {
+        return _groups.at(idx);
+    } catch(std::out_of_range) {
+        throw std::out_of_range("Parameters::group method is trying to access the group "
+                                + std::to_string(idx) +
+                                " while the maximum number of groups is "
+                                + std::to_string(nbGroups()) + ".");
+    }
+}
+
+ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group_nonConst(size_t idx)
+{
+    try {
+        return _groups.at(idx);
+    } catch(std::out_of_range) {
+        throw std::out_of_range("Parameters::group method is trying to access the group "
+                                + std::to_string(idx) +
+                                " while the maximum number of groups is "
+                                + std::to_string(nbGroups()) + ".");
+    }
+}
+
+const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(const std::string &groupName) const
+{
+    return group(groupIdx(groupName));
+}
+
+ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group_nonConst(const std::string &groupName)
+{
+    return group_nonConst(groupIdx(groupName));
+}
+
+void ezc3d::ParametersNS::Parameters::group(const ezc3d::ParametersNS::GroupNS::Group &g)
 {
     // If the group already exist, override and merge
-    int alreadyExtIdx(groupIdx(g.name()));
-    if (alreadyExtIdx < 0)
+    size_t alreadyExtIdx(SIZE_MAX);
+    for (size_t i = 0; i < nbGroups(); ++i)
+        if (!group(i).name().compare(g.name()))
+            alreadyExtIdx = i;
+    if (alreadyExtIdx == SIZE_MAX)
         _groups.push_back(g);
     else {
         for (size_t i=0; i < g.nbParameters(); ++i)
             _groups[static_cast<unsigned int>(alreadyExtIdx)].parameter(g.parameter(i));
     }
-
-}
-const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(int group) const
-{
-    return _groups[static_cast<unsigned int>(group)];
-}
-const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(const std::string &groupName) const
-{
-    int idx(groupIdx(groupName));
-    if (idx < 0)
-        throw std::invalid_argument("Group name was not found in parameters");
-    return group(idx);
-}
-
-int ezc3d::ParametersNS::Parameters::groupIdx(const std::string &groupName) const
-{
-    for (int i = 0; i < static_cast<int>(groups().size()); ++i){
-        if (!group(i).name().compare(groupName))
-            return i;
-    }
-    return -1;
-}
-
-const std::vector<ezc3d::ParametersNS::GroupNS::Group>& ezc3d::ParametersNS::Parameters::groups() const
-{
-    return _groups;
-}
-ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group_nonConst(int group)
-{
-    return _groups[static_cast<unsigned int>(group)];
 }
