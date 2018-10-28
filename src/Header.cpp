@@ -56,7 +56,7 @@ ezc3d::Header::Header(ezc3d::c3d &file) :
 
 
 
-int ezc3d::Header::nbFrames() const
+size_t ezc3d::Header::nbFrames() const
 {
     if (nb3dPoints() == 0 && nbAnalogs() == 0)
         return 0;
@@ -68,7 +68,7 @@ void ezc3d::Header::nbAnalogs(int n)
 {
     _nbAnalogsMeasurement = n * _nbAnalogByFrame;
 }
-int ezc3d::Header::nbAnalogs() const
+size_t ezc3d::Header::nbAnalogs() const
 {
     if (_nbAnalogByFrame == 0)
         return 0;
@@ -144,13 +144,13 @@ float ezc3d::Header::frameRate() const
 {
     return _frameRate;
 }
-void ezc3d::Header::nbAnalogByFrame(int nb)
+void ezc3d::Header::nbAnalogByFrame(size_t nb)
 {
     int analogs(nbAnalogs());
     _nbAnalogByFrame = nb;
     nbAnalogs(analogs);
 }
-int ezc3d::Header::nbAnalogByFrame() const
+size_t ezc3d::Header::nbAnalogByFrame() const
 {
     return _nbAnalogByFrame;
 }
@@ -186,11 +186,11 @@ int ezc3d::Header::nbAnalogsMeasurement() const
 {
     return _nbAnalogsMeasurement;
 }
-void ezc3d::Header::nb3dPoints(int n)
+void ezc3d::Header::nb3dPoints(size_t n)
 {
     _nb3dPoints = n;
 }
-int ezc3d::Header::nb3dPoints() const
+size_t ezc3d::Header::nb3dPoints() const
 {
     return _nb3dPoints;
 }

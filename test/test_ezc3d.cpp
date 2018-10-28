@@ -94,7 +94,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
                 for (size_t c = 0; c < c3dStruc.nAnalogs; ++c){
                     ezc3d::DataNS::AnalogsNS::Channel channel;
                     channel.name(c3dStruc.analogNames[c]);
-                    channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                    channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                     subframes.channel(channel);
                 }
                 analogs.subframe(subframes);
@@ -687,7 +687,7 @@ TEST(c3dModifier, addAnalogs) {
     for (size_t f = 0; f < new_c3d.nFrames; ++f)
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).value(),
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 }
 
@@ -733,7 +733,7 @@ TEST(c3dModifier, specificAnalog){
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
                 channel.name(new_c3d.analogNames[c]);
-                channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
             analogs.subframe(subframes);
@@ -753,7 +753,7 @@ TEST(c3dModifier, specificAnalog){
             for (size_t c = 0; c < analogNames.size(); ++c){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
                 channel.name(analogNames[c]);
-                channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
             analogs.subframe(subframes);
@@ -905,7 +905,7 @@ TEST(c3dModifier, addPointsAndAnalogs){
 
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).value(),
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 
     }
@@ -1189,7 +1189,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
         for (size_t sf = 0; sf < ref_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < ref_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(read_c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).value(),
+                EXPECT_FLOAT_EQ(read_c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 
     }
