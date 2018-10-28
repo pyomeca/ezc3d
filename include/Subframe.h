@@ -7,7 +7,7 @@
 /// \version 1.0
 /// \date October 17th, 2018
 ///
-///
+
 #include <sstream>
 #include <memory>
 #include <ezc3d.h>
@@ -82,6 +82,26 @@ public:
     /// \return The analog channel
     ///
     const ezc3d::DataNS::AnalogsNS::Channel& channel(const std::string& channelName) const;
+
+    ///
+    /// \brief Get a particular analog channel of index idx from the analogous data with write access
+    /// \param idx Index of the analog channel
+    /// \return The analog channel
+    ///
+    /// Get a particular analog channel of index idx from the analogous in the form of a non-const reference.
+    /// The user can thereafter modify this analog channel at will, but with the caution it requires.
+    ///
+    ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(size_t idx);
+
+    ///
+    /// \brief Get a particular analog channel with the name channelName from the analogous data
+    /// \param channelName
+    /// \return The analog channel
+    ///
+    /// Get a particular analog channel with the name channelName from the analogous in the form of a non-const reference.
+    /// The user can thereafter modify this analog channel at will, but with the caution it requires.
+    ///
+    ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(const std::string& channelName);
 
     ///
     /// \brief Add/replace a channel to the analog subframe data set

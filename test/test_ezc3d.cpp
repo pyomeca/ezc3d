@@ -25,13 +25,13 @@ struct c3dTestStruct{
     // Create an empty c3d
     ezc3d::c3d c3d;
 
-    size_t nFrames = SIZE_MAX;
     float pointFrameRate = -1;
+    float analogFrameRate = -1;
+    size_t nFrames = SIZE_MAX;
     size_t nMarkers = SIZE_MAX;
+    float nSubframes = -1;
     std::vector<std::string> markerNames;
 
-    float analogFrameRate = -1;
-    float nSubframes = -1;
     size_t nAnalogs = SIZE_MAX;
     std::vector<std::string> analogNames;
 };
@@ -687,7 +687,7 @@ TEST(c3dModifier, addAnalogs) {
     for (size_t f = 0; f < new_c3d.nFrames; ++f)
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(static_cast<int>(c)).value(),
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(static_cast<int>(sf)).channel(c).value(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 }
 

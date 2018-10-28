@@ -152,7 +152,7 @@ const std::string& ezc3d::DataNS::AnalogsNS::Channel::name() const
 void ezc3d::DataNS::AnalogsNS::Channel::name(const std::string &name)
 {
     std::string name_copy = name;
-    ezc3d::removeSpacesTrailOfAString(name_copy);
+    ezc3d::removeTrailingSpaces(name_copy);
     _name = name_copy;
 }
 

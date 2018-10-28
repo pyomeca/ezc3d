@@ -52,9 +52,19 @@ const ezc3d::DataNS::Points3dNS::Point& ezc3d::DataNS::Points3dNS::Points::point
 {
     return _points.at(idx);
 }
+
+ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point_nonConst(size_t idx)
+{
+    return _points.at(idx);
+}
 const ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point(const std::string &pointName) const
 {
     return point(pointIdx(pointName));
+}
+
+ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point_nonConst(const std::string &pointName)
+{
+    return point_nonConst(pointIdx(pointName));
 }
 void ezc3d::DataNS::Points3dNS::Point::print() const
 {
