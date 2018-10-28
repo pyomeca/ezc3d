@@ -65,7 +65,7 @@ public:
     void name(const std::string &name);
 
 
-    //---- DATA ----//
+    //---- ACTUAL DATA ----//
 protected:
     std::vector<float> _data; ///< Value of the point
 public:

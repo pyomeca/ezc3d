@@ -18,7 +18,7 @@ void ezc3d::DataNS::Points3dNS::Points::point(const ezc3d::DataNS::Points3dNS::P
     if (idx == SIZE_MAX)
         _points.push_back(point);
     else{
-        if (idx >= _points.size())
+        if (idx >= nbPoints())
             _points.resize(idx+1);
         _points[idx] = point;
     }
