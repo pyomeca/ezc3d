@@ -151,7 +151,7 @@ ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::pa
     } catch(std::out_of_range) {
         throw std::out_of_range("Groups::parameter method is trying to access the parameter "
                                 + std::to_string(idx) +
-                                " while the maximum number of parameter is "
+                                " while the maximum number of parameters is "
                                 + std::to_string(nbParameters()) + " in the group " + name() + ".");
     }
 }
