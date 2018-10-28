@@ -102,27 +102,4 @@ public:
 
 };
 
-
-
-
-
-class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
-public:
-    void print() const;
-    void write(std::fstream &f) const;
-
-    float value() const;
-    void value(float v);
-
-    const std::string& name() const;
-    void name(const std::string &name);
-
-protected:
-    std::string _name;
-    float _value;
-};
-
-
-
-
 #endif

@@ -2,14 +2,14 @@
 #include "Point.h"
 // Implementation of Point class
 
-ezc3d::DataNS::Points3dNS::Point::Point() :
-    _name("")
+ezc3d::DataNS::Points3dNS::Point::Point(const std::string &name) :
+    _name(name)
 {
     _data.resize(4);
 }
 
 ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &p) :
-    _name(p.name())
+    _name(p._name)
 {
     _data.resize(4);
     x(p.x());

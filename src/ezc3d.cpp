@@ -518,7 +518,7 @@ void ezc3d::c3d::addAnalog(const std::string &name)
         ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
         emptyChannel.name(name);
-        emptyChannel.value(0);
+        emptyChannel.data(0);
         ezc3d::DataNS::Frame frame;
         dummy_subframes.channel(emptyChannel);
         for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
