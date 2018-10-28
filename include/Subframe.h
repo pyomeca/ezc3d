@@ -1,0 +1,102 @@
+#ifndef SUBFRAME_H
+#define SUBFRAME_H
+///
+/// \file Subframe.h
+/// \brief Declaration of Subframe class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+///
+#include <sstream>
+#include <memory>
+#include <ezc3d.h>
+
+///
+/// \brief Subframe for the analogous data
+///
+class EZC3D_API ezc3d::DataNS::AnalogsNS::SubFrame{
+    //---- CONSTRUCTORS ----//
+public:
+    ///
+    /// \brief Create an empty subframe for analogous data
+    ///
+    SubFrame();
+
+    ///
+    /// \brief Create an empty subframe for analogous data, allocating the number of channels
+    /// \param nChannels Number of channels in the subframe
+    ///
+    SubFrame(size_t nChannels);
+
+
+    //---- STREAM ----//
+public:
+    ///
+    ///
+    /// \brief Print the subframe
+    ///
+    /// Print the subframe to the console by calling sequentially the print method of all of the analog channels
+    ///
+    void print() const;
+
+    ///
+    /// \brief Write the subframe to an opened file
+    /// \param f Already opened fstream file with write access
+    ///
+    /// Write the subframe to a file by calling sequentially the write method of all of the analog channels
+    ///
+    void write(std::fstream &f) const;
+
+
+    //---- CHANNELS ----//
+protected:
+    std::vector<ezc3d::DataNS::AnalogsNS::Channel> _channels;
+public:
+    ///
+    /// \brief Get the number of analog channels
+    /// \return The number of channels
+    ///
+    size_t nbChannels() const;
+
+    ///
+    /// \brief Get the index of a analog channel in the subframe
+    /// \param channelName Name of the analog channel
+    /// \return The index of the analog channel
+    ///
+    /// Search for the index of a analog channel into subframe by the name of this channel.
+    /// Throw a std::invalid_argument if channelName is not found
+    ///
+    size_t channelIdx(const std::string& channelName) const;
+
+    ///
+    /// \brief Get a particular analog channel of index idx from the analogous data
+    /// \param idx Index of the analog channel
+    /// \return The analog channel
+    ///
+    const ezc3d::DataNS::AnalogsNS::Channel& channel(size_t idx) const;
+
+    ///
+    /// \brief Get a particular analog channel with the name channelName from the analogous data
+    /// \param channelName
+    /// \return The analog channel
+    ///
+    const ezc3d::DataNS::AnalogsNS::Channel& channel(const std::string& channelName) const;
+
+    ///
+    /// \brief Add/replace a channel to the analog subframe data set
+    /// \param channel the actual channel to add
+    /// \param idx the index of the channel in the subframe data set
+    ///
+    /// Add or replace a particular channel to the subframe data set.
+    ///
+    /// If no idx is sent, then the channel is appended to the points data set.
+    /// If the idx correspond to a pre-existing channel, it replaces it.
+    /// If idx is larger than the number of channels, it resize the subframe accordingly and add the channel
+    /// where it belongs but leaves the other created channels empty.
+    ///
+    void channel(const ezc3d::DataNS::AnalogsNS::Channel& channel, size_t idx = SIZE_MAX);
+
+};
+
+#endif

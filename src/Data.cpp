@@ -62,7 +62,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                         unlabel << "unlabeled_analog_" << i;
                         c.name(unlabel.str());
                     }
-                    sub.replaceChannel(static_cast<int>(i), c);
+                    sub.channel(c, i);
                 }
                 analog.replaceSubframe(k, sub);
             }
@@ -127,65 +127,7 @@ void ezc3d::DataNS::Data::write(std::fstream &f) const
 
 
 
-// Analog data
-ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame()
-{
 
-}
-ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame(int nChannels)
-{
-    if (nChannels < 0)
-        throw std::out_of_range("Number of channels can't be under 0");
-    _channels.resize(static_cast<size_t>(nChannels));
-}
-void ezc3d::DataNS::AnalogsNS::SubFrame::print() const
-{
-    for (int i = 0; i < static_cast<int>(channels().size()); ++i){
-        channel(i).print();
-    }
-}
-void ezc3d::DataNS::AnalogsNS::SubFrame::write(std::fstream &f) const
-{
-    for (int i = 0; i < static_cast<int>(channels().size()); ++i){
-        channel(i).write(f);
-    }
-}
-
-void ezc3d::DataNS::AnalogsNS::SubFrame::addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel)
-{
-    _channels.push_back(channel);
-}
-void ezc3d::DataNS::AnalogsNS::SubFrame::replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel &channel)
-{
-    if (idx < 0 || idx >= static_cast<int>(channels().size()))
-        throw std::out_of_range("Tried to access wrong index for channel data");
-    _channels[static_cast<size_t>(idx)] = channel;
-}
-void ezc3d::DataNS::AnalogsNS::SubFrame::addChannels(const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& allChannelsData)
-{
-    _channels = allChannelsData;
-}
-std::vector<ezc3d::DataNS::AnalogsNS::Channel>& ezc3d::DataNS::AnalogsNS::SubFrame::channels_nonConst()
-{
-    return _channels;
-}
-const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& ezc3d::DataNS::AnalogsNS::SubFrame::channels() const
-{
-    return _channels;
-}
-const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(int idx) const
-{
-    if (idx < 0 || idx >= static_cast<int>(_channels.size()))
-        throw std::out_of_range("Tried to access wrong index for analog data");
-    return _channels[static_cast<size_t>(idx)];
-}
-const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(std::string channelName) const
-{
-    for (int i = 0; i < static_cast<int>(channels().size()); ++i)
-        if (!channel(i).name().compare(channelName))
-            return channel(i);
-    throw std::invalid_argument("Analog name was not found within the analogs");
-}
 float ezc3d::DataNS::AnalogsNS::Channel::value() const
 {
     return _value;

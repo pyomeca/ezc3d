@@ -30,6 +30,7 @@ public:
     ///
     Points(size_t nbPoints);
 
+
     //---- STREAM ----//
 public:
     ///
@@ -89,10 +90,10 @@ public:
     ///
     /// Add or replace a particular point to the points data set.
     ///
-    /// If no idx is sent, then the point is append to the points data set.
+    /// If no idx is sent, then the point is appended to the points data set.
     /// If the idx correspond to a pre-existing point, it replaces it.
     /// If idx is larger than the number of points, it resize the points accordingly and add the point
-    /// where it belongs but leaves the other created frames empty.
+    /// where it belongs but leaves the other created points empty.
     ///
     void point(const ezc3d::DataNS::Points3dNS::Point& point, size_t idx = SIZE_MAX);
 
