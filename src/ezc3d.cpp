@@ -43,7 +43,7 @@ ezc3d::c3d::~c3d()
 void ezc3d::c3d::updateHeader()
 {
     // Parameter is always consider as the right value. If there is a discrepancy between them, change the header
-    if (parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0] != header().nbFrames()){
+    if (static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) != header().nbFrames()){
         _header->firstFrame(0);
         _header->lastFrame(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0] - 1);
     }
@@ -52,24 +52,24 @@ void ezc3d::c3d::updateHeader()
     if (static_cast<int>(pointRate*buffer) != static_cast<int>(header().frameRate()*buffer)){
         _header->frameRate(pointRate);
     }
-    if (parameters().group("POINT").parameter("USED").valuesAsInt()[0] != header().nb3dPoints()){
-        _header->nb3dPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+    if (static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]) != header().nb3dPoints()){
+        _header->nb3dPoints(static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]));
     }
 
     // Compare the subframe with data when possible, otherwise go with the parameters
     if (_data != nullptr && data().nbFrames() > 0 && data().frame(0).analogs().nbSubframes() != 0) {
         if (data().frame(0).analogs().nbSubframes() != static_cast<size_t>(header().nbAnalogByFrame()))
-            _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().nbSubframes()));
+            _header->nbAnalogByFrame(data().frame(0).analogs().nbSubframes());
     } else {
         // Should always be greater than 0, but we have to take in account Optotrak lazyness
-        if (parameters().group("ANALOG").parameters().size())
+        if (parameters().group("ANALOG").nbParameters())
             if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
-                _header->nbAnalogByFrame(static_cast<int>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
+                _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
     }
 
     // Should always be greater than 0, but we have to take in account Optotrak lazyness
-    if (parameters().group("ANALOG").parameters().size()){
-        if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0] != header().nbAnalogs())
+    if (parameters().group("ANALOG").nbParameters()){
+        if (static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
             _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
     } else
         _header->nbAnalogs(0);
@@ -86,18 +86,18 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
     int nFrames(static_cast<int>(data().nbFrames()));
     if (nFrames != grpPoint.parameter("FRAMES").valuesAsInt()[0]){
-        int idx(grpPoint.parameterIdx("FRAMES"));
-        grpPoint.parameters_nonConst()[static_cast<size_t>(idx)].set(std::vector<int>() = {nFrames});
+        size_t idx(grpPoint.parameterIdx("FRAMES"));
+        grpPoint.parameter_nonConst(idx).set(nFrames);
     }
 
     // If points has been added
-    int nPoints;
+    size_t nPoints;
     if (data().nbFrames() > 0)
-        nPoints = static_cast<int>(data().frame(0).points().nbPoints());
+        nPoints = data().frame(0).points().nbPoints();
     else
-        nPoints = static_cast<int>(parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size());
-    if (nPoints != grpPoint.parameter("USED").valuesAsInt()[0]){
-        grpPoint.parameters_nonConst()[static_cast<size_t>(grpPoint.parameterIdx("USED"))].set(std::vector<int>() = {nPoints});
+        nPoints = parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size();
+    if (nPoints != static_cast<size_t>(grpPoint.parameter("USED").valuesAsInt()[0])){
+        grpPoint.parameter_nonConst("USED").set(nPoints);
 
         size_t idxLabels(static_cast<size_t>(grpPoint.parameterIdx("LABELS")));
         size_t idxDescriptions(static_cast<size_t>(grpPoint.parameterIdx("DESCRIPTIONS")));
@@ -105,13 +105,13 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
         std::vector<std::string> units;
-        for (int i = 0; i<nPoints; ++i){
+        for (size_t i = 0; i < nPoints; ++i){
             std::string name;
             if (data().nbFrames() == 0){
-                if (i < static_cast<int>(parameters().group("POINT").parameter("LABELS").valuesAsString().size()))
-                    name = parameters().group("POINT").parameter("LABELS").valuesAsString()[static_cast<size_t>(i)];
+                if (i < parameters().group("POINT").parameter("LABELS").valuesAsString().size())
+                    name = parameters().group("POINT").parameter("LABELS").valuesAsString()[i];
                 else
-                    name = newMarkers[static_cast<size_t>(i) - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
+                    name = newMarkers[i - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
             } else {
                 name = data().frame(0).points().point(i).name();
             }
@@ -119,61 +119,61 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             descriptions.push_back("");
             units.push_back("mm");
         }
-        grpPoint.parameters_nonConst()[idxLabels].set(labels);
-        grpPoint.parameters_nonConst()[idxDescriptions].set(descriptions);
-        grpPoint.parameters_nonConst()[idxUnits].set(units);
+        grpPoint.parameter_nonConst(idxLabels).set(labels);
+        grpPoint.parameter_nonConst(idxDescriptions).set(descriptions);
+        grpPoint.parameter_nonConst(idxUnits).set(units);
     }
 
     // If analogous data has been added
     ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
-    int nAnalogs;
+    size_t nAnalogs;
     if (data().nbFrames() > 0){
         if (data().frame(0).analogs().nbSubframes() > 0)
-            nAnalogs = static_cast<int>(data().frame(0).analogs().subframe(0).nbChannels());
+            nAnalogs = data().frame(0).analogs().subframe(0).nbChannels();
         else
             nAnalogs = 0;
     } else
-        nAnalogs = static_cast<int>(parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() + newAnalogs.size());
-    if (nAnalogs != grpAnalog.parameter("USED").valuesAsInt()[0]){
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(grpAnalog.parameterIdx("USED"))].set(std::vector<int>() = {nAnalogs});
+        nAnalogs = parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() + newAnalogs.size();
+    if (nAnalogs != static_cast<size_t>(grpAnalog.parameter("USED").valuesAsInt()[0])){
+        grpAnalog.parameter_nonConst("USED").set(nAnalogs);
 
         size_t idxLabels(static_cast<size_t>(grpAnalog.parameterIdx("LABELS")));
         size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
-        for (int i = 0; i<nAnalogs; ++i){
+        for (size_t i = 0; i<nAnalogs; ++i){
             std::string name;
             if (data().nbFrames() == 0){
-                if (i < static_cast<int>(parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()))
+                if (i < parameters().group("ANALOG").parameter("LABELS").valuesAsString().size())
                     name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[static_cast<size_t>(i)];
                 else
-                    name = newAnalogs[static_cast<size_t>(i)-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
+                    name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
             } else {
                 name = data().frame(0).analogs().subframe(0).channel(i).name();
             }
             labels.push_back(name);
             descriptions.push_back("");
         }
-        grpAnalog.parameters_nonConst()[idxLabels].set(labels);
-        grpAnalog.parameters_nonConst()[idxDescriptions].set(descriptions);
+        grpAnalog.parameter_nonConst(idxLabels).set(labels);
+        grpAnalog.parameter_nonConst(idxDescriptions).set(descriptions);
 
-        int idxScale(static_cast<int>(grpAnalog.parameterIdx("SCALE")));
+        size_t idxScale(grpAnalog.parameterIdx("SCALE"));
         std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
-        for (int i = static_cast<int>(grpAnalog.parameter(idxScale).valuesAsFloat().size()); i<nAnalogs; ++i)
+        for (size_t i = grpAnalog.parameter(idxScale).valuesAsFloat().size(); i < nAnalogs; ++i)
             scales.push_back(1);
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxScale)].set(scales);
+        grpAnalog.parameter_nonConst(idxScale).set(scales);
 
-        int idxOffset(grpAnalog.parameterIdx("OFFSET"));
+        size_t idxOffset(grpAnalog.parameterIdx("OFFSET"));
         std::vector<int> offset(grpAnalog.parameter(idxOffset).valuesAsInt());
-        for (int i = static_cast<int>(grpAnalog.parameter(idxOffset).valuesAsInt().size()); i<nAnalogs; ++i)
+        for (size_t i = grpAnalog.parameter(idxOffset).valuesAsInt().size(); i < nAnalogs; ++i)
             offset.push_back(0);
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxOffset)].set(offset);
+        grpAnalog.parameter_nonConst(idxOffset).set(offset);
 
-        int idxUnits(grpAnalog.parameterIdx("UNITS"));
+        size_t idxUnits(grpAnalog.parameterIdx("UNITS"));
         std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
-        for (int i = static_cast<int>(grpAnalog.parameter(idxUnits).valuesAsString().size()); i<nAnalogs; ++i)
+        for (size_t i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i < nAnalogs; ++i)
             units.push_back("V");
-        grpAnalog.parameters_nonConst()[static_cast<size_t>(idxUnits)].set(units);
+        grpAnalog.parameter_nonConst(idxUnits).set(units);
 
     }
     updateHeader();
@@ -297,7 +297,7 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
 void ezc3d::c3d::readMatrix(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
                        std::vector<int> &param_data, size_t currentIdx)
 {
-    for (int i=0; i<dimension[currentIdx]; ++i)
+    for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back (readInt(dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
         else
@@ -307,7 +307,7 @@ void ezc3d::c3d::readMatrix(unsigned int dataLenghtInBytes, const std::vector<si
 void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
                        std::vector<float> &param_data, size_t currentIdx)
 {
-    for (int i=0; i<dimension[currentIdx]; ++i)
+    for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back (readFloat());
         else
@@ -325,8 +325,8 @@ void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
     if (dimension.size() == 1){
         if (dimension[0] != 0) {
             std::string tp;
-            for (int j = 0; j < dimension[0]; ++j)
-                tp += param_data_string_tp[static_cast<size_t>(j)];
+            for (size_t j = 0; j < dimension[0]; ++j)
+                tp += param_data_string_tp[j];
             ezc3d::removeTrailingSpaces(tp);
             param_data_string.push_back(tp);
         }
@@ -338,7 +338,7 @@ void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
 void ezc3d::c3d::_readMatrix(const std::vector<size_t> &dimension,
                        std::vector<std::string> &param_data, size_t currentIdx)
 {
-    for (int i=0; i<dimension[currentIdx]; ++i)
+    for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back(readString(ezc3d::DATA_TYPE::BYTE));
         else
@@ -350,10 +350,10 @@ size_t ezc3d::c3d::_dispatchMatrix(const std::vector<size_t> &dimension,
                                  std::vector<std::string> &param_data_out, size_t idxInParam,
                                  size_t currentIdx)
 {
-    for (int i=0; i<dimension[currentIdx]; ++i)
+    for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1){
             std::string tp;
-            for (int j = 0; j < dimension[0]; ++j){
+            for (size_t j = 0; j < dimension[0]; ++j){
                 tp += param_data_in[idxInParam];
                 ++idxInParam;
             }
@@ -408,7 +408,7 @@ void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::Paramet
         idx = static_cast<int>(parameters().groups().size()-1);
     }
 
-    _parameters->group_nonConst(idx).addParameter(p);
+    _parameters->group_nonConst(idx).parameter(p);
 
     // Do a sanity check on the header if important stuff like number of frames or number of elements is changed
     updateHeader();
@@ -436,11 +436,11 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
         throw std::runtime_error("Analogs frame rate must be specified if you add some");
     }
 
-    int nAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
-    int subSize(static_cast<int>(f.analogs().nbSubframes()));
+    size_t nAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
+    size_t subSize(f.analogs().nbSubframes());
     if (subSize != 0){
-        int nChannel(static_cast<int>(f.analogs().subframe(0).nbChannels()));
-        int nAnalogByFrames(header().nbAnalogByFrame());
+        size_t nChannel(f.analogs().subframe(0).nbChannels());
+        size_t nAnalogByFrames(header().nbAnalogByFrame());
         if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs )
             throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
     }
@@ -458,7 +458,7 @@ void ezc3d::c3d::addPoint(const std::vector<ezc3d::DataNS::Frame>& frames)
         throw std::runtime_error("Points cannot be empty");
 
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    for (int idx = 0; idx<static_cast<int>(frames[0].points().nbPoints()); ++idx){
+    for (size_t idx = 0; idx < frames[0].points().nbPoints(); ++idx){
         const std::string &name(frames[0].points().point(idx).name());
         for (size_t i=0; i<labels.size(); ++i)
             if (!name.compare(labels[i]))
@@ -490,20 +490,20 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 {
     if (frames.size() != data().nbFrames())
         throw std::runtime_error("Frames must have the same number of frames");
-    if (static_cast<int>(frames[0].analogs().nbSubframes()) != header().nbAnalogByFrame())
+    if (frames[0].analogs().nbSubframes() != header().nbAnalogByFrame())
         throw std::runtime_error("Subrames must have the same number of subframes");
     if (frames[0].analogs().subframe(0).nbChannels() == 0)
         throw std::runtime_error("Channels cannot be empty");
 
     std::vector<std::string> labels(parameters().group("ANALOG").parameter("LABELS").valuesAsString());
-    for (int idx = 0; idx<static_cast<int>(frames[0].analogs().subframe(0).nbChannels()); ++idx){
+    for (size_t idx = 0; idx < frames[0].analogs().subframe(0).nbChannels(); ++idx){
         const std::string &name(frames[0].analogs().subframe(0).channel(idx).name());
         for (size_t i=0; i<labels.size(); ++i)
             if (!name.compare(labels[i]))
                 throw std::runtime_error("Analog channel already exists");
 
-        for (int f=0; f<static_cast<int>(data().nbFrames()); ++f){
-            for (int sf=0; sf<header().nbAnalogByFrame(); ++sf){
+        for (size_t f=0; f < data().nbFrames(); ++f){
+            for (size_t sf=0; sf < header().nbAnalogByFrame(); ++sf){
                 _data->frame_nonConst(f).analogs_nonConst().subframe_nonConst(sf).channel(frames[f].analogs().subframe(sf).channel(idx));
             }
         }
@@ -521,7 +521,7 @@ void ezc3d::c3d::addAnalog(const std::string &name)
         emptyChannel.data(0);
         ezc3d::DataNS::Frame frame;
         dummy_subframes.channel(emptyChannel);
-        for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
+        for (size_t sf = 0; sf < header().nbAnalogByFrame(); ++sf)
             frame.analogs_nonConst().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
