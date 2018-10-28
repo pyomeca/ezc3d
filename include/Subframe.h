@@ -11,6 +11,7 @@
 #include <sstream>
 #include <memory>
 #include <ezc3d.h>
+#include <Channel.h>
 
 ///
 /// \brief Subframe for the analogous data
@@ -51,7 +52,7 @@ public:
 
     //---- CHANNELS ----//
 protected:
-    std::vector<ezc3d::DataNS::AnalogsNS::Channel> _channels;
+    std::vector<ezc3d::DataNS::AnalogsNS::Channel> _channels; ///< Holder for the channels
 public:
     ///
     /// \brief Get the number of analog channels

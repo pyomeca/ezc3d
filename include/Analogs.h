@@ -13,7 +13,6 @@
 #include <ezc3d.h>
 #include <Subframe.h>
 
-
 ///
 /// \brief Analog holder for C3D analogous data
 ///
@@ -53,7 +52,7 @@ public:
 
     //---- SUBFRAME ----//
 protected:
-    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe;
+    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe; ///< Holder for the subframes
 public:
     ///
     /// \brief Get the number of subframes
