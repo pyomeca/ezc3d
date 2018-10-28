@@ -71,17 +71,37 @@ public:
 
     ///
     /// \brief Get a particular point of index idx from the 3D points data
-    /// \param idx Index of the point
+    /// \param idx The index of the point
     /// \return The point
     ///
     const ezc3d::DataNS::Points3dNS::Point& point(size_t idx) const;
 
     ///
+    /// \brief Get a particular point of index idx from the 3D points data in order to be modified by the caller
+    /// \param idx The index of the point
+    /// \return The point
+    ///
+    /// Get a particular point of index idx from the 3D points data in the form of a non-const reference.
+    /// The user can thereafter modify these points at will, but with the caution it requires.
+    ///
+    ezc3d::DataNS::Points3dNS::Point& point_nonConst(size_t idx);
+
+    ///
     /// \brief Get a particular point with the name pointName from the 3D points data
-    /// \param pointName
+    /// \param pointName The name of the point
     /// \return The point
     ///
     const ezc3d::DataNS::Points3dNS::Point& point(const std::string& pointName) const;
+
+    ///
+    /// \brief Get a particular point with the name pointName from the 3D points data in order to be modified by the caller
+    /// \param pointName The name of the point
+    /// \return The point
+    ///
+    /// Get a particular point with the name pointName from the 3D points data in the form of a non-const reference.
+    /// The user can thereafter modify these points at will, but with the caution it requires.
+    ///
+    ezc3d::DataNS::Points3dNS::Point& point_nonConst(const std::string& pointName);
 
     ///
     /// \brief Add/replace a point to the points data set

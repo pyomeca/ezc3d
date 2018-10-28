@@ -58,7 +58,7 @@ public:
     /// \brief Return a reference to all the points in order to be modified by the caller
     /// \return A non-const reference to all the points
     ///
-    /// This method returns all the points in the form of a non-const reference.
+    /// Get all the points in the form of a non-const reference.
     /// The user can thereafter modify these points at will, but with the caution it requires.
     ///
     ezc3d::DataNS::Points3dNS::Points& points_nonConst() const;
@@ -78,13 +78,13 @@ public:
     /// \brief Return a reference to all the analogs in order to be modified by the caller
     /// \return A non-const reference to all the analogs
     ///
-    /// This method returns all the analogs in the form of a non-const reference.
+    /// Get all the analogs in the form of a non-const reference.
     /// The user can thereafter modify these analogs at will, but with the caution it requires.
     ///
     ezc3d::DataNS::AnalogsNS::Analogs& analogs_nonConst() const;
 
 
-    //---- ACCESSOR ----//
+    //---- ACCESSORS ----//
 public:
     ///
     /// \brief Add a frame by copying a sent frame
