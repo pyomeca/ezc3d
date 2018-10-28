@@ -17,8 +17,8 @@ public:
     // Getter on the parameters
     int parametersAddress() const;
     int checksum() const;
-    void nb3dPoints(int n);
-    int nb3dPoints() const;
+    void nb3dPoints(size_t n);
+    size_t nb3dPoints() const;
     int nbAnalogsMeasurement() const;
     void firstFrame(int frame);
     int firstFrame() const;
@@ -27,8 +27,8 @@ public:
     int nbMaxInterpGap() const;
     int scaleFactor() const;
     int dataStart() const;
-    void nbAnalogByFrame(int nb);
-    int nbAnalogByFrame() const;
+    void nbAnalogByFrame(size_t nb);
+    size_t nbAnalogByFrame() const;
     void frameRate(float f);
     float frameRate() const;
     int emptyBlock1() const;
@@ -45,22 +45,22 @@ public:
     const std::vector<std::string>& eventsLabel() const;
     const std::string& eventsLabel(int idx) const;
     int emptyBlock4() const;
-    int nbFrames() const;
+    size_t nbFrames() const;
     void nbAnalogs(int n);
-    int nbAnalogs() const;
+    size_t nbAnalogs() const;
 
 protected:
     // Read the Header
     int _parametersAddress;         // Byte 1.1
     int _checksum;                 // Byte 1.2 ==> 80 if it is a c3d
-    int _nb3dPoints;                // Byte 2 ==> number of stored trajectories
-    int _nbAnalogsMeasurement;      // Byte 3 ==> total number of analog data per point frame
+    size_t _nb3dPoints;                // Byte 2 ==> number of stored trajectories
+    size_t _nbAnalogsMeasurement;      // Byte 3 ==> total number of analog data per point frame
     int _firstFrame; // 1-based!    // Byte 4 ==> first frame in the file
     int _lastFrame;                 // Byte 5 ==> last frame in the file
     int _nbMaxInterpGap;            // Byte 6 ==> maximal gap for interpolation
     int _scaleFactor;               // Byte 7-8 ==> convert int to 3d reference frame, floating point if negative
     int _dataStart;                 // Byte 9 ==> Number of first block for 3D and analog data
-    int _nbAnalogByFrame;           // Byte 10 ==> Number of analog by frame
+    size_t _nbAnalogByFrame;           // Byte 10 ==> Number of analog by frame
     float _frameRate;              // Byte 11-12 ==> 3d frame rate in Hz (floating point)
     int _emptyBlock1;               // Byte 13-147
     int _keyLabelPresent;           // Byte 148 ==> 12345 if Label and range are present

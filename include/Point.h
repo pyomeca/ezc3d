@@ -20,13 +20,15 @@ class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
 public:
     ///
     /// \brief Create an empty 3D point with memory allocated but not filled
+    /// \param name The name of the point
     ///
-    Point();
+    Point(const std::string& name = "");
 
     ///
     /// \brief Copy a 3D point
+    /// \param point The point to copy
     ///
-    Point(const ezc3d::DataNS::Points3dNS::Point&);
+    Point(const ezc3d::DataNS::Points3dNS::Point& point);
 
 
     //---- STREAM ----//
@@ -60,7 +62,7 @@ public:
 
     ///
     /// \brief Set the name of the point
-    /// \param name Name of the point
+    /// \param name The name of the point
     ///
     void name(const std::string &name);
 
