@@ -76,6 +76,15 @@ public:
     const std::vector<float> data() const;
 
     ///
+    /// \brief Get a reference to the STL vector where the 3D point is store in order to be modified by the caller
+    /// \return The 3d point
+    ///
+    /// Get a reference to the STL vector where the 3D point is store in the form of a non-const reference.
+    /// The user can thereafter modify these points at will, but with the caution it requires.
+    ///
+    std::vector<float> data_nonConst();
+
+    ///
     /// \brief Get the X component of the 3D point
     /// \return The X component of the 3d point
     ///

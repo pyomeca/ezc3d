@@ -54,6 +54,11 @@ const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const
 {
     return _data;
 }
+
+std::vector<float> ezc3d::DataNS::Points3dNS::Point::data_nonConst()
+{
+    return _data;
+}
 float ezc3d::DataNS::Points3dNS::Point::residual() const
 {
     return _data[3];
@@ -68,6 +73,6 @@ const std::string& ezc3d::DataNS::Points3dNS::Point::name() const
 void ezc3d::DataNS::Points3dNS::Point::name(const std::string &name)
 {
     std::string name_copy = name;
-    ezc3d::removeSpacesTrailOfAString(name_copy);
+    ezc3d::removeTrailingSpaces(name_copy);
     _name = name_copy;
 }
