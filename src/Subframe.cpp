@@ -54,3 +54,13 @@ const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::cha
 {
     return _channels.at(channelIdx(channelName));
 }
+
+ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel_nonConst(size_t idx)
+{
+    return _channels.at(idx);
+}
+
+ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel_nonConst(const std::string &channelName)
+{
+    return _channels.at(channelIdx(channelName));
+}
