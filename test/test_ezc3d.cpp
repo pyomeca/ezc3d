@@ -97,7 +97,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
                     channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                     subframes.channel(channel);
                 }
-                analogs.addSubframe(subframes);
+                analogs.subframe(subframes);
             }
         }
 
@@ -718,7 +718,7 @@ TEST(c3dModifier, specificAnalog){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
-            analogs.addSubframe(ezc3d::DataNS::AnalogsNS::SubFrame());
+            analogs.subframe(ezc3d::DataNS::AnalogsNS::SubFrame());
         frame.add(analogs);
         frames[f] = frame;
     }
@@ -736,7 +736,7 @@ TEST(c3dModifier, specificAnalog){
                 channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
-            analogs.addSubframe(subframes);
+            analogs.subframe(subframes);
         }
         frame.add(analogs);
         frames[f] = frame;
@@ -756,7 +756,7 @@ TEST(c3dModifier, specificAnalog){
                 channel.value(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
-            analogs.addSubframe(subframes);
+            analogs.subframe(subframes);
         }
         frame.add(analogs);
         frames[f] = frame;
@@ -776,18 +776,17 @@ TEST(c3dModifier, specificAnalog){
 
     // Create an analog and replace the subframes
     {
-        EXPECT_THROW(ezc3d::DataNS::AnalogsNS::Analogs(-1), std::out_of_range);
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
         ezc3d::DataNS::AnalogsNS::SubFrame sfToBeReplaced;
         ezc3d::DataNS::AnalogsNS::SubFrame sfToReplace;
-        analogs.addSubframe(sfToBeReplaced);
+        analogs.subframe(sfToBeReplaced);
 
-        EXPECT_THROW(analogs.replaceSubframe(-1, sfToReplace), std::out_of_range);
-        EXPECT_THROW(analogs.replaceSubframe(static_cast<int>(analogs.subframes().size()), sfToReplace), std::out_of_range);
-        EXPECT_NO_THROW(analogs.replaceSubframe(0, sfToReplace));
+        size_t nbSubframesOld(analogs.nbSubframes());
+        EXPECT_NO_THROW(analogs.subframe(sfToReplace, analogs.nbSubframes()+2));
+        EXPECT_EQ(analogs.nbSubframes(), nbSubframesOld + 3);
+        EXPECT_NO_THROW(analogs.subframe(sfToReplace, 0));
 
-        EXPECT_THROW(analogs.subframe(-1), std::out_of_range);
-        EXPECT_THROW(analogs.subframe(static_cast<int>(analogs.subframes().size())), std::out_of_range);
+        EXPECT_THROW(analogs.subframe(analogs.nbSubframes()), std::out_of_range);
         EXPECT_NO_THROW(analogs.subframe(0));
     }
 
@@ -952,7 +951,7 @@ TEST(c3dModifier, addFrames){
     ezc3d::DataNS::Frame stupidFrameAnalog;
     ezc3d::DataNS::AnalogsNS::Analogs stupidAnalogs(new_c3d.c3d.data().frame(0).analogs());
     ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe(new_c3d.nAnalogs-1);
-    stupidAnalogs.addSubframe(stupidSubframe);
+    stupidAnalogs.subframe(stupidSubframe);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
 
@@ -962,7 +961,7 @@ TEST(c3dModifier, addFrames){
     EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
 
     ezc3d::DataNS::AnalogsNS::SubFrame notSoStupidSubframe(new_c3d.nAnalogs);
-    stupidAnalogs.replaceSubframe(0, notSoStupidSubframe);
+    stupidAnalogs.subframe(notSoStupidSubframe, 0);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
     EXPECT_NO_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog));
 

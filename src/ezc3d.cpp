@@ -57,9 +57,9 @@ void ezc3d::c3d::updateHeader()
     }
 
     // Compare the subframe with data when possible, otherwise go with the parameters
-    if (_data != nullptr && data().nbFrames() > 0 && data().frame(0).analogs().subframes().size() != 0) {
-        if (data().frame(0).analogs().subframes().size() != static_cast<size_t>(header().nbAnalogByFrame()))
-            _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().subframes().size()));
+    if (_data != nullptr && data().nbFrames() > 0 && data().frame(0).analogs().nbSubframes() != 0) {
+        if (data().frame(0).analogs().nbSubframes() != static_cast<size_t>(header().nbAnalogByFrame()))
+            _header->nbAnalogByFrame(static_cast<int>(data().frame(0).analogs().nbSubframes()));
     } else {
         // Should always be greater than 0, but we have to take in account Optotrak lazyness
         if (parameters().group("ANALOG").parameters().size())
@@ -128,7 +128,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
     int nAnalogs;
     if (data().nbFrames() > 0){
-        if (data().frame(0).analogs().subframes().size() > 0)
+        if (data().frame(0).analogs().nbSubframes() > 0)
             nAnalogs = static_cast<int>(data().frame(0).analogs().subframe(0).nbChannels());
         else
             nAnalogs = 0;
@@ -432,14 +432,14 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
     if (f.points().nbPoints() > 0 && static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0){
         throw std::runtime_error("Analogs frame rate must be specified if you add some");
     }
-    if (f.analogs().subframes().size() > 0 && static_cast<double>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]) == 0.0){
+    if (f.analogs().nbSubframes() > 0 && static_cast<double>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]) == 0.0){
         throw std::runtime_error("Analogs frame rate must be specified if you add some");
     }
 
     int nAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
-    int subSize(static_cast<int>(f.analogs().subframes().size()));
+    int subSize(static_cast<int>(f.analogs().nbSubframes()));
     if (subSize != 0){
-        int nChannel(static_cast<int>(f.analogs().subframes()[0].nbChannels()));
+        int nChannel(static_cast<int>(f.analogs().subframe(0).nbChannels()));
         int nAnalogByFrames(header().nbAnalogByFrame());
         if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs )
             throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
@@ -490,7 +490,7 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 {
     if (frames.size() != data().nbFrames())
         throw std::runtime_error("Frames must have the same number of frames");
-    if (static_cast<int>(frames[0].analogs().subframes().size()) != header().nbAnalogByFrame())
+    if (static_cast<int>(frames[0].analogs().nbSubframes()) != header().nbAnalogByFrame())
         throw std::runtime_error("Subrames must have the same number of subframes");
     if (frames[0].analogs().subframe(0).nbChannels() == 0)
         throw std::runtime_error("Channels cannot be empty");
@@ -504,7 +504,7 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 
         for (int f=0; f<static_cast<int>(data().nbFrames()); ++f){
             for (int sf=0; sf<header().nbAnalogByFrame(); ++sf){
-                _data->frame_nonConst(f).analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].channel(frames[f].analogs().subframe(sf).channel(idx));
+                _data->frame_nonConst(f).analogs_nonConst().subframe_nonConst(sf).channel(frames[f].analogs().subframe(sf).channel(idx));
             }
         }
     }
@@ -522,7 +522,7 @@ void ezc3d::c3d::addAnalog(const std::string &name)
         ezc3d::DataNS::Frame frame;
         dummy_subframes.channel(emptyChannel);
         for (int sf=0; sf<header().nbAnalogByFrame(); ++sf)
-            frame.analogs_nonConst().addSubframe(dummy_subframes);
+            frame.analogs_nonConst().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
         addAnalog(dummy_frames);
