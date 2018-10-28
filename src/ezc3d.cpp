@@ -202,7 +202,7 @@ void ezc3d::c3d::print() const
     data().print();
 }
 
-void ezc3d::removeSpacesTrailOfAString(std::string& s){
+void ezc3d::removeTrailingSpaces(std::string& s){
     // Remove the spaces at the end of the strings
     for (int i = static_cast<int>(s.size()); i >= 0; --i)
         if (s.size() > 0 && s[s.size()-1] == ' ')
@@ -327,7 +327,7 @@ void ezc3d::c3d::readMatrix(const std::vector<int> &dimension,
             std::string tp;
             for (int j = 0; j < dimension[0]; ++j)
                 tp += param_data_string_tp[static_cast<size_t>(j)];
-            ezc3d::removeSpacesTrailOfAString(tp);
+            ezc3d::removeTrailingSpaces(tp);
             param_data_string.push_back(tp);
         }
     }
@@ -357,7 +357,7 @@ size_t ezc3d::c3d::_dispatchMatrix(const std::vector<int> &dimension,
                 tp += param_data_in[idxInParam];
                 ++idxInParam;
             }
-            ezc3d::removeSpacesTrailOfAString(tp);
+            ezc3d::removeTrailingSpaces(tp);
             param_data_out.push_back(tp);
         }
         else
@@ -504,7 +504,7 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
 
         for (int f=0; f<static_cast<int>(data().nbFrames()); ++f){
             for (int sf=0; sf<header().nbAnalogByFrame(); ++sf){
-                _data->frame_nonConst(f).analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].channel(frames[static_cast<size_t>(f)].analogs().subframe(sf).channel(idx));
+                _data->frame_nonConst(f).analogs_nonConst().subframes_nonConst()[static_cast<size_t>(sf)].channel(frames[f].analogs().subframe(sf).channel(idx));
             }
         }
     }
