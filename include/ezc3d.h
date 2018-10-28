@@ -11,7 +11,7 @@
 #  define EZC3D_API
 #endif
 
-
+#include <sstream>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -85,18 +85,18 @@ public:
     int readInt(unsigned int nByteToRead,
                 int nByteFromPrevious = 0,
                 const std::ios_base::seekdir &pos = std::ios::cur);
-    int readUint(unsigned int nByteToRead,
+    size_t readUint(unsigned int nByteToRead,
                  int nByteFromPrevious = 0,
                  const std::ios_base::seekdir &pos = std::ios::cur);
     float readFloat(int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
-    void readMatrix(const std::vector<int> &dimension,
+    void readMatrix(const std::vector<size_t> &dimension,
                     std::vector<std::string> &param_data);
     void readMatrix(unsigned int dataLenghtInBytes,
-                    const std::vector<int> &dimension,
+                    const std::vector<size_t> &dimension,
                     std::vector<int> &param_data,
                     size_t currentIdx = 0);
-    void readMatrix(const std::vector<int> &dimension,
+    void readMatrix(const std::vector<size_t> &dimension,
                     std::vector<float> &param_data,
                     size_t currentIdx = 0);
 
@@ -131,12 +131,12 @@ protected:
         const  std::ios_base::seekdir &pos = std::ios::cur);
 
     // Internal function for reading strings
-    size_t _dispatchMatrix(const std::vector<int> &dimension,
+    size_t _dispatchMatrix(const std::vector<size_t> &dimension,
                          const std::vector<std::string> &param_data_in,
                          std::vector<std::string> &param_data_out,
                          size_t idxInParam = 0,
                          size_t currentIdx = 1);
-    void _readMatrix(const std::vector<int> &dimension,
+    void _readMatrix(const std::vector<size_t> &dimension,
                      std::vector<std::string> &param_data,
                      size_t currentIdx = 0);
 

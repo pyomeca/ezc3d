@@ -1,6 +1,6 @@
 #define EZC3D_API_EXPORTS
 #include "Data.h"
-// Implementation of data class
+// Implementation of Data class
 
 
 ezc3d::DataNS::Data::Data()
