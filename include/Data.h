@@ -12,7 +12,6 @@
 #include <memory>
 #include <ezc3d.h>
 #include <Frame.h>
-#include <Subframe.h>
 
 ///
 /// \brief Actual data of the C3D file
@@ -64,17 +63,26 @@ public:
     size_t nbFrames() const;
 
     ///
-    /// \brief Return a frame
-    /// \return A const reference to a particular data frame
+    /// \brief Get the frame of index idx
+    /// \param idx The index of the frame
+    /// \return The frame of index idx
+    ///
+    /// Get the frame of index idx.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
     const ezc3d::DataNS::Frame& frame(size_t idx) const;
 
     ///
-    /// \brief Return a frame in order to be modified by the caller
-    /// \return A non-const reference to a particular data frame
+    /// \brief Get the frame of index idx in order to be modified by the caller
+    /// \param idx The index of the frame
+    /// \return A non-const reference to the frame of index idx
     ///
-    /// This method returns a frame in the form of a non-const reference.
+    /// Return a frame in the form of a non-const reference.
     /// The user can thereafter modify this frame at will, but with the caution it requires.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of frames
+    ///
     ///
     ezc3d::DataNS::Frame& frame_nonConst(size_t idx);
 
@@ -95,22 +103,7 @@ public:
 };
 
 
-class EZC3D_API ezc3d::DataNS::AnalogsNS::Analogs{
-public:
-    Analogs();
-    Analogs(int nSubframes);
-    void print() const;
-    void write(std::fstream &f) const;
 
-    const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes() const;
-    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes_nonConst();
-    const ezc3d::DataNS::AnalogsNS::SubFrame& subframe(int idx) const;
-    void addSubframe(const ezc3d::DataNS::AnalogsNS::SubFrame& subframe);
-    void replaceSubframe(int idx, const SubFrame& subframe);
-
-protected:
-    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe;
-};
 
 
 class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
