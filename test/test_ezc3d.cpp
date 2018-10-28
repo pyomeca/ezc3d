@@ -182,7 +182,7 @@ void defaultHeaderTest(const ezc3d::c3d& new_c3d, HEADER_TYPE type = HEADER_TYPE
 void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     if (type == PARAMETER_TYPE::HEADER){
         EXPECT_EQ(new_c3d.parameters().checksum(), 80);
-        EXPECT_EQ(new_c3d.parameters().groups().size(), 3);
+        EXPECT_EQ(new_c3d.parameters().nbGroups(), 3);
     } else if (type == PARAMETER_TYPE::POINT){
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
@@ -421,8 +421,8 @@ TEST(c3dModifier, specificParameters){
         ezc3d::ParametersNS::GroupNS::Parameter p("UselessParameter");
         p.set(std::vector<int>()={});
         groupToBeAddedTwice.parameter(p);
-        EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
-        EXPECT_NO_THROW(params.addGroup(groupToBeAddedTwice));
+        EXPECT_NO_THROW(params.group(groupToBeAddedTwice));
+        EXPECT_NO_THROW(params.group(groupToBeAddedTwice));
     }
 }
 
@@ -1249,7 +1249,7 @@ TEST(c3dFileIO, readViconC3D){
 
     // Parameter tests
     EXPECT_EQ(Vicon.parameters().checksum(), 80);
-    EXPECT_EQ(Vicon.parameters().groups().size(), 9);
+    EXPECT_EQ(Vicon.parameters().nbGroups(), 9);
 
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
@@ -1372,7 +1372,7 @@ TEST(c3dFileIO, readQualisysC3D){
 
     // Parameter tests
     EXPECT_EQ(Qualisys.parameters().checksum(), 80);
-    EXPECT_EQ(Qualisys.parameters().groups().size(), 7);
+    EXPECT_EQ(Qualisys.parameters().nbGroups(), 7);
 
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
@@ -1498,7 +1498,7 @@ TEST(c3dFileIO, readOptotrakC3D){
 
     // Parameter tests
     EXPECT_EQ(Optotrak.parameters().checksum(), 80);
-    EXPECT_EQ(Optotrak.parameters().groups().size(), 3);
+    EXPECT_EQ(Optotrak.parameters().nbGroups(), 3);
 
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
