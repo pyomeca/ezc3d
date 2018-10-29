@@ -163,10 +163,10 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     _processorType(0)
 {
     // Read the Parameters Header
-    _parametersStart = file.readInt(1*ezc3d::DATA_TYPE::BYTE, 256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1), std::ios::beg);
-    _checksum = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
-    _nbParamBlock = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
-    _processorType = file.readInt(1*ezc3d::DATA_TYPE::BYTE);
+    _parametersStart = file.readUint(1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1)), std::ios::beg);
+    _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    _nbParamBlock = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    _processorType = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum == 0 && _parametersStart == 0){
         // Theoritically, if this happens, this is a bad c3d formatting and should return an error, but for some reason
         // Qualisys decided that they would not comply to the standard. Therefore they put "_parameterStart" and "_checksum" to 0
@@ -178,7 +178,7 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
         throw std::ios_base::failure("File must be a valid c3d file");
 
     // Read parameter or group
-    std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + _parametersStart - ezc3d::DATA_TYPE::BYTE);
+    std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
     while (nextParamByteInFile)
     {
         // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
@@ -261,22 +261,22 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
     f.seekg(actualPos);
 }
 
-int ezc3d::ParametersNS::Parameters::parametersStart() const
+size_t ezc3d::ParametersNS::Parameters::parametersStart() const
 {
     return _parametersStart;
 }
 
-int ezc3d::ParametersNS::Parameters::checksum() const
+size_t ezc3d::ParametersNS::Parameters::checksum() const
 {
     return _checksum;
 }
 
-int ezc3d::ParametersNS::Parameters::nbParamBlock() const
+size_t ezc3d::ParametersNS::Parameters::nbParamBlock() const
 {
     return _nbParamBlock;
 }
 
-int ezc3d::ParametersNS::Parameters::processorType() const
+size_t ezc3d::ParametersNS::Parameters::processorType() const
 {
     return _processorType;
 }

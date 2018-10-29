@@ -88,7 +88,7 @@ public:
     int readInt(unsigned int nByteToRead,
                 int nByteFromPrevious = 0,
                 const std::ios_base::seekdir &pos = std::ios::cur);
-    size_t readUint(unsigned int nByteToRead,
+    size_t readUint(size_t nByteToRead,
                  int nByteFromPrevious = 0,
                  const std::ios_base::seekdir &pos = std::ios::cur);
     float readFloat(int nByteFromPrevious = 0,
