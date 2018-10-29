@@ -66,13 +66,13 @@ int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &file, int nbCharInName
     _name.assign(file.readString(static_cast<unsigned int>(abs(nbCharInName) * ezc3d::DATA_TYPE::BYTE)));
 
     // number of byte to the next group from here
-    int offsetNext(static_cast<int>(file.readUint(2*ezc3d::DATA_TYPE::BYTE)));
+    size_t offsetNext(file.readUint(2*ezc3d::DATA_TYPE::BYTE));
     // Compute the position of the element in the file
     int nextParamByteInFile;
     if (offsetNext == 0)
         nextParamByteInFile = 0;
     else
-        nextParamByteInFile = static_cast<int>(file.tellg()) + offsetNext - ezc3d::DATA_TYPE::WORD;
+        nextParamByteInFile = static_cast<int>(static_cast<size_t>(file.tellg()) + offsetNext - ezc3d::DATA_TYPE::WORD);
 
     // Byte 5+nbCharInName ==> Number of characters in group description
     int nbCharInDesc(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
@@ -188,5 +188,5 @@ void ezc3d::ParametersNS::GroupNS::Group::parameter(const ezc3d::ParametersNS::G
     if (alreadyExistIdx == SIZE_MAX)
         _parameters.push_back(p);
     else
-        _parameters[static_cast<unsigned int>(alreadyExistIdx)] = p;
+        _parameters[alreadyExistIdx] = p;
 }
