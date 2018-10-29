@@ -27,6 +27,9 @@ public:
     ///
     Parameters(ezc3d::c3d &file);
 
+
+    //---- STREAM ----//
+public:
     ///
     /// \brief Print the groups by calling the print method of all the groups
     ///

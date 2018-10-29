@@ -152,22 +152,19 @@ void defaultHeaderTest(const ezc3d::c3d& new_c3d, HEADER_TYPE type = HEADER_TYPE
         EXPECT_EQ(new_c3d.header().nbEvents(), 0);
 
         EXPECT_EQ(new_c3d.header().eventsTime().size(), 18);
-        EXPECT_THROW(new_c3d.header().eventsTime(-1), std::invalid_argument);
-        for (int e = 0; e < static_cast<int>(new_c3d.header().eventsTime().size()); ++e)
+        for (size_t e = 0; e < new_c3d.header().eventsTime().size(); ++e)
             EXPECT_FLOAT_EQ(new_c3d.header().eventsTime(e), 0);
-        EXPECT_THROW(new_c3d.header().eventsTime(static_cast<int>(new_c3d.header().eventsTime().size())), std::invalid_argument);
+        EXPECT_THROW(new_c3d.header().eventsTime(new_c3d.header().eventsTime().size()), std::out_of_range);
 
         EXPECT_EQ(new_c3d.header().eventsLabel().size(), 18);
-        EXPECT_THROW(new_c3d.header().eventsLabel(-1), std::invalid_argument);
-        for (int e = 0; e < static_cast<int>(new_c3d.header().eventsLabel().size()); ++e)
+        for (size_t e = 0; e < new_c3d.header().eventsTime().size(); ++e)
             EXPECT_STREQ(new_c3d.header().eventsLabel(e).c_str(), "");
-        EXPECT_THROW(new_c3d.header().eventsLabel(static_cast<int>(new_c3d.header().eventsLabel().size())), std::invalid_argument);
+        EXPECT_THROW(new_c3d.header().eventsLabel(new_c3d.header().eventsLabel().size()), std::out_of_range);
 
         EXPECT_EQ(new_c3d.header().eventsDisplay().size(), 9);
-        EXPECT_THROW(new_c3d.header().eventsDisplay(-1), std::invalid_argument);
-        for (int e = 0; e < static_cast<int>(new_c3d.header().eventsDisplay().size()); ++e)
+        for (size_t e = 0; e < new_c3d.header().eventsDisplay().size(); ++e)
             EXPECT_EQ(new_c3d.header().eventsDisplay(e), 0);
-        EXPECT_THROW(new_c3d.header().eventsDisplay(static_cast<int>(new_c3d.header().eventsDisplay().size())), std::invalid_argument);
+        EXPECT_THROW(new_c3d.header().eventsDisplay(new_c3d.header().eventsDisplay().size()), std::out_of_range);
 
     }
 
@@ -1224,22 +1221,19 @@ TEST(c3dFileIO, readViconC3D){
     EXPECT_EQ(Vicon.header().nbEvents(), 0);
 
     EXPECT_EQ(Vicon.header().eventsTime().size(), 18);
-    EXPECT_THROW(Vicon.header().eventsTime(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Vicon.header().eventsTime().size()); ++e)
+    for (size_t e = 0; e < Vicon.header().eventsTime().size(); ++e)
         EXPECT_FLOAT_EQ(Vicon.header().eventsTime(e), 0);
-    EXPECT_THROW(Vicon.header().eventsTime(static_cast<int>(Vicon.header().eventsTime().size())), std::invalid_argument);
+    EXPECT_THROW(Vicon.header().eventsTime(Vicon.header().eventsTime().size()), std::out_of_range);
 
     EXPECT_EQ(Vicon.header().eventsLabel().size(), 18);
-    EXPECT_THROW(Vicon.header().eventsLabel(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Vicon.header().eventsLabel().size()); ++e)
+    for (size_t e = 0; e < Vicon.header().eventsLabel().size(); ++e)
         EXPECT_STREQ(Vicon.header().eventsLabel(e).c_str(), "");
-    EXPECT_THROW(Vicon.header().eventsLabel(static_cast<int>(Vicon.header().eventsLabel().size())), std::invalid_argument);
+    EXPECT_THROW(Vicon.header().eventsLabel(Vicon.header().eventsLabel().size()), std::out_of_range);
 
     EXPECT_EQ(Vicon.header().eventsDisplay().size(), 9);
-    EXPECT_THROW(Vicon.header().eventsDisplay(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Vicon.header().eventsDisplay().size()); ++e)
+    for (size_t e = 0; e < Vicon.header().eventsDisplay().size(); ++e)
         EXPECT_EQ(Vicon.header().eventsDisplay(e), 0);
-    EXPECT_THROW(Vicon.header().eventsDisplay(static_cast<int>(Vicon.header().eventsDisplay().size())), std::invalid_argument);
+    EXPECT_THROW(Vicon.header().eventsDisplay(Vicon.header().eventsDisplay().size()), std::out_of_range);
 
 
     EXPECT_EQ(Vicon.header().firstFrame(), 0);
@@ -1347,22 +1341,19 @@ TEST(c3dFileIO, readQualisysC3D){
     EXPECT_EQ(Qualisys.header().nbEvents(), 0);
 
     EXPECT_EQ(Qualisys.header().eventsTime().size(), 18);
-    EXPECT_THROW(Qualisys.header().eventsTime(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Qualisys.header().eventsTime().size()); ++e)
+    for (size_t e = 0; e < Qualisys.header().eventsTime().size(); ++e)
         EXPECT_FLOAT_EQ(Qualisys.header().eventsTime(e), 0);
-    EXPECT_THROW(Qualisys.header().eventsTime(static_cast<int>(Qualisys.header().eventsTime().size())), std::invalid_argument);
+    EXPECT_THROW(Qualisys.header().eventsTime(Qualisys.header().eventsTime().size()), std::out_of_range);
 
     EXPECT_EQ(Qualisys.header().eventsLabel().size(), 18);
-    EXPECT_THROW(Qualisys.header().eventsLabel(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Qualisys.header().eventsLabel().size()); ++e)
+    for (size_t e = 0; e < Qualisys.header().eventsLabel().size(); ++e)
         EXPECT_STREQ(Qualisys.header().eventsLabel(e).c_str(), "");
-    EXPECT_THROW(Qualisys.header().eventsLabel(static_cast<int>(Qualisys.header().eventsLabel().size())), std::invalid_argument);
+    EXPECT_THROW(Qualisys.header().eventsLabel(Qualisys.header().eventsLabel().size()), std::out_of_range);
 
     EXPECT_EQ(Qualisys.header().eventsDisplay().size(), 9);
-    EXPECT_THROW(Qualisys.header().eventsDisplay(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Qualisys.header().eventsDisplay().size()); ++e)
+    for (size_t e = 0; e < Qualisys.header().eventsDisplay().size(); ++e)
         EXPECT_EQ(Qualisys.header().eventsDisplay(e), 257);
-    EXPECT_THROW(Qualisys.header().eventsDisplay(static_cast<int>(Qualisys.header().eventsDisplay().size())), std::invalid_argument);
+    EXPECT_THROW(Qualisys.header().eventsDisplay(Qualisys.header().eventsDisplay().size()), std::out_of_range);
 
 
     EXPECT_EQ(Qualisys.header().firstFrame(), 704);
@@ -1473,22 +1464,19 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.header().nbEvents(), 0);
 
     EXPECT_EQ(Optotrak.header().eventsTime().size(), 18);
-    EXPECT_THROW(Optotrak.header().eventsTime(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Optotrak.header().eventsTime().size()); ++e)
+    for (size_t e = 0; e < Optotrak.header().eventsTime().size(); ++e)
         EXPECT_FLOAT_EQ(Optotrak.header().eventsTime(e), 0);
-    EXPECT_THROW(Optotrak.header().eventsTime(static_cast<int>(Optotrak.header().eventsTime().size())), std::invalid_argument);
+    EXPECT_THROW(Optotrak.header().eventsTime(Optotrak.header().eventsTime().size()), std::out_of_range);
 
     EXPECT_EQ(Optotrak.header().eventsLabel().size(), 18);
-    EXPECT_THROW(Optotrak.header().eventsLabel(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Optotrak.header().eventsLabel().size()); ++e)
+    for (size_t e = 0; e < Optotrak.header().eventsLabel().size(); ++e)
         EXPECT_STREQ(Optotrak.header().eventsLabel(e).c_str(), "");
-    EXPECT_THROW(Optotrak.header().eventsLabel(static_cast<int>(Optotrak.header().eventsLabel().size())), std::invalid_argument);
+    EXPECT_THROW(Optotrak.header().eventsLabel(Optotrak.header().eventsLabel().size()), std::out_of_range);
 
     EXPECT_EQ(Optotrak.header().eventsDisplay().size(), 9);
-    EXPECT_THROW(Optotrak.header().eventsDisplay(-1), std::invalid_argument);
-    for (int e = 0; e < static_cast<int>(Optotrak.header().eventsDisplay().size()); ++e)
+    for (size_t e = 0; e < Optotrak.header().eventsDisplay().size(); ++e)
         EXPECT_EQ(Optotrak.header().eventsDisplay(e), 0);
-    EXPECT_THROW(Optotrak.header().eventsDisplay(static_cast<int>(Optotrak.header().eventsDisplay().size())), std::invalid_argument);
+    EXPECT_THROW(Optotrak.header().eventsDisplay(Optotrak.header().eventsDisplay().size()), std::out_of_range);
 
 
     EXPECT_EQ(Optotrak.header().firstFrame(), 0);
