@@ -274,7 +274,7 @@ int ezc3d::c3d::readInt(unsigned int nByteToRead, int nByteFromPrevious,
     return out;
 }
 
-size_t ezc3d::c3d::readUint(unsigned int nByteToRead, int nByteFromPrevious,
+size_t ezc3d::c3d::readUint(size_t nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char* c = new char[nByteToRead + 1];
