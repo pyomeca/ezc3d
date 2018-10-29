@@ -45,27 +45,27 @@ public:
     //---- PARAMETER METADATA ----//
 protected:
     // Read the Parameters Header
-    int _parametersStart;   ///< Byte 1 of the parameter's section of the C3D file.
+    size_t _parametersStart;    ///< Byte 1 of the parameter's section of the C3D file.
+                                ///<
+                                ///< If the value is 1 then it starts at byte 3
+                                ///< otherwise, it starts at byte 512*parametersStart
+    size_t _checksum;   ///< Byte 2 of the C3D file
+                        ///<
+                        ///< It should be equals to 0x50 for a valid a c3d
+    size_t _nbParamBlock;   ///< Byte 3 of the C3D file
                             ///<
-                            ///< If the value is 1 then it starts at byte 3
-                            ///< otherwise, it starts at byte 512*parametersStart
-    int _checksum;  ///< Byte 2 of the C3D file
-                    ///<
-                    ///< It should be equals to 0x50 for a valid a c3d
-    int _nbParamBlock;  ///< Byte 3 of the C3D file
-                        ///<
-                        ///< Number of 256-bytes blocks the paramertes fits in.
-                        ///< It defines the starting position of the data
-    int _processorType; ///< Byte 4 of the C3D file
-                        ///<
-                        ///< Processor type (83 + [1 Inter, 2 DEC, 3 MIPS])
+                            ///< Number of 256-bytes blocks the paramertes fits in.
+                            ///< It defines the starting position of the data
+    size_t _processorType;  ///< Byte 4 of the C3D file
+                            ///<
+                            ///< Processor type (83 + [1 Inter, 2 DEC, 3 MIPS])
 
 public:
     ///
     /// \brief Get the byte in the file where the data starts
     /// \return The byte in the file where the data starts
     ///
-    int parametersStart() const;
+    size_t parametersStart() const;
 
     ///
     /// \brief Get the checksum of the parameters
@@ -73,13 +73,13 @@ public:
     ///
     /// The chechsum, according to C3D.org documentation, should be equals to 0x50 for a valid C3D
     ///
-    int checksum() const;
+    size_t checksum() const;
 
     ///
     /// \brief Get the number of 256-bytes the parameters need in the file
     /// \return The number of 256-bytes the parameters need in the file
     ///
-    int nbParamBlock() const;
+    size_t nbParamBlock() const;
 
     ///
     /// \brief Get the processor type the file was writen on
@@ -87,7 +87,7 @@ public:
     ///
     /// The processor type is defined by the value 83 + index. Where index is 1 for Intel, 2 for DEC and 3 for MIPS
     ///
-    int processorType() const;
+    size_t processorType() const;
 
 
     //---- GROUPS ----//
