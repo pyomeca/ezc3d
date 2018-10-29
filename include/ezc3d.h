@@ -24,6 +24,9 @@
 #include <string>
 #endif
 
+///
+/// \brief Namespace ezc3d
+///
 namespace ezc3d {
     // Size of some constant (in Byte)
     enum DATA_TYPE{

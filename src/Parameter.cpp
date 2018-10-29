@@ -100,7 +100,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
     f.seekg(actualPos);
 }
 
-unsigned int ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstream &f, const std::vector<size_t>& dim, unsigned int currentIdx, unsigned int cmp) const{
+size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstream &f, const std::vector<size_t>& dim, unsigned int currentIdx, unsigned int cmp) const{
     for (size_t i=0; i<dim[currentIdx]; ++i)
         if (currentIdx == dim.size()-1){
             if (_data_type == DATA_TYPE::BYTE)
