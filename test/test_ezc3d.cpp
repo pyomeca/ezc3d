@@ -303,7 +303,7 @@ TEST(wrongC3D, wrongChecksumParameter){
 
     // Modify the header checksum byte
     std::ofstream c3d_file(savePath.c_str(), std::ofstream::in);
-    c3d_file.seekp(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1) + 1); // move to the parameter checksum
+    c3d_file.seekp(static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1) + 1)); // move to the parameter checksum
     int checksum(0x0);
     c3d_file.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
     c3d_file.close();
@@ -313,7 +313,7 @@ TEST(wrongC3D, wrongChecksumParameter){
 
     // If a 0 is also on the byte before the checksum, this is a Qualisys C3D and should be read even if checksum si wrong
     std::ofstream c3d_file2(savePath.c_str(), std::ofstream::in);
-    c3d_file2.seekp(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1)); // move to the parameter checksum
+    c3d_file2.seekp(static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1))); // move to the parameter checksum
     int parameterStart(0x0);
     c3d_file2.write(reinterpret_cast<const char*>(&parameterStart), ezc3d::BYTE);
     c3d_file2.close();
