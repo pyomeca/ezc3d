@@ -50,7 +50,7 @@ protected:
     /// \param cmp Internal variable that keep track where it is in the parameter recursive calls. It should be set to 0 when called the first time.
     /// \return The internal variable cmp. It should be ignore by the user.
     ///
-    unsigned int writeImbricatedParameter(std::fstream &f, const std::vector<size_t> &dim, unsigned int currentIdx=0, unsigned int cmp=0) const;
+    size_t writeImbricatedParameter(std::fstream &f, const std::vector<size_t> &dim, unsigned int currentIdx=0, unsigned int cmp=0) const;
 
 public:
     ///
