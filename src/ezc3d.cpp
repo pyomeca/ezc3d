@@ -382,10 +382,7 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const
 
 void ezc3d::c3d::lockGroup(const std::string &groupName)
 {
-    int idx(parameters().groupIdx(groupName));
-    if (idx < 0)
-        throw std::invalid_argument("Group not found");
-    _parameters->group_nonConst(idx).lock();
+    _parameters->group_nonConst(groupName).lock();
 }
 
 void ezc3d::c3d::unlockGroup(const std::string &groupName)
@@ -396,7 +393,7 @@ void ezc3d::c3d::unlockGroup(const std::string &groupName)
     _parameters->group_nonConst(idx).unlock();
 }
 
-void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
+void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
     if (!p.name().compare("")){
         throw std::invalid_argument("Parameter must have a name");
@@ -416,26 +413,27 @@ void ezc3d::c3d::addParameter(const std::string &groupName, const ezc3d::Paramet
     updateHeader();
 }
 
-void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
+void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx)
 {
     // Make sure f.points().points() is the same as data.f[ANY].points()
     int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
     if (nPoints != 0 && static_cast<int>(f.points().nbPoints()) != nPoints)
-        throw std::runtime_error("Points must be consistent in terms of number of points");
+        throw std::runtime_error("Number of points in POINT:USED parameter must equal"
+                                 "the number of points sent in the frame");
 
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
     for (size_t i=0; i<labels.size(); ++i)
         try {
             f.points().pointIdx(labels[i]);
         } catch (std::invalid_argument) {
-            throw std::invalid_argument("All points must be previously defined in the frames and points");
+            throw std::invalid_argument("All the points in the frame must appear in the POINT:LABELS parameter");
         }
 
     if (f.points().nbPoints() > 0 && static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0){
-        throw std::runtime_error("Analogs frame rate must be specified if you add some");
+        throw std::runtime_error("Point frame rate must be specified if you add some");
     }
     if (f.analogs().nbSubframes() > 0 && static_cast<double>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0]) == 0.0){
-        throw std::runtime_error("Analogs frame rate must be specified if you add some");
+        throw std::runtime_error("Analog frame rate must be specified if you add some");
     }
 
     size_t nAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
@@ -444,34 +442,16 @@ void ezc3d::c3d::addFrame(const ezc3d::DataNS::Frame &f, int j)
         size_t nChannel(f.analogs().subframe(0).nbChannels());
         size_t nAnalogByFrames(header().nbAnalogByFrame());
         if (!(nAnalogs==0 && nAnalogByFrames==0) && nChannel != nAnalogs )
-            throw std::runtime_error("Analogs must be consistent with data in terms of data frequency");
+            throw std::runtime_error("Number of analogs in ANALOG:USED parameter must equal "
+                                     "the number of analogs sent in the frame");
     }
 
     // Replace the jth frame
-    _data->frame(f, j);
+    _data->frame(f, idx);
     updateParameters();
 }
 
-void ezc3d::c3d::addPoint(const std::vector<ezc3d::DataNS::Frame>& frames)
-{
-    if (frames.size() == 0 || frames.size() != data().nbFrames())
-        throw std::runtime_error("Frames must have the same number as the frame count");
-    if (frames[0].points().nbPoints() == 0)
-        throw std::runtime_error("Points cannot be empty");
-
-    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    for (size_t idx = 0; idx < frames[0].points().nbPoints(); ++idx){
-        const std::string &name(frames[0].points().point(idx).name());
-        for (size_t i=0; i<labels.size(); ++i)
-            if (!name.compare(labels[i]))
-                throw std::runtime_error("Marker already exists");
-
-        for (size_t f=0; f<data().nbFrames(); ++f)
-            _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
-    }
-    updateParameters();
-}
-void ezc3d::c3d::addPoint(const std::string &name){
+void ezc3d::c3d::point(const std::string &name){
     if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
@@ -482,27 +462,50 @@ void ezc3d::c3d::addPoint(const std::string &name){
         frame.add(dummy_pts);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        addPoint(dummy_frames);
+        point(dummy_frames);
     } else {
         updateParameters({name});
     }
 }
 
-void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
+void ezc3d::c3d::point(const std::vector<ezc3d::DataNS::Frame>& frames)
+{
+    if (frames.size() == 0 || frames.size() != data().nbFrames())
+        throw std::invalid_argument("Size of the array of frames must equal the number of frames already "
+                                    "present in the data set");
+    if (frames[0].points().nbPoints() == 0)
+        throw std::invalid_argument("Points in the frames cannot be empty");
+
+    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
+    for (size_t idx = 0; idx < frames[0].points().nbPoints(); ++idx){
+        const std::string &name(frames[0].points().point(idx).name());
+        for (size_t i=0; i<labels.size(); ++i)
+            if (!name.compare(labels[i]))
+                throw std::invalid_argument("The marker you try to create already exists in the data set");
+
+        for (size_t f=0; f<data().nbFrames(); ++f)
+            _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
+    }
+    updateParameters();
+}
+
+void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
 {
     if (frames.size() != data().nbFrames())
-        throw std::runtime_error("Frames must have the same number of frames");
+        throw std::invalid_argument("Size of the array of frames must equal the number of frames already "
+                                    "present in the data set");
     if (frames[0].analogs().nbSubframes() != header().nbAnalogByFrame())
-        throw std::runtime_error("Subrames must have the same number of subframes");
+        throw std::invalid_argument("Size of the subframes in the frames must equal the number of subframes "
+                                    "already present in the data set");
     if (frames[0].analogs().subframe(0).nbChannels() == 0)
-        throw std::runtime_error("Channels cannot be empty");
+        throw std::invalid_argument("Channels in the frame cannot be empty");
 
     std::vector<std::string> labels(parameters().group("ANALOG").parameter("LABELS").valuesAsString());
     for (size_t idx = 0; idx < frames[0].analogs().subframe(0).nbChannels(); ++idx){
         const std::string &name(frames[0].analogs().subframe(0).channel(idx).name());
         for (size_t i=0; i<labels.size(); ++i)
             if (!name.compare(labels[i]))
-                throw std::runtime_error("Analog channel already exists");
+                throw std::invalid_argument("The channel you try to create already exists in the data set");
 
         for (size_t f=0; f < data().nbFrames(); ++f){
             for (size_t sf=0; sf < header().nbAnalogByFrame(); ++sf){
@@ -513,7 +516,7 @@ void ezc3d::c3d::addAnalog(const std::vector<ezc3d::DataNS::Frame> &frames)
     updateParameters();
 }
 
-void ezc3d::c3d::addAnalog(const std::string &name)
+void ezc3d::c3d::analog(const std::string &name)
 {
     if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
@@ -527,7 +530,7 @@ void ezc3d::c3d::addAnalog(const std::string &name)
             frame.analogs_nonConst().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        addAnalog(dummy_frames);
+        analog(dummy_frames);
     } else {
         updateParameters({}, {name});
     }
