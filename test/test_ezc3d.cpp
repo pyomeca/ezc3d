@@ -43,7 +43,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
         c3dStruc.nMarkers = c3dStruc.markerNames.size();
         // Add markers to the new c3d
         for (size_t m = 0; m < c3dStruc.nMarkers; ++m)
-            c3dStruc.c3d.addPoint(c3dStruc.markerNames[m]);
+            c3dStruc.c3d.point(c3dStruc.markerNames[m]);
     }
 
     c3dStruc.analogNames.clear();
@@ -53,7 +53,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
         c3dStruc.nAnalogs = c3dStruc.analogNames.size();
         // Add markers to the new c3d
         for (size_t a = 0; a < c3dStruc.nAnalogs; ++a)
-            c3dStruc.c3d.addAnalog(c3dStruc.analogNames[a]);
+            c3dStruc.c3d.analog(c3dStruc.analogNames[a]);
     }
 
     c3dStruc.nFrames = 10;
@@ -61,7 +61,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
     if (withMarkers){
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
         pointRate.set(std::vector<float>()={c3dStruc.pointFrameRate});
-        c3dStruc.c3d.addParameter("POINT", pointRate);
+        c3dStruc.c3d.parameter("POINT", pointRate);
     }
     if (withAnalogs){
         c3dStruc.analogFrameRate = 1000;
@@ -69,7 +69,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
 
         ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
         analogRate.set(std::vector<float>()={c3dStruc.analogFrameRate});
-        c3dStruc.c3d.addParameter("ANALOG", analogRate);
+        c3dStruc.c3d.parameter("ANALOG", analogRate);
     }
     for (size_t f = 0; f < c3dStruc.nFrames; ++f){
         ezc3d::DataNS::Frame frame;
@@ -107,7 +107,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
             frame.add(pts);
         else if (withAnalogs)
             frame.add(analogs);
-        c3dStruc.c3d.addFrame(frame);
+        c3dStruc.c3d.frame(frame);
     }
 }
 
@@ -333,7 +333,7 @@ TEST(wrongC3D, wrongNextparamParameter){
 
     // If a 0 is also on the byte before the checksum, this is a Qualisys C3D and should be read even if checksum si wrong
     std::ofstream c3d_file(savePath.c_str(), std::ofstream::in);
-    c3d_file.seekp(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1)); // move to the parameter checksum
+    c3d_file.seekp(static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1))); // move to the parameter checksum
     int parameterStart(0x0);
     c3d_file.write(reinterpret_cast<const char*>(&parameterStart), ezc3d::BYTE);
     c3d_file.close();
@@ -351,10 +351,6 @@ TEST(c3dModifier, specificParameters){
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, true, true);
 
-    // Test update parameter
-    EXPECT_THROW(new_c3d.c3d.updateParameters({"WrongPoint"}, {}), std::runtime_error);
-    EXPECT_THROW(new_c3d.c3d.updateParameters({}, {"WrongAnalog"}), std::runtime_error);
-
     // Get an erroneous group
     EXPECT_THROW(new_c3d.c3d.parameters().group("ThisIsNotARealGroup"), std::invalid_argument);
 
@@ -369,9 +365,9 @@ TEST(c3dModifier, specificParameters){
 
     // Add an erroneous parameter to a group
     ezc3d::ParametersNS::GroupNS::Parameter p;
-    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.parameter("POINT", p), std::invalid_argument);
     p.name("EmptyParam");
-    EXPECT_THROW(new_c3d.c3d.addParameter("POINT", p), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.parameter("POINT", p), std::runtime_error);
 
     // Get an erroneous parameter
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter("ThisIsNotARealParamter"), std::invalid_argument);
@@ -380,7 +376,7 @@ TEST(c3dModifier, specificParameters){
     ezc3d::ParametersNS::GroupNS::Parameter p2;
     p2.name("NewParam");
     p2.set(std::vector<int>());
-    EXPECT_NO_THROW(new_c3d.c3d.addParameter("ThisIsANewRealGroup", p2));
+    EXPECT_NO_THROW(new_c3d.c3d.parameter("ThisIsANewRealGroup", p2));
     EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameter("NewParam").valuesAsInt().size(), 0);
 
@@ -491,14 +487,14 @@ TEST(c3dModifier, addPoints) {
 
     // Add frame with a new marker with not enough frames
     std::vector<ezc3d::DataNS::Frame> new_frames;
-    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames() - 1; ++f)
         new_frames.push_back(ezc3d::DataNS::Frame());
-    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
 
     // Not enough points
     new_frames.push_back(ezc3d::DataNS::Frame());
-    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
 
     // Try adding an already existing point
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
@@ -507,7 +503,7 @@ TEST(c3dModifier, addPoints) {
         pts.point(pt);
         new_frames[f].add(pts);
     }
-    EXPECT_THROW(new_c3d.c3d.addPoint(new_frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
 
     // Adding it properly
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
@@ -516,7 +512,7 @@ TEST(c3dModifier, addPoints) {
         pts.point(pt);
         new_frames[f].add(pts);
     }
-    EXPECT_NO_THROW(new_c3d.c3d.addPoint(new_frames));
+    EXPECT_NO_THROW(new_c3d.c3d.point(new_frames));
 
 }
 
@@ -542,7 +538,7 @@ TEST(c3dModifier, specificPoint){
         }
 
         frame.add(pts);
-        new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+        new_c3d.c3d.frame(frame, f);
     }
 
     // failed test replacing a point
@@ -614,7 +610,7 @@ TEST(c3dModifier, specificPoint){
     EXPECT_THROW(new_c3d.c3d.data().frame(0).points().point(new_c3d.nMarkers), std::out_of_range);
 
     // Test for removing space at the end of a label
-    new_c3d.c3d.addPoint("PointNameWithSpaceAtTheEnd ");
+    new_c3d.c3d.point("PointNameWithSpaceAtTheEnd ");
     new_c3d.nMarkers += 1;
     new_c3d.markerNames.push_back("PointNameWithSpaceAtTheEnd");
     EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[new_c3d.nMarkers - 1].c_str(), "PointNameWithSpaceAtTheEnd");
@@ -694,7 +690,7 @@ TEST(c3dModifier, specificAnalog){
     fillC3D(new_c3d, false, true);
 
     // Test for removing space at the end of a label
-    new_c3d.c3d.addAnalog("AnalogNameWithSpaceAtTheEnd ");
+    new_c3d.c3d.analog("AnalogNameWithSpaceAtTheEnd ");
     new_c3d.nAnalogs += 1;
     new_c3d.analogNames.push_back("AnalogNameWithSpaceAtTheEnd");
     EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString()[new_c3d.nAnalogs - 1].c_str(), "AnalogNameWithSpaceAtTheEnd");
@@ -702,11 +698,11 @@ TEST(c3dModifier, specificAnalog){
     // Add analog by frames
     std::vector<ezc3d::DataNS::Frame> frames;
     // Wrong number of frames
-    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
 
     // Wrong number of subframes
     frames.resize(new_c3d.nFrames);
-    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
 
     // Wrong number of channels
     EXPECT_NO_THROW(ezc3d::DataNS::AnalogsNS::SubFrame(0));
@@ -718,7 +714,7 @@ TEST(c3dModifier, specificAnalog){
         frame.add(analogs);
         frames[f] = frame;
     }
-    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
 
     // Already existing channels
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
@@ -737,7 +733,7 @@ TEST(c3dModifier, specificAnalog){
         frame.add(analogs);
         frames[f] = frame;
     }
-    EXPECT_THROW(new_c3d.c3d.addAnalog(frames), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
 
     // No throw
     std::vector<std::string> analogNames = {"NewAnalog1", "NewAnalog2", "NewAnalog3", "NewAnalog4"};
@@ -757,7 +753,7 @@ TEST(c3dModifier, specificAnalog){
         frame.add(analogs);
         frames[f] = frame;
     }
-    EXPECT_NO_THROW(new_c3d.c3d.addAnalog(frames));
+    EXPECT_NO_THROW(new_c3d.c3d.analog(frames));
 
     // Get channel names
     for (size_t c = 0; c < new_c3d.analogNames.size(); ++c)
@@ -919,12 +915,12 @@ TEST(c3dModifier, addFrames){
     // Add an impossible frame
     ezc3d::DataNS::Frame stupidFramePoint;
     // Wrong number of points
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFramePoint), std::runtime_error);
+    EXPECT_THROW(new_c3d.c3d.frame(stupidFramePoint), std::runtime_error);
 
     // Wrong number of frames
     ezc3d::DataNS::Points3dNS::Points stupidPoints(new_c3d.c3d.data().frame(0).points());
     stupidFramePoint.add(stupidPoints);
-    new_c3d.c3d.addFrame(stupidFramePoint);
+    new_c3d.c3d.frame(stupidFramePoint);
 
     // Wrong name of points
     ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(0).points().point(0));
@@ -932,7 +928,7 @@ TEST(c3dModifier, addFrames){
     pt.name("WrongName");
     stupidPoints.point(pt, 0);
     stupidFramePoint.add(stupidPoints);
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFramePoint), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.frame(stupidFramePoint), std::invalid_argument);
 
     // Put back the good name
     pt.name(realPointName);
@@ -942,30 +938,30 @@ TEST(c3dModifier, addFrames){
     new_c3d.nAnalogs = 3;
     ezc3d::ParametersNS::GroupNS::Parameter analogUsed(new_c3d.c3d.parameters().group("ANALOG").parameter("USED"));
     analogUsed.set(std::vector<int>()={static_cast<int>(new_c3d.nAnalogs)});
-    new_c3d.c3d.addParameter("ANALOG", analogUsed);
+    new_c3d.c3d.parameter("ANALOG", analogUsed);
 
     ezc3d::DataNS::Frame stupidFrameAnalog;
     ezc3d::DataNS::AnalogsNS::Analogs stupidAnalogs(new_c3d.c3d.data().frame(0).analogs());
     ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe(new_c3d.nAnalogs-1);
     stupidAnalogs.subframe(stupidSubframe);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
+    EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
 
     ezc3d::ParametersNS::GroupNS::Parameter analogRate(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE"));
     analogRate.set(std::vector<float>()={100});
-    new_c3d.c3d.addParameter("ANALOG", analogRate);
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
+    new_c3d.c3d.parameter("ANALOG", analogRate);
+    EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error);
 
     ezc3d::DataNS::AnalogsNS::SubFrame notSoStupidSubframe(new_c3d.nAnalogs);
     stupidAnalogs.subframe(notSoStupidSubframe, 0);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
-    EXPECT_NO_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog));
+    EXPECT_NO_THROW(new_c3d.c3d.frame(stupidFrameAnalog));
 
     // Remove point frame rate and then
     ezc3d::ParametersNS::GroupNS::Parameter pointRate(new_c3d.c3d.parameters().group("POINT").parameter("RATE"));
     pointRate.set(std::vector<float>()={0});
-    new_c3d.c3d.addParameter("POINT", pointRate);
-    EXPECT_THROW(new_c3d.c3d.addFrame(stupidFrameAnalog), std::runtime_error);
+    new_c3d.c3d.parameter("POINT", pointRate);
+    EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error);
 }
 
 
@@ -989,7 +985,7 @@ TEST(c3dModifier, specificFrames){
         }
         ezc3d::DataNS::Frame frame;
         frame.add(pts);
-        new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+        new_c3d.c3d.frame(frame, f);
     }
 
     // Add a new frame at 2 spaces after the last frame
@@ -1007,7 +1003,7 @@ TEST(c3dModifier, specificFrames){
         }
         ezc3d::DataNS::Frame frame;
         frame.add(pts);
-        new_c3d.c3d.addFrame(frame, static_cast<int>(f));
+        new_c3d.c3d.frame(frame, f);
     }
     new_c3d.nFrames += 2;
 
