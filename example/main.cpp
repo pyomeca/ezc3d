@@ -29,7 +29,7 @@ int main()
         ezc3d::c3d c3d("markers_analogs.c3d");
 
         // Add two new markers to the c3d (one filled with zeros, the other one with data)
-        c3d.addPoint("new_marker1"); // Add empty
+        c3d.point("new_marker1"); // Add empty
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
@@ -43,25 +43,25 @@ int main()
             frame.add(pts_new);
             frames_point.push_back(frame);
         }
-        c3d.addPoint(frames_point); // Add the previously created
+        c3d.point(frames_point); // Add the previously created
 
         // Add a new analog to the c3d (one filled with zeros, the other one with data)
-        c3d.addAnalog("new_analog1"); // add the empty
+        c3d.analog("new_analog1"); // add the empty
         std::vector<ezc3d::DataNS::Frame> frames_analog;
         ezc3d::DataNS::AnalogsNS::SubFrame subframes_analog;
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
         emptyChannel.name("new_analog2");
         ezc3d::DataNS::Frame frame;
         subframes_analog.channel(emptyChannel);
-        for (int sf=0; sf<c3d.header().nbAnalogByFrame(); ++sf){
+        for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
             ezc3d::DataNS::AnalogsNS::Channel c(subframes_analog.channel(0));
             c.data(sf + 1);
             subframes_analog.channel(c, 0);
             frame.analogs_nonConst().subframe(subframes_analog);
         }
-        for (size_t f=0; f<c3d.data().nbFrames(); ++f)
+        for (size_t f = 0; f < c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
-        c3d.addAnalog(frames_analog);
+        c3d.analog(frames_analog);
 
         // Add a new frame
         ezc3d::DataNS::Frame f;
@@ -78,27 +78,27 @@ int main()
         }
         ezc3d::DataNS::AnalogsNS::Analogs analog;
         ezc3d::DataNS::AnalogsNS::SubFrame subframe;
-        for (int i=0; i<c3d.header().nbAnalogs(); ++i){
+        for (size_t i=0; i < c3d.header().nbAnalogs(); ++i){
             ezc3d::DataNS::AnalogsNS::Channel c;
             c.data(i+1);
             subframe.channel(c);
         }
-        for (int i=0; i<c3d.header().nbAnalogByFrame(); ++i)
+        for (size_t i=0; i < c3d.header().nbAnalogByFrame(); ++i)
             analog.subframe(subframe);
         f.add(pts, analog);
-        c3d.addFrame(f);
+        c3d.frame(f);
 
 
         // Add new parameters
         ezc3d::ParametersNS::GroupNS::Parameter p1("new_param_1");
         p1.set(std::vector<int>() = {2}, {1});
-        c3d.addParameter("new_group_1", p1);
+        c3d.parameter("new_group_1", p1);
         ezc3d::ParametersNS::GroupNS::Parameter p2("new_param_2");
         p2.set(std::vector<int>() = {1, 1, 2, 3, 5, 8}, {3, 2}); // TESTER LE READER DANS MATLAB!
-        c3d.addParameter("new_group_1", p2);
+        c3d.parameter("new_group_1", p2);
         ezc3d::ParametersNS::GroupNS::Parameter p3("new_param_1");
         p3.set(std::vector<std::string>() = {"value1", "longer_value1", "value2", "longer_value2"}, {2, 2});
-        c3d.addParameter("new_group_2", p3);
+        c3d.parameter("new_group_2", p3);
 
         // write the changed c3d
         c3d.write("augmentedC3d.c3d");
@@ -117,16 +117,16 @@ int main()
         // Fill it with some values
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
         pointRate.set(std::vector<float>() = {100}, {1});
-        c3d_empty.addParameter("POINT", pointRate);
+        c3d_empty.parameter("POINT", pointRate);
 
         ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
         analogRate.set(std::vector<float>() = {1000}, {1});
-        c3d_empty.addParameter("ANALOG", analogRate);
+        c3d_empty.parameter("ANALOG", analogRate);
 
-        c3d_empty.addPoint("new_marker1"); // Add empty
-        c3d_empty.addPoint("new_marker2"); // Add empty
-        c3d_empty.addAnalog("new_analog1"); // add the empty
-        c3d_empty.addAnalog("new_analog2"); // add the empty
+        c3d_empty.point("new_marker1"); // Add empty
+        c3d_empty.point("new_marker2"); // Add empty
+        c3d_empty.analog("new_analog1"); // add the empty
+        c3d_empty.analog("new_analog2"); // add the empty
         // Add a new frame
         ezc3d::DataNS::Frame f;
         std::vector<std::string>labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
@@ -142,16 +142,16 @@ int main()
         }
         ezc3d::DataNS::AnalogsNS::Analogs analog;
         ezc3d::DataNS::AnalogsNS::SubFrame subframe;
-        for (int i=0; i<c3d_empty.header().nbAnalogs(); ++i){
+        for (size_t i=0; i < c3d_empty.header().nbAnalogs(); ++i){
             ezc3d::DataNS::AnalogsNS::Channel c;
             c.data(i+1);
             subframe.channel(c);
         }
-        for (int i=0; i<c3d_empty.header().nbAnalogByFrame(); ++i)
+        for (size_t i=0; i < c3d_empty.header().nbAnalogByFrame(); ++i)
             analog.subframe(subframe);
         f.add(pts, analog);
-        c3d_empty.addFrame(f);
-        c3d_empty.addFrame(f);
+        c3d_empty.frame(f);
+        c3d_empty.frame(f);
 
         // Write the brand new c3d
         c3d_empty.write("emptyC3d.c3d");
