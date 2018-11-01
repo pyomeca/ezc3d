@@ -164,13 +164,13 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
 
     // Read the data for the parameters
     if (_data_type == DATA_TYPE::CHAR)
-        file.readMatrix(_dimension, _param_data_string);
+        file.readParam(_dimension, _param_data_string);
     else if (_data_type == DATA_TYPE::BYTE)
-        file.readMatrix(static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
+        file.readParam(static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
     else if (_data_type == DATA_TYPE::INT)
-        file.readMatrix(static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
+        file.readParam(static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
     else if (_data_type == DATA_TYPE::FLOAT)
-        file.readMatrix(_dimension, _param_data_float);
+        file.readParam(_dimension, _param_data_float);
 
 
     // Byte 5+nbCharInName ==> Number of characters in group description
