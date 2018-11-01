@@ -89,7 +89,7 @@ public:
 
     ///
     /// \brief Set the number 3D points
-    /// \param n
+    /// \param numberOfPoints The number of points
     ///
     void nb3dPoints(size_t numberOfPoints);
 
@@ -107,7 +107,7 @@ public:
 
     ///
     /// \brief Set the number of analogs
-    /// \param The number of analogs
+    /// \param nbOfAnalogs The number of analogs
     ///
     void nbAnalogs(size_t nbOfAnalogs);
 
