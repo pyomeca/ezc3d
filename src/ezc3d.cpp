@@ -45,7 +45,7 @@ void ezc3d::c3d::updateHeader()
     // Parameter is always consider as the right value. If there is a discrepancy between them, change the header
     if (static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) != header().nbFrames()){
         _header->firstFrame(0);
-        _header->lastFrame(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0] - 1);
+        _header->lastFrame(static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) - 1);
     }
     float pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
     float buffer(10000); // For decimal truncature
@@ -70,7 +70,7 @@ void ezc3d::c3d::updateHeader()
     // Should always be greater than 0, but we have to take in account Optotrak lazyness
     if (parameters().group("ANALOG").nbParameters()){
         if (static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
-            _header->nbAnalogs(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]);
+            _header->nbAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
     } else
         _header->nbAnalogs(0);
 }
@@ -219,7 +219,7 @@ std::string ezc3d::toUpper(const std::string &str){
 
 unsigned int ezc3d::c3d::hex2uint(const char * val, unsigned int len){
     int ret(0);
-    for (unsigned int i=0; i<len; i++)
+    for (unsigned int i = 0; i < len; i++)
         ret |= static_cast<int>(static_cast<unsigned char>(val[i])) * static_cast<int>(pow(0x100, i));
     return static_cast<unsigned int>(ret);
 }
@@ -274,7 +274,7 @@ int ezc3d::c3d::readInt(unsigned int nByteToRead, int nByteFromPrevious,
     return out;
 }
 
-size_t ezc3d::c3d::readUint(size_t nByteToRead, int nByteFromPrevious,
+size_t ezc3d::c3d::readUint(unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char* c = new char[nByteToRead + 1];
@@ -294,27 +294,27 @@ float ezc3d::c3d::readFloat(int nByteFromPrevious,
     return out;
 }
 
-void ezc3d::c3d::readMatrix(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
                        std::vector<int> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back (readInt(dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
         else
-            readMatrix(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
+            readParam(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(const std::vector<size_t> &dimension,
                        std::vector<float> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back (readFloat());
         else
-            readMatrix(dimension, param_data, currentIdx + 1);
+            readParam(dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readMatrix(const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(const std::vector<size_t> &dimension,
                        std::vector<std::string> &param_data_string)
 {
     std::vector<std::string> param_data_string_tp;
@@ -387,10 +387,7 @@ void ezc3d::c3d::lockGroup(const std::string &groupName)
 
 void ezc3d::c3d::unlockGroup(const std::string &groupName)
 {
-    int idx(parameters().groupIdx(groupName));
-    if (idx < 0)
-        throw std::invalid_argument("Group not found");
-    _parameters->group_nonConst(idx).unlock();
+    _parameters->group_nonConst(groupName).unlock();
 }
 
 void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)

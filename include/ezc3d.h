@@ -132,6 +132,136 @@ public:
     ///
     void write(const std::string &filePath) const;
 
+protected:
+    // Internal reading function
+    char * c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
+    unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
+
+    ///
+    /// \brief Actual function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
+    /// \param nByteToRead The number of bytes to read
+    /// \param c The output char
+    /// \param nByteFromPrevious The number of byte to skip from current position
+    /// \param pos The position to start from
+    ///
+    void readFile(unsigned int nByteToRead,
+        char * c,
+        int nByteFromPrevious = 0,
+        const  std::ios_base::seekdir &pos = std::ios::cur);
+
+    ///
+    /// \brief Convert an hexadecimal value to an unsigned integer
+    /// \param val The value to convert
+    /// \param len The number of bytes of the val parameter
+    /// \return The unsigned integer value
+    ///
+    unsigned int hex2uint(const char * val, unsigned int len);
+
+    ///
+    /// \brief Convert an hexadecimal value to a integer
+    /// \param val The value to convert
+    /// \param len The number of bytes of the val parameter
+    /// \return The integer value
+    ///
+    int hex2int(const char * val, unsigned int len);
+
+public:
+    ///
+    /// \brief Read an integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param nByteToRead The number of byte to read to be converted into integer
+    /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
+    /// \param pos Where to reposition the cursor
+    /// \return The integer value
+    ///
+    int readInt(unsigned int nByteToRead,
+                int nByteFromPrevious = 0,
+                const std::ios_base::seekdir &pos = std::ios::cur);
+
+    ///
+    /// \brief Read a unsigned integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param nByteToRead The number of byte to read to be converted into unsigned integer
+    /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
+    /// \param pos Where to reposition the cursor
+    /// \return The unsigned integer value
+    ///
+    size_t readUint(unsigned int nByteToRead,
+                    int nByteFromPrevious = 0,
+                    const std::ios_base::seekdir &pos = std::ios::cur);
+
+    ///
+    /// \brief Read a float at the position current + nByteFromPrevious from a file
+    /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
+    /// \param pos Where to reposition the cursor
+    /// \return The float value
+    ///
+    float readFloat(int nByteFromPrevious = 0,
+                    const std::ios_base::seekdir &pos = std::ios::cur);
+
+    ///
+    /// \brief Read a string (array of char of nByteToRead bytes) at the position current + nByteFromPrevious from a file
+    /// \param nByteToRead The number of byte to read to be converted into float
+    /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
+    /// \param pos Where to reposition the cursor
+    /// \return The float value
+    ///
+    std::string readString(unsigned int nByteToRead,
+                           int nByteFromPrevious = 0,
+                           const std::ios_base::seekdir &pos = std::ios::cur);
+
+    ///
+    /// \brief Read a matrix of integer parameters of dimensions dimension with each integer of length dataLengthInByte
+    /// \param dataLenghtInBytes The number of bytes to read to be converted to int
+    /// \param dimension The dimensions of the matrix up to 7-dimensions
+    /// \param param_data The actual output of the function
+    /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
+    ///
+    void readParam(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
+                    std::vector<int> &param_data, size_t currentIdx = 0);
+
+    ///
+    /// \brief Read a matrix of float parameters of dimensions dimension
+    /// \param dimension The dimensions of the matrix up to 7-dimensions
+    /// \param param_data The actual output of the function
+    /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
+    ///
+    void readParam(const std::vector<size_t> &dimension,
+                    std::vector<float> &param_data,
+                    size_t currentIdx = 0);
+
+    ///
+    /// \brief Read a matrix of string of dimensions dimension with the first dimension being the length of the strings
+    /// \param dimension The dimensions of the matrix up to 7-dimensions. The first dimension is the length of the strings
+    /// \param param_data The actual output of the function
+    ///
+    void readParam(const std::vector<size_t> &dimension,
+                    std::vector<std::string> &param_data);
+
+protected:
+    ///
+    /// \brief Internal function to dispatch a string array to a matrix of strings
+    /// \param dimension The dimensions of the matrix up to 7-dimensions
+    /// \param param_data_in The input vector of strings
+    /// \param param_data_out The output matrix of strings
+    /// \param idxInParam Internal counter to keep track where the function is in its recursive calls
+    /// \param currentIdx Internal counter to keep track where the function is in its recursive calls
+    /// \return
+    ///
+    size_t _dispatchMatrix(const std::vector<size_t> &dimension,
+                         const std::vector<std::string> &param_data_in,
+                         std::vector<std::string> &param_data_out,
+                         size_t idxInParam = 0,
+                         size_t currentIdx = 1);
+
+    ///
+    /// \brief Internal function to read a string array to a matrix of strings
+    /// \param dimension The dimensions of the matrix up to 7-dimensions
+    /// \param param_data The output matrix of strings
+    /// \param currentIdx Internal counter to keep track where the function is in its recursive calls
+    ///
+    void _readMatrix(const std::vector<size_t> &dimension,
+                     std::vector<std::string> &param_data,
+                     size_t currentIdx = 0);
+
 
     // ---- C3D MAIN STRUCTURE ---- //
 protected:
@@ -256,58 +386,21 @@ public:
 
     // ---- UPDATER ---- //
 protected:
+    ///
+    /// \brief Update the header according to the parameters and the data
+    ///
     void updateHeader();
+
+    ///
+    /// \brief Update parameters according to the data
+    /// \param newMarkers The names of the new markers
+    /// \param newAnalogs The names of the new analogs
+    ///
+    /// Throw a std::runtime_error if newMarkers or newAnalogs was added while the data set is not empty.
+    /// If you want to add a new marker after having actual data in the data set, you must use the frame method.
+    ///
     void updateParameters(const std::vector<std::string> &newMarkers = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
-
-public:
-    // Byte reading functions
-    std::string readString(unsigned int nByteToRead, int nByteFromPrevious = 0,
-                           const std::ios_base::seekdir &pos = std::ios::cur);
-    int readInt(unsigned int nByteToRead,
-                int nByteFromPrevious = 0,
-                const std::ios_base::seekdir &pos = std::ios::cur);
-    size_t readUint(size_t nByteToRead,
-                 int nByteFromPrevious = 0,
-                 const std::ios_base::seekdir &pos = std::ios::cur);
-    float readFloat(int nByteFromPrevious = 0,
-                    const std::ios_base::seekdir &pos = std::ios::cur);
-    void readMatrix(const std::vector<size_t> &dimension,
-                    std::vector<std::string> &param_data);
-    void readMatrix(unsigned int dataLenghtInBytes,
-                    const std::vector<size_t> &dimension,
-                    std::vector<int> &param_data,
-                    size_t currentIdx = 0);
-    void readMatrix(const std::vector<size_t> &dimension,
-                    std::vector<float> &param_data,
-                    size_t currentIdx = 0);
-
-
-
-
-
-protected:
-    // Internal reading function
-    char * c_float;
-    unsigned int m_nByteToRead_float;
-    void readFile(unsigned int nByteToRead,
-        char * c,
-        int nByteFromPrevious = 0,
-        const  std::ios_base::seekdir &pos = std::ios::cur);
-
-    // Internal function for reading strings
-    size_t _dispatchMatrix(const std::vector<size_t> &dimension,
-                         const std::vector<std::string> &param_data_in,
-                         std::vector<std::string> &param_data_out,
-                         size_t idxInParam = 0,
-                         size_t currentIdx = 1);
-    void _readMatrix(const std::vector<size_t> &dimension,
-                     std::vector<std::string> &param_data,
-                     size_t currentIdx = 0);
-
-    // Converting functions
-    unsigned int hex2uint(const char * val, unsigned int len);
-    int hex2int(const char * val, unsigned int len);
 };
 
 #include "Header.h"
