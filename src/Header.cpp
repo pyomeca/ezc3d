@@ -176,6 +176,44 @@ void ezc3d::Header::read(ezc3d::c3d &file)
     _emptyBlock4 = file.readInt(22*ezc3d::DATA_TYPE::WORD);
 }
 
+size_t ezc3d::Header::parametersAddress() const
+{
+    return _parametersAddress;
+}
+
+size_t ezc3d::Header::checksum() const
+{
+    return _checksum;
+}
+
+size_t ezc3d::Header::nb3dPoints() const
+{
+    return _nb3dPoints;
+}
+
+void ezc3d::Header::nb3dPoints(size_t numberOfPoints)
+{
+    _nb3dPoints = numberOfPoints;
+}
+
+size_t ezc3d::Header::nbAnalogs() const
+{
+    if (_nbAnalogByFrame == 0)
+        return 0;
+    else
+        return _nbAnalogsMeasurement / _nbAnalogByFrame;
+}
+
+void ezc3d::Header::nbAnalogs(size_t nbOfAnalogs)
+{
+    _nbAnalogsMeasurement = nbOfAnalogs * _nbAnalogByFrame;
+}
+
+size_t ezc3d::Header::nbAnalogsMeasurement() const
+{
+    return _nbAnalogsMeasurement;
+}
+
 size_t ezc3d::Header::nbFrames() const
 {
     if (nb3dPoints() == 0 && nbAnalogs() == 0)
@@ -184,58 +222,108 @@ size_t ezc3d::Header::nbFrames() const
         return _lastFrame - _firstFrame + 1;
 }
 
-void ezc3d::Header::nbAnalogs(size_t nbOfAnalogs)
+size_t ezc3d::Header::firstFrame() const
 {
-    _nbAnalogsMeasurement = nbOfAnalogs * _nbAnalogByFrame;
+    return _firstFrame;
 }
-size_t ezc3d::Header::nbAnalogs() const
+
+void ezc3d::Header::firstFrame(size_t frame)
 {
-    if (_nbAnalogByFrame == 0)
-        return 0;
-    else
-        return _nbAnalogsMeasurement / _nbAnalogByFrame;
+    _firstFrame = frame;
 }
-int ezc3d::Header::emptyBlock4() const
+
+size_t ezc3d::Header::lastFrame() const
 {
-    return _emptyBlock4;
+    return _lastFrame;
 }
-const std::vector<std::string>& ezc3d::Header::eventsLabel() const
+
+void ezc3d::Header::lastFrame(size_t frame)
 {
-    return _eventsLabel;
+    _lastFrame = frame;
 }
-const std::string& ezc3d::Header::eventsLabel(size_t idx) const
+
+size_t ezc3d::Header::nbMaxInterpGap() const
 {
-    try {
-        return _eventsLabel.at(idx);
-    } catch(std::out_of_range) {
-        throw std::out_of_range("Header::eventsLabel method is trying to access the event "
-                                + std::to_string(idx) +
-                                " while the maximum number of events is "
-                                + std::to_string(nbEvents()) + ".");
-    }
+    return _nbMaxInterpGap;
 }
+
+int ezc3d::Header::scaleFactor() const
+{
+    return _scaleFactor;
+}
+
+size_t ezc3d::Header::dataStart() const
+{
+    return _dataStart;
+}
+
+size_t ezc3d::Header::nbAnalogByFrame() const
+{
+    return _nbAnalogByFrame;
+}
+
+void ezc3d::Header::nbAnalogByFrame(size_t nbOfAnalogsByFrame)
+{
+    size_t analogs(nbAnalogs());
+    _nbAnalogByFrame = nbOfAnalogsByFrame;
+    nbAnalogs(analogs);
+}
+
+float ezc3d::Header::frameRate() const
+{
+    return _frameRate;
+}
+
+void ezc3d::Header::frameRate(float pointFrameRate)
+{
+    _frameRate = pointFrameRate;
+}
+
+int ezc3d::Header::emptyBlock1() const
+{
+    return _emptyBlock1;
+}
+
+int ezc3d::Header::emptyBlock2() const
+{
+    return _emptyBlock2;
+}
+
 int ezc3d::Header::emptyBlock3() const
 {
     return _emptyBlock3;
 }
-std::vector<size_t> ezc3d::Header::eventsDisplay() const
+
+int ezc3d::Header::emptyBlock4() const
 {
-    return _eventsDisplay;
+    return _emptyBlock4;
 }
-size_t ezc3d::Header::eventsDisplay(size_t idx) const{
-    try {
-        return _eventsDisplay.at(idx);
-    } catch(std::out_of_range) {
-        throw std::out_of_range("Header::eventsDisplay method is trying to access the event "
-                                + std::to_string(idx) +
-                                " while the maximum number of events is "
-                                + std::to_string(nbEvents()) + ".");
-    }
+
+size_t ezc3d::Header::keyLabelPresent() const
+{
+    return _keyLabelPresent;
 }
+
+size_t ezc3d::Header::firstBlockKeyLabel() const
+{
+    return _firstBlockKeyLabel;
+}
+
+size_t ezc3d::Header::fourCharPresent() const
+{
+    return _fourCharPresent;
+}
+
+size_t ezc3d::Header::nbEvents() const
+{
+    return _nbEvents;
+}
+
 const std::vector<float>& ezc3d::Header::eventsTime() const
 {
     return _eventsTime;
 }
+
 float ezc3d::Header::eventsTime(size_t idx) const
 {
     try {
@@ -247,96 +335,36 @@ float ezc3d::Header::eventsTime(size_t idx) const
                                 + std::to_string(nbEvents()) + ".");
     }
 }
-int ezc3d::Header::emptyBlock2() const
-{
-    return _emptyBlock2;
-}
-size_t ezc3d::Header::nbEvents() const
-{
-    return _nbEvents;
-}
-size_t ezc3d::Header::fourCharPresent() const
-{
-    return _fourCharPresent;
-}
-size_t ezc3d::Header::firstBlockKeyLabel() const
-{
-    return _firstBlockKeyLabel;
-}
-size_t ezc3d::Header::keyLabelPresent() const
-{
-    return _keyLabelPresent;
-}
-int ezc3d::Header::emptyBlock1() const
-{
-    return _emptyBlock1;
-}
-void ezc3d::Header::frameRate(float pointFrameRate)
-{
-    _frameRate = pointFrameRate;
-}
-float ezc3d::Header::frameRate() const
-{
-    return _frameRate;
-}
-void ezc3d::Header::nbAnalogByFrame(size_t nbOfAnalogsByFrame)
-{
-    size_t analogs(nbAnalogs());
-    _nbAnalogByFrame = nbOfAnalogsByFrame;
-    nbAnalogs(analogs);
-}
-size_t ezc3d::Header::nbAnalogByFrame() const
-{
-    return _nbAnalogByFrame;
-}
-size_t ezc3d::Header::dataStart() const
-{
-    return _dataStart;
-}
-int ezc3d::Header::scaleFactor() const
-{
-    return _scaleFactor;
-}
-size_t ezc3d::Header::nbMaxInterpGap() const
-{
-    return _nbMaxInterpGap;
-}
-void ezc3d::Header::firstFrame(size_t frame)
-{
-    _firstFrame = frame;
-}
-size_t ezc3d::Header::firstFrame() const
-{
-    return _firstFrame;
-}
-void ezc3d::Header::lastFrame(size_t frame)
-{
-    _lastFrame = frame;
-}
-size_t ezc3d::Header::lastFrame() const
-{
-    return _lastFrame;
-}
-size_t ezc3d::Header::nbAnalogsMeasurement() const
-{
-    return _nbAnalogsMeasurement;
-}
-void ezc3d::Header::nb3dPoints(size_t numberOfPoints)
-{
-    _nb3dPoints = numberOfPoints;
-}
-size_t ezc3d::Header::nb3dPoints() const
-{
-    return _nb3dPoints;
-}
-size_t ezc3d::Header::checksum() const
-{
-    return _checksum;
-}
-size_t ezc3d::Header::parametersAddress() const
-{
-    return _parametersAddress;
-}
-// Read the Header
 
+std::vector<size_t> ezc3d::Header::eventsDisplay() const
+{
+    return _eventsDisplay;
+}
 
+size_t ezc3d::Header::eventsDisplay(size_t idx) const{
+    try {
+        return _eventsDisplay.at(idx);
+    } catch(std::out_of_range) {
+        throw std::out_of_range("Header::eventsDisplay method is trying to access the event "
+                                + std::to_string(idx) +
+                                " while the maximum number of events is "
+                                + std::to_string(nbEvents()) + ".");
+    }
+}
+
+const std::vector<std::string>& ezc3d::Header::eventsLabel() const
+{
+    return _eventsLabel;
+}
+
+const std::string& ezc3d::Header::eventsLabel(size_t idx) const
+{
+    try {
+        return _eventsLabel.at(idx);
+    } catch(std::out_of_range) {
+        throw std::out_of_range("Header::eventsLabel method is trying to access the event "
+                                + std::to_string(idx) +
+                                " while the maximum number of events is "
+                                + std::to_string(nbEvents()) + ".");
+    }
+}
