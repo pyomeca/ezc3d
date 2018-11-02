@@ -106,7 +106,7 @@ void ezc3d::Header::write(std::fstream &f) const
     // Parameters of analog data
     f.write(reinterpret_cast<const char*>(&_dataStart), 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&_nbAnalogByFrame), 1*ezc3d::DATA_TYPE::WORD);
-    float frameRate(static_cast<float>(_frameRate));
+    float frameRate(_frameRate);
     f.write(reinterpret_cast<const char*>(&frameRate), 2*ezc3d::DATA_TYPE::WORD);
     for (int i=0; i<135; ++i)
         f.write(reinterpret_cast<const char*>(&_emptyBlock1), 1*ezc3d::DATA_TYPE::WORD);
