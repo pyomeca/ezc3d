@@ -274,8 +274,8 @@ void ezc3d::c3d::unlockGroup(const std::string &groupName)
 void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx)
 {
     // Make sure f.points().points() is the same as data.f[ANY].points()
-    int nPoints(parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
-    if (nPoints != 0 && static_cast<int>(f.points().nbPoints()) != nPoints)
+    size_t nPoints(static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]));
+    if (nPoints != 0 && f.points().nbPoints() != nPoints)
         throw std::runtime_error("Number of points in POINT:USED parameter must equal"
                                  "the number of points sent in the frame");
 
@@ -438,8 +438,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
 
     // If frames has been added
     ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
-    int nFrames(static_cast<int>(data().nbFrames()));
-    if (nFrames != grpPoint.parameter("FRAMES").valuesAsInt()[0]){
+    size_t nFrames(data().nbFrames());
+    if (nFrames != static_cast<size_t>(grpPoint.parameter("FRAMES").valuesAsInt()[0])){
         size_t idx(grpPoint.parameterIdx("FRAMES"));
         grpPoint.parameter_nonConst(idx).set(nFrames);
     }
@@ -453,9 +453,9 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     if (nPoints != static_cast<size_t>(grpPoint.parameter("USED").valuesAsInt()[0])){
         grpPoint.parameter_nonConst("USED").set(nPoints);
 
-        size_t idxLabels(static_cast<size_t>(grpPoint.parameterIdx("LABELS")));
-        size_t idxDescriptions(static_cast<size_t>(grpPoint.parameterIdx("DESCRIPTIONS")));
-        size_t idxUnits(static_cast<size_t>(grpPoint.parameterIdx("UNITS")));
+        size_t idxLabels(grpPoint.parameterIdx("LABELS"));
+        size_t idxDescriptions(grpPoint.parameterIdx("DESCRIPTIONS"));
+        size_t idxUnits(grpPoint.parameterIdx("UNITS"));
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
         std::vector<std::string> units;
@@ -499,7 +499,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
             std::string name;
             if (data().nbFrames() == 0){
                 if (i < parameters().group("ANALOG").parameter("LABELS").valuesAsString().size())
-                    name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[static_cast<size_t>(i)];
+                    name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[i];
                 else
                     name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
             } else {
