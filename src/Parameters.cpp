@@ -192,7 +192,7 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
         int id(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
 
         // Make sure there at least enough group
-        for (int i = static_cast<int>(_groups.size()); i < abs(id); ++i)
+        for (size_t i = _groups.size(); i < static_cast<size_t>(abs(id)); ++i)
             _groups.push_back(ezc3d::ParametersNS::GroupNS::Group());
 
         // Group ID always negative for groups and positive parameter of group ID
@@ -339,6 +339,6 @@ void ezc3d::ParametersNS::Parameters::group(const ezc3d::ParametersNS::GroupNS::
         _groups.push_back(g);
     else {
         for (size_t i=0; i < g.nbParameters(); ++i)
-            _groups[static_cast<unsigned int>(alreadyExtIdx)].parameter(g.parameter(i));
+            _groups[alreadyExtIdx].parameter(g.parameter(i));
     }
 }
