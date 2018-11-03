@@ -1,7 +1,13 @@
 #define EZC3D_API_EXPORTS
-#include "Data.h"
-// Implementation of Data class
+///
+/// \file Data.cpp
+/// \brief Implementation of Data class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
+#include "Data.h"
 
 ezc3d::DataNS::Data::Data()
 {

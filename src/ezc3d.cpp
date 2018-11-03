@@ -1,4 +1,12 @@
 #define EZC3D_API_EXPORTS
+///
+/// \file ezc3d.cpp
+/// \brief Implementation of ezc3d class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+
 #include "ezc3d.h"
 
 void ezc3d::removeTrailingSpaces(std::string& s){
