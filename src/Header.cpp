@@ -1,7 +1,13 @@
 #define EZC3D_API_EXPORTS
-#include "Header.h"
-// Implementation of Header class
+///
+/// \file Header.cpp
+/// \brief Implementation of Header class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
+#include "Header.h"
 
 ezc3d::Header::Header():
     _parametersAddress(2),
