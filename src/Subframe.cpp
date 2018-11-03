@@ -84,3 +84,8 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::channel(const ezc3d::DataNS::AnalogsNS:
         _channels[idx] = channel;
     }
 }
+
+const std::vector<ezc3d::DataNS::AnalogsNS::Channel> &ezc3d::DataNS::AnalogsNS::SubFrame::channel() const
+{
+    return _channels;
+}

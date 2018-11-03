@@ -128,6 +128,12 @@ public:
     ///
     void channel(const ezc3d::DataNS::AnalogsNS::Channel& channel, size_t idx = SIZE_MAX);
 
+    ///
+    /// \brief Get all the analog channels from the analogous data
+    /// \return The analog channels
+    ///
+    const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channel() const;
+
 };
 
 #endif

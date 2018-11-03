@@ -177,6 +177,12 @@ public:
     ///
     void parameter(const ezc3d::ParametersNS::GroupNS::Parameter& parameter);
 
+    ///
+    /// \brief Get all the parameter from the group
+    /// \return The parameters
+    ///
+    const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters() const;
+
 };
 
 #endif
