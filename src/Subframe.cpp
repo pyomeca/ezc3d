@@ -1,6 +1,13 @@
 #define EZC3D_API_EXPORTS
+///
+/// \file Subframe.cpp
+/// \brief Implementation of Subframe class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+
 #include "Subframe.h"
-// Implementation of Subframe class
 
 ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame()
 {
