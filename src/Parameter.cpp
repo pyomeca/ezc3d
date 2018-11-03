@@ -1,7 +1,13 @@
 #define EZC3D_API_EXPORTS
-#include "Parameter.h"
-// Implementation of Parameter class
+///
+/// \file Parameter.cpp
+/// \brief Implementation of Parameter class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
+#include "Parameter.h"
 
 ezc3d::ParametersNS::GroupNS::Parameter::Parameter(const std::string &name, const std::string &description) :
     _name(name),

@@ -1,7 +1,13 @@
 #define EZC3D_API_EXPORTS
-#include "Group.h"
-// Implementation of Group class
+///
+/// \file Group.cpp
+/// \brief Implementation of Group class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
+#include "Group.h"
 
 ezc3d::ParametersNS::GroupNS::Group::Group(const std::string &name, const std::string &description) :
     _name(name),
