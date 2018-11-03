@@ -124,6 +124,12 @@ public:
     ///
     void point(const ezc3d::DataNS::Points3dNS::Point& point, size_t idx = SIZE_MAX);
 
+    ///
+    /// \brief Get all the points from the 3D points data
+    /// \return The points
+    ///
+    const std::vector<ezc3d::DataNS::Points3dNS::Point>& points() const;
+
 };
 
 #endif

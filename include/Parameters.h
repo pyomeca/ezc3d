@@ -160,6 +160,11 @@ public:
     ///
     void group(const ezc3d::ParametersNS::GroupNS::Group& group);
 
+    ///
+    /// \brief Get all groups the group holder with read-only access
+    /// \return The groups
+    ///
+    const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
 };
 
 #endif

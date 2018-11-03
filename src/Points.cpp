@@ -82,3 +82,8 @@ void ezc3d::DataNS::Points3dNS::Points::point(const ezc3d::DataNS::Points3dNS::P
         _points[idx] = point;
     }
 }
+
+const std::vector<ezc3d::DataNS::Points3dNS::Point> &ezc3d::DataNS::Points3dNS::Points::points() const
+{
+    return _points;
+}
