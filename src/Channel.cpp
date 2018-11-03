@@ -1,6 +1,13 @@
 #define EZC3D_API_EXPORTS
+///
+/// \file Channel.cpp
+/// \brief Implementation of Channel class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+
 #include "Channel.h"
-// Implementation of Channel class
 
 ezc3d::DataNS::AnalogsNS::Channel::Channel(const std::string &name) :
     _name(name)
