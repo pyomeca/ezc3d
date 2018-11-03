@@ -4,91 +4,97 @@
 
 #include "utils.h"
 
+void fillMatlabField(mxArray *field, mwIndex idx, size_t value){
+    mxArray* ptr = mxCreateDoubleMatrix(1, 1, mxREAL);
+    double * val = mxGetPr(ptr);
+    val[0] = static_cast<double>(value);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
+}
 void fillMatlabField(mxArray *field, mwIndex idx, int value){
     mxArray* ptr = mxCreateDoubleMatrix(1, 1, mxREAL);
     double * val = mxGetPr(ptr);
-    val[0] = (double)value;
-    mxSetFieldByNumber(field, 0, idx, ptr);
+    val[0] = static_cast<double>(value);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<int>& values, const std::vector<int>& dimension){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<int>& values, const std::vector<size_t>& dimension){
     mxArray* ptr;
     if (dimension.size() == 0)
         ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
     else {
         mwSize ndim(dimension.size());
         mwSize *dims = new mwSize[ndim];
-        for (int i=0; i<ndim; ++i)
+        for (size_t i = 0; i < ndim; ++i)
             dims[i] = dimension[i];
         ptr = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
         delete[] dims;
     }
     double * val = mxGetDoubles(ptr);
-    for (int i =0; i < values.size(); ++i)
+    for (size_t i =0; i < values.size(); ++i)
         val[i] = values[i];
-    mxSetFieldByNumber(field, 0, idx, ptr);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
 }
 
 void fillMatlabField(mxArray *field, mwIndex idx, double value){
     mxArray* ptr = mxCreateDoubleMatrix(1, 1, mxREAL);
     double * val = mxGetPr(ptr);
     val[0] = value;
-    mxSetFieldByNumber(field, 0, idx, ptr);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<float>& values, const std::vector<int>& dimension){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<float>& values, const std::vector<size_t>& dimension){
     mxArray* ptr;
     if (dimension.size() == 0)
         ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
     else {
         mwSize ndim(dimension.size());
         mwSize *dims = new mwSize[ndim];
-        for (int i=0; i<ndim; ++i)
+        for (size_t i = 0; i < ndim; ++i)
             dims[i] = dimension[i];
         ptr = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
         delete[] dims;
     }
     double * val = mxGetDoubles(ptr);
-    for (int i =0; i < values.size(); ++i)
-        val[i] = (double)values[i];
-    mxSetFieldByNumber(field, 0, idx, ptr);
+    for (size_t i =0; i < values.size(); ++i)
+        val[i] = static_cast<double>(values[i]);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<double>& values, const std::vector<int>& dimension){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<double>& values, const std::vector<size_t>& dimension){
     mxArray* ptr;
     if (dimension.size() == 0)
         ptr = mxCreateDoubleMatrix(values.size(), 1, mxREAL);
     else {
         mwSize ndim(dimension.size());
         mwSize *dims = new mwSize[ndim];
-        for (int i=0; i<ndim; ++i)
+        for (size_t i = 0; i < ndim; ++i)
             dims[i] = dimension[i];
         ptr = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
         delete[] dims;
     }
     double * val = mxGetDoubles(ptr);
-    for (int i =0; i < values.size(); ++i)
+    for (size_t i =0; i < values.size(); ++i)
         val[i] = values[i];
-    mxSetFieldByNumber(field, 0, idx, ptr);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
 }
 
 void fillMatlabField(mxArray *field, mwIndex idx, const std::string &value){
-    mxSetFieldByNumber(field, 0, idx, mxCreateString(value.c_str()));
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), mxCreateString(value.c_str()));
 }
-void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<std::string>& values, const std::vector<int>& dimension){
+void fillMatlabField(mxArray *field, mwIndex idx, const std::vector<std::string>& values, const std::vector<size_t>& dimension){
     mxArray* ptr;
     if (dimension.size() <= 1)
             ptr = mxCreateCellMatrix(values.size(), 1);
     else {
         mwSize ndim(dimension.size()-1);
         mwSize *dims = new mwSize[ndim];
-        for (int i=0; i<ndim; ++i)
+        for (size_t i = 0; i < ndim; ++i)
             dims[i] = dimension[i+1];
         ptr = mxCreateCellArray(ndim, dims);
         delete[] dims;
     }
 
     // Fill cell matrix with input arguments
-    for (int i =0; i < values.size(); ++i)
+    for (size_t i =0; i < values.size(); ++i)
         mxSetCell(ptr, i, mxCreateString(values[i].c_str()) );
-    mxSetFieldByNumber(field, 0, idx, ptr);
+    mxSetFieldByNumber(field, 0, static_cast<int>(idx), ptr);
 }
 
 
@@ -103,7 +109,7 @@ bool toBool(const mxArray * prhs){
         return bool(mxGetPr(prhs)[0]);
     else if (mxIsLogical(prhs))
         return bool(mxGetLogicals(prhs)[0]);
-
+    throw std::invalid_argument("Unrecognized type for parameter.");
 }
 std::string toString(const mxArray * prhs){
     char *str_char = mxArrayToString(prhs);

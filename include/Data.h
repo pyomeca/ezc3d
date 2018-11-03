@@ -1,151 +1,108 @@
-#ifndef __DATA_H__
-#define __DATA_H__
+#ifndef DATA_H
+#define DATA_H
+///
+/// \file Data.h
+/// \brief Declaration of data class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
-#include <sstream>
-#include <memory>
-#include "ezc3d.h"
+#include <Frame.h>
 
-
-
+///
+/// \brief Actual data of the C3D file
+///
+/// The class stores all the data frames of a given or create C3D into a STL vector of frame.
+///
 class EZC3D_API ezc3d::DataNS::Data{
+    //---- CONSTRUCTORS ----//
 public:
+    ///
+    /// \brief Create a ready to fill Data class
+    ///
     Data();
+
+    ///
+    /// \brief Create a filled Data class from a given file
+    /// \param file File to copy the data from
+    ///
     Data(ezc3d::c3d &file);
+
+
+    //---- STREAM ----//
+public:
+    ///
+    ///
+    /// \brief Print the data
+    ///
+    /// Print all the data to the console by calling sequentially all the print method for all the frames
+    ///
     void print() const;
+
+    ///
+    /// \brief Write all the data to an opened file
+    /// \param f Already opened fstream file with write access
+    ///
+    /// Write all the data to a file by calling sequentially all the write method for all the frames
+    ///
     void write(std::fstream &f) const;
 
-    // Getter
-    void frame(const ezc3d::DataNS::Frame& f, int j = -1);
-    std::vector<ezc3d::DataNS::Frame>& frames_nonConst();
+
+    //---- FRAME ----//
+protected:
+    std::vector<ezc3d::DataNS::Frame> _frames; ///< Storage of the data
+public:
+    ///
+    /// \brief Get the number of frames in the data structure
+    /// \return The number of frames
+    ///
+    size_t nbFrames() const;
+
+    ///
+    /// \brief Get the frame of index idx
+    /// \param idx The index of the frame
+    /// \return The frame of index idx
+    ///
+    /// Get the frame of index idx.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of frames
+    ///
+    const ezc3d::DataNS::Frame& frame(size_t idx) const;
+
+    ///
+    /// \brief Get the frame of index idx in order to be modified by the caller
+    /// \param idx The index of the frame
+    /// \return A non-const reference to the frame of index idx
+    ///
+    /// Return a frame in the form of a non-const reference.
+    /// The user can thereafter modify this frame at will, but with the caution it requires.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of frames
+    ///
+    ///
+    ezc3d::DataNS::Frame& frame_nonConst(size_t idx);
+
+    ///
+    /// \brief Add/replace a frame to the data set
+    /// \param frame the actual frame
+    /// \param idx the index of the frame
+    ///
+    /// Add or replace a particular frame to the data set.
+    ///
+    /// If no idx is sent, then the frame is appended to the data set.
+    /// If the idx correspond to a specific frame, it replaces it.
+    /// If idx is outside the data set, it resize the data set accordingly and add the frame where it belongs
+    /// but leaves the other created frames empty.
+    ///
+    void frame(const ezc3d::DataNS::Frame& frame, size_t idx = SIZE_MAX);
+
+    ///
+    /// \brief Get all the frames from the data set
+    /// \return The frames
+    ///
     const std::vector<ezc3d::DataNS::Frame>& frames() const;
-    const ezc3d::DataNS::Frame& frame(int idx) const;
 
-protected:
-    std::vector<ezc3d::DataNS::Frame> _frames;
 };
-
-class EZC3D_API ezc3d::DataNS::Frame{
-public:
-    Frame();
-    void print() const;
-    void write(std::fstream &f) const;
-
-    void add(const ezc3d::DataNS::AnalogsNS::Analogs &analog_frame);
-    void add(const ezc3d::DataNS::Points3dNS::Points &point3d_frame);
-    void add(const ezc3d::DataNS::Frame &frame);
-    void add(const ezc3d::DataNS::Points3dNS::Points &point3d_frame, const ezc3d::DataNS::AnalogsNS::Analogs &analog_frame);
-
-    ezc3d::DataNS::Points3dNS::Points& points_nonConst() const;
-    const ezc3d::DataNS::Points3dNS::Points& points() const;
-    ezc3d::DataNS::AnalogsNS::Analogs& analogs_nonConst() const;
-    const ezc3d::DataNS::AnalogsNS::Analogs& analogs() const;
-
-protected:
-
-    std::shared_ptr<ezc3d::DataNS::Points3dNS::Points> _points; // All points for this frame
-    std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs> _analogs; // All subframe for all analogs
-};
-
-class EZC3D_API ezc3d::DataNS::Points3dNS::Points{
-public:
-    Points();
-    Points(int nMarkers);
-
-    void add(const ezc3d::DataNS::Points3dNS::Point& p);
-    void replace(int idx, const ezc3d::DataNS::Points3dNS::Point& p);
-    void print() const;
-    void write(std::fstream &f) const;
-
-    const std::vector<ezc3d::DataNS::Points3dNS::Point>& points() const;
-    std::vector<ezc3d::DataNS::Points3dNS::Point>& points_nonConst();
-    int pointIdx(const std::string& pointName) const;
-    const ezc3d::DataNS::Points3dNS::Point& point(int idx) const;
-    const ezc3d::DataNS::Points3dNS::Point& point(const std::string& pointName) const;
-
-protected:
-    std::vector<ezc3d::DataNS::Points3dNS::Point> _points;
-};
-
-class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
-public:
-    void print() const;
-    Point();
-    Point(const ezc3d::DataNS::Points3dNS::Point&);
-    void write(std::fstream &f) const;
-
-    float x() const;
-    void x(float x);
-
-    float y() const;
-    void y(float y);
-
-    float z() const;
-    void z(float z);
-
-	const std::vector<float> data() const;
-
-    float residual() const;
-    void residual(float residual);
-    const std::string& name() const;
-    void name(const std::string &name);
-
-protected:
-	std::vector<float> _data;
-    std::string _name;
-};
-
-class EZC3D_API ezc3d::DataNS::AnalogsNS::Analogs{
-public:
-    Analogs();
-    Analogs(int nSubframes);
-    void print() const;
-    void write(std::fstream &f) const;
-
-    const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes() const;
-    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes_nonConst();
-    const ezc3d::DataNS::AnalogsNS::SubFrame& subframe(int idx) const;
-    void addSubframe(const ezc3d::DataNS::AnalogsNS::SubFrame& subframe);
-    void replaceSubframe(int idx, const SubFrame& subframe);
-
-protected:
-    std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> _subframe;
-};
-
-class EZC3D_API ezc3d::DataNS::AnalogsNS::SubFrame{
-public:
-    SubFrame();
-    SubFrame(int nChannels);
-    void print() const;
-    void write(std::fstream &f) const;
-
-    void addChannel(const ezc3d::DataNS::AnalogsNS::Channel& channel);
-    void replaceChannel(int idx, const ezc3d::DataNS::AnalogsNS::Channel& channel);
-    void addChannels(const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& allChannelsData);
-    std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels_nonConst();
-    const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels() const;
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(int idx) const;
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(std::string channelName) const;
-protected:
-    std::vector<ezc3d::DataNS::AnalogsNS::Channel> _channels;
-};
-
-class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
-public:
-    void print() const;
-    void write(std::fstream &f) const;
-
-    float value() const;
-    void value(float v);
-
-    const std::string& name() const;
-    void name(const std::string &name);
-
-protected:
-    std::string _name;
-    float _value;
-};
-
-
-
 
 #endif
