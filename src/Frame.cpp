@@ -1,6 +1,13 @@
 #define EZC3D_API_EXPORTS
+///
+/// \file Frame.cpp
+/// \brief Implementation of Frame class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+
 #include "Frame.h"
-// Implementation of Frame class
 
 ezc3d::DataNS::Frame::Frame()
 {

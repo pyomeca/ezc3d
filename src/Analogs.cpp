@@ -1,6 +1,13 @@
 #define EZC3D_API_EXPORTS
+///
+/// \file Analogs.cpp
+/// \brief Implementation of Analogs class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+
 #include "Analogs.h"
-// Implementation of Analogs class
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs()
 {
