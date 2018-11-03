@@ -190,3 +190,8 @@ void ezc3d::ParametersNS::GroupNS::Group::parameter(const ezc3d::ParametersNS::G
     else
         _parameters[alreadyExistIdx] = p;
 }
+
+const std::vector<ezc3d::ParametersNS::GroupNS::Parameter> &ezc3d::ParametersNS::GroupNS::Group::parameters() const
+{
+    return _parameters;
+}
