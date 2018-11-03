@@ -8,6 +8,32 @@
 /// \date October 17th, 2018
 ///
 
+///
+/// \mainpage Documentation of ezc3d
+///
+/// \section intro_sec Introduction
+///
+/// This is the document for the library ezc3d
+/// (<a href="http://github.com/pyomeca/ezc3d">http://github.com/pyomeca/ezc3d</a>). The main goal of
+/// this library is to eazily create, read and modify c3d (<a href="http://c3d.org">http://c3d.org</a>)
+/// files, largely used in biomechanics.
+///
+/// This documentation was automatically generated for the version 0.3 on the 17th of October, 2018.
+///
+/// \section install_sec Installation
+///
+/// To install ezc3d, please refer to the README.md file accessible via the github repository.
+///
+/// \section contact_sec Contact
+///
+/// If you have any questions, comments or suggestions for future development, you are very welcomed to
+/// send me an email at <a href="mailto:pariterre@gmail.com">pariterre@gmail.com</a>.
+///
+/// \section conclusion_sec Conclusion
+///
+/// Enjoy C3D files!
+///
+
 // dllexport/import declaration
 #ifdef _WIN32
 #  ifdef EZC3D_API_EXPORTS

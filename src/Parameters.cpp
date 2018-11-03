@@ -1,7 +1,13 @@
 #define EZC3D_API_EXPORTS
-#include "Parameters.h"
-// Implementation of Parameters class
+///
+/// \file Parameters.cpp
+/// \brief Implementation of Parameters class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
+#include "Parameters.h"
 
 ezc3d::ParametersNS::Parameters::Parameters():
     _parametersStart(1),

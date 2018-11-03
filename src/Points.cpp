@@ -1,6 +1,13 @@
 #define EZC3D_API_EXPORTS
+///
+/// \file Points.cpp
+/// \brief Implementation of Points class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
+
 #include "Points.h"
-// Implementation of Points class
 
 // Point3d data
 ezc3d::DataNS::Points3dNS::Points::Points()
