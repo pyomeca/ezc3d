@@ -1,8 +1,8 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 ///
-/// \file Parameter.h
-/// \brief Declaration of Parameter class
+/// \file Parameters.h
+/// \brief Declaration of Parameters class
 /// \author Pariterre
 /// \version 1.0
 /// \date October 17th, 2018
