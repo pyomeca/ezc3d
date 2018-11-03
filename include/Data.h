@@ -97,6 +97,12 @@ public:
     ///
     void frame(const ezc3d::DataNS::Frame& frame, size_t idx = SIZE_MAX);
 
+    ///
+    /// \brief Get all the frames from the data set
+    /// \return The frames
+    ///
+    const std::vector<ezc3d::DataNS::Frame>& frames() const;
+
 };
 
 #endif

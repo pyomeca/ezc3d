@@ -94,6 +94,12 @@ public:
     ///
     void subframe(const ezc3d::DataNS::AnalogsNS::SubFrame& subframe, size_t idx = SIZE_MAX);
 
+    ///
+    /// \brief Get all the subframes from the analogous data set
+    /// \return The subframes
+    ///
+    const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes() const;
+
 };
 
 #endif
