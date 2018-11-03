@@ -67,3 +67,8 @@ void ezc3d::DataNS::AnalogsNS::Analogs::subframe(const ezc3d::DataNS::AnalogsNS:
         _subframe[idx] = subframe;
     }
 }
+
+const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> &ezc3d::DataNS::AnalogsNS::Analogs::subframes() const
+{
+    return _subframe;
+}

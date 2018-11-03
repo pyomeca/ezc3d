@@ -132,4 +132,9 @@ void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &frame, size_t idx)
     }
 }
 
+const std::vector<ezc3d::DataNS::Frame> &ezc3d::DataNS::Data::frames() const
+{
+    return _frames;
+}
+
 

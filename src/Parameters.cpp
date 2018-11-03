@@ -342,3 +342,8 @@ void ezc3d::ParametersNS::Parameters::group(const ezc3d::ParametersNS::GroupNS::
             _groups[alreadyExtIdx].parameter(g.parameter(i));
     }
 }
+
+const std::vector<ezc3d::ParametersNS::GroupNS::Group> &ezc3d::ParametersNS::Parameters::groups() const
+{
+    return _groups;
+}
