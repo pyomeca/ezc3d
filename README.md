@@ -55,7 +55,25 @@ The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and t
 The core code is written in C++, meaning you can fully create from scratch, read and write C3D from C++. There is an example code in the folder example that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful. 
 
 The informations that follows are the basics. 
-### Create a 
+### Create an empty while valid C3D structure
+To create a new valid yet empty C3D, just call the `c3d` class without parameter.
+```C++
+ezc3d::c3d c3d;
+```
+
+### Read a C3D
+To read a C3D file you simply have to call the `c3d` class with a path
+```C++
+ezc3d::c3d c3d("path_to_c3d.c3d");
+```
+Please note that on Windows, the path must be `/` or `\\` separated, for obvious reasons. 
+
+### Write a C3D
+A `c3d` class is able to write itself to a file using the method `write`
+```C++
+ezc3d::c3d c3d;
+c3d.write("path_to_c3d.c3d")
+```
 
 ## MATLAB
 (https://www.mathworks.com/)
