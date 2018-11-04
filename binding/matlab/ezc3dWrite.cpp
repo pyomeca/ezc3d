@@ -143,7 +143,7 @@ void mexFunction(int nlhs,mxArray *[],int nrhs,const mxArray *prhs[])
     // Create a fresh c3d which will be fill with c3d struct
     ezc3d::c3d c3d;
 
-    // Get the names of the markers
+    // Get the names of the points
     mxArray *parameterPoints = mxGetField(parameter, 0, "POINT");
     if (!parameterPoints)
         mexErrMsgTxt("'parameter.POINT' is not accessible in the structure.");
