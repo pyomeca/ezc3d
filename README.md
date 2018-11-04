@@ -79,19 +79,45 @@ c3d.write("path_to_c3d.c3d")
 ### Navigating into the C3D class
 The C3D class mimics the C3D structures as defined by the standard, that is separated into a `header`, a `parameters` and a `data` class. You can get a const-reference to these classes by simply calling their names (see below for more specific examples)
 
-### Get a parameter from the header 
+#### Get a value from the header 
 To retrieve some information from the header, just call the `header` class and then the specific information you are interested in. If for example, you want to get the frame rate of the cameras, you should do as follow:
 ```C++
 ezc3d::c3d c3d("path_to_c3d.c3d");
 float pointRate(c3d.header().frameRate());
 ```
-Please note that the names mimics those used by the C3D format as described by the c3d.org documentation. For more information on what you can get from the header, please refer to the documentation on header ().
+Please note that the names mimics those used by the C3D format as described by the c3d.org documentation. For more information on what you can get from the header, please refer to the documentation on [header](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1Header.html).
 
-### Get a parameter from the C3D
-Parameters in C3D are arranged in a GROUP:PAMETER manner. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the labels of the points, you can navigate up to the POINT group and then to the LABELS parameter. 
+#### Set a value to the header
+It is not possible from outside to add, remove or even modify the header directly. The reason for that is that the header has a very specific formatting to be compliant to the standard. Therefore, the header will update itself if needed when the parameters class is modify. If it doesn't this is a bug that should be reported. 
+
+#### Get a parameter
+Parameters in C3D are arranged in a GROUP:PAMETER manner and the classes in EZC3D mimic this arrangement. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the labels of the points, you can navigate up to the POINT group and then to the LABELS parameter. 
 ```C++
 ezc3d::c3d c3d;
 std::vector<std::string> point_labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
+```
+For more information on what you can get from the parameters, please refer to the documentation on [parameters](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1ParametersNS_1_1Parameters.html).
+
+#### Set a parameter 
+There are two ways to add a parameter to the `c3d` class. 
+
+##### Using the c3d accessor
+The first and prefered way is to add a parameter via the accessors method of the class `c3d`. The first parameter is the name of the group to place/replace the parameter in, and the second parameter is the parameter to add. 
+```C++
+ezc3d::c3d c3d;
+ezc3d::ParametersNS::GroupNS::Parameter param("name_of_my_new_parameter"); // Create a new parameter
+param.set(2.0); // Give a value to the parameter
+c3d.parameter("GroupName", param); // Add the parameter to the c3d structure
+```
+For more information on how to set a new parameter from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
+
+##### Using the nonConst reference
+The second method more design for internal communication between structure. However you may find yourself in situation where the normal method is just to long for what you want to do. Then you can access directly the parameter via a nonConst reference. If you manually want to modify the number of points used, you could do:
+```C++
+ezc3d::c3d c3d;
+c3d.
+param.set(2.0); // Give a value to the parameter
+c3d.parameter("GroupName", param); // Add the parameter to the c3d structure
 ```
 
 ## MATLAB
