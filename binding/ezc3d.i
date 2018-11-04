@@ -12,17 +12,18 @@
 
 // Instantiate templates
 namespace std {
-   %template(VecInt) vector<int>;
-   %template(VecFloat) vector<float>;
-   %template(VecString) vector<std::string>;
+    %template(VecInt) vector<int>;
+    %template(VecUInt) vector<size_t>;
+    %template(VecFloat) vector<float>;
+    %template(VecString) vector<std::string>;
 
-   %template(VecGroups) vector<ezc3d::ParametersNS::GroupNS::Group>;
-   %template(VecParameters) vector<ezc3d::ParametersNS::GroupNS::Parameter>;
+    %template(VecGroups) vector<ezc3d::ParametersNS::GroupNS::Group>;
+    %template(VecParameters) vector<ezc3d::ParametersNS::GroupNS::Parameter>;
 
-   %template(VecFrames) vector<ezc3d::DataNS::Frame>;
-   %template(VecPoints) vector<ezc3d::DataNS::Points3dNS::Point>;
-   %template(VecAnalogSubFrames) vector<ezc3d::DataNS::AnalogsNS::SubFrame>;
-   %template(VecAnalogChannels) vector<ezc3d::DataNS::AnalogsNS::Channel>;
+    %template(VecFrames) vector<ezc3d::DataNS::Frame>;
+    %template(VecPoints) vector<ezc3d::DataNS::Points3dNS::Point>;
+    %template(VecAnalogSubFrames) vector<ezc3d::DataNS::AnalogsNS::SubFrame>;
+    %template(VecAnalogChannels) vector<ezc3d::DataNS::AnalogsNS::Channel>;
 
 }
 
