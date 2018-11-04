@@ -318,9 +318,14 @@ The C3D format allows for some pretty old and probably useless stuff. For exampl
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
 # Changes log
-Version 0.1.0 - First working version of a C++ C3D reader. 
+## Version 0.1.0
+First working version of a C++ C3D reader. 
 
-Version 0.2.0 - Reader and writer in C++, Python interface with SWIG for the reader, MATLAB interface for the reader and writer
+## Version 0.2.0
+Reader and writer in C++, Python interface with SWIG for the reader, MATLAB interface for the reader and writer
 
-Version 0.3.0 - Pythonic interface for the python reader and started to interface the writer. 
-Version 0.3.1 - Documentation using Doxygen added for the C++ code, Major refactor of the code in order to harmonized it across the classes.
+## Version 0.3.0
+Pythonic interface for the python reader and started to interface the writer. 
+
+## Version 0.3.1
+Documentation using Doxygen added for the C++ code, Major refactor of the code in order to harmonized it across the classes.
