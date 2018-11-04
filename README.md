@@ -55,7 +55,8 @@ The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and t
 The core code is written in C++, meaning you can fully create from scratch, read and write C3D from C++. There is an example code in the folder example that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful. 
 
 The informations that follows are the basics. 
-### Create an empty while valid C3D structure
+
+### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `c3d` class without parameter.
 ```C++
 ezc3d::c3d c3d;
@@ -75,6 +76,9 @@ ezc3d::c3d c3d;
 c3d.write("path_to_c3d.c3d")
 ```
 
+### Add a parameter to the C3D
+Parameters in C3D are arranged in a GROUP:PAMETER manner. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the LABELS parameter
+
 ## MATLAB
 (https://www.mathworks.com/)
 
@@ -92,6 +96,10 @@ The second way is to provide me with non-working C3D files (See the C3D Software
 The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from three different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/) and Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
 # Documentation
+## C3D format
+The C3D format is maintained by http://c3d.org. They provide recommandation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
+
+## EZC3D
 The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it youself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d`. 
 
 # Troubleshoots
