@@ -132,7 +132,7 @@ public:
     /// \brief Get all the analog channels from the analogous data
     /// \return The analog channels
     ///
-    const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channel() const;
+    const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels() const;
 
 };
 
