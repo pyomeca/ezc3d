@@ -50,5 +50,13 @@ namespace std {
 %include "ezc3d.h"
 %include "Header.h"
 %include "Parameters.h"
+%include "Group.h"
+%include "Parameter.h"
 %include "Data.h"
+%include "Frame.h"
+%include "Points.h"
+%include "Point.h"
+%include "Analogs.h"
+%include "Subframe.h"
+%include "Channel.h"
 

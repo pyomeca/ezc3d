@@ -2,6 +2,7 @@
 find_package(PYTHON3 REQUIRED)
 include_directories(${Python3_INCLUDE_DIRS})
 find_package(Numpy REQUIRED)
+
 include_directories(${NUMPY_INCLUDES})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 if(WIN32)

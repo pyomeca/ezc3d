@@ -1,0 +1,15 @@
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/docs/
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/include/ 
+INPUT                  += @CMAKE_CURRENT_SOURCE_DIR@/src/ 
+INPUT                  +=@CMAKE_CURRENT_SOURCE_DIR@/docs
+
+# Remove dll_export that confuses Doxygen
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+PREDEFINED             = EZC3D_API=
+
+# Other options
+PROJECT_NAME           = EZC3D
+FULL_PATH_NAMES        = NO
+SOURCE_BROWSER         = YES
