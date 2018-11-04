@@ -183,13 +183,30 @@ c3d_empty.print();
 For more information on how to set data from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
 
 ##### Using the nonConst reference
-The second method more design for internal communication between structure. However you may find yourself in situation where the normal method is just to long for what you want to do. Then you can access directly the parameter via a nonConst reference. If you manually want to modify the number of points used, you could do:
+The second method is more designed for internal purpose. However, you may find yourself in situation where the normal method is just to long or restrictive for what you want to do. Then you can access directly the data via a nonConst reference. For example, you can add channels that way:
 ```C++
+// Add a new analog to the c3d (one filled with zeros, the other one with data)
 ezc3d::c3d c3d;
-c3d.
-param.set(2.0); // Give a value to the parameter
-c3d.parameter("GroupName", param); // Add the parameter to the c3d structure
+
+c3d.analog("new_analog1"); // Declare an empty channel
+std::vector<ezc3d::DataNS::Frame> frames_analog;
+ezc3d::DataNS::Frame frame;
+// Fill the frame 
+for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
+    ezc3d::DataNS::AnalogsNS::Channel newChannel("new_analogs2");
+    newChannel.data(sf+1);
+    ezc3d::DataNS::AnalogsNS::SubFrame subframes_analog;
+    subframes_analog.channel(newChannel);
+    frame.analogs_nonConst().subframe(subframes_analog); // The non-const reference makes it easier to add the subframe
+}
+for (size_t f=0; f<c3d.data().nbFrames(); ++f)
+    frames_analog.push_back(frame);
+c3d.analog(frames_analog);
+
+// Print it
+c3d.print();
 ```
+Please notice that this method by-pass some protection and may create invalid C3D if not used properly.
 
 ## MATLAB
 (https://www.mathworks.com/)
