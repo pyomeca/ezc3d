@@ -419,13 +419,13 @@ protected:
 
     ///
     /// \brief Update parameters according to the data
-    /// \param newMarkers The names of the new markers
+    /// \param newPoints The names of the new poits
     /// \param newAnalogs The names of the new analogs
     ///
-    /// Throw a std::runtime_error if newMarkers or newAnalogs was added while the data set is not empty.
-    /// If you want to add a new marker after having actual data in the data set, you must use the frame method.
+    /// Throw a std::runtime_error if newPoints or newAnalogs was added while the data set is not empty.
+    /// If you want to add a new point after having actual data in the data set, you must use the frame method.
     ///
-    void updateParameters(const std::vector<std::string> &newMarkers = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
+    void updateParameters(const std::vector<std::string> &newPoints = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
 };
 

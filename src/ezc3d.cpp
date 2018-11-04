@@ -347,7 +347,7 @@ void ezc3d::c3d::point(const std::vector<ezc3d::DataNS::Frame>& frames)
         const std::string &name(frames[0].points().point(idx).name());
         for (size_t i=0; i<labels.size(); ++i)
             if (!name.compare(labels[i]))
-                throw std::invalid_argument("The marker you try to create already exists in the data set");
+                throw std::invalid_argument("The point you try to create already exists in the data set");
 
         for (size_t f=0; f<data().nbFrames(); ++f)
             _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
@@ -437,10 +437,10 @@ void ezc3d::c3d::updateHeader()
         _header->nbAnalogs(0);
 }
 
-void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, const std::vector<std::string> &newAnalogs)
+void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, const std::vector<std::string> &newAnalogs)
 {
-    if (data().nbFrames() != 0 && newMarkers.size() > 0)
-        throw std::runtime_error("newMarkers in updateParameters should only be called on empty c3d");
+    if (data().nbFrames() != 0 && newPoints.size() > 0)
+        throw std::runtime_error("newPoints in updateParameters should only be called on empty c3d");
     if (data().nbFrames() != 0 && newAnalogs.size() > 0)
         throw std::runtime_error("newAnalogs in updateParameters should only be called on empty c3d");
 
@@ -457,7 +457,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
     if (data().nbFrames() > 0)
         nPoints = data().frame(0).points().nbPoints();
     else
-        nPoints = parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newMarkers.size();
+        nPoints = parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newPoints.size();
     if (nPoints != static_cast<size_t>(grpPoint.parameter("USED").valuesAsInt()[0])){
         grpPoint.parameter_nonConst("USED").set(nPoints);
 
@@ -473,7 +473,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newMarkers, co
                 if (i < parameters().group("POINT").parameter("LABELS").valuesAsString().size())
                     name = parameters().group("POINT").parameter("LABELS").valuesAsString()[i];
                 else
-                    name = newMarkers[i - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
+                    name = newPoints[i - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
             } else {
                 name = data().frame(0).points().point(i).name();
             }
