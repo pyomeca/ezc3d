@@ -76,7 +76,7 @@ ezc3d::c3d c3d;
 c3d.write("path_to_c3d.c3d")
 ```
 
-### Navigating into the C3D class
+### Navigating through the C3D class
 The C3D class mimics the C3D structures as defined by the standard, that is separated into a `header`, a `parameters` and a `data` class. You can get a const-reference to these classes by simply calling their names (see below for more specific examples)
 
 #### Get a value from the header 
