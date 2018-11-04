@@ -10,25 +10,25 @@
 %}
 %include <std_vector.i>
 
-%apply (int* IN_ARRAY1, int DIM1) {(int* markers, int nMarkers)};
+%apply (int* IN_ARRAY1, int DIM1) {(int* points, int nPoints)};
 %apply (int* IN_ARRAY1, int DIM1) {(int* channels, int nChannels)};
 
 %rename(console_print) print;
 
 %inline %{
-PyObject * _get_points(const ezc3d::c3d& c3d, const std::vector<int>& markers)
+PyObject * _get_points(const ezc3d::c3d& c3d, const std::vector<int>& points)
 {
     // Get the data
-    size_t nMarkers(markers.size());
+    size_t nPoints(points.size());
     size_t nFrames(c3d.data().nbFrames());
-    double * data = new double[4 * nMarkers * nFrames];
+    double * data = new double[4 * nPoints * nFrames];
     for (size_t f = 0; f < nFrames; ++f){
-        for (size_t m = 0; m < nMarkers; ++m){
-            const ezc3d::DataNS::Points3dNS::Point& point(c3d.data().frame(f).points().point(markers[m]));
-            data[nMarkers*nFrames*0+nFrames*m+f] = point.x();
-            data[nMarkers*nFrames*1+nFrames*m+f] = point.y();
-            data[nMarkers*nFrames*2+nFrames*m+f] = point.z();
-            data[nMarkers*nFrames*3+nFrames*m+f] = 1;
+        for (size_t m = 0; m < nPoints; ++m){
+            const ezc3d::DataNS::Points3dNS::Point& point(c3d.data().frame(f).points().point(points[m]));
+            data[nPoints*nFrames*0+nFrames*m+f] = point.x();
+            data[nPoints*nFrames*1+nFrames*m+f] = point.y();
+            data[nPoints*nFrames*2+nFrames*m+f] = point.z();
+            data[nPoints*nFrames*3+nFrames*m+f] = 1;
         }
     }
 
@@ -36,7 +36,7 @@ PyObject * _get_points(const ezc3d::c3d& c3d, const std::vector<int>& markers)
     int nArraySize = 3;
     npy_intp * arraySizes = new npy_intp[nArraySize];
     arraySizes[0] = 4;
-    arraySizes[1] = nMarkers;
+    arraySizes[1] = nPoints;
     arraySizes[2] = nFrames;
     PyArrayObject * c = (PyArrayObject *)PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, data);
     delete[] arraySizes;
@@ -81,25 +81,25 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
 {
     // Extend c3d class to get an easy accessor to data points
     PyObject * get_points(){
-        std::vector<int> markers;
+        std::vector<int> points;
         for (int i = 0; i < self->header().nb3dPoints(); ++i)
-            markers.push_back(i);
-        return _get_points(*self, markers);
+            points.push_back(i);
+        return _get_points(*self, points);
     }
 
-    PyObject * get_points(int* markers, int nMarkers)
+    PyObject * get_points(int* points, int nPoints)
     {
-        std::vector<int> _markers;
-        for (int i = 0; i < nMarkers; ++i)
-            _markers.push_back(markers[i]);
-        return _get_points(*self, _markers);
+        std::vector<int> _points;
+        for (int i = 0; i < nPoints; ++i)
+            _points.push_back(points[i]);
+        return _get_points(*self, _points);
     }
 
-    PyObject * get_points(int marker)
+    PyObject * get_points(int point)
     {
-        std::vector<int> markers;
-        markers.push_back(marker);
-        return _get_points(*self, markers);
+        std::vector<int> points;
+        points.push_back(point);
+        return _get_points(*self, points);
     }
 
 
