@@ -20,12 +20,11 @@ PyObject * _get_points(const ezc3d::c3d& c3d, const std::vector<int>& markers)
 {
     // Get the data
     size_t nMarkers(markers.size());
-    const std::vector<ezc3d::DataNS::Frame>& frames = c3d.data().frames();
-    size_t nFrames(frames.size());
+    size_t nFrames(c3d.data().nbFrames());
     double * data = new double[4 * nMarkers * nFrames];
-    for (int f = 0; f < nFrames; ++f){
-        for (int m = 0; m < nMarkers; ++m){
-            const ezc3d::DataNS::Points3dNS::Point& point(frames[f].points().point(markers[m]));
+    for (size_t f = 0; f < nFrames; ++f){
+        for (size_t m = 0; m < nMarkers; ++m){
+            const ezc3d::DataNS::Points3dNS::Point& point(c3d.data().frame(f).points().point(markers[m]));
             data[nMarkers*nFrames*0+nFrames*m+f] = point.x();
             data[nMarkers*nFrames*1+nFrames*m+f] = point.y();
             data[nMarkers*nFrames*2+nFrames*m+f] = point.z();
@@ -54,18 +53,13 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
 {
     // Get the data
     size_t nAnalogs(analogs.size());
-    const std::vector<ezc3d::DataNS::Frame>& frames = c3d.data().frames();
-    size_t nFrames(frames.size());
+    size_t nFrames(c3d.data().nbFrames());
     int nSubframe(c3d.header().nbAnalogByFrame());
     double * data = new double[nAnalogs * nFrames * nSubframe];
-    for (int f = 0; f < nFrames; ++f){
-        for (int sf = 0; sf < nSubframe; ++sf){
-            const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels(frames[f].analogs().subframe(sf).channels());
-            for (int a = 0; a < nAnalogs; ++a){
-                data[nSubframe*nFrames*a + sf+nSubframe*f] = channels[analogs[a]].value();
-            }
-        }
-    }
+    for (size_t f = 0; f < nFrames; ++f)
+        for (size_t sf = 0; sf < nSubframe; ++sf)
+            for (int a = 0; a < nAnalogs; ++a)
+                data[nSubframe*nFrames*a + sf+nSubframe*f] = c3d.data().frame(f).analogs().subframe(sf).channel(a).data();
 
     // Export them to Python Object
     int nArraySize = 3;

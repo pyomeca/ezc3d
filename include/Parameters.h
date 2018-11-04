@@ -1,115 +1,170 @@
-#ifndef __PARAMETERS_H__
-#define __PARAMETERS_H__
+#ifndef PARAMETERS_H
+#define PARAMETERS_H
+///
+/// \file Parameters.h
+/// \brief Declaration of Parameters class
+/// \author Pariterre
+/// \version 1.0
+/// \date October 17th, 2018
+///
 
-#include <stdexcept>
-#include <memory>
+#include <Group.h>
 
-#include "ezc3d.h"
-
+///
+/// \brief Group holder of C3D parameters
+///
 class EZC3D_API ezc3d::ParametersNS::Parameters{
+    //---- CONSTRUCTOR ----//
 public:
+    ///
+    /// \brief Create a default group holder with minimal groups to have a valid c3d
+    ///
     Parameters();
+
+    ///
+    /// \brief Construct group holder from a C3D file
+    /// \param file Already opened fstream file with read access
+    ///
     Parameters(ezc3d::c3d &file);
+
+
+    //---- STREAM ----//
+public:
+    ///
+    /// \brief Print the groups by calling the print method of all the groups
+    ///
     void print() const;
+
+    ///
+    /// \brief Write the groups to an opened file by calling the write method of all the groups
+    /// \param f Already opened fstream file with write access
+    ///
     void write(std::fstream &f) const;
 
-    const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
-    const ezc3d::ParametersNS::GroupNS::Group& group(int group) const;
-    const ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
-    int groupIdx(const std::string& groupName) const;
-    ezc3d::ParametersNS::GroupNS::Group& group_nonConst(int group);
-    void addGroup(const ezc3d::ParametersNS::GroupNS::Group& g);
 
-    int parametersStart() const;
-    int checksum() const;
-    int nbParamBlock() const;
-    int processorType() const;
-
+    //---- PARAMETER METADATA ----//
 protected:
-    std::vector<ezc3d::ParametersNS::GroupNS::Group> _groups; // Holder for the group of parameters
-
     // Read the Parameters Header
-    int _parametersStart;   // Byte 1 ==> if 1 then it starts at byte 3 otherwise at byte 512*parametersStart
-    int _checksum;         // Byte 2 ==> should be 80 if it is a c3d
-    int _nbParamBlock;      // Byte 3 ==> Number of parameter blocks to follow
-    int _processorType;     // Byte 4 ==> Processor type (83 + [1 Inter, 2 DEC, 3 MIPS])
-};
+    size_t _parametersStart;    ///< Byte 1 of the parameter's section of the C3D file.
+                                ///<
+                                ///< If the value is 1 then it starts at byte 3
+                                ///< otherwise, it starts at byte 512*parametersStart
+    size_t _checksum;   ///< Byte 2 of the C3D file
+                        ///<
+                        ///< It should be equals to 0x50 for a valid a c3d
+    size_t _nbParamBlock;   ///< Byte 3 of the C3D file
+                            ///<
+                            ///< Number of 256-bytes blocks the paramertes fits in.
+                            ///< It defines the starting position of the data
+    size_t _processorType;  ///< Byte 4 of the C3D file
+                            ///<
+                            ///< Processor type (83 + [1 Inter, 2 DEC, 3 MIPS])
 
-
-class EZC3D_API ezc3d::ParametersNS::GroupNS::Group{
 public:
-    Group(const std::string &name = "", const std::string &description = "");
+    ///
+    /// \brief Get the byte in the file where the data starts
+    /// \return The byte in the file where the data starts
+    ///
+    size_t parametersStart() const;
 
-    int read(ezc3d::c3d &file, int nbCharInName);
-    int addParameter(ezc3d::c3d &file, int nbCharInName);
-    void addParameter(const ezc3d::ParametersNS::GroupNS::Parameter& p);
-    void print() const;
-    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
+    ///
+    /// \brief Get the checksum of the parameters
+    /// \return The checksum of the parameters
+    ///
+    /// The chechsum, according to C3D.org documentation, should be equals to 0x50 for a valid C3D
+    ///
+    size_t checksum() const;
 
-    // Getter for the group
-    void lock();
-    void unlock();
-    bool isLocked() const;
-    const std::string& name() const;
-    const std::string& description() const;
-    const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters() const;
-    const ezc3d::ParametersNS::GroupNS::Parameter& parameter(int idx) const;
-    std::vector<ezc3d::ParametersNS::GroupNS::Parameter>& parameters_nonConst();
-    int parameterIdx(std::string parameterName) const;
-    const ezc3d::ParametersNS::GroupNS::Parameter& parameter(std::string parameterName) const;
+    ///
+    /// \brief Get the number of 256-bytes the parameters need in the file
+    /// \return The number of 256-bytes the parameters need in the file
+    ///
+    size_t nbParamBlock() const;
 
+    ///
+    /// \brief Get the processor type the file was writen on
+    /// \return The processor type the file was writen on
+    ///
+    /// The processor type is defined by the value 83 + index. Where index is 1 for Intel, 2 for DEC and 3 for MIPS
+    ///
+    size_t processorType() const;
+
+
+    //---- GROUPS ----//
 protected:
-    bool _isLocked; // If the group should not be modified
+    std::vector<ezc3d::ParametersNS::GroupNS::Group> _groups; ///< Holder for the group of parameters
 
-    std::string _name;
-    std::string _description;
-
-    std::vector<ezc3d::ParametersNS::GroupNS::Parameter> _parameters; // Holder for the parameters of the group
-};
-
-
-class EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter{
 public:
-    Parameter(const std::string &name = "", const std::string &description = "");
+    /// \brief Get the number of groups
+    /// \return The number of groups
+    ///
+    size_t nbGroups() const;
 
-    int read(ezc3d::c3d &file, int nbCharInName);
-    void set(const std::vector<int>& data, const std::vector<int>& dimension);
-    void set(const std::vector<float>& data, const std::vector<int>& dimension);
-    void set(const std::vector<std::string>& data, const std::vector<int>& dimension);
-    void print() const;
-    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
+    ///
+    /// \brief Get the index of a group in the group holder
+    /// \param groupName Name of the group
+    /// \return The index of the group
+    ///
+    /// Search for the index of a group into the group holder by the name of this group.
+    ///
+    /// Throw a std::invalid_argument if groupName is not found
+    ///
+    size_t groupIdx(const std::string& groupName) const;
 
-    // Getter for the group
-    const std::vector<int> dimension() const;
-    void lock();
-    void unlock();
-    bool isLocked() const;
-    void name(const std::string paramName);
-    const std::string& name() const;
-    const std::string& description() const;
+    ///
+    /// \brief Get a particular group of index idx from the group holder
+    /// \param idx The index of the group
+    /// \return The group
+    ///
+    /// Get a particular group of index idx from the group holder.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of groups
+    ///
+    const ezc3d::ParametersNS::GroupNS::Group& group(size_t idx) const;
 
-    ezc3d::DATA_TYPE type() const;
-    const std::vector<std::string>& valuesAsString() const;
-    const std::vector<int>& valuesAsByte() const;
-    const std::vector<int>& valuesAsInt() const;
-    const std::vector<float>& valuesAsFloat() const;
+    ///
+    /// \brief Get a particular group of index idx from the group holder in order to be modified by the caller
+    /// \param idx The index of the group
+    /// \return The group
+    ///
+    /// Get a particular group of index idx from the group holder in the form of a non-const reference.
+    /// The user can thereafter modify the parameter at will, but with the caution it requires.
+    ///
+    /// Throw a std::out_of_range exception if idx is larger than the number of groups
+    ///
+    ezc3d::ParametersNS::GroupNS::Group& group_nonConst(size_t idx);
 
-protected:
+    ///
+    /// \brief Get a particular group with the name groupName from the group holder
+    /// \param groupName The name of the group
+    /// \return The group
+    ///
+    /// Throw a std::invalid_argument if groupName is not found
+    ///
+    const ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
 
-    bool _isLocked; // If the group should not be modified
-    unsigned int writeImbricatedParameter(std::fstream &f, const std::vector<int>& dim, unsigned int currentIdx=0, unsigned int cmp=0) const;
-    bool isDimensionConsistent(int dataSize, const std::vector<int>& dimension) const;
+    ///
+    /// \brief Get a particular group with the name groupName from the group holder
+    /// \param groupName The name of the group
+    /// \return The group
+    ///
+    /// Throw a std::invalid_argument if groupName is not found
+    ///
+    ezc3d::ParametersNS::GroupNS::Group& group_nonConst(const std::string& groupName);
 
-    std::vector<int> _dimension; // Mapping of the data vector
-    ezc3d::DATA_TYPE _data_type; // What kind of data there is in the parameter
-    std::vector<int> _param_data_int; // Actual parameter
-    std::vector<float> _param_data_float; // Actual parameter
-    std::vector<std::string> _param_data_string; // Actual parameter
+    ///
+    /// \brief Add/replace a group in the group holder
+    /// \param group The group to copy
+    ///
+    /// If the group sent does not exist in the group holder, it is appended. Otherwise it is replaced
+    ///
+    void group(const ezc3d::ParametersNS::GroupNS::Group& group);
 
-    std::string _name;
-    std::string _description;
+    ///
+    /// \brief Get all groups the group holder with read-only access
+    /// \return The groups
+    ///
+    const std::vector<ezc3d::ParametersNS::GroupNS::Group>& groups() const;
 };
-
-
 
 #endif
