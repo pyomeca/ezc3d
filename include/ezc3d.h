@@ -62,9 +62,10 @@
 ///
 /// \brief Namespace ezc3d
 ///
-/// Usefull functions, enum and misc useful for the ezc3d project
+/// Useful functions, enum and misc useful for the ezc3d project
 ///
 namespace ezc3d {
+    // ---- UTILS ---- //
     ///
     /// \brief Enum that describes the size of different types
     ///
@@ -91,26 +92,43 @@ namespace ezc3d {
     ///
     EZC3D_API std::string toUpper(const std::string &str);
 
-    // Forward declaration of the whole project structure
+
+    // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
     class c3d;
     class EZC3D_API Header;
 
+    ///
+    /// \brief Namespace that holds the Parameters hierarchy
+    ///
     namespace ParametersNS {
         class EZC3D_API Parameters;
+
+        ///
+        /// \brief Namespace that holds the Group and Parameter classes
+        ///
         namespace GroupNS {
                 class EZC3D_API Group;
                 class EZC3D_API Parameter;
             }
     }
 
+    ///
+    /// \brief Namespace that holds the Data hierarchy
+    ///
     namespace DataNS {
         class EZC3D_API Data;
 
         class Frame;
+        ///
+        /// \brief Namespace that holds the Points hierarchy
+        ///
         namespace Points3dNS {
             class EZC3D_API Points;
             class EZC3D_API Point;
         }
+        ///
+        /// \brief Namespace that holds the Analogs hierarchy
+        ///
         namespace AnalogsNS {
             class EZC3D_API Analogs;
             class EZC3D_API SubFrame;
@@ -419,13 +437,13 @@ protected:
 
     ///
     /// \brief Update parameters according to the data
-    /// \param newMarkers The names of the new markers
+    /// \param newPoints The names of the new poits
     /// \param newAnalogs The names of the new analogs
     ///
-    /// Throw a std::runtime_error if newMarkers or newAnalogs was added while the data set is not empty.
-    /// If you want to add a new marker after having actual data in the data set, you must use the frame method.
+    /// Throw a std::runtime_error if newPoints or newAnalogs was added while the data set is not empty.
+    /// If you want to add a new point after having actual data in the data set, you must use the frame method.
     ///
-    void updateParameters(const std::vector<std::string> &newMarkers = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
+    void updateParameters(const std::vector<std::string> &newPoints = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
 };
 
