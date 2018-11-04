@@ -76,8 +76,23 @@ ezc3d::c3d c3d;
 c3d.write("path_to_c3d.c3d")
 ```
 
-### Add a parameter to the C3D
-Parameters in C3D are arranged in a GROUP:PAMETER manner. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the LABELS parameter
+### Navigating into the C3D class
+The C3D class mimics the C3D structures as defined by the standard, that is separated into a `header`, a `parameters` and a `data` class. You can get a const-reference to these classes by simply calling their names (see below for more specific examples)
+
+### Get a parameter from the header 
+To retrieve some information from the header, just call the `header` class and then the specific information you are interested in. If for example, you want to get the frame rate of the cameras, you should do as follow:
+```C++
+ezc3d::c3d c3d("path_to_c3d.c3d");
+float pointRate(c3d.header().frameRate());
+```
+Please note that the names mimics those used by the C3D format as described by the c3d.org documentation. For more information on what you can get from the header, please refer to the documentation on header ().
+
+### Get a parameter from the C3D
+Parameters in C3D are arranged in a GROUP:PAMETER manner. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the labels of the points, you can navigate up to the POINT group and then to the LABELS parameter. 
+```C++
+ezc3d::c3d c3d;
+std::vector<std::string> point_labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
+```
 
 ## MATLAB
 (https://www.mathworks.com/)
