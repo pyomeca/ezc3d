@@ -24,9 +24,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     }
 
     // Preparer the first layer of the output structure
-    const char *globalFieldsNames[] = {"header", "parameter","data"};
+    const char *globalFieldsNames[] = {"header", "parameters","data"};
     int headerIdx = 0;
-    int parameterIdx = 1;
+    int parametersIdx = 1;
     int dataIdx = 2;
     mwSize globalFieldsDims[2] = {1, 1};
     plhs[0] = mxCreateStructArray(2, globalFieldsDims, sizeof(globalFieldsNames)/sizeof(*globalFieldsNames), globalFieldsNames);
@@ -94,7 +94,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             }
             mwSize groupsFieldsDims[2] = {1, 1};
             mxArray * groupsStruct = mxCreateStructArray(2, groupsFieldsDims, static_cast<int>(nbGroups), const_cast<const char**>(groupsFieldsNames));
-            mxSetFieldByNumber(plhs[0], 0, parameterIdx, groupsStruct);
+            mxSetFieldByNumber(plhs[0], 0, parametersIdx, groupsStruct);
 
             // Parse each parameters
             for (size_t g = 0; g < nbGroups; ++g){
