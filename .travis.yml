@@ -24,6 +24,8 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda config --set auto_update_conda no
     - conda update -q conda
+    - conda create -n ezc3d
+    - source activate ezc3d
 
 install:
     # Install test packages for Python3
@@ -36,10 +38,12 @@ script:
     # Download, compile and test core
     - mkdir -p build
     - cd build
-    - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF .. 
+    - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF -DBUILD_DOC=ON -DBINDER_PYTHON3=ON .. 
     - make
     - make ezc3d_coverage
     - ctest
+    - cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/envs/ezc3d -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON .. 
+    - make install
 
     # Test the python binder
     - pytest -v --color=yes ../test
@@ -52,9 +56,9 @@ after_success:
     # Uploading report to CodeCov
     - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
     
-    # Code coverage for python (Not sure yet how to merge the two results)
-    - conda install -c conda-forge codecov
-    - codecov
+    # # Code coverage for python (Not sure yet how to merge the two results)
+    # - conda install -c conda-forge codecov
+    # - codecov
     
 notifications:
     email:
