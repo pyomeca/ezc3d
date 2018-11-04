@@ -15,9 +15,9 @@ ezc3d::DataNS::Points3dNS::Points::Points()
 
 }
 
-ezc3d::DataNS::Points3dNS::Points::Points(size_t nbMarkers)
+ezc3d::DataNS::Points3dNS::Points::Points(size_t nbPoints)
 {
-    _points.resize(nbMarkers);
+    _points.resize(nbPoints);
 }
 
 void ezc3d::DataNS::Points3dNS::Points::print() const
