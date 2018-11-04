@@ -5,7 +5,7 @@ C3D (http://c3d.org) is a format specifically designed to store biomechanics dat
 
 EZC3D addresses these issues. It offers a comprehensive and light API to read and write C3D files. The source code is written in C++ allowing to be compiled and used by higher level langages thanks to SWIG (http://www.swig.org/). Still, proper interface are written on top of the SWIG binder in order to facilitate the experience of the coders in their respective langages. 
 
-Without further ado, let's begin C3Ding!
+So, without further ado, let's begin C3Ding!
 
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
@@ -242,9 +242,48 @@ c3d.data.points = rand(3,1,100);
 % Write the C3D
 ezc3dWrite('path_to_c3d.c3d', c3d);
 ```
-
 ## Python 3
-(https://www.python.org/) 
+Python (https://www.python.org/) is a scripting langage that has taken more and more importance over the past years. So much that now it is one of the prefered langage of the scientific community. It simplicity yet its large power perform a large variety of tasks makes it almost a certainty that its popularity won't decrease for the next years.
+
+To interface the C++ code with Python, SWIG is a great tool. It creates very efficiently an interface in the target langage with minimal code to write. However, the resulting code in the target langage is far from being easy to use. Actually, it gives a mixed-API not far from the original C++ langage. When this is useful to rapidly create the interface, it lacks of user-friendlyness. EZC3D interface the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organized the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to used this python interface. 
+
+Please note, to navigate the c3d struture provided by the interface, the easiest way is to use the `keys()` method since this is a dictionary. 
+
+### Create an empty yet valid C3D structure
+To create a new valid yet empty C3D, just call the `ezc3d.c3d()` method without any argument. 
+```python3
+from ezc3d import c3d
+c = c3d()
+print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of points used
+```
+
+### Read a C3D
+To read a C3D file you simply to call the `ezc3d.c3d()` with the path to c3d as the first argument.
+```python3
+from ezc3d import c3d
+c = c3d('path_to_c3d.c3d')
+print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of points used
+```
+
+### Write a C3D
+To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
+```python3
+import numpy as np
+
+from ezc3d import c3d
+
+# Create a valid dict to work on
+c = c3d()
+
+# Add a point to the structure. 
+c['parameters']['POINT']['RATE']['value'] = [100]
+c['parameters']['POINT']['USED']['value'] = [1]
+c['parameters']['POINT']['LABELS']['value'] = ['NewMarkerName']
+c['data']['points'] = np.ndarray((4,1,100));  # XYZ1 x N_POINTS x N_FRAMES
+
+# Write the C3D
+c.write('path_to_c3d.c3d')
+```
 
 # How to contribute
 You are very welcome to contribute to the project! There are to main ways to contribute. 
@@ -279,3 +318,9 @@ The C3D format allows for some pretty old and probably useless stuff. For exampl
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
 # Changes log
+Version 0.1.0 - First working version of a C++ C3D reader. 
+
+Version 0.2.0 - Reader and writer in C++, Python interface with SWIG for the reader, MATLAB interface for the reader and writer
+
+Version 0.3.0 - Pythonic interface for the python reader and started to interface the writer. 
+Version 0.3.1 - Documentation using Doxygen added for the C++ code, Major refactor of the code in order to harmonized it across the classes.
