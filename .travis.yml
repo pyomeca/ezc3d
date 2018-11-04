@@ -27,7 +27,7 @@ before_install:
 
 install:
     # Install test packages for Python3
-    - conda install pytest
+    - conda install python pytest numpy
 
 script:
     ############################################################################
