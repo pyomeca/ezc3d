@@ -206,10 +206,42 @@ c3d.analog(frames_analog);
 // Print it
 c3d.print();
 ```
-Please notice that this method by-pass some protection and may create invalid C3D if not used properly.
+Please note that this method by-passes some protection and may create invalid C3D if not used properly.
 
 ## MATLAB
-(https://www.mathworks.com/)
+MATLAB (https://www.mathworks.com/) is a prototyping langage largely used in industry and faily used by the biomecanical scientific community. Despite the growing popularity of Python as a free and open-source alternative or Octave as a very similar langage open-source, MATLAB remains an important player. Therefore EZC3D comes with a binder for MATLAB.
+
+MATLAB stands for Matrix laboratory. As the name suggest, it is mainly used to perform operation on matrix. With that in mind, the binder was written to organize the point so it is easy to perform matrix multiplication on them. Hence, EZC3D works on MATLAB structure that separate the `header`, the `parameter` and the `data`. Into the `header` structure, you will find information on the `points`, the `analogs` and the `events`. Into the `parameter`, you will find all the groups and parameters as they appear in the C3D file. Finally, in the `data`, there is the `points` values organized into a 3d hypermatrix (XYZ x N_POINTS x N_FRAMES) and the `analogs` values organized into a 2d matrix (N_FRAMES x N_CHANNELS).
+
+### Create an empty yet valid C3D structure
+To create a new valid yet empty C3D, just call the `ezc3dRead` without any argument. 
+```MATLAB
+c3d = ezc3dRead();
+disp(c3d.parameter.POINT.USED); % Print the number of points used
+```
+
+### Read a C3D
+To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as the first argument.
+```MATLAB
+c3d = ezc3dRead('path_to_c3d.c3d');
+disp(c3d.parameter.POINT.USED); % Print the number of points used
+```
+
+### Write a C3D
+To write a C3D to a file, you must call the `ezc3dWrite` function. This function waits for the path of the C3D to write and a valid structure. Please note that the header is actually ignore since it is fully constructed from required parameters. Hence, a valid structure may omit the header. Still, for simplicity, it is easier to send a structure created via the `ezc3dRead` function.
+```MATLAB
+% Create a valid structure to work on
+c3d = ezc3dRead();
+
+% Add a point to the structure. 
+c3d.parameter.POINT.RATE = 100;
+c3d.parameter.POINT.USED = c3d.parameter.POINT.USED + 1;
+c3d.parameter.POINT.LABELS = [c3d.parameter.POINT.LABELS, 'NewMarkerName'];
+c3d.data.points = rand(3,1,100);
+
+% Write the C3D
+ezc3dWrite('path_to_c3d.c3d', c3d);
+```
 
 ## Python 3
 (https://www.python.org/) 
