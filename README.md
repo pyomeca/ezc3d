@@ -95,21 +95,92 @@ Parameters in C3D are arranged in a GROUP:PAMETER manner and the classes in EZC3
 ```C++
 ezc3d::c3d c3d;
 std::vector<std::string> point_labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
+for (size_t m = 0; m < point_labels.size(); ++m){
+  std::cout << point_labels[m] << std::endl;
+}
 ```
 For more information on what you can get from the parameters, please refer to the documentation on [parameters](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1ParametersNS_1_1Parameters.html).
 
 #### Set a parameter 
-There are two ways to add a parameter to the `c3d` class. 
-
-##### Using the c3d accessor
-The first and prefered way is to add a parameter via the accessors method of the class `c3d`. The first parameter is the name of the group to place/replace the parameter in, and the second parameter is the parameter to add. 
+To set a parameter into a group, you must call an accessor method provided into the `c3d` class. The first parameter of the function is the name of the group to set the new parameter in, and the second parameter of the function is the actual parameter to set.
 ```C++
 ezc3d::c3d c3d;
 ezc3d::ParametersNS::GroupNS::Parameter param("name_of_my_new_parameter"); // Create a new parameter
 param.set(2.0); // Give a value to the parameter
 c3d.parameter("GroupName", param); // Add the parameter to the c3d structure
 ```
-For more information on how to set a new parameter from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
+Please note that if this parameter already exist in the group named "GroupName", then this parameter is replaced by the new one. Otherwise, if it doesn't exist or the group doesn't exist, then it is added to the group. For more information on how to set a new parameter from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
+
+#### Get data
+Point and analogous data are the core of the C3D file. To understand the structure though it is essential to understand that everything is based on points. For example, the base frame rate the point frame rate, while the analogous data is based on the number of data per point frame. Therefor to get a particular point in time, you must get the data at a certain frame and specify which point you are interested in, while to get a particular analogous data you must also specify the subframe.
+```C++
+ezc3d::c3d c3d("path_to_c3d.c3d");
+ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(f).points().point(0));
+pt.print();
+ezc3d::DataNS::AnalogsNS::Channel channel(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel("channel1"));
+channel.print();
+```
+For more information on what you can get from the points, please refer to the documentation on [points](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1DataNS_1_1Points3dNS_1_1Points.html) or [analogs](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1DataNS_1_1AnalogsNS_1_1Analogs.html).
+
+#### Set data 
+There are two ways to add data to the data set. 
+
+##### Using the c3d accessor
+The first and prefered way is to add a frame via the accessors method of the class `c3d`. The parameter to send is the filled frame to add/replace to the data structure. 
+Please note that the points and channel must have been declare to the parameters before adding them to the data set. This is so the whole c3d structure is properly harmonized. 
+Please also note, for the same reason, that POINT:RATE and ANALOG:RATE must have been declared before adding points and analogs. 
+Here is a full example that creates a new C3D, add points and analogs and print it to the console. 
+```C++
+// Create an empyt c3d
+ezc3d::c3d c3d_empty;
+
+// Declare rates
+ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
+pointRate.set(std::vector<float>() = {100}, {1});
+c3d_empty.parameter("POINT", pointRate);
+
+ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
+analogRate.set(std::vector<float>() = {1000}, {1});
+c3d_empty.parameter("ANALOG", analogRate);
+
+// Declare the points and channels to the c3d
+c3d_empty.point("new_marker1"); // Add empty
+c3d_empty.point("new_marker2"); // Add empty
+c3d_empty.analog("new_analog1"); // add the empty
+c3d_empty.analog("new_analog2"); // add the empty
+
+// Fill them with some random values
+ezc3d::DataNS::Frame f;
+std::vector<std::string>labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
+int nPoints(c3d_empty.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
+ezc3d::DataNS::Points3dNS::Points pts;
+for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
+    ezc3d::DataNS::Points3dNS::Point pt;
+    pt.name(labels[i]);
+    pt.x(1.0);
+    pt.y(2.0);
+    pt.z(3.0);
+    pts.point(pt);
+}
+ezc3d::DataNS::AnalogsNS::Analogs analog;
+ezc3d::DataNS::AnalogsNS::SubFrame subframe;
+for (size_t i=0; i < c3d_empty.header().nbAnalogs(); ++i){
+    ezc3d::DataNS::AnalogsNS::Channel c;
+    c.data(i+1);
+    subframe.channel(c);
+}
+for (size_t i=0; i < c3d_empty.header().nbAnalogByFrame(); ++i)
+    analog.subframe(subframe);
+    
+// add them to the data set
+f.add(pts, analog);
+c3d_empty.frame(f);
+c3d_empty.frame(f); // Why not adding a second frame?
+
+// Print them to the console
+c3d_empty.print();
+```
+For more information on how to set data from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
 
 ##### Using the nonConst reference
 The second method more design for internal communication between structure. However you may find yourself in situation where the normal method is just to long for what you want to do. Then you can access directly the parameter via a nonConst reference. If you manually want to modify the number of points used, you could do:
