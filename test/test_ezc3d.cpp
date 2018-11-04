@@ -28,22 +28,22 @@ struct c3dTestStruct{
     float pointFrameRate = -1;
     float analogFrameRate = -1;
     size_t nFrames = SIZE_MAX;
-    size_t nMarkers = SIZE_MAX;
+    size_t nPoints = SIZE_MAX;
     float nSubframes = -1;
-    std::vector<std::string> markerNames;
+    std::vector<std::string> pointNames;
 
     size_t nAnalogs = SIZE_MAX;
     std::vector<std::string> analogNames;
 };
 
-void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
+void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
     // Setup some variables
-    if (withMarkers){
-        c3dStruc.markerNames = {"marker1", "marker2", "marker3"};
-        c3dStruc.nMarkers = c3dStruc.markerNames.size();
-        // Add markers to the new c3d
-        for (size_t m = 0; m < c3dStruc.nMarkers; ++m)
-            c3dStruc.c3d.point(c3dStruc.markerNames[m]);
+    if (withPoints){
+        c3dStruc.pointNames = {"point1", "point2", "point3"};
+        c3dStruc.nPoints = c3dStruc.pointNames.size();
+        // Add points to the new c3d
+        for (size_t m = 0; m < c3dStruc.nPoints; ++m)
+            c3dStruc.c3d.point(c3dStruc.pointNames[m]);
     }
 
     c3dStruc.analogNames.clear();
@@ -51,14 +51,14 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
     if (withAnalogs){
         c3dStruc.analogNames = {"analog1", "analog2", "analog3"};
         c3dStruc.nAnalogs = c3dStruc.analogNames.size();
-        // Add markers to the new c3d
+        // Add analog to the new c3d
         for (size_t a = 0; a < c3dStruc.nAnalogs; ++a)
             c3dStruc.c3d.analog(c3dStruc.analogNames[a]);
     }
 
     c3dStruc.nFrames = 10;
     c3dStruc.pointFrameRate = 100;
-    if (withMarkers){
+    if (withPoints){
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
         pointRate.set(std::vector<float>()={c3dStruc.pointFrameRate});
         c3dStruc.c3d.parameter("POINT", pointRate);
@@ -75,10 +75,10 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
         ezc3d::DataNS::Frame frame;
 
         ezc3d::DataNS::Points3dNS::Points pts;
-        if (withMarkers){
-            for (size_t m = 0; m < c3dStruc.nMarkers; ++m){
+        if (withPoints){
+            for (size_t m = 0; m < c3dStruc.nPoints; ++m){
                 ezc3d::DataNS::Points3dNS::Point pt;
-                pt.name(c3dStruc.markerNames[m]);
+                pt.name(c3dStruc.pointNames[m]);
                 // Generate some random data
                 pt.x(static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
                 pt.y(static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
@@ -101,9 +101,9 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withMarkers, bool withAnalogs){
             }
         }
 
-        if (withMarkers && withAnalogs)
+        if (withPoints && withAnalogs)
             frame.add(pts, analogs);
-        else if (withMarkers)
+        else if (withPoints)
             frame.add(pts);
         else if (withAnalogs)
             frame.add(analogs);
@@ -430,7 +430,7 @@ TEST(c3dModifier, addPoints) {
     defaultHeaderTest(new_c3d.c3d, HEADER_TYPE::ANALOG_AND_EVENT);
 
     // Things that should have change
-    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
     EXPECT_EQ(new_c3d.c3d.header().lastFrame(), new_c3d.nFrames - 1);
     EXPECT_EQ(new_c3d.c3d.header().nbMaxInterpGap(), 10);
@@ -447,7 +447,7 @@ TEST(c3dModifier, addPoints) {
     // Things that should have change
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
@@ -458,34 +458,34 @@ TEST(c3dModifier, addPoints) {
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nMarkers);
-    for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.markerNames[m].c_str());
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nPoints);
+    for (size_t m = 0; m < new_c3d.nPoints; ++m){
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.pointNames[m].c_str());
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
     }
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).residual(), 0);
+        for (size_t m = 0; m < new_c3d.nPoints; ++m){
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).residual(), 0);
 
-            std::vector<float> data(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).data());
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).x(), data[0]);
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).y(), data[1]);
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).z(), data[2]);
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).residual(), 0);
+            std::vector<float> data(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).data());
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).x(), data[0]);
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).y(), data[1]);
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).z(), data[2]);
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).residual(), 0);
         }
     }
 
-    // Add frame with a new marker with not enough frames
+    // Add frame with a new point with not enough frames
     std::vector<ezc3d::DataNS::Frame> new_frames;
     EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames() - 1; ++f)
@@ -527,9 +527,9 @@ TEST(c3dModifier, specificPoint){
         ezc3d::DataNS::Frame frame;
 
         ezc3d::DataNS::Points3dNS::Points pts(new_c3d.c3d.data().frame(f).points());
-        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+        for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(new_c3d.markerNames[m]);
+            pt.name(new_c3d.pointNames[m]);
             // Generate some random data
             pt.x(static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
             pt.y(static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
@@ -557,7 +557,7 @@ TEST(c3dModifier, specificPoint){
     }
 
     // Things that should have change
-    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
     EXPECT_EQ(new_c3d.c3d.header().lastFrame(), new_c3d.nFrames - 1);
     EXPECT_EQ(new_c3d.c3d.header().nbMaxInterpGap(), 10);
@@ -574,7 +574,7 @@ TEST(c3dModifier, specificPoint){
     // Things that should have change
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
@@ -585,35 +585,35 @@ TEST(c3dModifier, specificPoint){
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nMarkers);
-    for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.markerNames[m].c_str());
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nPoints);
+    for (size_t m = 0; m < new_c3d.nPoints; ++m){
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.pointNames[m].c_str());
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
     }
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).residual(), 0);
+        for (size_t m = 0; m < new_c3d.nPoints; ++m){
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).x(), static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).y(), static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).z(), static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).residual(), 0);
         }
     }
 
     // Access a non-existant point
-    EXPECT_THROW(new_c3d.c3d.data().frame(0).points().point(new_c3d.nMarkers), std::out_of_range);
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).points().point(new_c3d.nPoints), std::out_of_range);
 
     // Test for removing space at the end of a label
     new_c3d.c3d.point("PointNameWithSpaceAtTheEnd ");
-    new_c3d.nMarkers += 1;
-    new_c3d.markerNames.push_back("PointNameWithSpaceAtTheEnd");
-    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[new_c3d.nMarkers - 1].c_str(), "PointNameWithSpaceAtTheEnd");
+    new_c3d.nPoints += 1;
+    new_c3d.pointNames.push_back("PointNameWithSpaceAtTheEnd");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[new_c3d.nPoints - 1].c_str(), "PointNameWithSpaceAtTheEnd");
 
 }
 
@@ -812,7 +812,7 @@ TEST(c3dModifier, addPointsAndAnalogs){
     defaultHeaderTest(new_c3d.c3d, HEADER_TYPE::EVENT_ONLY);
 
     // Things that should have change
-    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
     EXPECT_EQ(new_c3d.c3d.header().lastFrame(), new_c3d.nFrames - 1);
     EXPECT_EQ(new_c3d.c3d.header().nbMaxInterpGap(), 10);
@@ -832,7 +832,7 @@ TEST(c3dModifier, addPointsAndAnalogs){
     // Things that should have change
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
@@ -843,13 +843,13 @@ TEST(c3dModifier, addPointsAndAnalogs){
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nMarkers);
-    for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(), new_c3d.markerNames[m].c_str());
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nPoints);
+    for (size_t m = 0; m < new_c3d.nPoints; ++m){
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(), new_c3d.pointNames[m].c_str());
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
     }
@@ -889,10 +889,10 @@ TEST(c3dModifier, addPointsAndAnalogs){
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+        for (size_t m = 0; m < new_c3d.nPoints; ++m){
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
         }
 
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
@@ -974,9 +974,9 @@ TEST(c3dModifier, specificFrames){
     // Replace existing frame
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+        for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(new_c3d.markerNames[m]);
+            pt.name(new_c3d.pointNames[m]);
             // Generate some random data
             pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
             pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
@@ -992,9 +992,9 @@ TEST(c3dModifier, specificFrames){
     {
         size_t f(new_c3d.nFrames + 1);
         ezc3d::DataNS::Points3dNS::Points pts;
-        for (size_t m = 0; m < new_c3d.nMarkers; ++m){
+        for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(new_c3d.markerNames[m]);
+            pt.name(new_c3d.pointNames[m]);
             // Generate some random data
             pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
             pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
@@ -1016,7 +1016,7 @@ TEST(c3dModifier, specificFrames){
     defaultHeaderTest(new_c3d.c3d, HEADER_TYPE::ANALOG_AND_EVENT);
 
     // Things that should have change
-    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.header().nb3dPoints(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
     EXPECT_EQ(new_c3d.c3d.header().lastFrame(), new_c3d.nFrames - 1);
     EXPECT_EQ(new_c3d.c3d.header().nbMaxInterpGap(), 10);
@@ -1033,7 +1033,7 @@ TEST(c3dModifier, specificFrames){
     // Things that should have change
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
@@ -1044,13 +1044,13 @@ TEST(c3dModifier, specificFrames){
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nMarkers);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nMarkers);
-    for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.markerNames[m].c_str());
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), new_c3d.nPoints);
+    for (size_t m = 0; m < new_c3d.nPoints; ++m){
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(),new_c3d.pointNames[m].c_str());
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
         EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
     }
@@ -1058,16 +1058,16 @@ TEST(c3dModifier, specificFrames){
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         if (f != new_c3d.nFrames - 2) { // Where no actual frames where added
-            for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).x(), static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).y(), static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).z(), static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+            for (size_t m = 0; m < new_c3d.nPoints; ++m){
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).x(), static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).y(), static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
+                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).z(), static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
             }
         } else {
-            for (size_t m = 0; m < new_c3d.nMarkers; ++m){
-                EXPECT_THROW(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).x(), std::invalid_argument);
-                EXPECT_THROW(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).y(), std::invalid_argument);
-                EXPECT_THROW(new_c3d.c3d.data().frame(f).points().point(new_c3d.markerNames[m]).z(), std::invalid_argument);
+            for (size_t m = 0; m < new_c3d.nPoints; ++m){
+                EXPECT_THROW(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).x(), std::invalid_argument);
+                EXPECT_THROW(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).y(), std::invalid_argument);
+                EXPECT_THROW(new_c3d.c3d.data().frame(f).points().point(new_c3d.pointNames[m]).z(), std::invalid_argument);
             }
         }
     }
@@ -1096,7 +1096,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     defaultHeaderTest(read_c3d, HEADER_TYPE::EVENT_ONLY);
 
     // Things that should have change
-    EXPECT_EQ(read_c3d.header().nb3dPoints(), ref_c3d.nMarkers);
+    EXPECT_EQ(read_c3d.header().nb3dPoints(), ref_c3d.nPoints);
     EXPECT_EQ(read_c3d.header().firstFrame(), 0);
     EXPECT_EQ(read_c3d.header().lastFrame(), ref_c3d.nFrames - 1);
     EXPECT_EQ(read_c3d.header().nbMaxInterpGap(), 10);
@@ -1116,7 +1116,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     // Things that should have change
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
-    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], ref_c3d.nMarkers);
+    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], ref_c3d.nPoints);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
@@ -1127,13 +1127,13 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], ref_c3d.nFrames);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
-    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), ref_c3d.nMarkers);
+    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), ref_c3d.nPoints);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
-    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), ref_c3d.nMarkers);
+    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), ref_c3d.nPoints);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
-    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), ref_c3d.nMarkers);
-    for (size_t m = 0; m < ref_c3d.nMarkers; ++m){
-        EXPECT_STREQ(read_c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(), ref_c3d.markerNames[m].c_str());
+    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), ref_c3d.nPoints);
+    for (size_t m = 0; m < ref_c3d.nPoints; ++m){
+        EXPECT_STREQ(read_c3d.parameters().group("POINT").parameter("LABELS").valuesAsString()[m].c_str(), ref_c3d.pointNames[m].c_str());
         EXPECT_STREQ(read_c3d.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString()[m].c_str(), "");
         EXPECT_STREQ(read_c3d.parameters().group("POINT").parameter("UNITS").valuesAsString()[m].c_str(), "mm");
     }
@@ -1173,10 +1173,10 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
     // DATA
     for (size_t f = 0; f < ref_c3d.nFrames; ++f){
-        for (size_t m = 0; m < ref_c3d.nMarkers; ++m){
-            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(ref_c3d.markerNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(ref_c3d.markerNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(ref_c3d.markerNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+        for (size_t m = 0; m < ref_c3d.nPoints; ++m){
+            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(ref_c3d.pointNames[m]).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(ref_c3d.pointNames[m]).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(ref_c3d.pointNames[m]).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
         }
 
         for (size_t sf = 0; sf < ref_c3d.nSubframes; ++sf)

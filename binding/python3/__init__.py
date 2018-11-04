@@ -58,7 +58,7 @@ class c3d(C3dMapper):
             # Interface to swig pointers
             self.header = swig_header
 
-            self._storage['markers'] = {
+            self._storage['points'] = {
                 'size': self.header.nb3dPoints(),
                 'frame_rate': self.header.frameRate(),
                 'first_frame': self.header.firstFrame(),
@@ -67,7 +67,7 @@ class c3d(C3dMapper):
             self._storage['analogs'] = {
                 'size': self.header.nbAnalogs(),
                 'frame_rate': self.header.nbAnalogByFrame() * self.header.frameRate(),
-                'first_frame': self.header.nbAnalogByFrame() * self.header.firstFrame()+1,
+                'first_frame': self.header.nbAnalogByFrame() * self.header.firstFrame(),
                 'last_frame': self.header.nbAnalogByFrame() * self.header.lastFrame()
             }
             self._storage['events'] = {
@@ -222,7 +222,7 @@ class c3d(C3dMapper):
                     c.name(analog_labels[i])
                     c.data(data_analogs[0, i, nb_analog_subframes*f + sf])
                     subframe.channel(c, i)
-                analogs.replaceSubframe(sf, subframe)
+                analogs.subframe(subframe, sf)
             frame = ezc3d.Frame()
             frame.add(pts, analogs)
             new_c3d.frame(frame)
