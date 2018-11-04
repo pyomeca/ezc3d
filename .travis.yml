@@ -24,12 +24,11 @@ before_install:
     - conda config --set always_yes yes --set changeps1 no
     - conda config --set auto_update_conda no
     - conda update -q conda
-    - conda create -n ezc3d
     - source activate
 
 install:
     # Install test packages for Python3
-    - conda install python pytest numpy
+    - conda install python pytest numpy swig
 
 script:
     ############################################################################
@@ -42,7 +41,7 @@ script:
     - make
     - make ezc3d_coverage
     - ctest
-    - cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/envs/ezc3d -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON .. 
+    - cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON .. 
     - make install
     
     # Test the python binder
