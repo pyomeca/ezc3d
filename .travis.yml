@@ -8,25 +8,42 @@ matrix:
       - COMPILER=g++-7
     addons:
       apt:
-        packages: [g++, valgrind, python-yaml, lcov, cmake]
+        packages: [g++, valgrind, python-yaml, lcov, cmake, python3.7]
 
     
 before_install:
     # Combine global build options with OS/compiler-dependent options
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+   
+    # Add stuff for Python3 tests as well
+    #- wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+    #- bash miniconda.sh -b -p $HOME/miniconda
+    #- export PATH="$HOME/miniconda/bin:$PATH"
+    #- hash -r
+    #- conda config --set always_yes yes --set changeps1 no
+    #- conda config --set auto_update_conda no
+    #- conda update -q conda
+
+install:
+    # Install test packages for Python3
+    #- conda install pytest
+    - pip install -U pytest
 
 script:
     ############################################################################
     # Build main and tests
     ############################################################################
-     - mkdir -p build
-     - cd build
-     - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF .. 
-     - make
-     - make ezc3d_coverage
-     - ctest
+    # Download, compile and test core
+    - mkdir -p build
+    - cd build
+    - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF .. 
+    - make
+    - make ezc3d_coverage
+    - ctest
 
+    # Test the python binder
+    - pytest -v --color=yes test
 
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
@@ -35,3 +52,13 @@ after_success:
     - lcov --list coverage.info #debug info
     # Uploading report to CodeCov
     - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    
+    # Code coverage for python (Not sure yet how to merge the two results)
+    - conda install -c conda-forge codecov
+    - codecov
+    
+notifications:
+    email:
+        on_success: never
+        on_failure: always
+
