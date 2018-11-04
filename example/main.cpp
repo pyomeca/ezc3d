@@ -24,12 +24,12 @@ int main()
     {
         ezc3d::c3d c3d("markers_analogs.c3d");
 
-        // Add two new markers to the c3d (one filled with zeros, the other one with data)
-        c3d.point("new_marker1"); // Add empty
+        // Add two new points to the c3d (one filled with zeros, the other one with data)
+        c3d.point("new_point1"); // Add empty
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
-        pt_new.name("new_marker2");
+        pt_new.name("new_point2");
         pt_new.x(1.0);
         pt_new.y(2.0);
         pt_new.z(3.0);
@@ -119,8 +119,8 @@ int main()
         analogRate.set(std::vector<float>() = {1000}, {1});
         c3d_empty.parameter("ANALOG", analogRate);
 
-        c3d_empty.point("new_marker1"); // Add empty
-        c3d_empty.point("new_marker2"); // Add empty
+        c3d_empty.point("new_point1"); // Add empty
+        c3d_empty.point("new_point2"); // Add empty
         c3d_empty.analog("new_analog1"); // add the empty
         c3d_empty.analog("new_analog2"); // add the empty
         // Add a new frame
@@ -165,12 +165,12 @@ int main()
     {
         ezc3d::c3d c3d("markers_analogs.c3d");
 
-        // Add two new markers to the c3d (one filled with zeros, the other one with data)
-        c3d.point("new_marker1"); // Add empty
+        // Add two new points to the c3d (one filled with zeros, the other one with data)
+        c3d.point("new_point1"); // Add empty
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
-        pt_new.name("new_marker2");
+        pt_new.name("new_point2");
         pt_new.x(1.0);
         pt_new.y(2.0);
         pt_new.z(3.0);
@@ -258,8 +258,8 @@ int main()
         analogRate.set(std::vector<float>() = {1000}, {1});
         c3d_empty.parameter("ANALOG", analogRate);
 
-        c3d_empty.point("new_marker1"); // Add empty
-        c3d_empty.point("new_marker2"); // Add empty
+        c3d_empty.point("new_point1"); // Add empty
+        c3d_empty.point("new_point2"); // Add empty
         c3d_empty.analog("new_analog1"); // add the empty
         c3d_empty.analog("new_analog2"); // add the empty
         // Add a new frame

@@ -24,9 +24,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     }
 
     // Preparer the first layer of the output structure
-    const char *globalFieldsNames[] = {"header", "parameter","data"};
+    const char *globalFieldsNames[] = {"header", "parameters","data"};
     int headerIdx = 0;
-    int parameterIdx = 1;
+    int parametersIdx = 1;
     int dataIdx = 2;
     mwSize globalFieldsDims[2] = {1, 1};
     plhs[0] = mxCreateStructArray(2, globalFieldsDims, sizeof(globalFieldsNames)/sizeof(*globalFieldsNames), globalFieldsNames);
@@ -42,21 +42,21 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
         // Fill the header
         {
-        const char *headerFieldsNames[] = {"markers", "analogs", "events"};
+        const char *headerFieldsNames[] = {"points", "analogs", "events"};
         mwSize headerFieldsDims[2] = {1, 1};
         mxArray * headerStruct = mxCreateStructArray(2, headerFieldsDims, sizeof(headerFieldsNames)/sizeof(*headerFieldsNames), headerFieldsNames);
         mxSetFieldByNumber(plhs[0], 0, headerIdx, headerStruct);
-            // fill markers
+            // fill points
             {
-                const char *markersFieldsNames[] = {"size", "frameRate", "firstFrame", "lastFrame"};
-                mwSize markerFieldsDims[2] = {1, 1};
-                mxArray * markersStruct = mxCreateStructArray(2, markerFieldsDims, sizeof(markersFieldsNames)/sizeof(*markersFieldsNames), markersFieldsNames);
-                mxSetFieldByNumber(headerStruct, 0, 0, markersStruct);
+                const char *pointsFieldsNames[] = {"size", "frameRate", "firstFrame", "lastFrame"};
+                mwSize pointFieldsDims[2] = {1, 1};
+                mxArray * pointsStruct = mxCreateStructArray(2, pointFieldsDims, sizeof(pointsFieldsNames)/sizeof(*pointsFieldsNames), pointsFieldsNames);
+                mxSetFieldByNumber(headerStruct, 0, 0, pointsStruct);
 
-                fillMatlabField(markersStruct, 0, c3d->header().nb3dPoints());
-                fillMatlabField(markersStruct, 1, static_cast<mxDouble>(c3d->header().frameRate()));
-                fillMatlabField(markersStruct, 2, c3d->header().firstFrame()+1);
-                fillMatlabField(markersStruct, 3, c3d->header().lastFrame()+1);
+                fillMatlabField(pointsStruct, 0, c3d->header().nb3dPoints());
+                fillMatlabField(pointsStruct, 1, static_cast<mxDouble>(c3d->header().frameRate()));
+                fillMatlabField(pointsStruct, 2, c3d->header().firstFrame()+1);
+                fillMatlabField(pointsStruct, 3, c3d->header().lastFrame()+1);
             }
             // fill analogs
             {
@@ -94,7 +94,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             }
             mwSize groupsFieldsDims[2] = {1, 1};
             mxArray * groupsStruct = mxCreateStructArray(2, groupsFieldsDims, static_cast<int>(nbGroups), const_cast<const char**>(groupsFieldsNames));
-            mxSetFieldByNumber(plhs[0], 0, parameterIdx, groupsStruct);
+            mxSetFieldByNumber(plhs[0], 0, parametersIdx, groupsStruct);
 
             // Parse each parameters
             for (size_t g = 0; g < nbGroups; ++g){
