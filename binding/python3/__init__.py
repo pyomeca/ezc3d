@@ -58,7 +58,7 @@ class c3d(C3dMapper):
             # Interface to swig pointers
             self.header = swig_header
 
-            self._storage['markers'] = {
+            self._storage['points'] = {
                 'size': self.header.nb3dPoints(),
                 'frame_rate': self.header.frameRate(),
                 'first_frame': self.header.firstFrame(),
@@ -67,7 +67,7 @@ class c3d(C3dMapper):
             self._storage['analogs'] = {
                 'size': self.header.nbAnalogs(),
                 'frame_rate': self.header.nbAnalogByFrame() * self.header.frameRate(),
-                'first_frame': self.header.nbAnalogByFrame() * self.header.firstFrame()+1,
+                'first_frame': self.header.nbAnalogByFrame() * self.header.firstFrame(),
                 'last_frame': self.header.nbAnalogByFrame() * self.header.lastFrame()
             }
             self._storage['events'] = {
@@ -155,11 +155,11 @@ class c3d(C3dMapper):
         # Update some important stuff (names of markers and analogs)
         point_labels = groups['POINT']['LABELS']['value']
         for point_label in point_labels:
-            new_c3d.addMarker(point_label)
+            new_c3d.point(point_label)
 
         analog_labels = groups['ANALOG']['LABELS']['value']
         for analog_label in analog_labels:
-            new_c3d.addAnalog(analog_label)
+            new_c3d.analog(analog_label)
 
         for group in groups:
             for param in groups[group]:
@@ -193,7 +193,7 @@ class c3d(C3dMapper):
                         new_param.set(ezc3d.VecString(old_param["value"]), dim)
                     else:
                         raise NotImplementedError("Parameter type not implemented yet")
-                    new_c3d.addParameter(group, new_param)
+                    new_c3d.parameter(group, new_param)
 
         # Initialization for speed
         pt = ezc3d.Point()
@@ -203,10 +203,10 @@ class c3d(C3dMapper):
         c = ezc3d.Channel()
         subframe = ezc3d.SubFrame()
         for i in range (nb_analogs):
-            subframe.addChannel(c)
+            subframe.channel(c)
         analogs = ezc3d.Analogs()
         for i in range (nb_analog_subframes):
-            analogs.addSubframe(subframe)
+            analogs.subframe(subframe)
 
         # Fill the data
         for f in range(nb_point_frames):
@@ -215,17 +215,17 @@ class c3d(C3dMapper):
                 pt.x(data_points[0, i, f])
                 pt.y(data_points[1, i, f])
                 pt.z(data_points[2, i, f])
-                pts.replace(i, pt)
+                pts.point(pt, i)
 
             for sf in range(nb_analog_subframes):
                 for i in range(nb_analogs):
                     c.name(analog_labels[i])
                     c.value(data_analogs[0, i, nb_analog_subframes*f + sf])
-                    subframe.replaceChannel(i, c)
-                analogs.replaceSubframe(sf, subframe)
+                    subframe.channel(c, i)
+                analogs.subframe(subframe, sf)
             frame = ezc3d.Frame()
             frame.add(pts, analogs)
-            new_c3d.addFrame(frame)
+            new_c3d.frame(frame)
 
         # Write the file
         new_c3d.write(path)
