@@ -270,19 +270,30 @@ To write a C3D to a file, you must call the `write` method of a c3d dictionnary.
 ```python3
 import numpy as np
 
-from ezc3d import c3d
+import ezc3d
 
-# Create a valid dict to work on
-c = c3d()
+# Load an empty c3d structure
+c3d = ezc3d.c3d()
 
-# Add a point to the structure. 
-c['parameters']['POINT']['RATE']['value'] = [100]
-c['parameters']['POINT']['USED']['value'] = [1]
-c['parameters']['POINT']['LABELS']['value'] = ['NewMarkerName']
-c['data']['points'] = np.ndarray((4,1,100));  # XYZ1 x N_POINTS x N_FRAMES
+# Fill it with random data
+c3d['parameters']['POINT']['RATE']['value'] = [100]
+c3d['parameters']['POINT']['LABELS']['value'] = ('point1', 'point2', 'point3', 'point4', 'point5')
+c3d['data']['points'] = np.random.rand(4, 5, 100)
+c3d['data']['points'][1, :, :] = 2
+c3d['data']['points'][2, :, :] = 3
 
-# Write the C3D
-c.write('path_to_c3d.c3d')
+c3d['parameters']['ANALOG']['RATE']['value'] = [1000]
+c3d['parameters']['ANALOG']['LABELS']['value'] = ('analog1', 'analog2', 'analog3', 'analog4', 'analog5', 'analog6')
+c3d['data']['analogs'] = np.random.rand(1, 6, 1000)
+c3d['data']['analogs'][0, 0, :] = 4
+c3d['data']['analogs'][0, 1, :] = 5
+c3d['data']['analogs'][0, 2, :] = 6
+c3d['data']['analogs'][0, 3, :] = 7
+c3d['data']['analogs'][0, 4, :] = 8
+c3d['data']['analogs'][0, 5, :] = 9
+
+# Write the data
+c3d.write("path_to_c3d.c3d")
 ```
 
 # How to contribute
