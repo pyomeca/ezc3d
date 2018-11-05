@@ -68,7 +68,7 @@ class c3d(C3dMapper):
                 'size': self.header.nbAnalogs(),
                 'frame_rate': self.header.nbAnalogByFrame() * self.header.frameRate(),
                 'first_frame': self.header.nbAnalogByFrame() * self.header.firstFrame(),
-                'last_frame': self.header.nbAnalogByFrame() * self.header.lastFrame()
+                'last_frame': self.header.nbAnalogByFrame() * (self.header.lastFrame()+1) - 1
             }
             self._storage['events'] = {
                 'size': len(self.header.eventsTime()),
