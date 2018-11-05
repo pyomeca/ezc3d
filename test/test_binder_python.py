@@ -20,7 +20,7 @@ def test_create_c3d():
     assert c3d['header']['analogs']['size'] == 0
     assert c3d['header']['analogs']['frame_rate'] == 0.0
     assert c3d['header']['analogs']['first_frame'] == 0
-    assert c3d['header']['analogs']['last_frame'] == 0
+    assert c3d['header']['analogs']['last_frame'] == -1
     
     assert c3d['header']['events']['size'] == 18
     assert c3d['header']['events']['events_time'] == (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -102,7 +102,7 @@ def test_create_and_read_c3d():
     assert c3d_to_compare['header']['analogs']['size'] == len(analog_names)
     assert c3d_to_compare['header']['analogs']['frame_rate'] == analog_frame_rate
     assert c3d_to_compare['header']['analogs']['first_frame'] == 0
-    assert c3d_to_compare['header']['analogs']['last_frame'] == analog_frame_rate * n_second - analog_frame_rate / point_frame_rate
+    assert c3d_to_compare['header']['analogs']['last_frame'] == analog_frame_rate * n_second - 1
     
     assert c3d_to_compare['header']['events']['size'] == 18
     assert c3d_to_compare['header']['events']['events_time'] == (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
