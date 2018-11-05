@@ -92,7 +92,7 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::channel(const ezc3d::DataNS::AnalogsNS:
     }
 }
 
-const std::vector<ezc3d::DataNS::AnalogsNS::Channel> &ezc3d::DataNS::AnalogsNS::SubFrame::channel() const
+const std::vector<ezc3d::DataNS::AnalogsNS::Channel> &ezc3d::DataNS::AnalogsNS::SubFrame::channels() const
 {
     return _channels;
 }
