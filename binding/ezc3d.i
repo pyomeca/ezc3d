@@ -47,6 +47,13 @@ namespace std {
     }
 }
 
+%extend ezc3d::DataNS::Points3dNS::Point{
+    void x(double value){self->x(static_cast<float>(value));}
+    void y(double value){self->y(static_cast<float>(value));}
+    void z(double value){self->z(static_cast<float>(value));}
+    void residual(double value){self->residual(static_cast<float>(value));}
+}
+
 // Includes all neceressary files from the API
 %include "ezc3d.h"
 %include "Header.h"
