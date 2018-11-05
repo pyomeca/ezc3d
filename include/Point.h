@@ -92,7 +92,7 @@ public:
 
     ///
     /// \brief Set the X component of the 3D point
-    /// \return The X component of the 3d point
+    /// \param x The X component of the 3d point
     ///
     void x(float x);
 
@@ -104,7 +104,7 @@ public:
 
     ///
     /// \brief Set the Y component of the 3D point
-    /// \return The Y component of the 3d point
+    /// \param y The Y component of the 3d point
     ///
     void y(float y);
 
@@ -116,7 +116,7 @@ public:
 
     ///
     /// \brief Set the Z component of the 3D point
-    /// \return The Z component of the 3d point
+    /// \param z The Z component of the 3d point
     ///
     void z(float z);
 
@@ -128,7 +128,7 @@ public:
 
     ///
     /// \brief Set the residualZ component of the 3D point
-    /// \return The residual component of the 3d point
+    /// \param residual The residual component of the 3d point
     ///
     void residual(float residual);
 };

@@ -125,26 +125,39 @@ class c3d(C3dMapper):
         # Check for sanity of the structure
         data_points = self._storage['data']['points']
         if len(data_points.shape) != 3:
-            raise TypeError("Points should be a numpy with 3 exactly dimensions (XYZ(1) x nPoints x nFrames)")
+            raise TypeError("Points should be a numpy with exactly 3 dimensions (XYZ(1) x nPoints x nFrames)")
         nb_point_components = data_points.shape[0]
         nb_points = data_points.shape[1]
         nb_point_frames = data_points.shape[2]
         if nb_point_components < 3 or nb_point_components > 4:
             raise TypeError("Points should be a numpy with first dimension exactly equals to 3 or 4 elements")
+        if nb_points != len(self._storage['parameters']['POINT']['LABELS']['value']):
+            raise ValueError("'c3d['parameters']['POINT']['LABELS']' must have the same length as nPoints of the data.")
 
         data_analogs = self._storage['data']['analogs']
         if len(data_analogs.shape) != 3:
-            raise TypeError("Points should be a numpy with 3 exactly dimensions (1 x nAnalogs x nFrames)")
+            raise TypeError("Analogs should be a numpy with exactly 3 dimensions (1 x nAnalogs x nFrames)")
         nb_analog_components = data_analogs.shape[0]
         nb_analogs = data_analogs.shape[1]
         nb_analog_frames = data_analogs.shape[2]
         if nb_analog_components != 1:
-            raise TypeError("Points should be a numpy with first dimension exactly equals to 1 element")
+            raise TypeError("Analogs should be a numpy with first dimension exactly equals to 1 element")
         nb_analog_subframes = 0
         if nb_point_frames != 0:
-            if nb_analog_frames % nb_point_frames != 0:
-                raise ValueError("Number of frames of Points and Analogs should be a multiple of an integer")
+            if self._storage['parameters']['ANALOG']['RATE']['value'][0] == 0:
+                if nb_analog_frames % nb_point_frames != 0:
+                    raise ValueError("Number of frames of Points and Analogs should be a multiple of an integer")
+            else:
+                if nb_analog_frames != self._storage['parameters']['ANALOG']['RATE']['value'][0] / \
+                        self._storage['parameters']['POINT']['RATE']['value'][0] * nb_point_frames:
+                    raise ValueError("Number of frames in the data set must match the analog rate X point frame")
+
             nb_analog_subframes = int(nb_analog_frames / nb_point_frames)
+            self._storage['parameters']['ANALOG']['RATE']['value'][0] = nb_analog_subframes * \
+                                                            self._storage['parameters']['POINT']['RATE']['value'][0]
+        if nb_analogs != len(self._storage['parameters']['ANALOG']['LABELS']['value']):
+            raise ValueError("'c3d['parameters']['ANALOG']['LABELS']' must have the same length as "
+                             "nAnalogs of the data.")
 
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
@@ -199,7 +212,7 @@ class c3d(C3dMapper):
         pt = ezc3d.Point()
         pts = ezc3d.Points()
         for i in range(nb_points):
-            pts.add(pt)
+            pts.point(pt)
         c = ezc3d.Channel()
         subframe = ezc3d.SubFrame()
         for i in range (nb_analogs):
@@ -230,4 +243,5 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+
 
