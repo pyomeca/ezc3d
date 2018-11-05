@@ -86,24 +86,35 @@ class c3d(C3dMapper):
             self.parameters = swig_param
 
             for group in self.parameters.groups():
-                self._storage[group.name()] = dict()
                 for parameter in group.parameters():
-                    self._storage[group.name()][parameter.name()] = dict()
-                    self._storage[group.name()][parameter.name()]['type'] = parameter.type()
-                    self._storage[group.name()][parameter.name()]['description'] = parameter.description()
-                    if parameter.type() == ezc3d.BYTE:
-                        value = parameter.valuesAsByte()
-                    elif parameter.type() == ezc3d.INT:
-                        value = parameter.valuesAsInt()
-                    elif parameter.type() == ezc3d.FLOAT:
-                        value = parameter.valuesAsFloat()
-                    elif parameter.type() == ezc3d.CHAR:
-                        table = parameter.valuesAsString()
-                        value = []
-                        for element in table:
-                            value.append(element)
-                    self._storage[group.name()][parameter.name()]['value'] = value
+                    self.add_parameter(group.name(), parameter)
             return
+
+        def add_parameter(self, group_name, param_ezc3d):
+            # If the group does not exist create it
+            if group_name not in self._storage:
+                self._storage[group_name] = dict()
+
+            param = dict()
+            param['type'] = param_ezc3d.type()
+            param['description'] = param_ezc3d.description()
+            if param_ezc3d.type() == ezc3d.BYTE:
+                value = param_ezc3d.valuesAsByte()
+            elif param_ezc3d.type() == ezc3d.INT:
+                value = param_ezc3d.valuesAsInt()
+            elif param_ezc3d.type() == ezc3d.FLOAT:
+                value = param_ezc3d.valuesAsFloat()
+            elif param_ezc3d.type() == ezc3d.CHAR:
+                table = param_ezc3d.valuesAsString()
+                value = []
+                for element in table:
+                    value.append(element)
+            param['value'] = value
+
+            if param_ezc3d.name() not in self._storage[group_name]:
+                self._storage[group_name][param_ezc3d.name()] = dict()
+            self._storage[group_name][param_ezc3d.name()] = param
+
 
     class Data(C3dMutableMapper):
         def __init__(self, swig_c3d):
@@ -115,6 +126,12 @@ class c3d(C3dMapper):
             self._storage['points'] = swig_c3d.get_points()
             self._storage['analogs'] = swig_c3d.get_analogs()
             return
+
+    def add_parameter(self, group_name, parameter_name, value, description=""):
+        # Create the parameter properly using the ezc3d API
+        param_ezc3d = ezc3d.Parameter(parameter_name, description)
+        param_ezc3d.set(value)
+        self._storage['parameters'].add_parameter(group_name, param_ezc3d)
 
     def write(self, path):
         # Make sure path is a valid path
