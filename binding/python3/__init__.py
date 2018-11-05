@@ -86,26 +86,37 @@ class c3d(C3dMapper):
             self.parameters = swig_param
 
             for group in self.parameters.groups():
-                self._storage[group.name()] = dict()
                 for parameter in group.parameters():
-                    self._storage[group.name()][parameter.name()] = dict()
-                    self._storage[group.name()][parameter.name()]['type'] = parameter.type()
-                    self._storage[group.name()][parameter.name()]['description'] = parameter.description()
-                    if parameter.type() == ezc3d.BYTE:
-                        value = parameter.valuesAsByte()
-                    elif parameter.type() == ezc3d.INT:
-                        value = parameter.valuesAsInt()
-                    elif parameter.type() == ezc3d.FLOAT:
-                        value = parameter.valuesAsFloat()
-                    elif parameter.type() == ezc3d.CHAR:
-                        table = parameter.valuesAsString()
-                        value = []
-                        for element in table:
-                            value.append(element)
-                    self._storage[group.name()][parameter.name()]['value'] = value
+                    self.add_parameter(group.name(), parameter)
             return
 
-    class Data(C3dMapper):
+        def add_parameter(self, group_name, param_ezc3d):
+            # If the group does not exist create it
+            if group_name not in self._storage:
+                self._storage[group_name] = dict()
+
+            param = dict()
+            param['type'] = param_ezc3d.type()
+            param['description'] = param_ezc3d.description()
+            if param_ezc3d.type() == ezc3d.BYTE:
+                value = param_ezc3d.valuesAsByte()
+            elif param_ezc3d.type() == ezc3d.INT:
+                value = param_ezc3d.valuesAsInt()
+            elif param_ezc3d.type() == ezc3d.FLOAT:
+                value = param_ezc3d.valuesAsFloat()
+            elif param_ezc3d.type() == ezc3d.CHAR:
+                table = param_ezc3d.valuesAsString()
+                value = []
+                for element in table:
+                    value.append(element)
+            param['value'] = value
+
+            if param_ezc3d.name() not in self._storage[group_name]:
+                self._storage[group_name][param_ezc3d.name()] = dict()
+            self._storage[group_name][param_ezc3d.name()] = param
+
+
+    class Data(C3dMutableMapper):
         def __init__(self, swig_c3d):
             super(c3d.Data, self).__init__()
 
@@ -116,6 +127,12 @@ class c3d(C3dMapper):
             self._storage['analogs'] = swig_c3d.get_analogs()
             return
 
+    def add_parameter(self, group_name, parameter_name, value, description=""):
+        # Create the parameter properly using the ezc3d API
+        param_ezc3d = ezc3d.Parameter(parameter_name, description)
+        param_ezc3d.set(value)
+        self._storage['parameters'].add_parameter(group_name, param_ezc3d)
+
     def write(self, path):
         # Make sure path is a valid path
         extension = ".c3d"
@@ -125,26 +142,39 @@ class c3d(C3dMapper):
         # Check for sanity of the structure
         data_points = self._storage['data']['points']
         if len(data_points.shape) != 3:
-            raise TypeError("Points should be a numpy with 3 exactly dimensions (XYZ(1) x nPoints x nFrames)")
+            raise TypeError("Points should be a numpy with exactly 3 dimensions (XYZ(1) x nPoints x nFrames)")
         nb_point_components = data_points.shape[0]
         nb_points = data_points.shape[1]
         nb_point_frames = data_points.shape[2]
         if nb_point_components < 3 or nb_point_components > 4:
             raise TypeError("Points should be a numpy with first dimension exactly equals to 3 or 4 elements")
+        if nb_points != len(self._storage['parameters']['POINT']['LABELS']['value']):
+            raise ValueError("'c3d['parameters']['POINT']['LABELS']' must have the same length as nPoints of the data.")
 
         data_analogs = self._storage['data']['analogs']
         if len(data_analogs.shape) != 3:
-            raise TypeError("Points should be a numpy with 3 exactly dimensions (1 x nAnalogs x nFrames)")
+            raise TypeError("Analogs should be a numpy with exactly 3 dimensions (1 x nAnalogs x nFrames)")
         nb_analog_components = data_analogs.shape[0]
         nb_analogs = data_analogs.shape[1]
         nb_analog_frames = data_analogs.shape[2]
         if nb_analog_components != 1:
-            raise TypeError("Points should be a numpy with first dimension exactly equals to 1 element")
+            raise TypeError("Analogs should be a numpy with first dimension exactly equals to 1 element")
         nb_analog_subframes = 0
         if nb_point_frames != 0:
-            if nb_analog_frames % nb_point_frames != 0:
-                raise ValueError("Number of frames of Points and Analogs should be a multiple of an integer")
+            if self._storage['parameters']['ANALOG']['RATE']['value'][0] == 0:
+                if nb_analog_frames % nb_point_frames != 0:
+                    raise ValueError("Number of frames of Points and Analogs should be a multiple of an integer")
+            else:
+                if nb_analog_frames != self._storage['parameters']['ANALOG']['RATE']['value'][0] / \
+                        self._storage['parameters']['POINT']['RATE']['value'][0] * nb_point_frames:
+                    raise ValueError("Number of frames in the data set must match the analog rate X point frame")
+
             nb_analog_subframes = int(nb_analog_frames / nb_point_frames)
+            self._storage['parameters']['ANALOG']['RATE']['value'][0] = nb_analog_subframes * \
+                                                            self._storage['parameters']['POINT']['RATE']['value'][0]
+        if nb_analogs != len(self._storage['parameters']['ANALOG']['LABELS']['value']):
+            raise ValueError("'c3d['parameters']['ANALOG']['LABELS']' must have the same length as "
+                             "nAnalogs of the data.")
 
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
@@ -199,7 +229,7 @@ class c3d(C3dMapper):
         pt = ezc3d.Point()
         pts = ezc3d.Points()
         for i in range(nb_points):
-            pts.add(pt)
+            pts.point(pt)
         c = ezc3d.Channel()
         subframe = ezc3d.SubFrame()
         for i in range (nb_analogs):
@@ -220,7 +250,7 @@ class c3d(C3dMapper):
             for sf in range(nb_analog_subframes):
                 for i in range(nb_analogs):
                     c.name(analog_labels[i])
-                    c.value(data_analogs[0, i, nb_analog_subframes*f + sf])
+                    c.data(data_analogs[0, i, nb_analog_subframes*f + sf])
                     subframe.channel(c, i)
                 analogs.subframe(subframe, sf)
             frame = ezc3d.Frame()
@@ -230,4 +260,5 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+
 
