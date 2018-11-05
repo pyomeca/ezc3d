@@ -49,12 +49,13 @@ EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to 
 > `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install ezc3d. Typically, this is {MY DOCUMENTS}/MATLAB. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 
 # How to use
-The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires so time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible
+The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires so time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
+
+There is example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
 
 ## The C++ API
-The core code is written in C++, meaning you can fully create from scratch, read and write C3D from C++. There is an example code in the folder example that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful. 
-
-The informations that follows are the basics. 
+The core code is written in C++, meaning you can fully create from scratch, read and write C3D from C++. 
+The informations that follows is a basic guide that should allow you to perform anything you want to do.
 
 ### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `c3d` class without parameter.
