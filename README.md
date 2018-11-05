@@ -1,5 +1,5 @@
 # EZC3D
-EZC3D is an easy to use reader, modifier and writter for C3D format files. It is written en C++ with proper binders for Python and MATLAB scripting langages. 
+EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB scripting langages. 
 
 C3D (http://c3d.org) is a format specifically designed to store biomechanics data. Hence many biomechanics softwares can produce C3D files in order to share data. However, there is a lack in the biomechanics community of an easy to use, free and open source library to read, modify and write them as needed when it gets to the data analysis. There was at some point the BTK project (https://github.com/Biomechanical-ToolKit/BTKCore) that was targeting this goal, but the project is now obsolete. 
 
