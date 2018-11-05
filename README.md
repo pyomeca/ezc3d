@@ -188,10 +188,15 @@ The second method is more designed for internal purpose. However, you may find y
 // Add a new analog to the c3d (one filled with zeros, the other one with data)
 ezc3d::c3d c3d;
 
-c3d.analog("new_analog1"); // Declare an empty channel
+// Add a analog rate
+ezc3d::ParametersNS::GroupNS::Parameter analog_rate("RATE");
+analog_rate.set(1000.0);
+c3d.parameter("ANALOG", analog_rate);
+
+c3d.analog("new_analog1"); // Declare an empty channel (Note the name will be overriden)
 std::vector<ezc3d::DataNS::Frame> frames_analog;
 ezc3d::DataNS::Frame frame;
-// Fill the frame 
+// Fill the frame
 for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
     ezc3d::DataNS::AnalogsNS::Channel newChannel("new_analogs2");
     newChannel.data(sf+1);
@@ -199,9 +204,7 @@ for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
     subframes_analog.channel(newChannel);
     frame.analogs_nonConst().subframe(subframes_analog); // The non-const reference makes it easier to add the subframe
 }
-for (size_t f=0; f<c3d.data().nbFrames(); ++f)
-    frames_analog.push_back(frame);
-c3d.analog(frames_analog);
+c3d.frame(frame);
 
 // Print it
 c3d.print();
@@ -267,6 +270,8 @@ print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of poin
 
 ### Write a C3D
 To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
+
+The example that follows contructs a new C3D from scratch, adding data and adding a custom parameter.
 ```python3
 import numpy as np
 
@@ -291,6 +296,12 @@ c3d['data']['analogs'][0, 2, :] = 6
 c3d['data']['analogs'][0, 3, :] = 7
 c3d['data']['analogs'][0, 4, :] = 8
 c3d['data']['analogs'][0, 5, :] = 9
+
+# Add a custom parameter to the POINT group
+c3d.add_parameter("POINT", "newParam", [1, 2, 3])
+
+# Add a custom parameter a new group
+c3d.add_parameter("NewGroup", "newParam", ["MyParam1", "MyParam2"])
 
 # Write the data
 c3d.write("path_to_c3d.c3d")
