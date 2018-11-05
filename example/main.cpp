@@ -1,5 +1,5 @@
 
-#define BUILD_SANDBOX
+//#define BUILD_SANDBOX
 #include <vector>
 #include "ezc3d.h"
 
@@ -61,7 +61,7 @@ int main()
 
         // Add a new frame
         ezc3d::DataNS::Frame f;
-        std::vector<std::string>labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
+        std::vector<std::string> labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
         int nPoints(c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
@@ -264,7 +264,7 @@ int main()
         c3d_empty.analog("new_analog2"); // add the empty
         // Add a new frame
         ezc3d::DataNS::Frame f;
-        std::vector<std::string>labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
+        std::vector<std::string> labels(c3d_empty.parameters().group("POINT").parameter("LABELS").valuesAsString());
         int nPoints(c3d_empty.parameters().group("POINT").parameter("USED").valuesAsInt()[0]);
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
