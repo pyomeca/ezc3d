@@ -352,3 +352,6 @@ Pythonic interface for the python reader and started to interface the writer.
 
 ## Version 0.3.1
 Documentation using Doxygen added for the C++ code, Major refactor of the code in order to harmonized it across the classes.
+
+## Version 0.3.2
+Added tests and example files for Python3 and MATLAB. 
