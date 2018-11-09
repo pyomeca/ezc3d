@@ -340,6 +340,19 @@ The C3D format allows for some pretty old and probably useless stuff. For exampl
 
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
+## Cite
+If you use ezc3d, we would be grateful if you could cite it as follows:
+
+```
+@misc{Michaud2018ezc3d,
+    author = {Michaud, Benjamin and Begon, Mickael},
+    title = {EZC3D: Easy to use C3D reader/writer in C++, Python and Matlab},
+    howpublished={Web page},
+    url = {https://github.com/pyomeca/ezc3d},
+    year = {2018}
+}
+```
+
 # Changes log
 ## Version 0.1.0
 First working version of a C++ C3D reader. 
