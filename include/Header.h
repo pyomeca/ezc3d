@@ -50,11 +50,20 @@ public:
 
     //---- HEADER ----//
 protected:
+    size_t _nbOfZerosBeforeHeader; ///< If the header doesn't start at the begining of the file
+                                   ///< remember the zero counts
+
     size_t _parametersAddress;  ///< Byte 1.1
                                 ///<
                                 ///< The byte at which the parameters start in the file
 
 public:
+    ///
+    /// \brief Get the number of zeros before the header starts in the file
+    /// \return The number of zeros before the header starts in the file
+    ///
+    size_t nbOfZerosBeforeHeader() const;
+
     ///
     /// \brief Get the byte at which the parameters start in the file
     /// \return The byte at which the parameters start in the file
