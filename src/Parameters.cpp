@@ -169,7 +169,7 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     _processorType(0)
 {
     // Read the Parameters Header
-    _parametersStart = file.readUint(1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1)), std::ios::beg);
+    _parametersStart = file.readUint(1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + file.header().nbOfZerosBeforeHeader()), std::ios::beg);
     _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
     _nbParamBlock = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
     _processorType = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
