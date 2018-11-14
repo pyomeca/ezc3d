@@ -172,6 +172,11 @@ class c3d(C3dMapper):
             nb_analog_subframes = int(nb_analog_frames / nb_point_frames)
             self._storage['parameters']['ANALOG']['RATE']['value'][0] = nb_analog_subframes * \
                                                             self._storage['parameters']['POINT']['RATE']['value'][0]
+            nb_frames = nb_point_frames
+        else:
+            nb_frames = nb_analog_frames
+            nb_analog_subframes = 1
+
         if nb_analogs != len(self._storage['parameters']['ANALOG']['LABELS']['value']):
             raise ValueError("'c3d['parameters']['ANALOG']['LABELS']' must have the same length as "
                              "nAnalogs of the data.")
@@ -239,7 +244,7 @@ class c3d(C3dMapper):
             analogs.subframe(subframe)
 
         # Fill the data
-        for f in range(nb_point_frames):
+        for f in range(nb_frames):
             for i in range(nb_points):
                 pt.name(point_labels[i])
                 pt.x(data_points[0, i, f])
@@ -260,5 +265,6 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+
 
 
