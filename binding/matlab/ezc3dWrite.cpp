@@ -131,11 +131,16 @@ void mexFunction(int nlhs,mxArray *[],int nrhs,const mxArray *prhs[])
     size_t nAnalogs(dimsAnalogs[1]);
     size_t nFramesAnalogs(dimsAnalogs[0]);
 
+    size_t nFrames(0);
     size_t nSubframes(0);
     if (nFramesPoints != 0){
         if (nFramesAnalogs % nFramesPoints != 0)
             mexErrMsgTxt("Number of frames of Points and Analogs should be a multiple of an integer");
+        nFrames = nFramesPoints;
         nSubframes = nFramesAnalogs/nFramesPoints;
+    } else {
+        nFrames = nFramesAnalogs;
+        nSubframes = 1;
     }
 
 
@@ -277,7 +282,7 @@ void mexFunction(int nlhs,mxArray *[],int nrhs,const mxArray *prhs[])
     // Fill the data
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
-    for (size_t f=0; f<nFramesPoints; ++f){
+    for (size_t f=0; f<nFrames; ++f){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<nPoints; ++i){
