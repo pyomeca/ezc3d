@@ -10,6 +10,7 @@
 #include "Header.h"
 
 ezc3d::Header::Header():
+    _nbOfZerosBeforeHeader(0),
     _parametersAddress(2),
     _checksum(0x50),
     _nb3dPoints(0),
@@ -36,6 +37,7 @@ ezc3d::Header::Header():
 }
 
 ezc3d::Header::Header(ezc3d::c3d &file) :
+    _nbOfZerosBeforeHeader(0),
     _parametersAddress(2),
     _checksum(0),
     _nb3dPoints(0),
@@ -91,7 +93,8 @@ void ezc3d::Header::print() const{
 void ezc3d::Header::write(std::fstream &f) const
 {
     // write the checksum byte and the start point of header
-    f.write(reinterpret_cast<const char*>(&_parametersAddress), ezc3d::BYTE);
+    int parameterAddessDefault(2);
+    f.write(reinterpret_cast<const char*>(&parameterAddessDefault), ezc3d::BYTE);
     int checksum(0x50);
     f.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
 
@@ -142,6 +145,16 @@ void ezc3d::Header::read(ezc3d::c3d &file)
 {
     // Parameter address
     _parametersAddress = file.readUint(1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
+
+    // For some reason, some Vicon's file has lot of "0" at the beginning of the file
+    // This part loop up to the point no 0 is found
+    while (!_parametersAddress){
+        _parametersAddress = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+        if (file.eof())
+            throw std::ios_base::failure("File is empty");
+        ++_nbOfZerosBeforeHeader;
+    }
+
     _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
@@ -180,6 +193,11 @@ void ezc3d::Header::read(ezc3d::c3d &file)
     for (unsigned int i = 0; i<_eventsLabel.size(); ++i)
         _eventsLabel[i] = file.readString(2*ezc3d::DATA_TYPE::WORD);
     _emptyBlock4 = file.readInt(22*ezc3d::DATA_TYPE::WORD);
+}
+
+size_t ezc3d::Header::nbOfZerosBeforeHeader() const
+{
+    return _nbOfZerosBeforeHeader;
 }
 
 size_t ezc3d::Header::parametersAddress() const
