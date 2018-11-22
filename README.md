@@ -1,4 +1,4 @@
-<img src="https://github.com/pyomeca/design/blob/logo/logo/logo.svg" width="70%" height="70%">
+<img src="https://github.com/pyomeca/ezc3d/blob/logo/logo/logo.svg" width="70%" height="70%">
 
 # EZC3D
 EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB scripting langages. 
