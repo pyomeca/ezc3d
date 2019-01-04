@@ -22,7 +22,8 @@
 ///
 /// \section install_sec Installation
 ///
-/// To install ezc3d, please refer to the README.md file accessible via the github repository.
+/// To install ezc3d, please refer to the README.md file accessible via the github repository or by following this
+/// <a href="md__home_pariterre_programmation_ezc3d_README.html">link</a>.
 ///
 /// \section contact_sec Contact
 ///
