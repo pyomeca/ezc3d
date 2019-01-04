@@ -97,19 +97,20 @@ endif (BUILD_DOC)
 option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
 
 if (BUILD_TESTS)
-    # Download and unpack googletest at configure time
-    configure_file(third-parties/CMakeLists.txt.in third-parties/CMakeLists.txt)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-      RESULT_VARIABLE result
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-    if(result)
-      message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-    endif()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build .
-      RESULT_VARIABLE result
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
-    if(result)
-      message(FATAL_ERROR "Build step for googletest failed: ${result}")
+    # Download gtest if necessary
+    set(RELATIVE_PATH_TO_GTEST external/gtest)
+    find_path(GTEST_INCLUDE_DIR gtest.h HINTS ${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest)
+
+    if((NOT GTEST_INCLUDE_DIR) OR (NOT EXISTS ${GTEST_INCLUDE_DIR}))
+        # we couldn't find the header files for gtest or they don't exist
+        message("Unable to find gtest")
+
+        # we have a submodule setup for gtest, assume it is under external/gtest
+        # now we need to clone this submodule
+        execute_process(COMMAND git submodule update --init -- external/gtest
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+        find_path(GTEST_INCLUDE_DIR gtest.h HINTS ${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest)
     endif()
 
     # Prevent overriding the parent project's compiler/linker
@@ -118,8 +119,10 @@ if (BUILD_TESTS)
 
     # Add googletest directly to our build. This defines
     # the gtest and gtest_main targets.
-    add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-                     ${CMAKE_BINARY_DIR}/googletest-build
+    set(BUILD_GMOCK OFF)
+    set(INSTALL_GTEST OFF)
+    add_subdirectory(${RELATIVE_PATH_TO_GTEST}
+                     ${CMAKE_BINARY_DIR}/gtest
                      EXCLUDE_FROM_ALL)
 
     ##############
