@@ -98,7 +98,7 @@ option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
 
 if (BUILD_TESTS)
     # Download and unpack googletest at configure time
-    configure_file(third-parties/CMakeLists.txt.in third-parties/CMakeLists.txt)
+    configure_file(test/CMakeLists.txt.in test/CMakeLists.txt)
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
       RESULT_VARIABLE result
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
