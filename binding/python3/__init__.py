@@ -170,8 +170,10 @@ class c3d(C3dMapper):
                     raise ValueError("Number of frames in the data set must match the analog rate X point frame")
 
             nb_analog_subframes = int(nb_analog_frames / nb_point_frames)
-            self._storage['parameters']['ANALOG']['RATE']['value'][0] = nb_analog_subframes * \
-                                                            self._storage['parameters']['POINT']['RATE']['value'][0]
+            self._storage['parameters']['ANALOG']['RATE']['value'] = (
+                nb_analog_subframes
+                * self._storage['parameters']['POINT']['RATE']['value'][0],
+            )
             nb_frames = nb_point_frames
         else:
             nb_frames = nb_analog_frames
