@@ -189,7 +189,7 @@ class c3d(C3dMapper):
         # Fill the parameters
         groups = self._storage['parameters']
 
-        # Update some important stuff (names of markers and analogs)
+        # Update some important stuff (names of points and analogs)
         point_labels = groups['POINT']['LABELS']['value']
         for point_label in point_labels:
             new_c3d.point(point_label)
