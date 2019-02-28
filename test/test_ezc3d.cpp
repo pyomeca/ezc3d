@@ -30,6 +30,7 @@ struct c3dTestStruct{
     size_t nFrames = SIZE_MAX;
     size_t nPoints = SIZE_MAX;
     float nSubframes = -1;
+    float dummyForByteAlignment = -1; // Because of float precision, 4 bytes must be padded here due to the odd numer of float variables
     std::vector<std::string> pointNames;
 
     size_t nAnalogs = SIZE_MAX;
@@ -705,7 +706,6 @@ TEST(c3dModifier, specificAnalog){
     EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
 
     // Wrong number of channels
-    EXPECT_NO_THROW(ezc3d::DataNS::AnalogsNS::SubFrame(0));
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
@@ -942,7 +942,8 @@ TEST(c3dModifier, addFrames){
 
     ezc3d::DataNS::Frame stupidFrameAnalog;
     ezc3d::DataNS::AnalogsNS::Analogs stupidAnalogs(new_c3d.c3d.data().frame(0).analogs());
-    ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe(new_c3d.nAnalogs-1);
+    ezc3d::DataNS::AnalogsNS::SubFrame stupidSubframe;
+    stupidSubframe.nbChannels(new_c3d.nAnalogs-1);
     stupidAnalogs.subframe(stupidSubframe);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
     EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
@@ -952,7 +953,8 @@ TEST(c3dModifier, addFrames){
     new_c3d.c3d.parameter("ANALOG", analogRate);
     EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error);
 
-    ezc3d::DataNS::AnalogsNS::SubFrame notSoStupidSubframe(new_c3d.nAnalogs);
+    ezc3d::DataNS::AnalogsNS::SubFrame notSoStupidSubframe;
+    notSoStupidSubframe.nbChannels(new_c3d.nAnalogs);
     stupidAnalogs.subframe(notSoStupidSubframe, 0);
     stupidFrameAnalog.add(stupidPoints, stupidAnalogs);
     EXPECT_NO_THROW(new_c3d.c3d.frame(stupidFrameAnalog));
