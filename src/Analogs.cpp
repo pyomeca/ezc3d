@@ -14,11 +14,6 @@ ezc3d::DataNS::AnalogsNS::Analogs::Analogs()
 
 }
 
-ezc3d::DataNS::AnalogsNS::Analogs::Analogs(size_t nbSubframes)
-{
-    _subframe.resize(nbSubframes);
-}
-
 void ezc3d::DataNS::AnalogsNS::Analogs::print() const
 {
     for (size_t i = 0; i < nbSubframes(); ++i){
@@ -38,6 +33,11 @@ void ezc3d::DataNS::AnalogsNS::Analogs::write(std::fstream &f) const
 size_t ezc3d::DataNS::AnalogsNS::Analogs::nbSubframes() const
 {
     return _subframe.size();
+}
+
+void ezc3d::DataNS::AnalogsNS::Analogs::nbSubframes(size_t nbSubframes)
+{
+    _subframe.resize(nbSubframes);
 }
 
 const ezc3d::DataNS::AnalogsNS::SubFrame& ezc3d::DataNS::AnalogsNS::Analogs::subframe(size_t idx) const

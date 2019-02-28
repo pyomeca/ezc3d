@@ -58,9 +58,11 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
             _frames[j].add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
 
             // Read analogs
-            ezc3d::DataNS::AnalogsNS::Analogs analog(file.header().nbAnalogByFrame());
+            ezc3d::DataNS::AnalogsNS::Analogs analog;
+            analog.nbSubframes(file.header().nbAnalogByFrame());
             for (size_t k = 0; k < file.header().nbAnalogByFrame(); ++k){
-                ezc3d::DataNS::AnalogsNS::SubFrame sub(file.header().nbAnalogs());
+                ezc3d::DataNS::AnalogsNS::SubFrame sub;
+                sub.nbChannels(file.header().nbAnalogs());
                 for (size_t i = 0; i < file.header().nbAnalogs(); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
                     c.data(file.readFloat());
