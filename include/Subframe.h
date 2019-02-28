@@ -21,12 +21,6 @@ public:
     ///
     SubFrame();
 
-    ///
-    /// \brief Create an empty subframe for analogous data, allocating the number of channels
-    /// \param nChannels Number of channels in the subframe
-    ///
-    SubFrame(size_t nChannels);
-
 
     //---- STREAM ----//
 public:
@@ -56,6 +50,12 @@ public:
     /// \return The number of channels
     ///
     size_t nbChannels() const;
+
+    ///
+    /// \brief Resize the number of channels. Warning, this function drops data if channels are downsized.
+    /// \param nChannels Number of channels in the subframe
+    ///
+    void nbChannels(size_t nChannels);
 
     ///
     /// \brief Get the index of a analog channel in the subframe

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="204.01787mm"
+   height="61.603462mm"
+   viewBox="0 0 204.01787 61.603462"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="/home/pariterre/programmation/ezc3d/logo/logo2.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4607"
+       is_visible="true"
+       yy="true"
+       xx="true"
+       bendpath1="m 89.025629,333.84247 c 17.513221,-6.61242 62.439141,-5.01089 79.516521,-1.06908"
+       bendpath2="m 185.86925,334.91155 v 29.47842"
+       bendpath3="m 100.25095,363.32089 c 17.24016,3.71062 50.5165,4.48309 67.75666,1.06908"
+       bendpath4="m 85.688229,334.91155 c 0,9.50794 0,16.17265 0,29.47842"
+       bendpath1-nodetypes="cc"
+       bendpath3-nodetypes="cc"
+       bendpath2-nodetypes="cc"
+       bendpath4-nodetypes="cc" />
+    <inkscape:path-effect
+       effect="rough_hatches"
+       id="path-effect897"
+       is_visible="true"
+       direction="135.88066,267.5126 , 26.38553,0"
+       dist_rdm="75;1"
+       growth="0"
+       do_bend="true"
+       bender="135.88066,272.5126 , 5,0"
+       bottom_edge_variation="2.947842;1"
+       top_edge_variation="2.947842;1"
+       bottom_tgt_variation="0;1"
+       top_tgt_variation="0;1"
+       scale_bf="1"
+       scale_bb="1"
+       scale_tf="1"
+       scale_tb="1"
+       top_smth_variation="0;1"
+       bottom_smth_variation="0;1"
+       fat_output="true"
+       stroke_width_top="1"
+       stroke_width_bottom="1"
+       front_thickness="1"
+       back_thickness="0.25" />
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4896"
+       is_visible="true"
+       yy="true"
+       xx="false"
+       bendpath1="m 83.1096,257.7734 c 32.77781,-6.62273 68.48638,-5.16785 105.5421,0"
+       bendpath2="m 188.6517,257.7734 v 29.47841"
+       bendpath3="m 83.1096,287.25181 c 32.77574,7.09658 67.85782,7.38757 105.5421,0"
+       bendpath4="m 83.1096,257.7734 v 29.47841"
+       bendpath1-nodetypes="cc"
+       bendpath3-nodetypes="cc" />
+    <inkscape:path-effect
+       effect="bend_path"
+       id="path-effect4894"
+       is_visible="true"
+       bendpath="m -1020.0547,692.88769 h 371.20314"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false" />
+    <inkscape:path-effect
+       effect="lattice2"
+       gridpoint0="-1020.0547,625.82227"
+       gridpoint1="-648.85156,625.82227"
+       gridpoint2="-1020.0547,759.95312"
+       gridpoint3="-648.85156,759.95312"
+       gridpoint4="-927.25392,625.82227"
+       gridpoint5="-741.65234,625.82227"
+       gridpoint6="-927.25392,759.95312"
+       gridpoint7="-741.65234,759.95312"
+       gridpoint8x9="-834.45313,625.82227"
+       gridpoint10x11="-834.45313,759.95312"
+       gridpoint12="-1020.0547,659.35498"
+       gridpoint13="-648.85156,659.35498"
+       gridpoint14="-1020.0547,726.42041"
+       gridpoint15="-648.85156,726.42041"
+       gridpoint16="-927.25392,659.35498"
+       gridpoint17="-741.65234,659.35498"
+       gridpoint18="-927.25392,726.42041"
+       gridpoint19="-741.65234,726.42041"
+       gridpoint20x21="-834.45313,659.35498"
+       gridpoint22x23="-834.45313,726.42041"
+       gridpoint24x26="-1020.0547,692.8877"
+       gridpoint25x27="-648.85156,692.8877"
+       gridpoint28x30="-927.25392,692.8877"
+       gridpoint29x31="-741.65234,692.8877"
+       gridpoint32x33x34x35="-834.45313,692.8877"
+       id="path-effect4892"
+       is_visible="true"
+       horizontal_mirror="false"
+       vertical_mirror="false"
+       live_update="true" />
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4890"
+       is_visible="true"
+       yy="true"
+       xx="true"
+       bendpath1="m -1020.0547,625.82227 h 371.20314"
+       bendpath2="M -648.85156,625.82227 V 759.95312"
+       bendpath3="m -1020.0547,759.95312 h 371.20314"
+       bendpath4="M -1020.0547,625.82227 V 759.95312" />
+    <inkscape:path-effect
+       effect="bend_path"
+       id="path-effect4888"
+       is_visible="true"
+       bendpath="m -1020.0547,692.88769 h 371.20314"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="178.65356"
+     inkscape:cy="540.16862"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:measure-start="154.286,840"
+     inkscape:measure-end="0,0"
+     inkscape:window-width="1299"
+     inkscape:window-height="713"
+     inkscape:window-x="67"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-235.39654)">
+    <g
+       id="g1014"
+       transform="translate(0,75.000006)">
+      <rect
+         ry="30.772413"
+         y="160.39653"
+         x="0"
+         height="61.544823"
+         width="145.17061"
+         id="rect815-3-6-3-3"
+         style="fill:#000734;fill-opacity:1;stroke:none;stroke-width:0.22368795" />
+      <rect
+         ry="25.56951"
+         y="164.56798"
+         x="78.913498"
+         height="53.272686"
+         width="120.94504"
+         id="rect817-7-0-2-8"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000734;stroke-width:8.31866074;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         transform="scale(0.98872371,1.0114049)"
+         id="text827-8-2-7-6"
+         y="205.63835"
+         x="88.696091"
+         style="font-style:normal;font-weight:normal;font-size:46.27433395px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#8b782d;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:46.27386093px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#8b782d;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           y="205.63835"
+           x="88.696091"
+           id="tspan825-8-8-3-1"
+           sodipodi:role="line">C3D</tspan></text>
+      <text
+         id="text854-6-8-3-6"
+         y="207.80266"
+         x="9.2594757"
+         style="font-style:normal;font-weight:normal;font-size:61.84767914px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.32212329"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:61.84900284px;font-family:Comfortaa;-inkscape-font-specification:'Comfortaa, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke-width:0.32212329"
+           y="207.80266"
+           x="9.2594757"
+           id="tspan852-0-4-2-0"
+           sodipodi:role="line">ez</tspan></text>
+    </g>
+  </g>
+</svg>
