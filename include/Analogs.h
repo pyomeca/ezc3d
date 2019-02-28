@@ -21,12 +21,6 @@ public:
     ///
     Analogs();
 
-    ///
-    /// \brief Create an empty holder for the analogous data preallocating the size of it
-    /// \param nbSubframes The number of subframes to be in the holder
-    ///
-    Analogs(size_t nbSubframes);
-
 
     //---- STREAM ----//
 public:
@@ -56,6 +50,12 @@ public:
     /// \return The number of subframes
     ///
     size_t nbSubframes() const;
+
+    ///
+    /// \brief Resize the number of subframes. Warning, this function drops data if subframes is downsized
+    /// \param nbSubframes The number of subframes to be in the holder
+    ///
+    void nbSubframes(size_t nbSubframes);
 
     ///
     /// \brief Get a particular subframe of index idx from the analogous data set
