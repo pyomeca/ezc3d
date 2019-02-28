@@ -18,7 +18,7 @@
 /// this library is to eazily create, read and modify c3d (<a href="http://c3d.org">http://c3d.org</a>)
 /// files, largely used in biomechanics.
 ///
-/// This documentation was automatically generated for the version 0.3.3 on the 5th of November, 2018.
+/// This documentation was automatically generated for the version 0.3.4 on the 28th of February, 2019.
 ///
 /// \section install_sec Installation
 ///
