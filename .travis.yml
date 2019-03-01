@@ -30,9 +30,9 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; 
         then 
           wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
-          echo "Coucou1"
-          echo $HOME
-          echo "Coucou2"
+          echo "Coucou1";
+          echo $HOME;
+          echo "Coucou2";
         fi
     - bash miniconda.sh -b -p $HOME/miniconda
     - export PATH="$HOME/miniconda/bin:$PATH"
