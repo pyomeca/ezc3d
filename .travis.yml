@@ -55,6 +55,7 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
           cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
           make;
+          ./runUnitTests
       fi
     - ctest
     - cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON ..;
