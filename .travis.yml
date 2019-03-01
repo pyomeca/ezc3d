@@ -38,7 +38,7 @@ before_install:
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda config --set auto_update_conda no
-    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then conda update -q conda; fi
+#    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then conda update -q conda; fi
     - source activate
 
 install:
