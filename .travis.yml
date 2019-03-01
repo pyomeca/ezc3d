@@ -6,9 +6,15 @@ matrix:
     compiler: gcc
     env:
       - COMPILER=g++-7
-    addons:
-      apt:
-        packages: [g++, valgrind, python-yaml, lcov, cmake]
+  - os: osx
+    osx_image: xcode7.2
+    compiler: gcc
+    env:
+      - COMPILER=g++-7
+      
+addons:
+  apt:
+    packages: [g++, valgrind, python-yaml, lcov, cmake]
 
     
 before_install:
