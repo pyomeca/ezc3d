@@ -53,33 +53,7 @@ script:
     - mkdir -p build
     - cd build
       # Perform tests on all platform, but only perform code coverage on Linux
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
-        make; 
-        make ezc3d_coverage;
-      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
-        make;
-        ./runUnitTests;
-      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX= -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF ..;
-        cmake --build ./ --config Release;
-        # Reunite dlls and executable
-        copy bin\Release\*.dll .;
-        copy Release\*.dll .;
-        copy Release\*.exe .;
-        runUnitTests;
-      fi
-    - ctest
-    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
-        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON ..;
-        make install;
-      else
-        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=$ToolsDir/miniconda3/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON ..;
-        cmake --build ./ --config Release --target install;
-      fi
-    # Test the python binder
-    - pytest -v --color=yes ../test 
+
 
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
