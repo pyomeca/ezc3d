@@ -61,6 +61,13 @@ script:
         cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
         make;
         ./runUnitTests;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX= -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF ..;
+        cmake --build ./ --config Release;
+        copy bin\Release\*.dll .;
+        copy Release\*.dll .;
+        copy Release\*.exe .;
+        runUnitTests;
       fi
     - ctest
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
