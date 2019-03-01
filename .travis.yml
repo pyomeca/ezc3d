@@ -55,15 +55,20 @@ script:
       # Perform tests on all platform, but only perform code coverage on Linux
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
         cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
-        make; 
-        make ezc3d_coverage;
+        make;
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
         make;
-        ./runUnitTests;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
         cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX= -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF ..;
         cmake --build ./ --config Release;
+      fi
+    # Only do the coverage on Linux, but run the test anyway to get a nice output
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        make ezc3d_coverage;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+        ./runUnitTests;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
         copy bin\Release\*.dll .;
         copy Release\*.dll .;
         copy Release\*.exe .;
@@ -81,16 +86,20 @@ script:
     - pytest -v --color=yes ../test 
 
 after_success:
-    - cd ${TRAVIS_BUILD_DIR}
-    - lcov --directory . --capture --output-file coverage.info # capture coverage info
-    - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
-    - lcov --list coverage.info #debug info
     # Uploading report to CodeCov
-    - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        cd ${TRAVIS_BUILD_DIR};
+        lcov --directory . --capture --output-file coverage.info;
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info;
+        lcov --list coverage.info;
+        bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
+      fi
     
     # # Code coverage for python (Not sure yet how to merge the two results)
-    # - conda install -c conda-forge codecov
-    # - codecov
+    # if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    #     conda install -c conda-forge codecov;
+    #     codecov;
+    # fi
     
 notifications:
     email:
