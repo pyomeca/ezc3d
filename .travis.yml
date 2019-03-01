@@ -69,10 +69,10 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         ./runUnitTests;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        copy bin\Release\*.dll .;
-        copy Release\*.dll .;
-        copy Release\*.exe .;
-        runUnitTests;
+        cp bin/Release/*.dll .;
+        cp Release/*.dll .;
+        cp Release/*.exe .;
+        runUnitTests.exe;
       fi
     - ctest
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
