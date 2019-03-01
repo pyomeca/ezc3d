@@ -72,7 +72,7 @@ script:
         cp bin/Release/*.dll .;
         cp Release/*.dll .;
         cp Release/*.exe .;
-        runUnitTests.exe;
+        ./runUnitTests.exe;
       fi
     - ctest
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
