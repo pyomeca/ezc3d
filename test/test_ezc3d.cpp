@@ -115,7 +115,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
 void defaultHeaderTest(const ezc3d::c3d& new_c3d, HEADER_TYPE type = HEADER_TYPE::ALL){
 
     // Generic stuff
-    EXPECT_EQ(new_c3d.header().checksum(), 80);
+    EXPECT_LT(new_c3d.header().checksum(), 80);
     EXPECT_EQ(new_c3d.header().keyLabelPresent(), 0);
     EXPECT_EQ(new_c3d.header().firstBlockKeyLabel(), 0);
     EXPECT_EQ(new_c3d.header().fourCharPresent(), 12345);
