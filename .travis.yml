@@ -47,8 +47,8 @@ script:
     # Download, compile and test core
     - mkdir -p build
     - cd build
+      # Perform tests on all platform, but only perform code coverage on Linux
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-          # Only perform code coverage on Linux
           cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
           make; 
           make ezc3d_coverage;
