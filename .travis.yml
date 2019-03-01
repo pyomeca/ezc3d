@@ -79,7 +79,7 @@ script:
         cmake --build ./ --config Release --target install;
       fi
     # Test the python binder
-    - pytest -v --color=yes ../test
+    - pytest -v --color=yes ../test 
 
 after_success:
     - cd ${TRAVIS_BUILD_DIR}
