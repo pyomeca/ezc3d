@@ -11,6 +11,7 @@ matrix:
     compiler: gcc
     env:
       - COMPILER=g++-7
+  - os: windows
       
 addons:
   apt:
