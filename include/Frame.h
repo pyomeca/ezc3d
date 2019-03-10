@@ -109,6 +109,12 @@ public:
     ///
     void add(const ezc3d::DataNS::Points3dNS::Points &points, const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
 
+    ///
+    /// \brief Return if the frame is empty
+    /// \return if the frame is empty
+    ///
+    bool isempty() const;
+
 };
 
 #endif

@@ -6,9 +6,16 @@ matrix:
     compiler: gcc
     env:
       - COMPILER=g++-7
-    addons:
-      apt:
-        packages: [g++, valgrind, python-yaml, lcov, cmake]
+  - os: osx
+    osx_image: xcode7.2
+    compiler: gcc
+    env:
+      - COMPILER=g++-7
+  - os: windows
+      
+addons:
+  apt:
+    packages: [g++, valgrind, python-yaml, lcov, cmake]
 
     
 before_install:
@@ -17,13 +24,21 @@ before_install:
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
    
     # Add stuff for Python3 tests as well
-    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-    - bash miniconda.sh -b -p $HOME/miniconda
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+        bash miniconda.sh -b -p $HOME/miniconda;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+        bash miniconda.sh -b -p $HOME/miniconda;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        choco install miniconda3 --params="'/AddToPath:1'";
+        export PATH="/c/tools/miniconda3/scripts:/c/tools/miniconda3/:$PATH";
+      fi
     - export PATH="$HOME/miniconda/bin:$PATH"
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda config --set auto_update_conda no
-    - conda update -q conda
+    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then conda update -q conda; fi
     - source activate
 
 install:
@@ -37,27 +52,54 @@ script:
     # Download, compile and test core
     - mkdir -p build
     - cd build
-    - cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF .. 
-    - make
-    - make ezc3d_coverage
+      # Perform tests on all platform, but only perform code coverage on Linux
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
+        make;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
+        make;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX= -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF ..;
+        cmake --build ./ --config Release;
+      fi
+    # Only do the coverage on Linux, but run the test anyway to get a nice output
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        make ezc3d_coverage;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+        ./runUnitTests;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        cp bin/Release/*.dll .;
+        cp Release/*.dll .;
+        cp Release/*.exe .;
+        ./runUnitTests.exe;
+      fi
     - ctest
-    - cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON .. 
-    - make install
-    
+    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
+        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON ..;
+        make install;
+      else
+        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=$ToolsDir/miniconda3/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DBINDER_PYTHON3=ON ..;
+        cmake --build ./ --config Release --target install;
+      fi
     # Test the python binder
-    - pytest -v --color=yes ../test
+    - pytest -v --color=yes ../test 
 
 after_success:
-    - cd ${TRAVIS_BUILD_DIR}
-    - lcov --directory . --capture --output-file coverage.info # capture coverage info
-    - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
-    - lcov --list coverage.info #debug info
     # Uploading report to CodeCov
-    - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        cd ${TRAVIS_BUILD_DIR};
+        lcov --directory . --capture --output-file coverage.info;
+        lcov --remove coverage.info '/usr/*' --output-file coverage.info;
+        lcov --list coverage.info;
+        bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
+      fi
     
     # # Code coverage for python (Not sure yet how to merge the two results)
-    # - conda install -c conda-forge codecov
-    # - codecov
+    # if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    #     conda install -c conda-forge codecov;
+    #     codecov;
+    # fi
     
 notifications:
     email:

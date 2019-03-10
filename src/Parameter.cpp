@@ -60,7 +60,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
     f.write(reinterpret_cast<const char*>(&_data_type), 1*ezc3d::DATA_TYPE::BYTE);
     size_t size_dim(_dimension.size());
     // If it is a scalar, store it as so
-    if (_dimension.size() == 1 && _dimension[0] == 1){
+    if (_dimension.size() == 1 && _dimension[0] == 1 && _data_type != DATA_TYPE::CHAR){
         int _size_dim(0);
         f.write(reinterpret_cast<const char*>(&_size_dim), 1*ezc3d::DATA_TYPE::BYTE);
     }
