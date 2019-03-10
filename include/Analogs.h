@@ -100,6 +100,11 @@ public:
     ///
     const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>& subframes() const;
 
+    ///
+    /// \brief Return if the analogs are empty
+    /// \return if the analogs are empty
+    ///
+    bool isempty() const;
 };
 
 #endif
