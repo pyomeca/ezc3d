@@ -1478,8 +1478,8 @@ TEST(c3dFileIO, readOptotrakC3D){
 
 
     EXPECT_EQ(Optotrak.header().firstFrame(), 0);
-    EXPECT_EQ(Optotrak.header().lastFrame(), 1148);
-    EXPECT_EQ(Optotrak.header().nbFrames(), 1149);
+    EXPECT_EQ(Optotrak.header().lastFrame(), 29);
+    EXPECT_EQ(Optotrak.header().nbFrames(), 30);
 
 
     // Parameter tests
@@ -1495,7 +1495,7 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 30);
-    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 1149); // ignore because it changes if analog is present
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 30); // ignore because it changes if analog is present
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 54);
@@ -1509,6 +1509,6 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt()[0], 0);
 
     // DATA
-    for (size_t f = 0; f < 1149; ++f)
+    for (size_t f = 0; f < 30; ++f)
         EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 54);
 }

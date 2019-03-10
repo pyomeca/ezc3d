@@ -67,3 +67,8 @@ void ezc3d::DataNS::Frame::add(const ezc3d::DataNS::Points3dNS::Points &point3d_
     add(point3d_frame);
     add(analog_frame);
 }
+
+bool ezc3d::DataNS::Frame::isempty() const
+{
+    return points().isempty() && analogs().isempty();
+}

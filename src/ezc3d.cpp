@@ -48,11 +48,15 @@ ezc3d::c3d::c3d(const std::string &filePath):
     // Read all the section
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this));
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters(*this));
+
     // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
     updateHeader();
 
     // Now read the actual data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this));
+
+    // Parameters and header may be inconsistent with actual data, so reprocess them if needed
+    updateParameters();
 
     // Close the file
     close();
@@ -78,7 +82,15 @@ void ezc3d::c3d::write(const std::string& filePath) const
     this->header().write(f);
 
     // Write the parameters
-    this->parameters().write(f);
+    // We must copy parameters since there is no way to make sure that the number of frames is not higher than 0xFFFF
+    ezc3d::ParametersNS::Parameters params(parameters());
+    int nFrames(this->parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
+    if (nFrames > 0xFFFF){
+        ezc3d::ParametersNS::GroupNS::Parameter frames("FRAMES");
+        frames.set(-1);
+        params.group_nonConst("POINT").parameter(frames);
+    }
+    params.write(f);
 
     // Write the data
     this->data().write(f);
@@ -502,47 +514,51 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
             nAnalogs = 0;
     } else
         nAnalogs = parameters().group("ANALOG").parameter("LABELS").valuesAsString().size() + newAnalogs.size();
-    if (nAnalogs != static_cast<size_t>(grpAnalog.parameter("USED").valuesAsInt()[0])){
-        grpAnalog.parameter_nonConst("USED").set(nAnalogs);
 
-        size_t idxLabels(static_cast<size_t>(grpAnalog.parameterIdx("LABELS")));
-        size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
-        std::vector<std::string> labels;
-        std::vector<std::string> descriptions;
-        for (size_t i = 0; i<nAnalogs; ++i){
-            std::string name;
-            if (data().nbFrames() == 0){
-                if (i < parameters().group("ANALOG").parameter("LABELS").valuesAsString().size())
-                    name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[i];
-                else
-                    name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
-            } else {
-                name = data().frame(0).analogs().subframe(0).channel(i).name();
+    // Should always be greater than 0..., but we have to take in account Optotrak lazyness
+    if (parameters().group("ANALOG").nbParameters()){
+        if (nAnalogs != static_cast<size_t>(grpAnalog.parameter("USED").valuesAsInt()[0])){
+            grpAnalog.parameter_nonConst("USED").set(nAnalogs);
+
+            size_t idxLabels(static_cast<size_t>(grpAnalog.parameterIdx("LABELS")));
+            size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
+            std::vector<std::string> labels;
+            std::vector<std::string> descriptions;
+            for (size_t i = 0; i<nAnalogs; ++i){
+                std::string name;
+                if (data().nbFrames() == 0){
+                    if (i < parameters().group("ANALOG").parameter("LABELS").valuesAsString().size())
+                        name = parameters().group("ANALOG").parameter("LABELS").valuesAsString()[i];
+                    else
+                        name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
+                } else {
+                    name = data().frame(0).analogs().subframe(0).channel(i).name();
+                }
+                labels.push_back(name);
+                descriptions.push_back("");
             }
-            labels.push_back(name);
-            descriptions.push_back("");
+            grpAnalog.parameter_nonConst(idxLabels).set(labels);
+            grpAnalog.parameter_nonConst(idxDescriptions).set(descriptions);
+
+            size_t idxScale(grpAnalog.parameterIdx("SCALE"));
+            std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
+            for (size_t i = grpAnalog.parameter(idxScale).valuesAsFloat().size(); i < nAnalogs; ++i)
+                scales.push_back(1);
+            grpAnalog.parameter_nonConst(idxScale).set(scales);
+
+            size_t idxOffset(grpAnalog.parameterIdx("OFFSET"));
+            std::vector<int> offset(grpAnalog.parameter(idxOffset).valuesAsInt());
+            for (size_t i = grpAnalog.parameter(idxOffset).valuesAsInt().size(); i < nAnalogs; ++i)
+                offset.push_back(0);
+            grpAnalog.parameter_nonConst(idxOffset).set(offset);
+
+            size_t idxUnits(grpAnalog.parameterIdx("UNITS"));
+            std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
+            for (size_t i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i < nAnalogs; ++i)
+                units.push_back("V");
+            grpAnalog.parameter_nonConst(idxUnits).set(units);
+
         }
-        grpAnalog.parameter_nonConst(idxLabels).set(labels);
-        grpAnalog.parameter_nonConst(idxDescriptions).set(descriptions);
-
-        size_t idxScale(grpAnalog.parameterIdx("SCALE"));
-        std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
-        for (size_t i = grpAnalog.parameter(idxScale).valuesAsFloat().size(); i < nAnalogs; ++i)
-            scales.push_back(1);
-        grpAnalog.parameter_nonConst(idxScale).set(scales);
-
-        size_t idxOffset(grpAnalog.parameterIdx("OFFSET"));
-        std::vector<int> offset(grpAnalog.parameter(idxOffset).valuesAsInt());
-        for (size_t i = grpAnalog.parameter(idxOffset).valuesAsInt().size(); i < nAnalogs; ++i)
-            offset.push_back(0);
-        grpAnalog.parameter_nonConst(idxOffset).set(offset);
-
-        size_t idxUnits(grpAnalog.parameterIdx("UNITS"));
-        std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
-        for (size_t i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i < nAnalogs; ++i)
-            units.push_back("V");
-        grpAnalog.parameter_nonConst(idxUnits).set(units);
-
     }
     updateHeader();
 }
