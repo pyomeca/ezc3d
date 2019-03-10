@@ -48,11 +48,15 @@ ezc3d::c3d::c3d(const std::string &filePath):
     // Read all the section
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this));
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters(*this));
+
     // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
     updateHeader();
 
     // Now read the actual data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this));
+
+    // Parameters and header may be inconsistent with actual data, so reprocess them if needed
+    updateParameters();
 
     // Close the file
     close();
@@ -78,7 +82,15 @@ void ezc3d::c3d::write(const std::string& filePath) const
     this->header().write(f);
 
     // Write the parameters
-    this->parameters().write(f);
+    // We must copy parameters since there is no way to make sure that the number of frames is not higher than 0xFFFF
+    ezc3d::ParametersNS::Parameters params(parameters());
+    int nFrames(this->parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
+    if (nFrames > 0xFFFF){
+        ezc3d::ParametersNS::GroupNS::Parameter frames("FRAMES");
+        frames.set(-1);
+        params.group_nonConst("POINT").parameter(frames);
+    }
+    params.write(f);
 
     // Write the data
     this->data().write(f);
