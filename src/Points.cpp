@@ -94,3 +94,11 @@ const std::vector<ezc3d::DataNS::Points3dNS::Point> &ezc3d::DataNS::Points3dNS::
 {
     return _points;
 }
+
+bool ezc3d::DataNS::Points3dNS::Points::isempty() const
+{
+    for (Point point : points())
+        if (!point.isempty())
+            return false;
+    return true;
+}
