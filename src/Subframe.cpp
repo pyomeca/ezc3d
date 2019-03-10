@@ -96,3 +96,11 @@ const std::vector<ezc3d::DataNS::AnalogsNS::Channel> &ezc3d::DataNS::AnalogsNS::
 {
     return _channels;
 }
+
+bool ezc3d::DataNS::AnalogsNS::SubFrame::isempty() const
+{
+    for (Channel channel : channels())
+        if (!channel.isempty())
+            return false;
+    return true;
+}
