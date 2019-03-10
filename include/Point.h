@@ -131,6 +131,12 @@ public:
     /// \param residual The residual component of the 3d point
     ///
     void residual(float residual);
+
+    ///
+    /// \brief Return if the point is empty
+    /// \return if the point is empty
+    ///
+    bool isempty() const;
 };
 
 #endif

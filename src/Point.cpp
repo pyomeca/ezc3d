@@ -99,3 +99,15 @@ float ezc3d::DataNS::Points3dNS::Point::residual() const
 void ezc3d::DataNS::Points3dNS::Point::residual(float residual){
     _data[3] = residual;
 }
+
+bool ezc3d::DataNS::Points3dNS::Point::isempty() const
+{
+    if (static_cast<double>(x()) == 0.0 &&
+            static_cast<double>(y()) == 0.0 &&
+            static_cast<double>(z()) == 0.0 &&
+            static_cast<double>(residual()) == 0.0)
+        return true;
+    else {
+        return false;
+    }
+}
