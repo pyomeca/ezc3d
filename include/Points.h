@@ -130,6 +130,11 @@ public:
     ///
     const std::vector<ezc3d::DataNS::Points3dNS::Point>& points() const;
 
+    ///
+    /// \brief Return if the points are empty
+    /// \return if the points are empty
+    ///
+    bool isempty() const;
 };
 
 #endif
