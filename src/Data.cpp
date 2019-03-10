@@ -85,12 +85,13 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 
     // remove the trailing empty frames if they exist
     size_t nFrames(_frames.size());
-    for (size_t i=0; i<nFrames-1; i--){ // -1 so we at least keep one frame if frames are empty
-        if (_frames.back().isempty())
-            _frames.pop_back();
-        else
-            break;
-    }
+    if (nFrames > 0)
+        for (size_t i=0; i<nFrames-1; i--){ // -1 so we at least keep one frame if frames are empty
+            if (_frames.back().isempty())
+                _frames.pop_back();
+            else
+                break;
+        }
 }
 
 void ezc3d::DataNS::Data::print() const
