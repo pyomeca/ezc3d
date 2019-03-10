@@ -22,10 +22,6 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                  256*ezc3d::DATA_TYPE::WORD*file.parameters().nbParamBlock() -
                  ezc3d::DATA_TYPE::BYTE), std::ios::beg); // "- BYTE" so it is just prior
 
-    // Initialize some variables
-    if (file.header().nbFrames()>0)
-        _frames.resize(file.header().nbFrames());
-
     // Get names of the data
     std::vector<std::string> pointNames;
     if (file.header().nb3dPoints() > 0)
@@ -36,6 +32,9 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 
     // Read the actual data
     for (size_t j = 0; j < file.header().nbFrames(); ++j){
+        if (file.eof())
+            break;
+
         ezc3d::DataNS::Frame f;
         if (file.header().scaleFactor() < 0){ // if it is float
             // Read point 3d
@@ -55,7 +54,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                 }
                 ptsAtAFrame.point(pt, i);
             }
-            _frames[j].add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
+            f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
 
             // Read analogs
             ezc3d::DataNS::AnalogsNS::Analogs analog;
@@ -77,11 +76,20 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
                 }
                 analog.subframe(sub, k);
             }
-            _frames[j].add(analog);
-
+            f.add(analog);
+            _frames.push_back(f);
         }
         else
             throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
+    }
+
+    // remove the trailing empty frames if they exist
+    size_t nFrames(_frames.size());
+    for (size_t i=0; i<nFrames-1; i--){ // -1 so we at least keep one frame if frames are empty
+        if (_frames.back().isempty())
+            _frames.pop_back();
+        else
+            break;
     }
 }
 
