@@ -105,6 +105,8 @@ void ezc3d::Header::write(std::fstream &f) const
     // Idx of first and last frame
     size_t firstFrame(_firstFrame + 1); // 1-based!
     size_t lastFrame(_lastFrame + 1); // 1-based!
+    if (lastFrame > 0xFFFF)
+        lastFrame = 0xFFFF; // Combine this with group("POINT").parameter("FRAMES") = -1
     f.write(reinterpret_cast<const char*>(&firstFrame), 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&lastFrame), 1*ezc3d::DATA_TYPE::WORD);
 

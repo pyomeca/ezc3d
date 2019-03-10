@@ -53,3 +53,11 @@ void ezc3d::DataNS::AnalogsNS::Channel::data(float v)
 {
     _data = v;
 }
+
+bool ezc3d::DataNS::AnalogsNS::Channel::isempty() const
+{
+    if (static_cast<double>(data()) == 0.0)
+        return true;
+    else
+        return false;
+}
