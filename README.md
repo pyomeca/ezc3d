@@ -18,7 +18,7 @@ The easiest way to install EZC3D is to download the binaries from anaconda (http
 
 After having install properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command:
 ```bash
-conda install -c pyomeca ezc3d
+conda install -c conda-forge ezc3d
 ```
 The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 binder will also be installed in the environment.
 
