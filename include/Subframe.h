@@ -134,6 +134,11 @@ public:
     ///
     const std::vector<ezc3d::DataNS::AnalogsNS::Channel>& channels() const;
 
+    ///
+    /// \brief Return if the subframe is empty
+    /// \return if the subframe is empty
+    ///
+    bool isempty() const;
 };
 
 #endif
