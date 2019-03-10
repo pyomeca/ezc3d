@@ -81,6 +81,11 @@ public:
     ///
     void data(float value);
 
+    ///
+    /// \brief Return if the channel is empty
+    /// \return if the channel is empty
+    ///
+    bool isempty() const;
 };
 
 
