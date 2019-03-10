@@ -79,3 +79,11 @@ const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame> &ezc3d::DataNS::AnalogsNS:
 {
     return _subframe;
 }
+
+bool ezc3d::DataNS::AnalogsNS::Analogs::isempty() const
+{
+    for (SubFrame subframe : subframes())
+        if (!subframe.isempty())
+            return false;
+    return true;
+}
