@@ -273,8 +273,8 @@ print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of poin
 point_data = c['data']['points']
 analog_data = c['data']['analogs']
 ```
-Please note that the shape of point_data is 4xNxT, where 4 represent the components XYZ1 (the extra 1 allows for rototranslation multiplications), N is the number of points and T is the number of frames. 
-Similarly, and to be consistent with the point shape, the shape of analog data are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
+> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the extra 1 allows for rototranslation multiplications), N is the number of points and T is the number of frames. 
+> Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 
 ### Write a C3D
 To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
