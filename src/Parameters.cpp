@@ -15,6 +15,60 @@ ezc3d::ParametersNS::Parameters::Parameters():
     _nbParamBlock(0),
     _processorType(84)
 {
+    setMandatoryParameters();
+}
+
+ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
+    _parametersStart(0),
+    _checksum(0),
+    _nbParamBlock(0),
+    _processorType(0)
+{
+    setMandatoryParameters();
+
+    // Read the Parameters Header
+    _parametersStart = file.readUint(1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + file.header().nbOfZerosBeforeHeader()), std::ios::beg);
+    _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    _nbParamBlock = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    _processorType = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    if (_checksum == 0 && _parametersStart == 0){
+        // In theory, if this happens, this is a bad c3d formatting and should return an error, but for some reason
+        // Qualisys decided that they would not comply to the standard. Therefore set put "_parameterStart" and "_checksum" to 0
+        // This is a patch for Qualisys bad formatting c3d
+        _parametersStart = 1;
+        _checksum = 0x50;
+    }
+    if (_checksum != 0x50) // If checkbyte is wrong
+        throw std::ios_base::failure("File must be a valid c3d file");
+
+    // Read parameter or group
+    std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
+    while (nextParamByteInFile)
+    {
+        // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
+        if (file.tellg() != nextParamByteInFile)
+            throw std::ios_base::failure("Bad c3d formatting");
+
+        // Nb of char in the group name, locked if negative, 0 if we finished the section
+        int nbCharInName(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+        if (nbCharInName == 0)
+            break;
+        int id(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+
+        // Make sure there at least enough group
+        for (size_t i = _groups.size(); i < static_cast<size_t>(abs(id)); ++i)
+            _groups.push_back(ezc3d::ParametersNS::GroupNS::Group());
+
+        // Group ID always negative for groups and positive parameter of group ID
+        if (id < 0)
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(file, nbCharInName);
+        else
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(file, nbCharInName);
+    }
+}
+
+void ezc3d::ParametersNS::Parameters::setMandatoryParameters()
+{
     // Mandatory groups
     {
         ezc3d::ParametersNS::GroupNS::Group grp("POINT", "");
@@ -85,7 +139,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("GEN_SCALE", "");
-            p.set(1);
+            p.set(1.0);
             grp.parameter(p);
         }
         {
@@ -159,53 +213,6 @@ ezc3d::ParametersNS::Parameters::Parameters():
             grp.parameter(p);
         }
         group(grp);
-    }
-}
-
-ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
-    _parametersStart(0),
-    _checksum(0),
-    _nbParamBlock(0),
-    _processorType(0)
-{
-    // Read the Parameters Header
-    _parametersStart = file.readUint(1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + file.header().nbOfZerosBeforeHeader()), std::ios::beg);
-    _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
-    _nbParamBlock = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
-    _processorType = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
-    if (_checksum == 0 && _parametersStart == 0){
-        // Theoritically, if this happens, this is a bad c3d formatting and should return an error, but for some reason
-        // Qualisys decided that they would not comply to the standard. Therefore they put "_parameterStart" and "_checksum" to 0
-        // This is a patch for Qualisys bad formatting c3d
-        _parametersStart = 1;
-        _checksum = 0x50;
-    }
-    if (_checksum != 0x50) // If checkbyte is wrong
-        throw std::ios_base::failure("File must be a valid c3d file");
-
-    // Read parameter or group
-    std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
-    while (nextParamByteInFile)
-    {
-        // Check if we spontaneously got to the next parameter. Otherwise c3d is messed up
-        if (file.tellg() != nextParamByteInFile)
-            throw std::ios_base::failure("Bad c3d formatting");
-
-        // Nb of char in the group name, locked if negative, 0 if we finished the section
-        int nbCharInName(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
-        if (nbCharInName == 0)
-            break;
-        int id(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
-
-        // Make sure there at least enough group
-        for (size_t i = _groups.size(); i < static_cast<size_t>(abs(id)); ++i)
-            _groups.push_back(ezc3d::ParametersNS::GroupNS::Group());
-
-        // Group ID always negative for groups and positive parameter of group ID
-        if (id < 0)
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(file, nbCharInName);
-        else
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(file, nbCharInName);
     }
 }
 
