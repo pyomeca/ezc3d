@@ -128,7 +128,7 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fs
     return cmp;
 }
 
-int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharInName)
+int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &c3d, std::fstream &file, int nbCharInName)
 {
     if (nbCharInName < 0)
         _isLocked = true;
@@ -136,10 +136,10 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
         _isLocked = false;
 
     // Read name of the group
-    _name = file.readString(static_cast<unsigned int>(abs(nbCharInName) * ezc3d::DATA_TYPE::BYTE));
+    _name = c3d.readString(file, static_cast<unsigned int>(abs(nbCharInName) * ezc3d::DATA_TYPE::BYTE));
 
     // number of byte to the next group from here
-    int offsetNext(static_cast<int>(file.readUint(2*ezc3d::DATA_TYPE::BYTE)));
+    int offsetNext(static_cast<int>(c3d.readUint(file, 2*ezc3d::DATA_TYPE::BYTE)));
     // Compute the position of the element in the file
     int nextParamByteInFile;
     if (offsetNext == 0)
@@ -148,7 +148,7 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
         nextParamByteInFile = static_cast<int>(file.tellg()) + offsetNext - ezc3d::DATA_TYPE::WORD;
 
     // -1 sizeof(char), 1 byte, 2 int, 4 float
-    int lengthInByte(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+    int lengthInByte(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
     if (lengthInByte == -1)
         _data_type = DATA_TYPE::CHAR;
     else if (lengthInByte == 1)
@@ -161,29 +161,29 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &file, int nbCharIn
         throw std::ios_base::failure ("Parameter type unrecognized");
 
     // number of dimension of parameter (0 for scalar)
-    int nDimensions(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+    int nDimensions(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
     if (nDimensions == 0 && _data_type != DATA_TYPE::CHAR) // In the special case of a scalar
         _dimension.push_back(1);
     else // otherwise it's a matrix
         for (int i=0; i<nDimensions; ++i)
-            _dimension.push_back (file.readUint(1*ezc3d::DATA_TYPE::BYTE));    // Read the dimension size of the matrix
+            _dimension.push_back (c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE));    // Read the dimension size of the matrix
 
     // Read the data for the parameters
     if (_data_type == DATA_TYPE::CHAR)
-        file.readParam(_dimension, _param_data_string);
+        c3d.readParam(file, _dimension, _param_data_string);
     else if (_data_type == DATA_TYPE::BYTE)
-        file.readParam(static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
+        c3d.readParam(file, static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
     else if (_data_type == DATA_TYPE::INT)
-        file.readParam(static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
+        c3d.readParam(file, static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
     else if (_data_type == DATA_TYPE::FLOAT)
-        file.readParam(_dimension, _param_data_float);
+        c3d.readParam(file, _dimension, _param_data_float);
 
 
     // Byte 5+nbCharInName ==> Number of characters in group description
-    int nbCharInDesc(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+    int nbCharInDesc(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
     // Byte 6+nbCharInName ==> Group description
     if (nbCharInDesc)
-        _description = file.readString(static_cast<unsigned int>(nbCharInDesc));
+        _description = c3d.readString(file, static_cast<unsigned int>(nbCharInDesc));
 
     // Return how many bytes
     return nextParamByteInFile;
