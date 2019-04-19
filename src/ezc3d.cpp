@@ -435,15 +435,12 @@ void ezc3d::c3d::updateHeader()
         if (data().frame(0).analogs().nbSubframes() != static_cast<size_t>(header().nbAnalogByFrame()))
             _header->nbAnalogByFrame(data().frame(0).analogs().nbSubframes());
     } else {
-        // Should always be greater than 0, but we have to take in account Optotrak lazyness
-        if (parameters().group("ANALOG").nbParameters()){
-            if (static_cast<size_t>(pointRate) == 0){
-                if (static_cast<size_t>(header().nbAnalogByFrame()) != 1)
-                    _header->nbAnalogByFrame(1);
-            } else {
-                if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
-                    _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
-            }
+        if (static_cast<size_t>(pointRate) == 0){
+            if (static_cast<size_t>(header().nbAnalogByFrame()) != 1)
+                _header->nbAnalogByFrame(1);
+        } else {
+            if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
+                _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
         }
     }
 
