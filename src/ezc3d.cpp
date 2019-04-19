@@ -36,30 +36,30 @@ ezc3d::c3d::c3d():
 }
 
 ezc3d::c3d::c3d(const std::string &filePath):
-    std::fstream(filePath, std::ios::in | std::ios::binary),
     _filePath(filePath),
     m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
 {
+    std::fstream stream(_filePath, std::ios::in | std::ios::binary);
     c_float = new char[m_nByteToRead_float + 1];
 
-    if (!is_open())
+    if (!stream.is_open())
         throw std::ios_base::failure("Could not open the c3d file");
 
     // Read all the section
-    _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this));
-    _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters(*this));
+    _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this, stream));
+    _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters(*this, stream));
 
     // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
     updateHeader();
 
     // Now read the actual data
-    _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this));
+    _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this, stream));
 
     // Parameters and header may be inconsistent with actual data, so reprocess them if needed
     updateParameters();
 
     // Close the file
-    close();
+    stream.close();
 }
 
 ezc3d::c3d::~c3d()
@@ -98,12 +98,12 @@ void ezc3d::c3d::write(const std::string& filePath) const
     f.close();
 }
 
-void ezc3d::c3d::readFile(unsigned int nByteToRead, char * c, int nByteFromPrevious,
+void ezc3d::c3d::readFile(std::fstream &file, unsigned int nByteToRead, char * c, int nByteFromPrevious,
                      const  std::ios_base::seekdir &pos)
 {
     if (pos != 1)
-        this->seekg (nByteFromPrevious, pos); // Move to number analogs
-    this->read (c, nByteToRead);
+        file.seekg (nByteFromPrevious, pos); // Move to number analogs
+    file.read (c, nByteToRead);
     c[nByteToRead] = '\0'; // Make sure last char is NULL
 }
 
@@ -133,11 +133,11 @@ int ezc3d::c3d::hex2int(const char * val, unsigned int len){
     return out;
 }
 
-int ezc3d::c3d::readInt(unsigned int nByteToRead, int nByteFromPrevious,
+int ezc3d::c3d::readInt(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char* c = new char[nByteToRead + 1];
-    readFile(nByteToRead, c, nByteFromPrevious, pos);
+    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
     int out(hex2int(c, nByteToRead));
@@ -145,11 +145,11 @@ int ezc3d::c3d::readInt(unsigned int nByteToRead, int nByteFromPrevious,
     return out;
 }
 
-size_t ezc3d::c3d::readUint(unsigned int nByteToRead, int nByteFromPrevious,
+size_t ezc3d::c3d::readUint(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
     char* c = new char[nByteToRead + 1];
-    readFile(nByteToRead, c, nByteFromPrevious, pos);
+    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
 
     // make sure it is an int and not an unsigned int
     size_t out(hex2uint(c, nByteToRead));
@@ -157,49 +157,49 @@ size_t ezc3d::c3d::readUint(unsigned int nByteToRead, int nByteFromPrevious,
     return out;
 }
 
-float ezc3d::c3d::readFloat(int nByteFromPrevious,
+float ezc3d::c3d::readFloat(std::fstream &file, int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
-    readFile(m_nByteToRead_float, c_float, nByteFromPrevious, pos);
+    readFile(file, m_nByteToRead_float, c_float, nByteFromPrevious, pos);
     float out (*reinterpret_cast<float*>(c_float));
     return out;
 }
 
-std::string ezc3d::c3d::readString(unsigned int nByteToRead, int nByteFromPrevious,
+std::string ezc3d::c3d::readString(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
                               const std::ios_base::seekdir &pos)
 {
     char* c = new char[nByteToRead + 1];
-    readFile(nByteToRead, c, nByteFromPrevious, pos);
+    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
     std::string out(c);
     delete[] c;
     return out;
 }
 
-void ezc3d::c3d::readParam(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(std::fstream &file, unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
                        std::vector<int> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readInt(dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
+            param_data.push_back (readInt(file, dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
         else
-            readParam(dataLenghtInBytes, dimension, param_data, currentIdx + 1);
+            readParam(file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readParam(const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(std::fstream &file, const std::vector<size_t> &dimension,
                        std::vector<float> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readFloat());
+            param_data.push_back (readFloat(file));
         else
-            readParam(dimension, param_data, currentIdx + 1);
+            readParam(file, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readParam(const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(std::fstream &file, const std::vector<size_t> &dimension,
                        std::vector<std::string> &param_data_string)
 {
     std::vector<std::string> param_data_string_tp;
-    _readMatrix(dimension, param_data_string_tp);
+    _readMatrix(file, dimension, param_data_string_tp);
 
     // Vicon c3d stores text length on first dimension, I am not sure if
     // this is a standard or a custom made stuff. I implemented it like that for now
@@ -236,14 +236,14 @@ size_t ezc3d::c3d::_dispatchMatrix(const std::vector<size_t> &dimension,
     return idxInParam;
 }
 
-void ezc3d::c3d::_readMatrix(const std::vector<size_t> &dimension,
+void ezc3d::c3d::_readMatrix(std::fstream &file, const std::vector<size_t> &dimension,
                        std::vector<std::string> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back(readString(ezc3d::DATA_TYPE::BYTE));
+            param_data.push_back(readString(file, ezc3d::DATA_TYPE::BYTE));
         else
-            _readMatrix(dimension, param_data, currentIdx + 1);
+            _readMatrix(file, dimension, param_data, currentIdx + 1);
 }
 
 const ezc3d::Header& ezc3d::c3d::header() const
@@ -435,24 +435,17 @@ void ezc3d::c3d::updateHeader()
         if (data().frame(0).analogs().nbSubframes() != static_cast<size_t>(header().nbAnalogByFrame()))
             _header->nbAnalogByFrame(data().frame(0).analogs().nbSubframes());
     } else {
-        // Should always be greater than 0, but we have to take in account Optotrak lazyness
-        if (parameters().group("ANALOG").nbParameters()){
-            if (static_cast<size_t>(pointRate) == 0){
-                if (static_cast<size_t>(header().nbAnalogByFrame()) != 1)
-                    _header->nbAnalogByFrame(1);
-            } else {
-                if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
-                    _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
-            }
+        if (static_cast<size_t>(pointRate) == 0){
+            if (static_cast<size_t>(header().nbAnalogByFrame()) != 1)
+                _header->nbAnalogByFrame(1);
+        } else {
+            if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
+                _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
         }
     }
 
-    // Should always be greater than 0, but we have to take in account Optotrak lazyness
-    if (parameters().group("ANALOG").nbParameters()){
-        if (static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
-            _header->nbAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
-    } else
-        _header->nbAnalogs(0);
+    if (static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
+        _header->nbAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
 }
 
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, const std::vector<std::string> &newAnalogs)
