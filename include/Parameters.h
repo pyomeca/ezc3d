@@ -27,6 +27,11 @@ public:
     ///
     Parameters(ezc3d::c3d &file);
 
+protected:
+    ///
+    /// \brief Add all required parameter for a c3d to be valid
+    ///
+    void setMandatoryParameters();
 
     //---- STREAM ----//
 public:
