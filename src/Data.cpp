@@ -14,37 +14,37 @@ ezc3d::DataNS::Data::Data()
 
 }
 
-ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
+ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
 {
     // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
-    file.readInt(ezc3d::DATA_TYPE::BYTE,
-                 static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + file.header().nbOfZerosBeforeHeader() +
-                 256*ezc3d::DATA_TYPE::WORD*file.parameters().nbParamBlock() -
+    c3d.readInt(file, ezc3d::DATA_TYPE::BYTE,
+                 static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader() +
+                 256*ezc3d::DATA_TYPE::WORD*c3d.parameters().nbParamBlock() -
                  ezc3d::DATA_TYPE::BYTE), std::ios::beg); // "- BYTE" so it is just prior
 
     // Get names of the data
     std::vector<std::string> pointNames;
-    if (file.header().nb3dPoints() > 0)
-        pointNames = file.parameters().group("POINT").parameter("LABELS").valuesAsString();
+    if (c3d.header().nb3dPoints() > 0)
+        pointNames = c3d.parameters().group("POINT").parameter("LABELS").valuesAsString();
     std::vector<std::string> analogNames;
-    if (file.header().nbAnalogs() > 0)
-        analogNames = file.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
+    if (c3d.header().nbAnalogs() > 0)
+        analogNames = c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
     // Read the actual data
-    for (size_t j = 0; j < file.header().nbFrames(); ++j){
+    for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
             break;
 
         ezc3d::DataNS::Frame f;
-        if (file.header().scaleFactor() < 0){ // if it is float
+        if (c3d.header().scaleFactor() < 0){ // if it is float
             // Read point 3d
-            ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(file.header().nb3dPoints());
-            for (size_t i = 0; i < file.header().nb3dPoints(); ++i){
+            ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(c3d.header().nb3dPoints());
+            for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
                 ezc3d::DataNS::Points3dNS::Point pt;
-                pt.x(file.readFloat());
-                pt.y(file.readFloat());
-                pt.z(file.readFloat());
-                pt.residual(file.readFloat());
+                pt.x(c3d.readFloat(file));
+                pt.y(c3d.readFloat(file));
+                pt.z(c3d.readFloat(file));
+                pt.residual(c3d.readFloat(file));
                 if (i < pointNames.size())
                     pt.name(pointNames[i]);
                 else {
@@ -58,13 +58,13 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &file)
 
             // Read analogs
             ezc3d::DataNS::AnalogsNS::Analogs analog;
-            analog.nbSubframes(file.header().nbAnalogByFrame());
-            for (size_t k = 0; k < file.header().nbAnalogByFrame(); ++k){
+            analog.nbSubframes(c3d.header().nbAnalogByFrame());
+            for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
                 ezc3d::DataNS::AnalogsNS::SubFrame sub;
-                sub.nbChannels(file.header().nbAnalogs());
-                for (size_t i = 0; i < file.header().nbAnalogs(); ++i){
+                sub.nbChannels(c3d.header().nbAnalogs());
+                for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
-                    c.data(file.readFloat());
+                    c.data(c3d.readFloat(file));
                     if (i < analogNames.size())
                         c.name(analogNames[i]);
                     else {
