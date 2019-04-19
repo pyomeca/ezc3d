@@ -207,9 +207,9 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 0);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::INT);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt().size(), 1);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt()[0], 1);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
@@ -651,9 +651,9 @@ TEST(c3dModifier, addAnalogs) {
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nAnalogs);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::INT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt()[0], 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
@@ -861,9 +861,9 @@ TEST(c3dModifier, addPointsAndAnalogs){
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nAnalogs);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::INT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt()[0], 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
@@ -1147,9 +1147,9 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), ref_c3d.nAnalogs);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), ref_c3d.nAnalogs);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::INT);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt().size(), 1);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsInt()[0], 1);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), ref_c3d.nAnalogs);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
@@ -1504,9 +1504,8 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), 54);
 
-    EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
-    EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
-    EXPECT_EQ(Optotrak.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt()[0], 0);
+    defaultParametersTest(Optotrak, PARAMETER_TYPE::ANALOG);
+    defaultParametersTest(Optotrak, PARAMETER_TYPE::FORCE_PLATFORM);
 
     // DATA
     for (size_t f = 0; f < 30; ++f)
