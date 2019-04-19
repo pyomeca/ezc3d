@@ -684,6 +684,10 @@ TEST(c3dModifier, addAnalogs) {
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 }
 
+TEST(c3dModifier, removeAnalog){
+    // Remove some analog parameter, while making sure the C3D is still valid
+    // TODO when removing analog is ready
+}
 
 TEST(c3dModifier, specificAnalog){
     // Create an empty c3d
