@@ -444,12 +444,8 @@ void ezc3d::c3d::updateHeader()
         }
     }
 
-    // Should always be greater than 0, but we have to take in account Optotrak lazyness
-    if (parameters().group("ANALOG").nbParameters()){
-        if (static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
-            _header->nbAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
-    } else
-        _header->nbAnalogs(0);
+    if (static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
+        _header->nbAnalogs(static_cast<size_t>(parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]));
 }
 
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, const std::vector<std::string> &newAnalogs)
