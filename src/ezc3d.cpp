@@ -441,18 +441,8 @@ void ezc3d::c3d::updateHeader()
                 if (static_cast<size_t>(header().nbAnalogByFrame()) != 1)
                     _header->nbAnalogByFrame(1);
             } else {
-                size_t analogRateIdx(SIZE_MAX);
-                try {
-                    // Take account for XSens lazyness
-                    analogRateIdx = parameters().group("ANALOG").parameterIdx("RATE");
-                } catch (const std::invalid_argument& e){
-                    // If we don't find ANALOG:RATE but ANALOG:USED is to true, throw anyway
-                    if (parameters().group("ANALOG").parameter("USED").valuesAsInt()[0])
-                        throw e;
-                }
-                if (analogRateIdx != SIZE_MAX)
-                    if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
-                        _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
+                if (static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate)  != static_cast<size_t>(header().nbAnalogByFrame()))
+                    _header->nbAnalogByFrame(static_cast<size_t>(parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0] / pointRate));
             }
         }
     }
