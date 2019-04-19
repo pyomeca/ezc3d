@@ -36,7 +36,7 @@ ezc3d::Header::Header():
     _eventsLabel.resize(18);
 }
 
-ezc3d::Header::Header(ezc3d::c3d &file) :
+ezc3d::Header::Header(ezc3d::c3d &c3d, std::fstream &file) :
     _nbOfZerosBeforeHeader(0),
     _parametersAddress(2),
     _checksum(0),
@@ -61,7 +61,7 @@ ezc3d::Header::Header(ezc3d::c3d &file) :
     _eventsTime.resize(18);
     _eventsDisplay.resize(9);
     _eventsLabel.resize(18);
-    read(file);
+    read(c3d, file);
 }
 
 void ezc3d::Header::print() const{
@@ -143,58 +143,58 @@ void ezc3d::Header::write(std::fstream &f) const
         f.write(reinterpret_cast<const char*>(&_emptyBlock4), 1*ezc3d::DATA_TYPE::WORD);
 }
 
-void ezc3d::Header::read(ezc3d::c3d &file)
+void ezc3d::Header::read(ezc3d::c3d &c3d, std::fstream &file)
 {
     // Parameter address
-    _parametersAddress = file.readUint(1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
+    _parametersAddress = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
 
     // For some reason, some Vicon's file has lot of "0" at the beginning of the file
     // This part loop up to the point no 0 is found
     while (!_parametersAddress){
-        _parametersAddress = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+        _parametersAddress = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
         if (file.eof())
             throw std::ios_base::failure("File is empty");
         ++_nbOfZerosBeforeHeader;
     }
 
-    _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    _checksum = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
     // Number of data
-    _nb3dPoints = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _nbAnalogsMeasurement = file.readUint(1*ezc3d::DATA_TYPE::WORD);
+    _nb3dPoints = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _nbAnalogsMeasurement = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
-    _firstFrame = file.readUint(1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
-    _lastFrame = file.readUint(1*ezc3d::DATA_TYPE::WORD) - 1;
+    _firstFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
+    _lastFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD) - 1;
 
     // Some info
-    _nbMaxInterpGap = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _scaleFactor = file.readInt(2*ezc3d::DATA_TYPE::WORD);
+    _nbMaxInterpGap = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _scaleFactor = c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    _dataStart = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _nbAnalogByFrame = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _frameRate = file.readFloat();
-    _emptyBlock1 = file.readInt(135*ezc3d::DATA_TYPE::WORD);
+    _dataStart = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _nbAnalogByFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _frameRate = c3d.readFloat(file);
+    _emptyBlock1 = c3d.readInt(file, 135*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of keys
-    _keyLabelPresent = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _firstBlockKeyLabel = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _fourCharPresent = file.readUint(1*ezc3d::DATA_TYPE::WORD);
+    _keyLabelPresent = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _firstBlockKeyLabel = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _fourCharPresent = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of events
-    _nbEvents = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _emptyBlock2 = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+    _nbEvents = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock2 = c3d.readInt(file, 1*ezc3d::DATA_TYPE::WORD);
     for (unsigned int i = 0; i < _eventsTime.size(); ++i)
-        _eventsTime[i] = file.readFloat();
+        _eventsTime[i] = c3d.readFloat(file);
     for (unsigned int i = 0; i < _eventsDisplay.size(); ++i)
-        _eventsDisplay[i] = file.readUint(1*ezc3d::DATA_TYPE::WORD);
-    _emptyBlock3 = file.readInt(1*ezc3d::DATA_TYPE::WORD);
+        _eventsDisplay[i] = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock3 = c3d.readInt(file, 1*ezc3d::DATA_TYPE::WORD);
     for (unsigned int i = 0; i<_eventsLabel.size(); ++i)
-        _eventsLabel[i] = file.readString(2*ezc3d::DATA_TYPE::WORD);
-    _emptyBlock4 = file.readInt(22*ezc3d::DATA_TYPE::WORD);
+        _eventsLabel[i] = c3d.readString(file, 2*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock4 = c3d.readInt(file, 22*ezc3d::DATA_TYPE::WORD);
 }
 
 size_t ezc3d::Header::nbOfZerosBeforeHeader() const

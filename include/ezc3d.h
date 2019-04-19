@@ -141,7 +141,7 @@ namespace ezc3d {
 ///
 /// \brief Main class for C3D holder
 ///
-class EZC3D_API ezc3d::c3d : public std::fstream {
+class EZC3D_API ezc3d::c3d {
 protected:
     std::string _filePath; ///< The file path if the C3D was opened from a file
 
@@ -184,12 +184,15 @@ protected:
 
     ///
     /// \brief Actual function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
+    /// \param file opened file stream to be read
     /// \param nByteToRead The number of bytes to read
     /// \param c The output char
     /// \param nByteFromPrevious The number of byte to skip from current position
     /// \param pos The position to start from
     ///
-    void readFile(unsigned int nByteToRead,
+    void readFile(
+        std::fstream &file,
+        unsigned int nByteToRead,
         char * c,
         int nByteFromPrevious = 0,
         const  std::ios_base::seekdir &pos = std::ios::cur);
@@ -213,73 +216,88 @@ protected:
 public:
     ///
     /// \brief Read an integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into integer
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The integer value
     ///
-    int readInt(unsigned int nByteToRead,
+    int readInt(std::fstream &file,
+                unsigned int nByteToRead,
                 int nByteFromPrevious = 0,
                 const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a unsigned integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into unsigned integer
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The unsigned integer value
     ///
-    size_t readUint(unsigned int nByteToRead,
+    size_t readUint(std::fstream &file,
+                    unsigned int nByteToRead,
                     int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a float at the position current + nByteFromPrevious from a file
+    /// \param file opened file stream to be read
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The float value
     ///
-    float readFloat(int nByteFromPrevious = 0,
+    float readFloat(std::fstream &file,
+                    int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a string (array of char of nByteToRead bytes) at the position current + nByteFromPrevious from a file
+    /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into float
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The float value
     ///
-    std::string readString(unsigned int nByteToRead,
+    std::string readString(std::fstream &file,
+                           unsigned int nByteToRead,
                            int nByteFromPrevious = 0,
                            const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a matrix of integer parameters of dimensions dimension with each integer of length dataLengthInByte
+    /// \param file opened file stream to be read
     /// \param dataLenghtInBytes The number of bytes to read to be converted to int
     /// \param dimension The dimensions of the matrix up to 7-dimensions
     /// \param param_data The actual output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
-                    std::vector<int> &param_data, size_t currentIdx = 0);
+    void readParam(std::fstream &file,
+                   unsigned int dataLenghtInBytes,
+                   const std::vector<size_t> &dimension,
+                   std::vector<int> &param_data, size_t currentIdx = 0);
 
     ///
     /// \brief Read a matrix of float parameters of dimensions dimension
+    /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions
     /// \param param_data The actual output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(const std::vector<size_t> &dimension,
-                    std::vector<float> &param_data,
-                    size_t currentIdx = 0);
+    void readParam(std::fstream &file,
+                   const std::vector<size_t> &dimension,
+                   std::vector<float> &param_data,
+                   size_t currentIdx = 0);
 
     ///
     /// \brief Read a matrix of string of dimensions dimension with the first dimension being the length of the strings
+    /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions. The first dimension is the length of the strings
     /// \param param_data The actual output of the function
     ///
-    void readParam(const std::vector<size_t> &dimension,
-                    std::vector<std::string> &param_data);
+    void readParam(std::fstream &file,
+                   const std::vector<size_t> &dimension,
+                   std::vector<std::string> &param_data);
 
 protected:
     ///
@@ -299,11 +317,13 @@ protected:
 
     ///
     /// \brief Internal function to read a string array to a matrix of strings
+    /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions
     /// \param param_data The output matrix of strings
     /// \param currentIdx Internal counter to keep track where the function is in its recursive calls
     ///
-    void _readMatrix(const std::vector<size_t> &dimension,
+    void _readMatrix(std::fstream &file,
+                     const std::vector<size_t> &dimension,
                      std::vector<std::string> &param_data,
                      size_t currentIdx = 0);
 

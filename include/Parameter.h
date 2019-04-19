@@ -55,11 +55,14 @@ protected:
 public:
     ///
     /// \brief Read and store a parameter from an opened C3D file
+    /// \param c3d C3D reference to copy the data in
     /// \param file The file stream already opened with read access
     /// \param nbCharInName The number of character of the parameter name
     /// \return The position in the file of the next Group/Parameter
     ///
-    int read(ezc3d::c3d &file, int nbCharInName);
+    int read(c3d &c3d,
+             std::fstream &file,
+             int nbCharInName);
 
 
     //---- METADATA ----//
