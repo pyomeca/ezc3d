@@ -25,9 +25,11 @@ public:
 
     ///
     /// \brief Create a filled Data class from a given file
+    /// \param c3d Reference to the c3d to copy the data in
     /// \param file File to copy the data from
     ///
-    Data(ezc3d::c3d &file);
+    Data(ezc3d::c3d &c3d,
+         std::fstream &file);
 
 
     //---- STREAM ----//
