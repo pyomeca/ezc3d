@@ -139,7 +139,7 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters()
         }
         {
             ezc3d::ParametersNS::GroupNS::Parameter p("GEN_SCALE", "");
-            p.set(1);
+            p.set(1.0);
             grp.parameter(p);
         }
         {
