@@ -18,7 +18,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
     setMandatoryParameters();
 }
 
-ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
+ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file) :
     _parametersStart(0),
     _checksum(0),
     _nbParamBlock(0),
@@ -27,10 +27,10 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
     setMandatoryParameters();
 
     // Read the Parameters Header
-    _parametersStart = file.readUint(1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(file.header().parametersAddress()-1) + file.header().nbOfZerosBeforeHeader()), std::ios::beg);
-    _checksum = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
-    _nbParamBlock = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
-    _processorType = file.readUint(1*ezc3d::DATA_TYPE::BYTE);
+    _parametersStart = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader()), std::ios::beg);
+    _checksum = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
+    _nbParamBlock = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
+    _processorType = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum == 0 && _parametersStart == 0){
         // In theory, if this happens, this is a bad c3d formatting and should return an error, but for some reason
         // Qualisys decided that they would not comply to the standard. Therefore set put "_parameterStart" and "_checksum" to 0
@@ -50,10 +50,10 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
             throw std::ios_base::failure("Bad c3d formatting");
 
         // Nb of char in the group name, locked if negative, 0 if we finished the section
-        int nbCharInName(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+        int nbCharInName(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
         if (nbCharInName == 0)
             break;
-        int id(file.readInt(1*ezc3d::DATA_TYPE::BYTE));
+        int id(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
 
         // Make sure there at least enough group
         for (size_t i = _groups.size(); i < static_cast<size_t>(abs(id)); ++i)
@@ -61,9 +61,9 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &file) :
 
         // Group ID always negative for groups and positive parameter of group ID
         if (id < 0)
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(file, nbCharInName);
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(c3d, file, nbCharInName);
         else
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(file, nbCharInName);
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(c3d, file, nbCharInName);
     }
 }
 
