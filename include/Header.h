@@ -23,9 +23,11 @@ public:
 
     ///
     /// \brief Read and store the header of an opened C3D file
+    /// \param c3d C3D reference to copy the data in
     /// \param file Already opened fstream file with read access
     ///
-    Header(ezc3d::c3d &file);
+    Header(c3d &c3d,
+           std::fstream &file);
 
 
     //---- STREAM ----//
@@ -43,9 +45,11 @@ public:
 
     ///
     /// \brief Read and store a header from an opened C3D file
+    /// \param c3d C3D reference to copy the data in
     /// \param file The file stream already opened with read access
     ///
-    void read(ezc3d::c3d &file);
+    void read(c3d &c3d,
+              std::fstream &file);
 
 
     //---- HEADER ----//
