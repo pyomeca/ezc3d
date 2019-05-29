@@ -758,9 +758,11 @@ TEST(c3dModifier, specificAnalog){
     EXPECT_NO_THROW(new_c3d.c3d.analog(frames));
 
     // Get channel names
-    for (size_t c = 0; c < new_c3d.analogNames.size(); ++c)
-        EXPECT_NO_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel(new_c3d.analogNames[c]));
-    EXPECT_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel("ThisIsNotARealChannel"), std::invalid_argument);
+    for (size_t c = 0; c < new_c3d.analogNames.size(); ++c){
+        size_t channelName(new_c3d.c3d.channelIdx(new_c3d.analogNames[c]));
+        EXPECT_NO_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel(channelName));
+    }
+    EXPECT_THROW(new_c3d.c3d.channelIdx("ThisIsNotARealChannel"), std::invalid_argument);
 
     // Get a subframe
     {
