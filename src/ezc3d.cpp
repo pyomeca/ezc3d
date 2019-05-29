@@ -407,7 +407,6 @@ void ezc3d::c3d::analog(const std::string &name)
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
-        emptyChannel.name(name);
         emptyChannel.data(0);
         ezc3d::DataNS::Frame frame;
         dummy_subframes.channel(emptyChannel);
@@ -415,13 +414,20 @@ void ezc3d::c3d::analog(const std::string &name)
             frame.analogs_nonConst().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        analog(dummy_frames);
+        analog(name, dummy_frames);
     } else {
         updateParameters({}, {name});
     }
 }
 
-void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
+void ezc3d::c3d::analog(std::string channelName, const std::vector<ezc3d::DataNS::Frame> &frames)
+{
+    std::vector<std::string> names;
+    names.push_back(channelName);
+    analog(names, frames);
+}
+
+void ezc3d::c3d::analog(const std::vector<std::string> &chanNames, const std::vector<ezc3d::DataNS::Frame> &frames)
 {
     if (frames.size() != data().nbFrames())
         throw std::invalid_argument("Size of the array of frames must equal the number of frames already "
@@ -432,11 +438,10 @@ void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
     if (frames[0].analogs().subframe(0).nbChannels() == 0)
         throw std::invalid_argument("Channels in the frame cannot be empty");
 
-    std::vector<std::string> labels(parameters().group("ANALOG").parameter("LABELS").valuesAsString());
-    for (size_t idx = 0; idx < frames[0].analogs().subframe(0).nbChannels(); ++idx){
-        const std::string &name(frames[0].analogs().subframe(0).channel(idx).name());
+    const std::vector<std::string>& labels(channelNames());
+    for (size_t idx = 0; idx < chanNames.size(); ++idx){
         for (size_t i=0; i<labels.size(); ++i)
-            if (!name.compare(labels[i]))
+            if (!chanNames[idx].compare(labels[i]))
                 throw std::invalid_argument("The channel you try to create already exists in the data set");
 
         for (size_t f=0; f < data().nbFrames(); ++f){
@@ -445,7 +450,7 @@ void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
             }
         }
     }
-    updateParameters();
+    updateParameters({}, chanNames);
 }
 
 void ezc3d::c3d::updateHeader()
@@ -549,6 +554,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
             size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
             std::vector<std::string> labels;
             std::vector<std::string> descriptions;
+            std::vector<std::string> chanNames(channelNames());
+            chanNames.insert( chanNames.end(), newAnalogs.begin(), newAnalogs.end() );
             for (size_t i = 0; i<nAnalogs; ++i){
                 std::string name;
                 if (data().nbFrames() == 0){
@@ -557,7 +564,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
                     else
                         name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
                 } else {
-                    name = data().frame(0).analogs().subframe(0).channel(i).name();
+                    name = chanNames[i];
+                    removeTrailingSpaces(name);
                 }
                 labels.push_back(name);
                 descriptions.push_back("");
