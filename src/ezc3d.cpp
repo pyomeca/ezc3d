@@ -348,19 +348,24 @@ void ezc3d::c3d::point(const std::string &name){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
         ezc3d::DataNS::Points3dNS::Point emptyPoint;
-        emptyPoint.name(name);
         dummy_pts.point(emptyPoint);
         ezc3d::DataNS::Frame frame;
         frame.add(dummy_pts);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        point(dummy_frames);
+        point(name, dummy_frames);
     } else {
         updateParameters({name});
     }
 }
 
-void ezc3d::c3d::point(const std::vector<ezc3d::DataNS::Frame>& frames)
+void ezc3d::c3d::point(const std::string& pointName, const std::vector<ezc3d::DataNS::Frame>& frames){
+    std::vector<std::string> names;
+    names.push_back(pointName);
+    point(names, frames);
+}
+
+void ezc3d::c3d::point(const std::vector<std::string>& ptsNames, const std::vector<ezc3d::DataNS::Frame>& frames)
 {
     if (frames.size() == 0 || frames.size() != data().nbFrames())
         throw std::invalid_argument("Size of the array of frames must equal the number of frames already "
@@ -368,17 +373,17 @@ void ezc3d::c3d::point(const std::vector<ezc3d::DataNS::Frame>& frames)
     if (frames[0].points().nbPoints() == 0)
         throw std::invalid_argument("Points in the frames cannot be empty");
 
-    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    for (size_t idx = 0; idx < frames[0].points().nbPoints(); ++idx){
-        const std::string &name(frames[0].points().point(idx).name());
+    const std::vector<std::string>& labels(pointNames());
+
+    for (size_t idx = 0; idx<ptsNames.size(); ++idx){
         for (size_t i=0; i<labels.size(); ++i)
-            if (!name.compare(labels[i]))
+            if (!ptsNames[idx].compare(labels[i]))
                 throw std::invalid_argument("The point you try to create already exists in the data set");
 
         for (size_t f=0; f<data().nbFrames(); ++f)
             _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
     }
-    updateParameters();
+    updateParameters(ptsNames);
 }
 
 void ezc3d::c3d::analog(const std::string &name)
@@ -464,11 +469,6 @@ void ezc3d::c3d::updateHeader()
 
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, const std::vector<std::string> &newAnalogs)
 {
-    if (data().nbFrames() != 0 && newPoints.size() > 0)
-        throw std::runtime_error("newPoints in updateParameters should only be called on empty c3d");
-    if (data().nbFrames() != 0 && newAnalogs.size() > 0)
-        throw std::runtime_error("newAnalogs in updateParameters should only be called on empty c3d");
-
     // If frames has been added
     ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
     size_t nFrames(data().nbFrames());
@@ -492,6 +492,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
         std::vector<std::string> units;
+        std::vector<std::string> ptsNames(pointNames());
+        ptsNames.insert( ptsNames.end(), newPoints.begin(), newPoints.end() );
         for (size_t i = 0; i < nPoints; ++i){
             std::string name;
             if (data().nbFrames() == 0){
@@ -500,7 +502,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
                 else
                     name = newPoints[i - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
             } else {
-                name = data().frame(0).points().point(i).name();
+                name = ptsNames[i];
+                removeTrailingSpaces(name);
             }
             labels.push_back(name);
             descriptions.push_back("");
