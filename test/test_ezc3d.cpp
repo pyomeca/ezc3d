@@ -93,7 +93,6 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
                 ezc3d::DataNS::AnalogsNS::SubFrame subframes;
                 for (size_t c = 0; c < c3dStruc.nAnalogs; ++c){
                     ezc3d::DataNS::AnalogsNS::Channel channel;
-                    channel.name(c3dStruc.analogNames[c]);
                     channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                     subframes.channel(channel);
                 }
@@ -701,11 +700,11 @@ TEST(c3dModifier, specificAnalog){
     // Add analog by frames
     std::vector<ezc3d::DataNS::Frame> frames;
     // Wrong number of frames
-    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.analog("uselessChannel", frames), std::invalid_argument);
 
     // Wrong number of subframes
     frames.resize(new_c3d.nFrames);
-    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.analog("uselessChannel", frames), std::invalid_argument);
 
     // Wrong number of channels
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
@@ -716,7 +715,7 @@ TEST(c3dModifier, specificAnalog){
         frame.add(analogs);
         frames[f] = frame;
     }
-    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.analog("wrongChannel", frames), std::invalid_argument);
 
     // Already existing channels
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
@@ -726,7 +725,6 @@ TEST(c3dModifier, specificAnalog){
             ezc3d::DataNS::AnalogsNS::SubFrame subframes;
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
-                channel.name(new_c3d.analogNames[c]);
                 channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
@@ -735,7 +733,7 @@ TEST(c3dModifier, specificAnalog){
         frame.add(analogs);
         frames[f] = frame;
     }
-    EXPECT_THROW(new_c3d.c3d.analog(frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.analog(new_c3d.analogNames, frames), std::invalid_argument);
 
     // No throw
     std::vector<std::string> analogNames = {"NewAnalog1", "NewAnalog2", "NewAnalog3", "NewAnalog4"};
@@ -746,7 +744,6 @@ TEST(c3dModifier, specificAnalog){
             ezc3d::DataNS::AnalogsNS::SubFrame subframes;
             for (size_t c = 0; c < analogNames.size(); ++c){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
-                channel.name(analogNames[c]);
                 channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
@@ -755,7 +752,7 @@ TEST(c3dModifier, specificAnalog){
         frame.add(analogs);
         frames[f] = frame;
     }
-    EXPECT_NO_THROW(new_c3d.c3d.analog(frames));
+    EXPECT_NO_THROW(new_c3d.c3d.analog(analogNames, frames));
 
     // Get channel names
     for (size_t c = 0; c < new_c3d.analogNames.size(); ++c){
@@ -789,9 +786,7 @@ TEST(c3dModifier, specificAnalog){
     // adding/replacing channels and getting them
     {
         ezc3d::DataNS::AnalogsNS::Channel channelToBeReplaced;
-        channelToBeReplaced.name("ToBeReplaced");
         ezc3d::DataNS::AnalogsNS::Channel channelToReplace;
-        channelToReplace.name("ToReplace");
 
         ezc3d::DataNS::AnalogsNS::SubFrame subframe;
         subframe.channel(channelToBeReplaced);
