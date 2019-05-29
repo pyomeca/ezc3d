@@ -18,7 +18,6 @@ class EZC3D_API ezc3d::DataNS::AnalogsNS::Channel{
 public:
     ///
     /// \brief Create an empty analogous data channel
-    /// \param name The name of the channel
     ///
     Channel();
 
