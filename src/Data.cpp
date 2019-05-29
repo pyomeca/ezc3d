@@ -45,13 +45,6 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 pt.y(c3d.readFloat(file));
                 pt.z(c3d.readFloat(file));
                 pt.residual(c3d.readFloat(file));
-                if (i < pointNames.size())
-                    pt.name(pointNames[i]);
-                else {
-                    std::stringstream unlabel;
-                    unlabel << "unlabeled_point_" << i;
-                    pt.name(unlabel.str());
-                }
                 ptsAtAFrame.point(pt, i);
             }
             f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
@@ -65,13 +58,6 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
                     c.data(c3d.readFloat(file));
-                    if (i < analogNames.size())
-                        c.name(analogNames[i]);
-                    else {
-                        std::stringstream unlabel;
-                        unlabel << "unlabeled_analog_" << i;
-                        c.name(unlabel.str());
-                    }
                     sub.channel(c, i);
                 }
                 analog.subframe(sub, k);
