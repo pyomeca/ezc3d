@@ -45,13 +45,6 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 pt.y(c3d.readFloat(file));
                 pt.z(c3d.readFloat(file));
                 pt.residual(c3d.readFloat(file));
-                if (i < pointNames.size())
-                    pt.name(pointNames[i]);
-                else {
-                    std::stringstream unlabel;
-                    unlabel << "unlabeled_point_" << i;
-                    pt.name(unlabel.str());
-                }
                 ptsAtAFrame.point(pt, i);
             }
             f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points

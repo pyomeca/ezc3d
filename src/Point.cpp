@@ -9,14 +9,12 @@
 
 #include "Point.h"
 
-ezc3d::DataNS::Points3dNS::Point::Point(const std::string &name) :
-    _name(name)
+ezc3d::DataNS::Points3dNS::Point::Point()
 {
     _data.resize(4);
 }
 
-ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &p) :
-    _name(p._name)
+ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &p)
 {
     _data.resize(4);
     x(p.x());
@@ -27,7 +25,7 @@ ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &
 
 void ezc3d::DataNS::Points3dNS::Point::print() const
 {
-    std::cout << name() << " = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
+    std::cout << " Position = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const
@@ -36,18 +34,6 @@ void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&_data[1]), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char*>(&_data[2]), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
-}
-
-const std::string& ezc3d::DataNS::Points3dNS::Point::name() const
-{
-    return _name;
-}
-
-void ezc3d::DataNS::Points3dNS::Point::name(const std::string &name)
-{
-    std::string name_copy = name;
-    ezc3d::removeTrailingSpaces(name_copy);
-    _name = name_copy;
 }
 
 const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const
