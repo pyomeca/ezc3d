@@ -339,6 +339,25 @@ public:
     const ezc3d::ParametersNS::Parameters& parameters() const; ///< The parameters of the C3D
     const ezc3d::DataNS::Data& data() const; ///< The points and analogous data of the C3D
 
+    // ---- PUBLIC GETTER INTERFACE ---- //
+public:
+    ///
+    /// \brief Get a reference to the names of the points
+    /// \return The reference to the names of the points
+    ///
+    const std::vector<std::string>& pointNames() const;
+
+    ///
+    /// \brief Get the index of a point in the points holder
+    /// \param pointName Name of the point
+    /// \return The index of the point
+    ///
+    /// Search for the index of a point into points data by the name of this point.
+    ///
+    /// Throw a std::invalid_argument if pointName is not found
+    ///
+    size_t pointIdx(const std::string& pointName) const;
+
 
     // ---- PUBLIC C3D MODIFICATION INTERFACE ---- //
 public:
