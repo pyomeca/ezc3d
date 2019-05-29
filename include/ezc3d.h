@@ -358,6 +358,23 @@ public:
     ///
     size_t pointIdx(const std::string& pointName) const;
 
+    ///
+    /// \brief Get a reference to the names of the analog channels
+    /// \return The reference to the names of the analog channels
+    ///
+    const std::vector<std::string>& channelNames() const;
+
+    ///
+    /// \brief Get the index of a analog channel in the subframe
+    /// \param channelName Name of the analog channel
+    /// \return The index of the analog channel
+    ///
+    /// Search for the index of a analog channel into subframe by the name of this channel.
+    ///
+    /// Throw a std::invalid_argument if channelName is not found
+    ///
+    size_t channelIdx(const std::string& channelName) const;
+
 
     // ---- PUBLIC C3D MODIFICATION INTERFACE ---- //
 public:
