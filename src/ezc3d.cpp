@@ -261,6 +261,20 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const
     return *_data;
 }
 
+const std::vector<std::string> &ezc3d::c3d::pointNames() const
+{
+    return parameters().group("POINT").parameter("LABELS").valuesAsString();
+}
+
+size_t ezc3d::c3d::pointIdx(const std::string &pointName) const
+{
+    const std::vector<std::string> &currentNames(pointNames());
+    for (size_t i = 0; i < currentNames.size(); ++i)
+        if (!currentNames[i].compare(pointName))
+            return i;
+    throw std::invalid_argument("Data::pointIdx could not find " + pointName + " in the points data set.");
+}
+
 void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
     if (!p.name().compare("")){
@@ -302,7 +316,7 @@ void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx)
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
     for (size_t i=0; i<labels.size(); ++i)
         try {
-            f.points().pointIdx(labels[i]);
+            pointIdx(labels[i]);
         } catch (std::invalid_argument) {
             throw std::invalid_argument("All the points in the frame must appear in the POINT:LABELS parameter");
         }
