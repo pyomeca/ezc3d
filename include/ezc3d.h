@@ -339,6 +339,42 @@ public:
     const ezc3d::ParametersNS::Parameters& parameters() const; ///< The parameters of the C3D
     const ezc3d::DataNS::Data& data() const; ///< The points and analogous data of the C3D
 
+    // ---- PUBLIC GETTER INTERFACE ---- //
+public:
+    ///
+    /// \brief Get a reference to the names of the points
+    /// \return The reference to the names of the points
+    ///
+    const std::vector<std::string>& pointNames() const;
+
+    ///
+    /// \brief Get the index of a point in the points holder
+    /// \param pointName Name of the point
+    /// \return The index of the point
+    ///
+    /// Search for the index of a point into points data by the name of this point.
+    ///
+    /// Throw a std::invalid_argument if pointName is not found
+    ///
+    size_t pointIdx(const std::string& pointName) const;
+
+    ///
+    /// \brief Get a reference to the names of the analog channels
+    /// \return The reference to the names of the analog channels
+    ///
+    const std::vector<std::string>& channelNames() const;
+
+    ///
+    /// \brief Get the index of a analog channel in the subframe
+    /// \param channelName Name of the analog channel
+    /// \return The index of the analog channel
+    ///
+    /// Search for the index of a analog channel into subframe by the name of this channel.
+    ///
+    /// Throw a std::invalid_argument if channelName is not found
+    ///
+    size_t channelIdx(const std::string& channelName) const;
+
 
     // ---- PUBLIC C3D MODIFICATION INTERFACE ---- //
 public:
@@ -408,6 +444,7 @@ public:
 
     ///
     /// \brief Add a new point to the data set
+    /// \param pointName The name of the new point
     /// \param frames The array of frames to add
     ///
     /// Append a new point to the data set.
@@ -418,7 +455,22 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
     ///
-    void point(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void point(const std::string &pointName, const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Add a new point to the data set
+    /// \param pointNames The name vector of the new points
+    /// \param frames The array of frames to add
+    ///
+    /// Append a new point to the data set.
+    ///
+    /// Throw a std::invalid_argument if the size of the std::vector of frames is not equal to the number of frames
+    /// already present in the data set. Obviously it throws the same error if no point were sent or if the
+    /// point was already in the data set.
+    ///
+    /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
+    ///
+    void point(const std::vector<std::string> &pointNames, const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
     /// \brief Create a channel of analog data to the data set of name name
@@ -435,6 +487,7 @@ public:
 
     ///
     /// \brief Add a new channel to the data set
+    /// \param channelName Name of the channel to add
     /// \param frames The array of frames to add
     ///
     /// Append a new channel to the data set.
@@ -446,7 +499,23 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
     ///
-    void analog(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void analog(std::string channelName, const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Add a new channel to the data set
+    /// \param channelNames Name of the channels to add
+    /// \param frames The array of frames to add
+    ///
+    /// Append a new channel to the data set.
+    ///
+    /// Throw a std::invalid_argument if the size of the std::vector of frames/subframes is not equal
+    /// to the number of frames/subframes already present in the data set.
+    /// Obviously it throws the same error if no channel were sent or if the
+    /// channel was already in the data set.
+    ///
+    /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
+    ///
+    void analog(const std::vector<std::string>& channelNames, const std::vector<ezc3d::DataNS::Frame> &frames);
 
 
     // ---- UPDATER ---- //

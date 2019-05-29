@@ -37,14 +37,6 @@ size_t ezc3d::DataNS::Points3dNS::Points::nbPoints() const
     return _points.size();
 }
 
-size_t ezc3d::DataNS::Points3dNS::Points::pointIdx(const std::string &pointName) const
-{
-    for (size_t i = 0; i < nbPoints(); ++i)
-        if (!point(i).name().compare(pointName))
-            return i;
-    throw std::invalid_argument("Points::pointIdx could not find " + pointName + " in the points data set");
-}
-
 const ezc3d::DataNS::Points3dNS::Point& ezc3d::DataNS::Points3dNS::Points::point(size_t idx) const
 {
     try {
@@ -67,16 +59,6 @@ ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point_nonCo
                                 " while the maximum number of points is "
                                 + std::to_string(nbPoints()) + ".");
     }
-}
-
-const ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point(const std::string &pointName) const
-{
-    return point(pointIdx(pointName));
-}
-
-ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point_nonConst(const std::string &pointName)
-{
-    return point_nonConst(pointIdx(pointName));
 }
 
 void ezc3d::DataNS::Points3dNS::Points::point(const ezc3d::DataNS::Points3dNS::Point &point, size_t idx)
