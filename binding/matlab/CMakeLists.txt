@@ -57,7 +57,7 @@ foreach(SUFFIXES Read Write)
 			RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/${${MASTER_PROJECT_NAME}_BIN_FOLDER}
 		)
 	else(WIN32)
-		set(Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE FILEPATH "Toolbox path to install, please note that the default directory may require administrator access")
+                set(Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR ${Matlab_ROOT_DIR}/toolbox CACHE PATH "Toolbox path to install, please note that the default directory may require administrator access")
 		install(TARGETS ${PROJECT_NAME}_${SUFFIXES}
 			DESTINATION ${Matlab_${MASTER_PROJECT_NAME}_INSTALL_DIR}/${PROJECT_NAME}
 		)

@@ -20,7 +20,7 @@ public:
     /// \brief Create an empty analogous data channel
     /// \param name The name of the channel
     ///
-    Channel(const std::string& name = "");
+    Channel();
 
     ///
     /// \brief Copy an analog channel
@@ -48,24 +48,7 @@ public:
     void write(std::fstream &f) const;
 
 
-    //---- METADATA ----//
-protected:
-    std::string _name; ///< Name of the channel
-public:
-    ///
-    /// \brief Get the name of the channel
-    /// \return The name of a channel
-    ///
-    const std::string& name() const;
-
-    ///
-    /// \brief Set the name of the channel
-    /// \param name The name of the channel
-    ///
-    void name(const std::string &name);
-
-
-    //---- ACTUAL DATA ----//
+    //---- DATA ----//
 protected:
     float _data; ///< Value of the analog data
 public:
