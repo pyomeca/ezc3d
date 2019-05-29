@@ -272,7 +272,22 @@ size_t ezc3d::c3d::pointIdx(const std::string &pointName) const
     for (size_t i = 0; i < currentNames.size(); ++i)
         if (!currentNames[i].compare(pointName))
             return i;
-    throw std::invalid_argument("Data::pointIdx could not find " + pointName + " in the points data set.");
+    throw std::invalid_argument("ezc3d::pointIdx could not find " + pointName + " in the points data set.");
+}
+
+const std::vector<std::string> &ezc3d::c3d::channelNames() const
+{
+    return parameters().group("ANALOG").parameter("LABELS").valuesAsString();
+}
+
+size_t ezc3d::c3d::channelIdx(const std::string &channelName) const
+{
+    const std::vector<std::string> &currentNames(channelNames());
+    for (size_t i = 0; i < currentNames.size(); ++i)
+        if (!currentNames[i].compare(channelName))
+            return i;
+    throw std::invalid_argument("ezc3d::channelIdx could not find " + channelName +
+                                " in the analogous data set");
 }
 
 void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
