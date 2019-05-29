@@ -79,7 +79,6 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
         if (withPoints){
             for (size_t m = 0; m < c3dStruc.nPoints; ++m){
                 ezc3d::DataNS::Points3dNS::Point pt;
-                pt.name(c3dStruc.pointNames[m]);
                 // Generate some random data
                 pt.x(static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
                 pt.y(static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
@@ -489,14 +488,14 @@ TEST(c3dModifier, addPoints) {
 
     // Add frame with a new point with not enough frames
     std::vector<ezc3d::DataNS::Frame> new_frames;
-    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.point("uselessPoint", new_frames), std::invalid_argument);
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames() - 1; ++f)
         new_frames.push_back(ezc3d::DataNS::Frame());
-    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.point("uselessPoint", new_frames), std::invalid_argument);
 
     // Not enough points
     new_frames.push_back(ezc3d::DataNS::Frame());
-    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.point("uselessPoint", new_frames), std::invalid_argument);
 
     // Try adding an already existing point
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
@@ -505,7 +504,7 @@ TEST(c3dModifier, addPoints) {
         pts.point(pt);
         new_frames[f].add(pts);
     }
-    EXPECT_THROW(new_c3d.c3d.point(new_frames), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.point(new_c3d.pointNames, new_frames), std::invalid_argument);
 
     // Adding it properly
     for (size_t f = 0; f < new_c3d.c3d.data().nbFrames(); ++f){
@@ -514,7 +513,7 @@ TEST(c3dModifier, addPoints) {
         pts.point(pt);
         new_frames[f].add(pts);
     }
-    EXPECT_NO_THROW(new_c3d.c3d.point(new_frames));
+    EXPECT_NO_THROW(new_c3d.c3d.point("goodPoint", new_frames));
 
 }
 
@@ -531,7 +530,6 @@ TEST(c3dModifier, specificPoint){
         ezc3d::DataNS::Points3dNS::Points pts(new_c3d.c3d.data().frame(f).points());
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(new_c3d.pointNames[m]);
             // Generate some random data
             pt.x(static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
             pt.y(static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
@@ -546,9 +544,7 @@ TEST(c3dModifier, specificPoint){
     // failed test replacing a point
     {
         ezc3d::DataNS::Points3dNS::Point ptToBeReplaced;
-        ptToBeReplaced.name("ToBeReplaced");
         ezc3d::DataNS::Points3dNS::Point ptToReplace;
-        ptToReplace.name("ToReplace");
 
         ezc3d::DataNS::Points3dNS::Points pts;
         pts.point(ptToBeReplaced);
@@ -973,7 +969,6 @@ TEST(c3dModifier, specificFrames){
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(new_c3d.pointNames[m]);
             // Generate some random data
             pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
             pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
@@ -991,7 +986,6 @@ TEST(c3dModifier, specificFrames){
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(new_c3d.pointNames[m]);
             // Generate some random data
             pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
             pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));

@@ -427,6 +427,7 @@ public:
 
     ///
     /// \brief Add a new point to the data set
+    /// \param pointName The name of the new point
     /// \param frames The array of frames to add
     ///
     /// Append a new point to the data set.
@@ -437,7 +438,22 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
     ///
-    void point(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void point(const std::string &pointName, const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Add a new point to the data set
+    /// \param pointNames The name vector of the new points
+    /// \param frames The array of frames to add
+    ///
+    /// Append a new point to the data set.
+    ///
+    /// Throw a std::invalid_argument if the size of the std::vector of frames is not equal to the number of frames
+    /// already present in the data set. Obviously it throws the same error if no point were sent or if the
+    /// point was already in the data set.
+    ///
+    /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
+    ///
+    void point(const std::vector<std::string> &pointNames, const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
     /// \brief Create a channel of analog data to the data set of name name

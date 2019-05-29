@@ -18,9 +18,8 @@ class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
 public:
     ///
     /// \brief Create an empty 3D point with memory allocated but not filled
-    /// \param name The name of the point
     ///
-    Point(const std::string& name = "");
+    Point();
 
     ///
     /// \brief Copy a 3D point
@@ -46,23 +45,6 @@ public:
     /// Write the actual values of the point to a file
     ///
     void write(std::fstream &f) const;
-
-
-    //---- METADATA ----//
-protected:
-    std::string _name; ///< Name of the point
-public:
-    ///
-    /// \brief Get the name of the point
-    /// \return The name of a point
-    ///
-    const std::string& name() const;
-
-    ///
-    /// \brief Set the name of the point
-    /// \param name The name of the point
-    ///
-    void name(const std::string &name);
 
 
     //---- ACTUAL DATA ----//
