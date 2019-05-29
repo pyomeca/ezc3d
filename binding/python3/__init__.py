@@ -248,7 +248,6 @@ class c3d(C3dMapper):
         # Fill the data
         for f in range(nb_frames):
             for i in range(nb_points):
-                pt.name(point_labels[i])
                 pt.x(data_points[0, i, f])
                 pt.y(data_points[1, i, f])
                 pt.z(data_points[2, i, f])
@@ -256,7 +255,6 @@ class c3d(C3dMapper):
 
             for sf in range(nb_analog_subframes):
                 for i in range(nb_analogs):
-                    c.name(analog_labels[i])
                     c.data(data_analogs[0, i, nb_analog_subframes*f + sf])
                     subframe.channel(c, i)
                 analogs.subframe(subframe, sf)
