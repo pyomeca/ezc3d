@@ -487,6 +487,7 @@ public:
 
     ///
     /// \brief Add a new channel to the data set
+    /// \param channelName Name of the channel to add
     /// \param frames The array of frames to add
     ///
     /// Append a new channel to the data set.
@@ -498,7 +499,23 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
     ///
-    void analog(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void analog(std::string channelName, const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Add a new channel to the data set
+    /// \param channelNames Name of the channels to add
+    /// \param frames The array of frames to add
+    ///
+    /// Append a new channel to the data set.
+    ///
+    /// Throw a std::invalid_argument if the size of the std::vector of frames/subframes is not equal
+    /// to the number of frames/subframes already present in the data set.
+    /// Obviously it throws the same error if no channel were sent or if the
+    /// channel was already in the data set.
+    ///
+    /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
+    ///
+    void analog(const std::vector<std::string>& channelNames, const std::vector<ezc3d::DataNS::Frame> &frames);
 
 
     // ---- UPDATER ---- //

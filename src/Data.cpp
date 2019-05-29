@@ -58,13 +58,6 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
                     ezc3d::DataNS::AnalogsNS::Channel c;
                     c.data(c3d.readFloat(file));
-                    if (i < analogNames.size())
-                        c.name(analogNames[i]);
-                    else {
-                        std::stringstream unlabel;
-                        unlabel << "unlabeled_analog_" << i;
-                        c.name(unlabel.str());
-                    }
                     sub.channel(c, i);
                 }
                 analog.subframe(sub, k);
