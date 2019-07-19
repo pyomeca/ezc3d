@@ -80,7 +80,7 @@ public:
 
     ///
     /// \brief Add/replace a point to the points data set
-    /// \param point The actual point to add
+    /// \param point The point to add
     /// \param idx The index of the point in the points data set
     ///
     /// Add or replace a particular point to the points data set.
