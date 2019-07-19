@@ -27,7 +27,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
     if (c3d.header().nbAnalogs() > 0)
         analogNames = c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
-    // Read the actual data
+    // Read the data
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
             break;
