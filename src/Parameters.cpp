@@ -231,7 +231,7 @@ void ezc3d::ParametersNS::Parameters::print() const
     std::cout << std::endl;
 }
 
-void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
+void ezc3d::ParametersNS::Parameters::write(std::fstream &f, std::streampos &dataStartPosition) const
 {
     // Write the header of parameters
     f.write(reinterpret_cast<const char*>(&_parametersStart), ezc3d::BYTE);
@@ -246,32 +246,22 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
 
     // Write each groups
-    std::streampos dataStartPosition; // Special parameter in POINT group
     for (size_t i=0; i < nbGroups(); ++i)
         group(i).write(f, -static_cast<int>(i+1), dataStartPosition);
 
     // Move the cursor to a beginning of a block
-    std::streampos actualPos(f.tellg());
-    for (int i=0; i<512 - static_cast<int>(actualPos) % 512; ++i){
+    std::streampos currentPos(f.tellg());
+    for (int i=0; i<512 - static_cast<int>(currentPos) % 512; ++i){
         f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
     }
-    // Go back at the left blank space and write the actual position
-    actualPos = f.tellg();
+    // Go back at the left blank space and write the current position
+    currentPos = f.tellg();
     f.seekg(pos);
-    int nBlocksToNext = int(actualPos - pos-2)/512;
-    if (int(actualPos - pos-2) % 512 > 0)
+    int nBlocksToNext = int(currentPos - pos-2)/512;
+    if (int(currentPos - pos-2) % 512 > 0)
         ++nBlocksToNext;
     f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
-    f.seekg(actualPos);
-
-    // Go back to data start blank space and write the actual position
-    actualPos = f.tellg();
-    f.seekg(dataStartPosition);
-    nBlocksToNext = int(actualPos)/512;
-    if (int(actualPos) % 512 > 0)
-        ++nBlocksToNext;
-    f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
-    f.seekg(actualPos);
+    f.seekg(currentPos);
 }
 
 size_t ezc3d::ParametersNS::Parameters::parametersStart() const
