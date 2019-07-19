@@ -52,10 +52,10 @@ ezc3d::c3d::c3d(const std::string &filePath):
     // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
     updateHeader();
 
-    // Now read the actual data
+    // Now read the data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this, stream));
 
-    // Parameters and header may be inconsistent with actual data, so reprocess them if needed
+    // Parameters and header may be inconsistent with data, so reprocess them if needed
     updateParameters();
 
     // Close the file
