@@ -49,12 +49,12 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, s
     f.write(reinterpret_cast<const char*>(&nCharGroupDescription), 1*ezc3d::DATA_TYPE::BYTE);
     f.write(description().c_str(), nCharGroupDescription*ezc3d::DATA_TYPE::BYTE);
 
-    std::streampos actualPos(f.tellg());
-    // Go back at the left blank space and write the actual position
+    std::streampos currentPos(f.tellg());
+    // Go back at the left blank space and write the current position
     f.seekg(pos);
-    int nCharToNext = int(actualPos - pos);
+    int nCharToNext = int(currentPos - pos);
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
-    f.seekg(actualPos);
+    f.seekg(currentPos);
 
     for (size_t i=0; i < nbParameters(); ++i)
         parameter(i).write(f, -groupIdx, dataStartPosition);

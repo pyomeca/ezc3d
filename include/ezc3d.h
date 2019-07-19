@@ -178,12 +178,12 @@ public:
     void write(const std::string &filePath) const;
 
 protected:
-    // Internal reading function
+    // Internal reading and writting function
     char * c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
     unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
 
     ///
-    /// \brief Actual function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
+    /// \brief The function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
     /// \param file opened file stream to be read
     /// \param nByteToRead The number of bytes to read
     /// \param c The output char
@@ -212,6 +212,17 @@ protected:
     /// \return The integer value
     ///
     int hex2int(const char * val, unsigned int len);
+
+    ///
+    /// \brief Write the data_start parameter where demanded
+    /// \param file opened file stream to be read
+    /// \param dataPosition The position in block of the data
+    /// \param paramPosition The position in byte to write the
+    /// \param type The type of data to write
+    ///
+    void writeDataStart(std::fstream &file,
+                        const std::streampos& dataStartPosition,
+                        const DATA_TYPE &type) const;
 
 public:
     ///
@@ -269,7 +280,7 @@ public:
     /// \param file opened file stream to be read
     /// \param dataLenghtInBytes The number of bytes to read to be converted to int
     /// \param dimension The dimensions of the matrix up to 7-dimensions
-    /// \param param_data The actual output of the function
+    /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
     void readParam(std::fstream &file,
@@ -281,7 +292,7 @@ public:
     /// \brief Read a matrix of float parameters of dimensions dimension
     /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions
-    /// \param param_data The actual output of the function
+    /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
     void readParam(std::fstream &file,
@@ -293,7 +304,7 @@ public:
     /// \brief Read a matrix of string of dimensions dimension with the first dimension being the length of the strings
     /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions. The first dimension is the length of the strings
-    /// \param param_data The actual output of the function
+    /// \param param_data The output of the function
     ///
     void readParam(std::fstream &file,
                    const std::vector<size_t> &dimension,
@@ -531,7 +542,7 @@ protected:
     /// \param newAnalogs The names of the new analogs
     ///
     /// Throw a std::runtime_error if newPoints or newAnalogs was added while the data set is not empty.
-    /// If you want to add a new point after having actual data in the data set, you must use the frame method.
+    /// If you want to add a new point after having data in the data set, you must use the frame method.
     ///
     void updateParameters(const std::vector<std::string> &newPoints = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 

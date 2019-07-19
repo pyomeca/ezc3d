@@ -82,7 +82,7 @@ public:
 
     ///
     /// \brief Add/replace a subframe to the analogous data set
-    /// \param subframe The actual subframe to add
+    /// \param subframe The subframe to add
     /// \param idx The index of the subframe in the analogous data set
     ///
     /// Add or replace a subframe to the analogous data set.

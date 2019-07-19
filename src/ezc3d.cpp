@@ -52,10 +52,10 @@ ezc3d::c3d::c3d(const std::string &filePath):
     // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
     updateHeader();
 
-    // Now read the actual data
+    // Now read the data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this, stream));
 
-    // Parameters and header may be inconsistent with actual data, so reprocess them if needed
+    // Parameters and header may be inconsistent with data, so reprocess them if needed
     updateParameters();
 
     // Close the file
@@ -79,7 +79,8 @@ void ezc3d::c3d::write(const std::string& filePath) const
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
     // Write the header
-    this->header().write(f);
+    std::streampos dataStartHeader;
+    header().write(f, dataStartHeader);
 
     // Write the parameters
     // We must copy parameters since there is no way to make sure that the number of frames is not higher than 0xFFFF
@@ -90,10 +91,15 @@ void ezc3d::c3d::write(const std::string& filePath) const
         frames.set(-1);
         params.group_nonConst("POINT").parameter(frames);
     }
-    params.write(f);
+    std::streampos dataStartParameters;
+    params.write(f, dataStartParameters);
+
+    // Write the data start parameter in header and parameter sections
+    writeDataStart(f, dataStartHeader, DATA_TYPE::WORD);
+    writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
 
     // Write the data
-    this->data().write(f);
+    data().write(f);
 
     f.close();
 }
@@ -131,6 +137,19 @@ int ezc3d::c3d::hex2int(const char * val, unsigned int len){
         out = static_cast<int>(tp);
 
     return out;
+}
+
+void ezc3d::c3d::writeDataStart(std::fstream &f, const std::streampos &dataStartPosition, const DATA_TYPE& type) const
+{
+    // Go back to data start blank space and write the current position (assuming current is the position of data!)
+    std::streampos dataPos = f.tellg();
+    f.seekg(dataStartPosition);
+    if (int(dataPos) % 512 > 0)
+        throw std::out_of_range("Something went wrong in the positioning of the pointer for writting the data. "
+                                "Please report this error.");
+    int nBlocksToNext = int(dataPos)/512 + 1; // DATA_START is 1-based
+    f.write(reinterpret_cast<const char*>(&nBlocksToNext), type);
+    f.seekg(dataPos);
 }
 
 int ezc3d::c3d::readInt(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
