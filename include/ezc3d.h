@@ -178,7 +178,7 @@ public:
     void write(const std::string &filePath) const;
 
 protected:
-    // Internal reading function
+    // Internal reading and writting function
     char * c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
     unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
 
@@ -212,6 +212,17 @@ protected:
     /// \return The integer value
     ///
     int hex2int(const char * val, unsigned int len);
+
+    ///
+    /// \brief Write the data_start parameter where demanded
+    /// \param file opened file stream to be read
+    /// \param dataPosition The position in block of the data
+    /// \param paramPosition The position in byte to write the
+    /// \param type The type of data to write
+    ///
+    void writeDataStart(std::fstream &file,
+                        const std::streampos& dataStartPosition,
+                        const DATA_TYPE &type) const;
 
 public:
     ///
