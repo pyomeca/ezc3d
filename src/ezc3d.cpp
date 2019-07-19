@@ -144,9 +144,10 @@ void ezc3d::c3d::writeDataStart(std::fstream &f, const std::streampos &dataStart
     // Go back to data start blank space and write the current position (assuming current is the position of data!)
     std::streampos dataPos = f.tellg();
     f.seekg(dataStartPosition);
-    int nBlocksToNext = int(dataPos)/512;
     if (int(dataPos) % 512 > 0)
-        ++nBlocksToNext;
+        throw std::out_of_range("Something went wrong in the positioning of the pointer for writting the data. "
+                                "Please report this error.");
+    int nBlocksToNext = int(dataPos)/512 + 1; // DATA_START is 1-based
     f.write(reinterpret_cast<const char*>(&nBlocksToNext), type);
     f.seekg(dataPos);
 }
