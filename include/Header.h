@@ -40,8 +40,9 @@ public:
     ///
     /// \brief Write the header to an opened file
     /// \param f Already opened fstream file with write access
+    /// \param dataStartPosition Returns the byte where to put the data start parameter
     ///
-    void write(std::fstream &f) const;
+    void write(std::fstream &f, std::streampos &dataStartPosition) const;
 
     ///
     /// \brief Read and store a header from an opened C3D file

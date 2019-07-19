@@ -45,8 +45,9 @@ public:
     ///
     /// \brief Write the groups to an opened file by calling the write method of all the groups
     /// \param f Already opened fstream file with write access
+    /// \param dataStartPosition Returns the byte where to put the data start parameter
     ///
-    void write(std::fstream &f) const;
+    void write(std::fstream &f, std::streampos &dataStartPosition) const;
 
 
     //---- PARAMETER METADATA ----//
