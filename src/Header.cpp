@@ -90,7 +90,7 @@ void ezc3d::Header::print() const{
     std::cout << std::endl;
 }
 
-void ezc3d::Header::write(std::fstream &f) const
+void ezc3d::Header::write(std::fstream &f, std::streampos &dataStartPosition) const
 {
     // write the checksum byte and the start point of header
     int parameterAddessDefault(2);
@@ -115,7 +115,8 @@ void ezc3d::Header::write(std::fstream &f) const
     f.write(reinterpret_cast<const char*>(&_scaleFactor), 2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    f.write(reinterpret_cast<const char*>(&_dataStart), 1*ezc3d::DATA_TYPE::WORD);
+    dataStartPosition = f.tellg();
+    f.write(reinterpret_cast<const char*>(&_dataStart), 1*ezc3d::DATA_TYPE::WORD); // To be changed when we know where the data are
     f.write(reinterpret_cast<const char*>(&_nbAnalogByFrame), 1*ezc3d::DATA_TYPE::WORD);
     float frameRate(_frameRate);
     f.write(reinterpret_cast<const char*>(&frameRate), 2*ezc3d::DATA_TYPE::WORD);

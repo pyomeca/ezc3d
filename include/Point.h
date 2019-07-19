@@ -34,7 +34,7 @@ public:
     ///
     /// \brief Print the point
     ///
-    /// Print the actual values of the point to the console
+    /// Print the values of the point to the console
     ///
     void print() const;
 
@@ -42,12 +42,12 @@ public:
     /// \brief Write the point to an opened file
     /// \param f Already opened fstream file with write access
     ///
-    /// Write the actual values of the point to a file
+    /// Write the values of the point to a file
     ///
     void write(std::fstream &f) const;
 
 
-    //---- ACTUAL DATA ----//
+    //---- DATA ----//
 protected:
     std::vector<float> _data; ///< Value of the point
 public:

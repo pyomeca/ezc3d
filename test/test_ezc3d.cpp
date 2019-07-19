@@ -1045,7 +1045,7 @@ TEST(c3dModifier, specificFrames){
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        if (f != new_c3d.nFrames - 2) { // Where no actual frames where added
+        if (f != new_c3d.nFrames - 2) { // Where no frames where added
             for (size_t m = 0; m < new_c3d.nPoints; ++m){
                 size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
                 EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
