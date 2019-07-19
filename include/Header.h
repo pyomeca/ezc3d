@@ -33,7 +33,7 @@ public:
     //---- STREAM ----//
 public:
     ///
-    /// \brief Print the actual header
+    /// \brief Print the header
     ///
     void print() const;
 
@@ -134,12 +134,12 @@ public:
 protected:
     size_t _firstFrame; ///< Byte 4
                         ///<
-                        ///< The first actual frame in the file.
+                        ///< The first frame in the file.
                         ///< Note, contrary to the way it is stored in the file,
                         ///< it is 0-based, i.e. the first frame is 0.
     size_t _lastFrame;  ///< Byte 5
                         ///<
-                        ///< The last actual frame in the file.
+                        ///< The last frame in the file.
                         ///< Note, contrary to the way it is stored in the file,
                         ///< it is 0-based, i.e. the first frame is 0.
 
@@ -151,25 +151,25 @@ public:
     size_t nbFrames() const;
 
     ///
-    /// \brief Get the first actual frame
-    /// \return The first actual frame
+    /// \brief Get the first frame
+    /// \return The first frame
     ///
     size_t firstFrame() const;
 
     ///
-    /// \brief Set the first actual frame
+    /// \brief Set the first frame
     /// \param frame
     ///
     void firstFrame(size_t frame);
 
     ///
-    /// \brief Get the last actual frame
-    /// \return The last actual frame
+    /// \brief Get the last frame
+    /// \return The last frame
     ///
     size_t lastFrame() const;
 
     ///
-    /// \brief Set the last actual frame
+    /// \brief Set the last frame
     /// \param frame
     ///
     void lastFrame(size_t frame);

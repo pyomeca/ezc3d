@@ -82,7 +82,7 @@ public:
 
     ///
     /// \brief Add/replace a channel to the analog subframe data set
-    /// \param channel the actual channel to add
+    /// \param channel the channel to add
     /// \param idx the index of the channel in the subframe data set
     ///
     /// Add or replace a particular channel to the subframe data set.
