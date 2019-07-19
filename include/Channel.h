@@ -34,7 +34,7 @@ public:
     ///
     /// \brief Print the channel
     ///
-    /// Print the actual value of the analog data to the console
+    /// Print the value of the analog data to the console
     ///
     void print() const;
 
@@ -42,7 +42,7 @@ public:
     /// \brief Write the channel to an opened file
     /// \param f Already opened fstream file with write access
     ///
-    /// Write the actual value of the analog data to a file
+    /// Write the value of the analog data to a file
     ///
     void write(std::fstream &f) const;
 

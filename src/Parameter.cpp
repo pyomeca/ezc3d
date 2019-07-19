@@ -98,12 +98,12 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
     f.write(reinterpret_cast<const char*>(&nCharDescription), 1*ezc3d::DATA_TYPE::BYTE);
     f.write(description().c_str(), nCharDescription*ezc3d::DATA_TYPE::BYTE);
 
-    // Go back at the left blank space and write the actual position
-    std::streampos actualPos(f.tellg());
+    // Go back at the left blank space and write the current position
+    std::streampos currentPos(f.tellg());
     f.seekg(pos);
-    int nCharToNext = int(actualPos - pos);
+    int nCharToNext = int(currentPos - pos);
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
-    f.seekg(actualPos);
+    f.seekg(currentPos);
 }
 
 size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstream &f, const std::vector<size_t>& dim, size_t currentIdx, size_t cmp) const{
