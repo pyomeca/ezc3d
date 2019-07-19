@@ -16,11 +16,8 @@ ezc3d::DataNS::Data::Data()
 
 ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
 {
-    // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
-    c3d.readInt(file, ezc3d::DATA_TYPE::BYTE,
-                 static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader() +
-                 256*ezc3d::DATA_TYPE::WORD*c3d.parameters().nbParamBlock() -
-                 ezc3d::DATA_TYPE::BYTE), std::ios::beg); // "- BYTE" so it is just prior
+    // Firstly move the pointer to the data start position
+    file.seekg( static_cast<int>(c3d.header().dataStart()-1)*512, std::ios::beg);
 
     // Get names of the data
     std::vector<std::string> pointNames;
