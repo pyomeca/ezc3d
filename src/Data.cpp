@@ -33,37 +33,44 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
             break;
 
         ezc3d::DataNS::Frame f;
-        if (c3d.header().scaleFactor() < 0){ // if it is float
-            // Read point 3d
-            ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(c3d.header().nb3dPoints());
-            for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
-                ezc3d::DataNS::Points3dNS::Point pt;
+        // Read point 3d
+        ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(c3d.header().nb3dPoints());
+        for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
+            ezc3d::DataNS::Points3dNS::Point pt;
+            if (c3d.header().scaleFactor() < 0){ // if it is float
                 pt.x(c3d.readFloat(file));
                 pt.y(c3d.readFloat(file));
                 pt.z(c3d.readFloat(file));
                 pt.residual(c3d.readFloat(file));
-                ptsAtAFrame.point(pt, i);
+            } else {
+                pt.x(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
+                pt.y(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
+                pt.z(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
+                pt.residual(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))*static_cast<float>(c3d.header().scaleFactor()));
             }
-            f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
-
-            // Read analogs
-            ezc3d::DataNS::AnalogsNS::Analogs analog;
-            analog.nbSubframes(c3d.header().nbAnalogByFrame());
-            for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
-                ezc3d::DataNS::AnalogsNS::SubFrame sub;
-                sub.nbChannels(c3d.header().nbAnalogs());
-                for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
-                    ezc3d::DataNS::AnalogsNS::Channel c;
-                    c.data(c3d.readFloat(file));
-                    sub.channel(c, i);
-                }
-                analog.subframe(sub, k);
-            }
-            f.add(analog);
-            _frames.push_back(f);
+            ptsAtAFrame.point(pt, i);
         }
-        else
-            throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
+        f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
+
+        // Read analogs
+        ezc3d::DataNS::AnalogsNS::Analogs analog;
+        analog.nbSubframes(c3d.header().nbAnalogByFrame());
+        for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
+            ezc3d::DataNS::AnalogsNS::SubFrame sub;
+            sub.nbChannels(c3d.header().nbAnalogs());
+            for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
+                ezc3d::DataNS::AnalogsNS::Channel c;
+                if (c3d.header().scaleFactor() < 0) // if it is float
+                    c.data(c3d.readFloat(file));
+                else {
+                    c.data(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
+                }
+                sub.channel(c, i);
+            }
+            analog.subframe(sub, k);
+        }
+        f.add(analog);
+        _frames.push_back(f);
     }
 
     // remove the trailing empty frames if they exist
