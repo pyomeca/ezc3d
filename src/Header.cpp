@@ -278,7 +278,7 @@ size_t ezc3d::Header::nbMaxInterpGap() const
     return _nbMaxInterpGap;
 }
 
-int ezc3d::Header::scaleFactor() const
+float ezc3d::Header::scaleFactor() const
 {
     return _scaleFactor;
 }
