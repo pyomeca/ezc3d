@@ -177,6 +177,39 @@ void defaultHeaderTest(const ezc3d::c3d& new_c3d, HEADER_TYPE type = HEADER_TYPE
     }
 }
 
+void compareHeader(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2){
+    EXPECT_EQ(c3d1.header().nbFrames(), c3d2.header().nbFrames());
+    EXPECT_FLOAT_EQ(c3d1.header().frameRate(), c3d2.header().frameRate());
+    EXPECT_EQ(c3d1.header().firstFrame(), c3d2.header().firstFrame());
+    EXPECT_EQ(c3d1.header().lastFrame(), c3d2.header().lastFrame());
+    EXPECT_EQ(c3d1.header().nb3dPoints(), c3d2.header().nb3dPoints());
+    EXPECT_EQ(c3d1.header().nbAnalogs(), c3d2.header().nbAnalogs());
+    EXPECT_EQ(c3d1.header().nbAnalogByFrame(), c3d2.header().nbAnalogByFrame());
+    EXPECT_EQ(c3d1.header().nbAnalogsMeasurement(), c3d2.header().nbAnalogsMeasurement());
+    EXPECT_EQ(c3d1.header().nbEvents(), c3d2.header().nbEvents());
+    for (size_t e = 0; e<c3d1.header().nbEvents(); ++e){
+        EXPECT_FLOAT_EQ(c3d1.header().eventsTime(e), c3d2.header().eventsTime(e));
+        EXPECT_EQ(c3d1.header().eventsDisplay(e), c3d2.header().eventsDisplay(e));
+        EXPECT_STREQ(c3d1.header().eventsLabel(e).c_str(), c3d2.header().eventsLabel(e).c_str());
+    }
+}
+
+void compareData(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2){
+    // All the data should be the same
+    for (size_t f=0; f<c3d1.header().nbFrames(); ++f){
+        for (size_t p=0; p<c3d1.header().nb3dPoints(); ++p){
+            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).x(), c3d2.data().frame(f).points().point(p).x());
+            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).y(), c3d2.data().frame(f).points().point(p).y());
+            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).z(), c3d2.data().frame(f).points().point(p).z());
+            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).residual(), c3d2.data().frame(f).points().point(p).residual());
+        }
+        for (size_t sf=0; sf<c3d1.data().frame(f).analogs().nbSubframes(); ++sf){
+            for (size_t c=0; c<c3d1.header().nbAnalogByFrame(); ++c){
+                EXPECT_FLOAT_EQ(c3d1.data().frame(f).analogs().subframe(sf).channel(c).data(), c3d2.data().frame(f).analogs().subframe(sf).channel(c).data());
+            }
+        }
+    }
+}
 
 void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     if (type == PARAMETER_TYPE::HEADER){
@@ -1504,28 +1537,40 @@ TEST(c3dFileIO, readOptotrakC3D){
         EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 54);
 }
 
-TEST(c3dFileIO, comparedIdenticalFiles){
+TEST(c3dFileIO, comparedIdenticalFilesSample1){
     ezc3d::c3d c3d_pr("c3dTestFiles/Eb015pr.c3d"); // Intel floating format
     ezc3d::c3d c3d_pi("c3dTestFiles/Eb015pi.c3d"); // Intel integer format
+    ezc3d::c3d c3d_vr("c3dTestFiles/Eb015vr.c3d"); // DEC floating format
+    ezc3d::c3d c3d_vi("c3dTestFiles/Eb015vi.c3d"); // DEC integer format
+    EXPECT_THROW(ezc3d::c3d c3d_sr("c3dTestFiles/Eb015dr.c3d"), std::runtime_error); // MIPS float format
+    EXPECT_THROW(ezc3d::c3d c3d_si("c3dTestFiles/Eb015di.c3d"), std::runtime_error); // MIPS integer format
 
-    EXPECT_EQ(c3d_pr.header().nbFrames(), c3d_pi.header().nbFrames());
-    EXPECT_EQ(c3d_pr.header().nbAnalogByFrame(), c3d_pi.header().nbAnalogByFrame());
-    EXPECT_EQ(c3d_pr.header().nb3dPoints(), c3d_pi.header().nb3dPoints());
-    EXPECT_EQ(c3d_pr.header().nbAnalogs(), c3d_pi.header().nbAnalogs());
-    EXPECT_EQ(c3d_pr.header().nbAnalogsMeasurement(), c3d_pi.header().nbAnalogsMeasurement());
-    EXPECT_EQ(c3d_pr.header().nbEvents(), c3d_pi.header().nbEvents());
+    // The header should be the same for relevant informations
+    compareHeader(c3d_pr, c3d_pi);
+    compareHeader(c3d_pr, c3d_vr);
+    compareHeader(c3d_pr, c3d_vi);
 
-    for (size_t f=0; f<c3d_pr.header().nbFrames(); ++f){
-        for (size_t p=0; p<c3d_pr.header().nb3dPoints(); ++p){
-            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).x(), c3d_pi.data().frame(f).points().point(p).x());
-            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).y(), c3d_pi.data().frame(f).points().point(p).y());
-            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).z(), c3d_pi.data().frame(f).points().point(p).z());
-            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).residual(), c3d_pi.data().frame(f).points().point(p).residual());
-        }
-        for (size_t sf=0; sf<c3d_pr.data().frame(f).analogs().nbSubframes(); ++sf){
-            for (size_t c=0; c<c3d_pr.header().nbAnalogByFrame(); ++c){
-                EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).analogs().subframe(sf).channel(c).data(), c3d_pi.data().frame(f).analogs().subframe(sf).channel(c).data());
-            }
-        }
-    }
+    // All the data should be the same
+    compareData(c3d_pr, c3d_pi);
+    compareData(c3d_pr, c3d_vr);
+    compareData(c3d_pr, c3d_vi);
+}
+
+TEST(c3dFileIO, comparedIdenticalFilesSample2){
+    ezc3d::c3d c3d_pr("c3dTestFiles/pc_real.c3d"); // Intel floating format
+    ezc3d::c3d c3d_pi("c3dTestFiles/pc_int.c3d"); // Intel integer format
+    ezc3d::c3d c3d_vr("c3dTestFiles/dec_real.c3d"); // DEC floating format
+    ezc3d::c3d c3d_vi("c3dTestFiles/dec_int.c3d"); // DEC integer format
+    EXPECT_THROW(ezc3d::c3d c3d_sr("c3dTestFiles/sgi_real.c3d"), std::runtime_error); // MIPS float format
+    EXPECT_THROW(ezc3d::c3d c3d_si("c3dTestFiles/sgi_int.c3d"), std::runtime_error); // MIPS integer format
+
+    // The header should be the same for relevant informations
+    compareHeader(c3d_pr, c3d_pi);
+    compareHeader(c3d_pr, c3d_vr);
+    // compareHeader(c3d_pr, c3d_vi); // Header is actually different
+
+    // All the data should be the same
+    // compareData(c3d_pr, c3d_pi); // Data are actually sligthly different
+    compareData(c3d_pr, c3d_vr);
+    compareData(c3d_pr, c3d_vi);
 }
