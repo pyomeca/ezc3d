@@ -56,11 +56,13 @@ public:
     ///
     /// \brief Read and store a parameter from an opened C3D file
     /// \param c3d C3D reference to copy the data in
+    /// \param params Reference to a valid parameter
     /// \param file The file stream already opened with read access
     /// \param nbCharInName The number of character of the parameter name
     /// \return The position in the file of the next Group/Parameter
     ///
     int read(c3d &c3d,
+             const Parameters &params,
              std::fstream &file,
              int nbCharInName);
 
