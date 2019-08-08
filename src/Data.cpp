@@ -8,6 +8,8 @@
 ///
 
 #include "Data.h"
+#include "Header.h"
+#include "Parameters.h"
 
 ezc3d::DataNS::Data::Data()
 {
