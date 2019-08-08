@@ -1,10 +1,7 @@
-project(ezc3d)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
+cmake_policy(SET CMP0048 NEW)
+project(ezc3d VERSION 0.3.3)
 set(CMAKE_CXX_STANDARD 11)
-
-set (${PROJECT_NAME}_VERSION_MAJOR 0)
-set (${PROJECT_NAME}_VERSION_MINOR 3)
-set (${PROJECT_NAME}_VERSION_PATCH 3)
 
 # Set some variables
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
