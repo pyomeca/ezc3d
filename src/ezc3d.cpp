@@ -478,10 +478,10 @@ void ezc3d::c3d::analog(const std::vector<std::string> &chanNames, const std::ve
 
 void ezc3d::c3d::updateHeader()
 {
-    // Parameter is always consider as the right value. If there is a discrepancy between them, change the header
+    // Parameter is always consider as the right value.
     if (static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) != header().nbFrames()){
-        _header->firstFrame(0);
-        _header->lastFrame(static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) - 1);
+        // If there is a discrepancy between them, change the header, while keeping the firstFrame value
+        _header->lastFrame(static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) + _header->firstFrame() - 1);
     }
     float pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
     float buffer(10000); // For decimal truncature
@@ -613,7 +613,6 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
             for (size_t i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i < nAnalogs; ++i)
                 units.push_back("V");
             grpAnalog.parameter_nonConst(idxUnits).set(units);
-
         }
     }
     updateHeader();
