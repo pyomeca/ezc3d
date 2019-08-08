@@ -14,7 +14,7 @@ ezc3d::ParametersNS::Parameters::Parameters():
     _parametersStart(1),
     _checksum(0x50),
     _nbParamBlock(0),
-    _processorType(84)
+    _processorType(PROCESSOR_TYPE::NO_PROCESSOR_TYPE)
 {
     setMandatoryParameters();
 }
@@ -23,15 +23,15 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
     _parametersStart(0),
     _checksum(0),
     _nbParamBlock(0),
-    _processorType(0)
+    _processorType(PROCESSOR_TYPE::NO_PROCESSOR_TYPE)
 {
     setMandatoryParameters();
 
-    // Read the Parameters Header
-    _parametersStart = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader()), std::ios::beg);
-    _checksum = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
-    _nbParamBlock = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
-    _processorType = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
+    // Read the Parameters Header (assuming Intel processor)
+    _parametersStart = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader()), std::ios::beg);
+    _checksum = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
+    _nbParamBlock = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
+    size_t processorTypeId = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum == 0 && _parametersStart == 0){
         // In theory, if this happens, this is a bad c3d formatting and should return an error, but for some reason
         // Qualisys decided that they would not comply to the standard. Therefore set put "_parameterStart" and "_checksum" to 0
@@ -42,8 +42,16 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
     if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
-    if (_processorType != 84)
-        throw std::runtime_error("Only Intel format is supported, please open a GitHub issue if you want support for the requested data type");
+    if (processorTypeId == 84)
+        _processorType = ezc3d::PROCESSOR_TYPE::INTEL;
+    else if (processorTypeId == 85)
+        _processorType = ezc3d::PROCESSOR_TYPE::DEC;
+    else if (processorTypeId == 86){
+        _processorType = ezc3d::PROCESSOR_TYPE::MIPS;
+        throw std::runtime_error("MIPS processor type not supported yet, please open a GitHub issue to report that you want this feature!");
+    }
+    else
+        throw std::runtime_error("Could not read the processor type");
 
     // Read parameter or group
     std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
@@ -54,10 +62,10 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
             throw std::ios_base::failure("Bad c3d formatting");
 
         // Nb of char in the group name, locked if negative, 0 if we finished the section
-        int nbCharInName(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
+        int nbCharInName(c3d.readInt(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));
         if (nbCharInName == 0)
             break;
-        int id(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
+        int id(c3d.readInt(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));
 
         // Make sure there at least enough group
         for (size_t i = _groups.size(); i < static_cast<size_t>(abs(id)); ++i)
@@ -65,9 +73,9 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
 
         // Group ID always negative for groups and positive parameter of group ID
         if (id < 0)
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(c3d, file, nbCharInName);
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(c3d, *this, file, nbCharInName);
         else
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(c3d, file, nbCharInName);
+            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(c3d, *this, file, nbCharInName);
     }
 }
 
@@ -246,7 +254,7 @@ void ezc3d::ParametersNS::Parameters::write(std::fstream &f, std::streampos &dat
     std::streampos pos(f.tellg()); // remember where to input this value later
     int blankValue(0);
     f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
-    int processorType = 84;
+    int processorType = PROCESSOR_TYPE::INTEL;
     f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
 
     // Write each groups
@@ -283,7 +291,7 @@ size_t ezc3d::ParametersNS::Parameters::nbParamBlock() const
     return _nbParamBlock;
 }
 
-size_t ezc3d::ParametersNS::Parameters::processorType() const
+ezc3d::PROCESSOR_TYPE ezc3d::ParametersNS::Parameters::processorType() const
 {
     return _processorType;
 }

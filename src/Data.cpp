@@ -30,6 +30,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
         analogNames = c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
     // Read the data
+    PROCESSOR_TYPE processorType(c3d.parameters().processorType());
     float pointScaleFactor(c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0]);
     std::vector<float> analogScaleFactors(c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat());
     float analogGeneralFactor(c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0]);
@@ -44,15 +45,15 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
         for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             if (c3d.header().scaleFactor() < 0){ // if it is float
-                pt.x(c3d.readFloat(file));
-                pt.y(c3d.readFloat(file));
-                pt.z(c3d.readFloat(file));
-                pt.residual(c3d.readFloat(file));
+                pt.x(c3d.readFloat(processorType, file));
+                pt.y(c3d.readFloat(processorType, file));
+                pt.z(c3d.readFloat(processorType, file));
+                pt.residual(c3d.readFloat(processorType, file));
             } else {
-                pt.x(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
-                pt.y(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
-                pt.z(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
-                pt.residual(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.x(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.y(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.z(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.residual(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
             }
             ptsAtAFrame.point(pt, i);
         }
@@ -67,9 +68,9 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
             for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 if (c3d.header().scaleFactor() < 0) // if it is float
-                    c.data( (c3d.readFloat(file) - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor );
+                    c.data( (c3d.readFloat(processorType, file) - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor );
                 else
-                    c.data( (static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD))  - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor ); // * scaleFactor);
+                    c.data( (static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD))  - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor ); // * scaleFactor);
                 sub.channel(c, i);
             }
             analog.subframe(sub, k);
