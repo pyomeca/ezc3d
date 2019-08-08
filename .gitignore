@@ -1,14 +1,21 @@
+# CMake related files
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
-Testing
+*.user.*
 Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 CMakeLists.txt.user
+
+# Compiling related files
 [Dd]ebug
 [Rr]elease
 [Bb]uild
 __pycache__
+
+# Testing suite
+Testing
+test/c3dFiles/C3dTestSuite
