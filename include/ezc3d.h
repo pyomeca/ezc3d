@@ -76,7 +76,17 @@ namespace ezc3d {
         INT = 2,
         WORD = 2,
         FLOAT = 4,
-        NONE = 10000
+        NO_DATA_TYPE = 10000
+    };
+
+    ///
+    /// \brief The type of processor used to store the data
+    ///
+    enum PROCESSOR_TYPE{
+        INTEL = 84,
+        DEC = 85,
+        MIPS = 86,
+        NO_PROCESSOR_TYPE = INTEL
     };
 
     ///
@@ -180,7 +190,17 @@ public:
 protected:
     // Internal reading and writting function
     char * c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
+    char * c_float_tp; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls (allow for copy of c_float)
+    char * c_int; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls
+    char * c_int_tp; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls  (allow for copy of c_int)
     unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
+    unsigned int m_nByteToReadMax_int; ///< Declaration of the max size of a int
+
+    ///
+    /// \brief Resize the too small char to read
+    /// \param nByteToRead The number of bytes to read
+    ///
+    void resizeCharHolder(unsigned int nByteToRead);
 
     ///
     /// \brief The function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
@@ -227,38 +247,44 @@ protected:
 public:
     ///
     /// \brief Read an integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into integer
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The integer value
     ///
-    int readInt(std::fstream &file,
+    int readInt(PROCESSOR_TYPE processorType,
+                std::fstream &file,
                 unsigned int nByteToRead,
                 int nByteFromPrevious = 0,
                 const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a unsigned integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into unsigned integer
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The unsigned integer value
     ///
-    size_t readUint(std::fstream &file,
+    size_t readUint(PROCESSOR_TYPE processorType,
+                    std::fstream &file,
                     unsigned int nByteToRead,
                     int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a float at the position current + nByteFromPrevious from a file
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The float value
     ///
-    float readFloat(std::fstream &file,
+    float readFloat(PROCESSOR_TYPE processorType,
+                    std::fstream &file,
                     int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
 
@@ -277,25 +303,30 @@ public:
 
     ///
     /// \brief Read a matrix of integer parameters of dimensions dimension with each integer of length dataLengthInByte
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param dataLenghtInBytes The number of bytes to read to be converted to int
     /// \param dimension The dimensions of the matrix up to 7-dimensions
     /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(std::fstream &file,
+    void readParam(PROCESSOR_TYPE processorType,
+                   std::fstream &file,
                    unsigned int dataLenghtInBytes,
                    const std::vector<size_t> &dimension,
-                   std::vector<int> &param_data, size_t currentIdx = 0);
+                   std::vector<int> &param_data,
+                   size_t currentIdx = 0);
 
     ///
     /// \brief Read a matrix of float parameters of dimensions dimension
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions
     /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(std::fstream &file,
+    void readParam(PROCESSOR_TYPE processorType,
+                   std::fstream &file,
                    const std::vector<size_t> &dimension,
                    std::vector<float> &param_data,
                    size_t currentIdx = 0);
