@@ -2,6 +2,9 @@
 //#define BUILD_SANDBOX
 #include <vector>
 #include "ezc3d.h"
+#include "Header.h"
+#include "Data.h"
+#include "Parameters.h"
 
 
 

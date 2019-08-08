@@ -2,6 +2,9 @@
 %{
 #define SWIG_FILE_WITH_INIT
 #include "ezc3d.h"
+#include "Header.h"
+#include "Data.h"
+#include "Parameters.h"
 %}
 
 %include "numpy.i"

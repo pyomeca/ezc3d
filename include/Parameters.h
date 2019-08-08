@@ -64,7 +64,7 @@ protected:
                             ///<
                             ///< Number of 256-bytes blocks the paramertes fits in.
                             ///< It defines the starting position of the data
-    size_t _processorType;  ///< Byte 4 of the C3D file
+    PROCESSOR_TYPE _processorType;  ///< Byte 4 of the C3D file
                             ///<
                             ///< Processor type (83 + [1 Inter, 2 DEC, 3 MIPS])
 
@@ -95,7 +95,7 @@ public:
     ///
     /// The processor type is defined by the value 83 + index. Where index is 1 for Intel, 2 for DEC and 3 for MIPS
     ///
-    size_t processorType() const;
+    PROCESSOR_TYPE processorType() const;
 
 
     //---- GROUPS ----//
