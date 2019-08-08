@@ -548,8 +548,5 @@ protected:
 
 };
 
-#include "Header.h"
-#include "Data.h"
-#include "Parameters.h"
-
 #endif
+

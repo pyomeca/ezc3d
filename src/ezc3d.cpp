@@ -8,6 +8,10 @@
 ///
 
 #include "ezc3d.h"
+#include "Header.h"
+#include "Data.h"
+#include "Parameters.h"
+
 
 void ezc3d::removeTrailingSpaces(std::string& s){
     // Remove the spaces at the end of the strings
