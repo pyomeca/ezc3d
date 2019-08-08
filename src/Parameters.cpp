@@ -8,6 +8,7 @@
 ///
 
 #include "Parameters.h"
+#include "Header.h"
 
 ezc3d::ParametersNS::Parameters::Parameters():
     _parametersStart(1),

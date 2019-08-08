@@ -4,6 +4,9 @@
 
 #include "ezc3d.h"
 #include "utils.h"
+#include "Header.h"
+#include "Parameters.h"
+#include "Data.h"
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
