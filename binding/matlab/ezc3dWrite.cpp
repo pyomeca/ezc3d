@@ -4,6 +4,9 @@
 
 #include "ezc3d.h"
 #include "utils.h"
+#include "Header.h"
+#include "Parameters.h"
+#include "Data.h"
 
 size_t parseParam(mxDouble* data, const std::vector<size_t> &dimension,
                std::vector<int> &param_data, size_t idxInData=0, size_t currentIdx=0)
