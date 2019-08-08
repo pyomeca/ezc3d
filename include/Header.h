@@ -76,6 +76,15 @@ public:
     size_t parametersAddress() const;
 
 protected:
+    ///
+    /// \brief Reads the processor type in the parameter section, returns the file pointer where it was at the beggining of the function
+    /// \param c3d C3D reference to copy the data in
+    /// \param file opened file stream to be read
+    /// \return The processor type as specified in the c3d file (83-Intel, 84-DEC, 85-MIPS)
+    ///
+    PROCESSOR_TYPE readProcessorType(c3d &c3d, std::fstream &file);
+
+protected:
     size_t _checksum;   ///< Byte 1.2
                         ///<
                         ///< The checksum should be equals to 0x50 for a valid a c3d

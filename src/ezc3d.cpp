@@ -30,9 +30,13 @@ std::string ezc3d::toUpper(const std::string &str){
 
 ezc3d::c3d::c3d():
     _filePath(""),
-    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
+    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
+    m_nByteToReadMax_int(100)
 {
     c_float = new char[m_nByteToRead_float + 1];
+    c_float_tp = new char[m_nByteToRead_float + 1];
+    c_int = new char[m_nByteToReadMax_int + 1];
+    c_int_tp = new char[m_nByteToReadMax_int + 1];
 
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters());
@@ -41,10 +45,14 @@ ezc3d::c3d::c3d():
 
 ezc3d::c3d::c3d(const std::string &filePath):
     _filePath(filePath),
-    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
+    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
+    m_nByteToReadMax_int(100)
 {
     std::fstream stream(_filePath, std::ios::in | std::ios::binary);
     c_float = new char[m_nByteToRead_float + 1];
+    c_float_tp = new char[m_nByteToRead_float + 1];
+    c_int = new char[m_nByteToReadMax_int + 1];
+    c_int_tp = new char[m_nByteToReadMax_int + 1];
 
     if (!stream.is_open())
         throw std::ios_base::failure("Could not open the c3d file");
@@ -69,6 +77,9 @@ ezc3d::c3d::c3d(const std::string &filePath):
 ezc3d::c3d::~c3d()
 {
     delete c_float;
+    delete c_float_tp;
+    delete c_int;
+    delete c_int_tp;
 }
 
 void ezc3d::c3d::print() const
@@ -106,6 +117,15 @@ void ezc3d::c3d::write(const std::string& filePath) const
     data().write(f);
 
     f.close();
+}
+
+void ezc3d::c3d::resizeCharHolder(unsigned int nByteToRead)
+{
+    delete[] c_int;
+    delete[] c_int_tp;
+    m_nByteToReadMax_int = nByteToRead;
+    c_int = new char[m_nByteToReadMax_int + 1];
+    c_int_tp = new char[m_nByteToReadMax_int + 1];
 }
 
 void ezc3d::c3d::readFile(std::fstream &file, unsigned int nByteToRead, char * c, int nByteFromPrevious,
@@ -156,41 +176,89 @@ void ezc3d::c3d::writeDataStart(std::fstream &f, const std::streampos &dataStart
     f.seekg(dataPos);
 }
 
-int ezc3d::c3d::readInt(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
+int ezc3d::c3d::readInt(PROCESSOR_TYPE processorType, std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
-    char* c = new char[nByteToRead + 1];
-    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+    if (nByteToRead > m_nByteToReadMax_int)
+        resizeCharHolder(nByteToRead);
 
-    // make sure it is an int and not an unsigned int
-    int out(hex2int(c, nByteToRead));
-    delete[] c;
+    readFile(file, nByteToRead, c_int, nByteFromPrevious, pos);
+
+    int out;
+    if (processorType == PROCESSOR_TYPE::MIPS){
+        // This is more or less good. Sometimes, it should not reverse...
+        for (size_t i=0; i<nByteToRead; ++i){
+            c_int_tp[i] = c_int[nByteToRead-1 - i];
+        }
+        c_int_tp[nByteToRead] = '\0';
+        out = hex2int(c_int_tp, nByteToRead);
+    } else {
+        // make sure it is an int and not an unsigned int
+        out = hex2int(c_int, nByteToRead);
+    }
+
     return out;
 }
 
-size_t ezc3d::c3d::readUint(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
+size_t ezc3d::c3d::readUint(PROCESSOR_TYPE processorType, std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
-    char* c = new char[nByteToRead + 1];
-    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+    if (nByteToRead > m_nByteToReadMax_int)
+        resizeCharHolder(nByteToRead);
 
-    // make sure it is an int and not an unsigned int
-    size_t out(hex2uint(c, nByteToRead));
-    delete[] c;
+    readFile(file, nByteToRead, c_int, nByteFromPrevious, pos);
+
+    size_t out;
+    if (processorType == PROCESSOR_TYPE::MIPS){
+        // This is more or less good. Sometimes, it should not reverse...
+        for (size_t i=0; i<nByteToRead; ++i){
+            c_int_tp[i] = c_int[nByteToRead-1 - i];
+        }
+        c_int_tp[nByteToRead] = '\0';
+        // make sure it is an int and not an unsigned int
+        out = hex2uint(c_int_tp, nByteToRead);
+    } else {
+        // make sure it is an int and not an unsigned int
+        out = hex2uint(c_int, nByteToRead);
+    }
+
     return out;
 }
 
-float ezc3d::c3d::readFloat(std::fstream &file, int nByteFromPrevious,
+float ezc3d::c3d::readFloat(PROCESSOR_TYPE processorType, std::fstream &file, int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
     readFile(file, m_nByteToRead_float, c_float, nByteFromPrevious, pos);
-    float out (*reinterpret_cast<float*>(c_float));
+    float out;
+    if (processorType == PROCESSOR_TYPE::INTEL) {
+        out = *reinterpret_cast<float*>(c_float);
+    } else if (processorType == PROCESSOR_TYPE::DEC){
+        c_float_tp[0] = c_float[2];
+        c_float_tp[1] = c_float[3];
+        c_float_tp[2] = c_float[0];
+        if (c_float[1] != 0)
+            c_float_tp[3] = c_float[1]-1;
+        else
+            c_float_tp[3] = c_float[1];
+        c_float_tp[4] = '\0';
+        out = *reinterpret_cast<float*>(c_float_tp);
+    } else if (processorType == PROCESSOR_TYPE::MIPS) {
+        for (unsigned int i=0; i<m_nByteToRead_float; ++i)
+            c_float_tp[i] = c_float[m_nByteToRead_float-1 - i];
+        c_float_tp[m_nByteToRead_float] = '\0';
+        out = *reinterpret_cast<float*>(c_float_tp);
+    } else {
+        throw std::runtime_error("Wrong type of processor for floating points");
+    }
     return out;
 }
 
 std::string ezc3d::c3d::readString(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
                               const std::ios_base::seekdir &pos)
 {
+    if (nByteToRead > m_nByteToReadMax_int)
+        resizeCharHolder(nByteToRead);
+
     char* c = new char[nByteToRead + 1];
     readFile(file, nByteToRead, c, nByteFromPrevious, pos);
     std::string out(c);
@@ -198,24 +266,24 @@ std::string ezc3d::c3d::readString(std::fstream &file, unsigned int nByteToRead,
     return out;
 }
 
-void ezc3d::c3d::readParam(std::fstream &file, unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(PROCESSOR_TYPE processorType, std::fstream &file, unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
                        std::vector<int> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readInt(file, dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
+            param_data.push_back (readInt(processorType, file, dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
         else
-            readParam(file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
+            readParam(processorType, file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readParam(std::fstream &file, const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(PROCESSOR_TYPE processorType, std::fstream &file, const std::vector<size_t> &dimension,
                        std::vector<float> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readFloat(file));
+            param_data.push_back (readFloat(processorType, file));
         else
-            readParam(file, dimension, param_data, currentIdx + 1);
+            readParam(processorType, file, dimension, param_data, currentIdx + 1);
 }
 
 void ezc3d::c3d::readParam(std::fstream &file, const std::vector<size_t> &dimension,

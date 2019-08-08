@@ -8,6 +8,7 @@
 ///
 
 #include "Header.h"
+#include "Parameters.h"
 
 ezc3d::Header::Header():
     _nbOfZerosBeforeHeader(0),
@@ -146,60 +147,63 @@ void ezc3d::Header::write(std::fstream &f, std::streampos &dataStartPosition) co
 
 void ezc3d::Header::read(ezc3d::c3d &c3d, std::fstream &file)
 {
-    // Parameter address
-    _parametersAddress = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
+    // Parameter address assuming Intel processor
+    _parametersAddress = c3d.readUint(PROCESSOR_TYPE::INTEL, file, 1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg);
 
     // For some reason, some Vicon's file has lot of "0" at the beginning of the file
     // This part loop up to the point no 0 is found
     while (!_parametersAddress){
-        _parametersAddress = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
+        _parametersAddress = c3d.readUint(PROCESSOR_TYPE::INTEL,file, 1*ezc3d::DATA_TYPE::BYTE);
         if (file.eof())
             throw std::ios_base::failure("File is empty");
         ++_nbOfZerosBeforeHeader;
     }
 
-    _checksum = c3d.readUint(file, 1*ezc3d::DATA_TYPE::BYTE);
+    _checksum = c3d.readUint(PROCESSOR_TYPE::INTEL, file, 1*ezc3d::DATA_TYPE::BYTE);
     if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
+    // Find which formatting is used
+    ezc3d::PROCESSOR_TYPE processorType(readProcessorType(c3d, file));
+
     // Number of data
-    _nb3dPoints = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _nbAnalogsMeasurement = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _nb3dPoints = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _nbAnalogsMeasurement = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
-    _firstFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _firstFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
     if (_firstFrame != 0) // First frame is 1-based, but some forgot hence they put 0..
         _firstFrame -= 1;
-    _lastFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD) - 1;
+    _lastFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD) - 1;
     if (_lastFrame != 0) // Las frame is 1-based, but some forgot  hence they put 0..
         _lastFrame -= 1;
 
     // Some info
-    _nbMaxInterpGap = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _scaleFactor = c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD);
+    _nbMaxInterpGap = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _scaleFactor = c3d.readFloat(processorType, file, 2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    _dataStart = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _nbAnalogByFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _frameRate = c3d.readFloat(file);
-    _emptyBlock1 = c3d.readInt(file, 135*ezc3d::DATA_TYPE::WORD);
+    _dataStart = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _nbAnalogByFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _frameRate = c3d.readFloat(processorType, file);
+    _emptyBlock1 = c3d.readInt(processorType, file, 135*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of keys
-    _keyLabelPresent = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _firstBlockKeyLabel = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _fourCharPresent = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    _keyLabelPresent = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _firstBlockKeyLabel = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _fourCharPresent = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of events
-    _nbEvents = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _emptyBlock2 = c3d.readInt(file, 1*ezc3d::DATA_TYPE::WORD);
+    _nbEvents = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock2 = c3d.readInt(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
     for (unsigned int i = 0; i < _eventsTime.size(); ++i)
-        _eventsTime[i] = c3d.readFloat(file);
+        _eventsTime[i] = c3d.readFloat(processorType, file);
     for (unsigned int i = 0; i < _eventsDisplay.size(); ++i)
-        _eventsDisplay[i] = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
-    _emptyBlock3 = c3d.readInt(file, 1*ezc3d::DATA_TYPE::WORD);
+        _eventsDisplay[i] = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock3 = c3d.readInt(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
     for (unsigned int i = 0; i<_eventsLabel.size(); ++i)
         _eventsLabel[i] = c3d.readString(file, 2*ezc3d::DATA_TYPE::WORD);
-    _emptyBlock4 = c3d.readInt(file, 22*ezc3d::DATA_TYPE::WORD);
+    _emptyBlock4 = c3d.readInt(processorType, file, 22*ezc3d::DATA_TYPE::WORD);
 }
 
 size_t ezc3d::Header::nbOfZerosBeforeHeader() const
@@ -210,6 +214,28 @@ size_t ezc3d::Header::nbOfZerosBeforeHeader() const
 size_t ezc3d::Header::parametersAddress() const
 {
     return _parametersAddress;
+}
+
+ezc3d::PROCESSOR_TYPE ezc3d::Header::readProcessorType(c3d &c3d, std::fstream &file)
+{
+    // Remember the current position of the cursor
+    std::streampos dataPos = file.tellg();
+
+    // Read the processor type (assuming Intel type)
+    size_t parametersAddress(c3d.readUint(PROCESSOR_TYPE::INTEL, file, 1*ezc3d::DATA_TYPE::BYTE, 0, std::ios::beg));
+    size_t processorType = c3d.readUint(PROCESSOR_TYPE::INTEL, file, 1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(parametersAddress-1)) + 3*ezc3d::DATA_TYPE::BYTE, std::ios::beg);
+
+    // Put back the cursor in the file
+    file.seekg(dataPos);
+
+    if (processorType == 84)
+        return ezc3d::PROCESSOR_TYPE::INTEL;
+    else if (processorType == 85)
+        return ezc3d::PROCESSOR_TYPE::DEC;
+    else if (processorType == 86)
+        return ezc3d::PROCESSOR_TYPE::MIPS;
+    else
+        throw std::runtime_error("Could not read the processor type");
 }
 
 size_t ezc3d::Header::checksum() const
