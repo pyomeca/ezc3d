@@ -167,8 +167,12 @@ void ezc3d::Header::read(ezc3d::c3d &c3d, std::fstream &file)
     _nbAnalogsMeasurement = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
-    _firstFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD) - 1; // 1-based!
+    _firstFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
+    if (_firstFrame != 0) // First frame is 1-based, but some forgot...
+        _firstFrame -= 1;
     _lastFrame = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD) - 1;
+    if (_lastFrame != 0) // Las frame is 1-based, but some forgot...
+        _lastFrame -= 1;
 
     // Some info
     _nbMaxInterpGap = c3d.readUint(file, 1*ezc3d::DATA_TYPE::WORD);
