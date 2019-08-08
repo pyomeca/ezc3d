@@ -1,10 +1,7 @@
-project(ezc3d)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
+cmake_policy(SET CMP0048 NEW)
+project(ezc3d VERSION 1.1.0)
 set(CMAKE_CXX_STANDARD 11)
-
-set (${PROJECT_NAME}_VERSION_MAJOR 0)
-set (${PROJECT_NAME}_VERSION_MINOR 3)
-set (${PROJECT_NAME}_VERSION_PATCH 3)
 
 # Set some variables
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/modules)
@@ -129,6 +126,7 @@ if (BUILD_TESTS)
     # Unit Tests
     ##############
     enable_testing()
+
     file(GLOB TEST_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp)
     add_executable(runUnitTests ${TEST_SRC_FILES})
 
@@ -152,7 +150,29 @@ if (BUILD_TESTS)
         SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
 
-    # Copy the c3d of the example
+    # Download and copy c3d test files from test test suite of c3d.org and add them to the local test files
+    IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite)
+        set(TEST_FILES_TO_DOWNLOAD Sample01.zip Sample02.zip)
+        foreach(FILE ${TEST_FILES_TO_DOWNLOAD})
+            file(
+                DOWNLOAD https://www.c3d.org/data/${FILE}
+                ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE}
+                TIMEOUT 60 # seconds
+                TLS_VERIFY ON
+                )
+            get_filename_component(FOLDER_NAME ${FILE} NAME_WE)
+            file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME})
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E tar -xf ../${FILE}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME}/
+                )
+            file(GLOB C3D_TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME}/*.c3d)
+            file(COPY ${C3D_TEST_FILES}
+                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
+        endforeach()
+    endif()
+
+    # Copy also some local c3d test files
     file(GLOB C3D_TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/*.c3d)
     file(COPY ${C3D_TEST_FILES}
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
