@@ -187,10 +187,10 @@ public:
     size_t nbMaxInterpGap() const;
 
 protected:
-    int _scaleFactor;   ///< Byte 7-8
-                        ///<
-                        ///< The scaling factor to convert the 3D point.
-                        ///< If the points are floats, then the scaling factor is if negative
+    float _scaleFactor;   ///< Byte 7-8
+                          ///<
+                          ///< The scaling factor to convert the 3D point.
+                          ///< If the points are floats, then the scaling factor is if negative
 
 public:
     ///
@@ -199,7 +199,7 @@ public:
     ///
     /// If the points are floats, then the scaling factor is if negative. Otherwise it is a integer
     ///
-    int scaleFactor() const;
+    float scaleFactor() const;
 
 protected:
     size_t _dataStart; ///< Byte 9
