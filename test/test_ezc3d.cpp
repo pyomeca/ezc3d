@@ -1199,7 +1199,7 @@ TEST(c3dFileIO, readViconC3D){
     // Point stuff
     EXPECT_EQ(Vicon.header().nb3dPoints(), 51);
     EXPECT_EQ(Vicon.header().nbMaxInterpGap(), 0);
-    EXPECT_EQ(Vicon.header().scaleFactor(), -1138501878);
+    EXPECT_FLOAT_EQ(Vicon.header().scaleFactor(), static_cast<float>(-0.01));
     EXPECT_FLOAT_EQ(Vicon.header().frameRate(), 100);
 
     // Analog stuff
@@ -1319,7 +1319,7 @@ TEST(c3dFileIO, readQualisysC3D){
     // Point stuff
     EXPECT_EQ(Qualisys.header().nb3dPoints(), 55);
     EXPECT_EQ(Qualisys.header().nbMaxInterpGap(), 10);
-    EXPECT_EQ(Qualisys.header().scaleFactor(), -1113841752);
+    EXPECT_FLOAT_EQ(Qualisys.header().scaleFactor(), static_cast<float>(-0.0762322545));
     EXPECT_FLOAT_EQ(Qualisys.header().frameRate(), 200);
 
     // Analog stuff
@@ -1442,7 +1442,7 @@ TEST(c3dFileIO, readOptotrakC3D){
     // Point stuff
     EXPECT_EQ(Optotrak.header().nb3dPoints(), 54);
     EXPECT_EQ(Optotrak.header().nbMaxInterpGap(), 0);
-    EXPECT_EQ(Optotrak.header().scaleFactor(), -1057245329);
+    EXPECT_FLOAT_EQ(Optotrak.header().scaleFactor(), static_cast<float>(-7.8661418));
     EXPECT_FLOAT_EQ(Optotrak.header().frameRate(), 30);
 
     // Analog stuff
