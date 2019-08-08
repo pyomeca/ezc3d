@@ -2,6 +2,9 @@
 #include <gtest/gtest.h>
 
 #include "ezc3d.h"
+#include "Header.h"
+#include "Data.h"
+#include "Parameters.h"
 
 enum HEADER_TYPE{
     ALL,
