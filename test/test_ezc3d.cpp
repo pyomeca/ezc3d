@@ -1503,3 +1503,29 @@ TEST(c3dFileIO, readOptotrakC3D){
     for (size_t f = 0; f < 30; ++f)
         EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 54);
 }
+
+TEST(c3dFileIO, comparedIdenticalFiles){
+    ezc3d::c3d c3d_pr("c3dTestFiles/Eb015pr.c3d"); // Intel floating format
+    ezc3d::c3d c3d_pi("c3dTestFiles/Eb015pi.c3d"); // Intel integer format
+
+    EXPECT_EQ(c3d_pr.header().nbFrames(), c3d_pi.header().nbFrames());
+    EXPECT_EQ(c3d_pr.header().nbAnalogByFrame(), c3d_pi.header().nbAnalogByFrame());
+    EXPECT_EQ(c3d_pr.header().nb3dPoints(), c3d_pi.header().nb3dPoints());
+    EXPECT_EQ(c3d_pr.header().nbAnalogs(), c3d_pi.header().nbAnalogs());
+    EXPECT_EQ(c3d_pr.header().nbAnalogsMeasurement(), c3d_pi.header().nbAnalogsMeasurement());
+    EXPECT_EQ(c3d_pr.header().nbEvents(), c3d_pi.header().nbEvents());
+
+    for (size_t f=0; f<c3d_pr.header().nbFrames(); ++f){
+        for (size_t p=0; p<c3d_pr.header().nb3dPoints(); ++p){
+            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).x(), c3d_pi.data().frame(f).points().point(p).x());
+            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).y(), c3d_pi.data().frame(f).points().point(p).y());
+            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).z(), c3d_pi.data().frame(f).points().point(p).z());
+            EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).points().point(p).residual(), c3d_pi.data().frame(f).points().point(p).residual());
+        }
+        for (size_t sf=0; sf<c3d_pr.data().frame(f).analogs().nbSubframes(); ++sf){
+            for (size_t c=0; c<c3d_pr.header().nbAnalogByFrame(); ++c){
+                EXPECT_FLOAT_EQ(c3d_pr.data().frame(f).analogs().subframe(sf).channel(c).data(), c3d_pi.data().frame(f).analogs().subframe(sf).channel(c).data());
+            }
+        }
+    }
+}
