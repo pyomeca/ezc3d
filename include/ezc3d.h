@@ -346,9 +346,23 @@ protected:
     std::shared_ptr<ezc3d::DataNS::Data> _data; ///< Pointer that holds the data of the C3D
 
 public:
-    const ezc3d::Header& header() const; ///< The header of the C3D
-    const ezc3d::ParametersNS::Parameters& parameters() const; ///< The parameters of the C3D
-    const ezc3d::DataNS::Data& data() const; ///< The points and analogous data of the C3D
+    ///
+    /// \brief The header of the C3D
+    /// \return The header of the C3D
+    ///
+    const ezc3d::Header& header() const;
+
+    ///
+    /// \brief The parameters of the C3D
+    /// \return The parameters of the C3D
+    ///
+    const ezc3d::ParametersNS::Parameters& parameters() const;
+
+    ///
+    /// \brief The points and analogous data of the C3D
+    /// \return The points and analogous data of the C3D
+    ///
+    const ezc3d::DataNS::Data& data() const;
 
     // ---- PUBLIC GETTER INTERFACE ---- //
 public:
