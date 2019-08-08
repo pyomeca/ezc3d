@@ -42,6 +42,9 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
     if (_checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
+    if (_processorType != 84)
+        throw std::runtime_error("Only Intel format is supported, please open a GitHub issue if you want support for the requested data type");
+
     // Read parameter or group
     std::streampos nextParamByteInFile(static_cast<int>(file.tellg()) + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
     while (nextParamByteInFile)

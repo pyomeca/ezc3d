@@ -30,6 +30,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
         analogNames = c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
     // Read the data
+    float scaleFactor(c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0]);
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
             break;
@@ -45,10 +46,10 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 pt.z(c3d.readFloat(file));
                 pt.residual(c3d.readFloat(file));
             } else {
-                pt.x(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
-                pt.y(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
-                pt.z(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
-                pt.residual(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))*static_cast<float>(c3d.header().scaleFactor()));
+                pt.x(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * scaleFactor);
+                pt.y(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * scaleFactor);
+                pt.z(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * scaleFactor);
+                pt.residual(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * scaleFactor);
             }
             ptsAtAFrame.point(pt, i);
         }
@@ -65,7 +66,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 if (c3d.header().scaleFactor() < 0) // if it is float
                     c.data(c3d.readFloat(file));
                 else {
-                    c.data(static_cast<float>(c3d.readInt(file, 2*ezc3d::DATA_TYPE::WORD))/static_cast<float>(c3d.header().scaleFactor()));
+                    c.data(static_cast<float>(c3d.readInt(file, ezc3d::DATA_TYPE::WORD)) * scaleFactor);
                 }
                 sub.channel(c, i);
             }
