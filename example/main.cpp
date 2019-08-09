@@ -2,6 +2,9 @@
 //#define BUILD_SANDBOX
 #include <vector>
 #include "ezc3d.h"
+#include "Header.h"
+#include "Data.h"
+#include "Parameters.h"
 
 
 
@@ -29,7 +32,6 @@ int main()
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
-        pt_new.name("new_point2");
         pt_new.x(1.0);
         pt_new.y(2.0);
         pt_new.z(3.0);
@@ -39,14 +41,13 @@ int main()
             frame.add(pts_new);
             frames_point.push_back(frame);
         }
-        c3d.point(frames_point); // Add the previously created
+        c3d.point("new_point2", frames_point); // Add the previously created
 
         // Add a new analog to the c3d (one filled with zeros, the other one with data)
         c3d.analog("new_analog1"); // add the empty
         std::vector<ezc3d::DataNS::Frame> frames_analog;
         ezc3d::DataNS::AnalogsNS::SubFrame subframes_analog;
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
-        emptyChannel.name("new_analog2");
         ezc3d::DataNS::Frame frame;
         subframes_analog.channel(emptyChannel);
         for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
@@ -57,7 +58,7 @@ int main()
         }
         for (size_t f = 0; f < c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
-        c3d.analog(frames_analog);
+        c3d.analog("new_analog2", frames_analog);
 
         // Add a new frame
         ezc3d::DataNS::Frame f;
@@ -66,7 +67,6 @@ int main()
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(labels[i]);
             pt.x(1.0);
             pt.y(2.0);
             pt.z(3.0);
@@ -130,7 +130,6 @@ int main()
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(labels[i]);
             pt.x(1.0);
             pt.y(2.0);
             pt.z(3.0);
@@ -170,7 +169,6 @@ int main()
         std::vector<ezc3d::DataNS::Frame> frames_point;
         ezc3d::DataNS::Points3dNS::Points pts_new;
         ezc3d::DataNS::Points3dNS::Point pt_new;
-        pt_new.name("new_point2");
         pt_new.x(1.0);
         pt_new.y(2.0);
         pt_new.z(3.0);
@@ -180,14 +178,14 @@ int main()
             frame.add(pts_new);
             frames_point.push_back(frame);
         }
-        c3d.point(frames_point); // Add the previously created
+        c3d.point("new_point2", frames_point); // Add the previously created
 
         // Add a new analog to the c3d (one filled with zeros, the other one with data)
         c3d.analog("new_analog1"); // add the empty
         std::vector<ezc3d::DataNS::Frame> frames_analog;
         ezc3d::DataNS::Frame frame;
         for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
-            ezc3d::DataNS::AnalogsNS::Channel newChannel("new_analogs2");
+            ezc3d::DataNS::AnalogsNS::Channel newChannel;
             newChannel.data(sf+1);
             ezc3d::DataNS::AnalogsNS::SubFrame subframes_analog;
             subframes_analog.channel(newChannel);
@@ -195,7 +193,7 @@ int main()
         }
         for (size_t f=0; f<c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
-        c3d.analog(frames_analog);
+        c3d.analog("new_analogs2", frames_analog);
 
         // Add a new frame
         ezc3d::DataNS::Frame f;
@@ -204,7 +202,6 @@ int main()
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(labels[i]);
             pt.x(1.0);
             pt.y(2.0);
             pt.z(3.0);
@@ -269,7 +266,6 @@ int main()
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<static_cast<size_t>(nPoints); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(labels[i]);
             pt.x(1.0);
             pt.y(2.0);
             pt.z(3.0);

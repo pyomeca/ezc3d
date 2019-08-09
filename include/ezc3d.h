@@ -18,7 +18,7 @@
 /// this library is to eazily create, read and modify c3d (<a href="http://c3d.org">http://c3d.org</a>)
 /// files, largely used in biomechanics.
 ///
-/// This documentation was automatically generated for the version 0.3.5 on the 10th of March, 2019.
+/// This documentation was automatically generated for the "Nostalgia" Release 1.1.0 on the 9th of August, 2019.
 ///
 /// \section install_sec Installation
 ///
@@ -76,7 +76,17 @@ namespace ezc3d {
         INT = 2,
         WORD = 2,
         FLOAT = 4,
-        NONE = 10000
+        NO_DATA_TYPE = 10000
+    };
+
+    ///
+    /// \brief The type of processor used to store the data
+    ///
+    enum PROCESSOR_TYPE{
+        INTEL = 84,
+        DEC = 85,
+        MIPS = 86,
+        NO_PROCESSOR_TYPE = INTEL
     };
 
     ///
@@ -178,12 +188,22 @@ public:
     void write(const std::string &filePath) const;
 
 protected:
-    // Internal reading function
+    // Internal reading and writting function
     char * c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
+    char * c_float_tp; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls (allow for copy of c_float)
+    char * c_int; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls
+    char * c_int_tp; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls  (allow for copy of c_int)
     unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
+    unsigned int m_nByteToReadMax_int; ///< Declaration of the max size of a int
 
     ///
-    /// \brief Actual function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
+    /// \brief Resize the too small char to read
+    /// \param nByteToRead The number of bytes to read
+    ///
+    void resizeCharHolder(unsigned int nByteToRead);
+
+    ///
+    /// \brief The function that reads the file, it returns the value into a generic char pointer that must be pre-allocate
     /// \param file opened file stream to be read
     /// \param nByteToRead The number of bytes to read
     /// \param c The output char
@@ -213,41 +233,58 @@ protected:
     ///
     int hex2int(const char * val, unsigned int len);
 
+    ///
+    /// \brief Write the data_start parameter where demanded
+    /// \param file opened file stream to be read
+    /// \param dataPosition The position in block of the data
+    /// \param paramPosition The position in byte to write the
+    /// \param type The type of data to write
+    ///
+    void writeDataStart(std::fstream &file,
+                        const std::streampos& dataStartPosition,
+                        const DATA_TYPE &type) const;
+
 public:
     ///
     /// \brief Read an integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into integer
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The integer value
     ///
-    int readInt(std::fstream &file,
+    int readInt(PROCESSOR_TYPE processorType,
+                std::fstream &file,
                 unsigned int nByteToRead,
                 int nByteFromPrevious = 0,
                 const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a unsigned integer of nByteToRead bytes at the position current + nByteFromPrevious from a file
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param nByteToRead The number of byte to read to be converted into unsigned integer
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The unsigned integer value
     ///
-    size_t readUint(std::fstream &file,
+    size_t readUint(PROCESSOR_TYPE processorType,
+                    std::fstream &file,
                     unsigned int nByteToRead,
                     int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Read a float at the position current + nByteFromPrevious from a file
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param nByteFromPrevious The number of bytes to skip from the current cursor position
     /// \param pos Where to reposition the cursor
     /// \return The float value
     ///
-    float readFloat(std::fstream &file,
+    float readFloat(PROCESSOR_TYPE processorType,
+                    std::fstream &file,
                     int nByteFromPrevious = 0,
                     const std::ios_base::seekdir &pos = std::ios::cur);
 
@@ -266,25 +303,30 @@ public:
 
     ///
     /// \brief Read a matrix of integer parameters of dimensions dimension with each integer of length dataLengthInByte
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param dataLenghtInBytes The number of bytes to read to be converted to int
     /// \param dimension The dimensions of the matrix up to 7-dimensions
-    /// \param param_data The actual output of the function
+    /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(std::fstream &file,
+    void readParam(PROCESSOR_TYPE processorType,
+                   std::fstream &file,
                    unsigned int dataLenghtInBytes,
                    const std::vector<size_t> &dimension,
-                   std::vector<int> &param_data, size_t currentIdx = 0);
+                   std::vector<int> &param_data,
+                   size_t currentIdx = 0);
 
     ///
     /// \brief Read a matrix of float parameters of dimensions dimension
+    /// \param processorType Convension processor type the file is following
     /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions
-    /// \param param_data The actual output of the function
+    /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(std::fstream &file,
+    void readParam(PROCESSOR_TYPE processorType,
+                   std::fstream &file,
                    const std::vector<size_t> &dimension,
                    std::vector<float> &param_data,
                    size_t currentIdx = 0);
@@ -293,7 +335,7 @@ public:
     /// \brief Read a matrix of string of dimensions dimension with the first dimension being the length of the strings
     /// \param file opened file stream to be read
     /// \param dimension The dimensions of the matrix up to 7-dimensions. The first dimension is the length of the strings
-    /// \param param_data The actual output of the function
+    /// \param param_data The output of the function
     ///
     void readParam(std::fstream &file,
                    const std::vector<size_t> &dimension,
@@ -335,9 +377,59 @@ protected:
     std::shared_ptr<ezc3d::DataNS::Data> _data; ///< Pointer that holds the data of the C3D
 
 public:
-    const ezc3d::Header& header() const; ///< The header of the C3D
-    const ezc3d::ParametersNS::Parameters& parameters() const; ///< The parameters of the C3D
-    const ezc3d::DataNS::Data& data() const; ///< The points and analogous data of the C3D
+    ///
+    /// \brief The header of the C3D
+    /// \return The header of the C3D
+    ///
+    const ezc3d::Header& header() const;
+
+    ///
+    /// \brief The parameters of the C3D
+    /// \return The parameters of the C3D
+    ///
+    const ezc3d::ParametersNS::Parameters& parameters() const;
+
+    ///
+    /// \brief The points and analogous data of the C3D
+    /// \return The points and analogous data of the C3D
+    ///
+    const ezc3d::DataNS::Data& data() const;
+
+    // ---- PUBLIC GETTER INTERFACE ---- //
+public:
+    ///
+    /// \brief Get a reference to the names of the points
+    /// \return The reference to the names of the points
+    ///
+    const std::vector<std::string>& pointNames() const;
+
+    ///
+    /// \brief Get the index of a point in the points holder
+    /// \param pointName Name of the point
+    /// \return The index of the point
+    ///
+    /// Search for the index of a point into points data by the name of this point.
+    ///
+    /// Throw a std::invalid_argument if pointName is not found
+    ///
+    size_t pointIdx(const std::string& pointName) const;
+
+    ///
+    /// \brief Get a reference to the names of the analog channels
+    /// \return The reference to the names of the analog channels
+    ///
+    const std::vector<std::string>& channelNames() const;
+
+    ///
+    /// \brief Get the index of a analog channel in the subframe
+    /// \param channelName Name of the analog channel
+    /// \return The index of the analog channel
+    ///
+    /// Search for the index of a analog channel into subframe by the name of this channel.
+    ///
+    /// Throw a std::invalid_argument if channelName is not found
+    ///
+    size_t channelIdx(const std::string& channelName) const;
 
 
     // ---- PUBLIC C3D MODIFICATION INTERFACE ---- //
@@ -408,6 +500,7 @@ public:
 
     ///
     /// \brief Add a new point to the data set
+    /// \param pointName The name of the new point
     /// \param frames The array of frames to add
     ///
     /// Append a new point to the data set.
@@ -418,7 +511,22 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
     ///
-    void point(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void point(const std::string &pointName, const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Add a new point to the data set
+    /// \param pointNames The name vector of the new points
+    /// \param frames The array of frames to add
+    ///
+    /// Append a new point to the data set.
+    ///
+    /// Throw a std::invalid_argument if the size of the std::vector of frames is not equal to the number of frames
+    /// already present in the data set. Obviously it throws the same error if no point were sent or if the
+    /// point was already in the data set.
+    ///
+    /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
+    ///
+    void point(const std::vector<std::string> &pointNames, const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
     /// \brief Create a channel of analog data to the data set of name name
@@ -435,6 +543,7 @@ public:
 
     ///
     /// \brief Add a new channel to the data set
+    /// \param channelName Name of the channel to add
     /// \param frames The array of frames to add
     ///
     /// Append a new channel to the data set.
@@ -446,7 +555,23 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
     ///
-    void analog(const std::vector<ezc3d::DataNS::Frame> &frames);
+    void analog(std::string channelName, const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Add a new channel to the data set
+    /// \param channelNames Name of the channels to add
+    /// \param frames The array of frames to add
+    ///
+    /// Append a new channel to the data set.
+    ///
+    /// Throw a std::invalid_argument if the size of the std::vector of frames/subframes is not equal
+    /// to the number of frames/subframes already present in the data set.
+    /// Obviously it throws the same error if no channel were sent or if the
+    /// channel was already in the data set.
+    ///
+    /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
+    ///
+    void analog(const std::vector<std::string>& channelNames, const std::vector<ezc3d::DataNS::Frame> &frames);
 
 
     // ---- UPDATER ---- //
@@ -462,14 +587,11 @@ protected:
     /// \param newAnalogs The names of the new analogs
     ///
     /// Throw a std::runtime_error if newPoints or newAnalogs was added while the data set is not empty.
-    /// If you want to add a new point after having actual data in the data set, you must use the frame method.
+    /// If you want to add a new point after having data in the data set, you must use the frame method.
     ///
     void updateParameters(const std::vector<std::string> &newPoints = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
 };
 
-#include "Header.h"
-#include "Data.h"
-#include "Parameters.h"
-
 #endif
+

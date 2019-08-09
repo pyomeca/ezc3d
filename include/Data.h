@@ -11,7 +11,7 @@
 #include <Frame.h>
 
 ///
-/// \brief Actual data of the C3D file
+/// \brief Data of the C3D file
 ///
 /// The class stores all the data frames of a given or create C3D into a STL vector of frame.
 ///
@@ -87,7 +87,7 @@ public:
 
     ///
     /// \brief Add/replace a frame to the data set
-    /// \param frame the actual frame
+    /// \param frame the frame to add/replace
     /// \param idx the index of the frame
     ///
     /// Add or replace a particular frame to the data set.

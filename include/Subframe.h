@@ -58,17 +58,6 @@ public:
     void nbChannels(size_t nChannels);
 
     ///
-    /// \brief Get the index of a analog channel in the subframe
-    /// \param channelName Name of the analog channel
-    /// \return The index of the analog channel
-    ///
-    /// Search for the index of a analog channel into subframe by the name of this channel.
-    ///
-    /// Throw a std::invalid_argument if channelName is not found
-    ///
-    size_t channelIdx(const std::string& channelName) const;
-
-    ///
     /// \brief Get a particular analog channel of index idx from the analogous data
     /// \param idx Index of the analog channel
     /// \return The analog channel
@@ -92,31 +81,8 @@ public:
     ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(size_t idx);
 
     ///
-    /// \brief Get a particular analog channel with the name channelName from the analogous data
-    /// \param channelName
-    /// \return The analog channel
-    ///
-    /// Get a particular analog channel with the name channelName from the analogous data.
-    ///
-    /// Throw a std::invalid_argument if channelName is not found
-    ///
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(const std::string& channelName) const;
-
-    ///
-    /// \brief Get a particular analog channel with the name channelName from the analogous data
-    /// \param channelName
-    /// \return The analog channel
-    ///
-    /// Get a particular analog channel with the name channelName from the analogous in the form of a non-const reference.
-    /// The user can thereafter modify this analog channel at will, but with the caution it requires.
-    ///
-    /// Throw a std::invalid_argument if channelName is not found
-    ///
-    ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(const std::string& channelName);
-
-    ///
     /// \brief Add/replace a channel to the analog subframe data set
-    /// \param channel the actual channel to add
+    /// \param channel the channel to add
     /// \param idx the index of the channel in the subframe data set
     ///
     /// Add or replace a particular channel to the subframe data set.
