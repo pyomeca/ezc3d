@@ -33,15 +33,16 @@ public:
     //---- STREAM ----//
 public:
     ///
-    /// \brief Print the actual header
+    /// \brief Print the header
     ///
     void print() const;
 
     ///
     /// \brief Write the header to an opened file
     /// \param f Already opened fstream file with write access
+    /// \param dataStartPosition Returns the byte where to put the data start parameter
     ///
-    void write(std::fstream &f) const;
+    void write(std::fstream &f, std::streampos &dataStartPosition) const;
 
     ///
     /// \brief Read and store a header from an opened C3D file
@@ -73,6 +74,15 @@ public:
     /// \return The byte at which the parameters start in the file
     ///
     size_t parametersAddress() const;
+
+protected:
+    ///
+    /// \brief Reads the processor type in the parameter section, returns the file pointer where it was at the beggining of the function
+    /// \param c3d C3D reference to copy the data in
+    /// \param file opened file stream to be read
+    /// \return The processor type as specified in the c3d file (83-Intel, 84-DEC, 85-MIPS)
+    ///
+    PROCESSOR_TYPE readProcessorType(c3d &c3d, std::fstream &file);
 
 protected:
     size_t _checksum;   ///< Byte 1.2
@@ -133,12 +143,12 @@ public:
 protected:
     size_t _firstFrame; ///< Byte 4
                         ///<
-                        ///< The first actual frame in the file.
+                        ///< The first frame in the file.
                         ///< Note, contrary to the way it is stored in the file,
                         ///< it is 0-based, i.e. the first frame is 0.
     size_t _lastFrame;  ///< Byte 5
                         ///<
-                        ///< The last actual frame in the file.
+                        ///< The last frame in the file.
                         ///< Note, contrary to the way it is stored in the file,
                         ///< it is 0-based, i.e. the first frame is 0.
 
@@ -150,25 +160,25 @@ public:
     size_t nbFrames() const;
 
     ///
-    /// \brief Get the first actual frame
-    /// \return The first actual frame
+    /// \brief Get the first frame
+    /// \return The first frame
     ///
     size_t firstFrame() const;
 
     ///
-    /// \brief Set the first actual frame
+    /// \brief Set the first frame
     /// \param frame
     ///
     void firstFrame(size_t frame);
 
     ///
-    /// \brief Get the last actual frame
-    /// \return The last actual frame
+    /// \brief Get the last frame
+    /// \return The last frame
     ///
     size_t lastFrame() const;
 
     ///
-    /// \brief Set the last actual frame
+    /// \brief Set the last frame
     /// \param frame
     ///
     void lastFrame(size_t frame);
@@ -186,10 +196,10 @@ public:
     size_t nbMaxInterpGap() const;
 
 protected:
-    int _scaleFactor;   ///< Byte 7-8
-                        ///<
-                        ///< The scaling factor to convert the 3D point.
-                        ///< If the points are floats, then the scaling factor is if negative
+    float _scaleFactor;   ///< Byte 7-8
+                          ///<
+                          ///< The scaling factor to convert the 3D point.
+                          ///< If the points are floats, then the scaling factor is if negative
 
 public:
     ///
@@ -198,7 +208,7 @@ public:
     ///
     /// If the points are floats, then the scaling factor is if negative. Otherwise it is a integer
     ///
-    int scaleFactor() const;
+    float scaleFactor() const;
 
 protected:
     size_t _dataStart; ///< Byte 9

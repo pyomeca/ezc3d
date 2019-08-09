@@ -27,7 +27,7 @@ public:
     //---- STREAM ----//
 public:
     ///
-    /// \brief Print the actual parameter and its values
+    /// \brief Print the parameter and its values
     ///
     void print() const;
 
@@ -37,7 +37,7 @@ public:
     /// \param groupIdx Index of the group that this particular parameter is in
     /// \param dataStartPosition The position in the file where the data start (special case for POINT:DATA_START parameter)
     ///
-    /// Write the actual parameter and its values to a file
+    /// Write the parameter and its values to a file
     ///
     void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
 
@@ -56,11 +56,13 @@ public:
     ///
     /// \brief Read and store a parameter from an opened C3D file
     /// \param c3d C3D reference to copy the data in
+    /// \param params Reference to a valid parameter
     /// \param file The file stream already opened with read access
     /// \param nbCharInName The number of character of the parameter name
     /// \return The position in the file of the next Group/Parameter
     ///
     int read(c3d &c3d,
+             const Parameters &params,
              std::fstream &file,
              int nbCharInName);
 
@@ -144,9 +146,9 @@ public:
 
     //---- DATA ----//
 protected:
-    std::vector<int> _param_data_int; ///< Actual parameter values if the parameter type is DATA_TYPE::BYTE of DATA_TYPE::INT
-    std::vector<float> _param_data_float; ///< Actual parameter values if the parameter type is DATA_TYPE::FLOAT
-    std::vector<std::string> _param_data_string; ///< Actual parameter values if the parameter type is DATA_TYPE::CHAR
+    std::vector<int> _param_data_int; ///< Parameter values if the parameter type is DATA_TYPE::BYTE of DATA_TYPE::INT
+    std::vector<float> _param_data_float; ///< Parameter values if the parameter type is DATA_TYPE::FLOAT
+    std::vector<std::string> _param_data_string; ///< Parameter values if the parameter type is DATA_TYPE::CHAR
 
 public:
     ///

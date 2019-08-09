@@ -2,20 +2,16 @@ language: cpp
 matrix:
   include:
   - os: linux
-    dist: trusty
+    dist: bionic
     compiler: gcc
     env:
-      - COMPILER=g++-7
+      - COMPILER=g++-5
   - os: osx
     osx_image: xcode7.2
     compiler: gcc
     env:
       - COMPILER=g++-7
   - os: windows
-      
-addons:
-  apt:
-    packages: [g++, valgrind, python-yaml, lcov, cmake]
 
     
 before_install:
@@ -44,7 +40,10 @@ before_install:
 install:
     # Install test packages for Python3
     - conda install python pytest numpy swig
-
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        conda install lcov -c conda-forge;
+      fi
+      
 script:
     ############################################################################
     # Build main and tests

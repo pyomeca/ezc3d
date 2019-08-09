@@ -34,8 +34,16 @@ INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.py
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py
         DESTINATION ${Python3_SITELIB}/${PROJECT_NAME})
 
-# For some reason, I could not install the library directly into subfolder
-# Some day this should be fixed...
+# Check if swig has its version 3 or 4, to choose the right place to put the library
+if(${SWIG_VERSION} MATCHES "^3(\.[0-9]*)*$")
+    set(PYTHON_INSTALL_DESTINATION ${Python3_SITELIB})
+elseif(${SWIG_VERSION} MATCHES "^4(\.[0-9]*)*$")
+    set(PYTHON_INSTALL_DESTINATION ${Python3_SITELIB}/${PROJECT_NAME})
+else()
+    message( FATAL_ERROR "Swig must be version 3 or 4" )
+endif()
+
+# Install the library
 INSTALL(TARGETS _${PROJECT_NAME}
-		DESTINATION ${Python3_SITELIB})  
+    DESTINATION ${PYTHON_INSTALL_DESTINATION})
 
