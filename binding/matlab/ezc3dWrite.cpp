@@ -4,6 +4,9 @@
 
 #include "ezc3d.h"
 #include "utils.h"
+#include "Header.h"
+#include "Parameters.h"
+#include "Data.h"
 
 size_t parseParam(mxDouble* data, const std::vector<size_t> &dimension,
                std::vector<int> &param_data, size_t idxInData=0, size_t currentIdx=0)
@@ -287,7 +290,6 @@ void mexFunction(int nlhs,mxArray *[],int nrhs,const mxArray *prhs[])
         ezc3d::DataNS::Points3dNS::Points pts;
         for (size_t i=0; i<nPoints; ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
-            pt.name(pointLabels[i]);
             pt.x(static_cast<float>(allDataPoints[nPointsComponents*i+0+f*3*nPoints]));
             pt.y(static_cast<float>(allDataPoints[nPointsComponents*i+1+f*3*nPoints]));
             pt.z(static_cast<float>(allDataPoints[nPointsComponents*i+2+f*3*nPoints]));
@@ -300,7 +302,6 @@ void mexFunction(int nlhs,mxArray *[],int nrhs,const mxArray *prhs[])
             for (size_t i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 c.data(static_cast<float>(allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]));
-                c.name(analogsLabels[i]);
                 subframe.channel(c);
             }
             analogs.subframe(subframe);
