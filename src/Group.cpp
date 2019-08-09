@@ -8,6 +8,7 @@
 ///
 
 #include "Group.h"
+#include "Parameters.h"
 
 ezc3d::ParametersNS::GroupNS::Group::Group(const std::string &name, const std::string &description) :
     _name(name),
@@ -49,19 +50,20 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, s
     f.write(reinterpret_cast<const char*>(&nCharGroupDescription), 1*ezc3d::DATA_TYPE::BYTE);
     f.write(description().c_str(), nCharGroupDescription*ezc3d::DATA_TYPE::BYTE);
 
-    std::streampos actualPos(f.tellg());
-    // Go back at the left blank space and write the actual position
+    std::streampos currentPos(f.tellg());
+    // Go back at the left blank space and write the current position
     f.seekg(pos);
-    int nCharToNext = int(actualPos - pos);
+    int nCharToNext = int(currentPos - pos);
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
-    f.seekg(actualPos);
+    f.seekg(currentPos);
 
     for (size_t i=0; i < nbParameters(); ++i)
         parameter(i).write(f, -groupIdx, dataStartPosition);
 
 }
 
-int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &c3d, std::fstream &file, int nbCharInName)
+int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &c3d, const ezc3d::ParametersNS::Parameters &params,
+                                              std::fstream &file, int nbCharInName)
 {
     if (nbCharInName < 0)
         _isLocked = true;
@@ -72,7 +74,7 @@ int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &c3d, std::fstream &fil
     _name.assign(c3d.readString(file, static_cast<unsigned int>(abs(nbCharInName) * ezc3d::DATA_TYPE::BYTE)));
 
     // number of byte to the next group from here
-    size_t offsetNext(c3d.readUint(file, 2*ezc3d::DATA_TYPE::BYTE));
+    size_t offsetNext(c3d.readUint(params.processorType(), file, 2*ezc3d::DATA_TYPE::BYTE));
     // Compute the position of the element in the file
     int nextParamByteInFile;
     if (offsetNext == 0)
@@ -81,7 +83,7 @@ int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &c3d, std::fstream &fil
         nextParamByteInFile = static_cast<int>(static_cast<size_t>(file.tellg()) + offsetNext - ezc3d::DATA_TYPE::WORD);
 
     // Byte 5+nbCharInName ==> Number of characters in group description
-    int nbCharInDesc(c3d.readInt(file, 1*ezc3d::DATA_TYPE::BYTE));
+    int nbCharInDesc(c3d.readInt(params.processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));
     // Byte 6+nbCharInName ==> Group description
     if (nbCharInDesc)
         _description = c3d.readString(file, static_cast<unsigned int>(nbCharInDesc));
@@ -172,17 +174,17 @@ ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::pa
     return parameter_nonConst(parameterIdx(parameterName));
 }
 
-int ezc3d::ParametersNS::GroupNS::Group::parameter(ezc3d::c3d &c3d, std::fstream &file, int nbCharInName)
+int ezc3d::ParametersNS::GroupNS::Group::parameter(ezc3d::c3d &c3d, const Parameters &params, std::fstream &file, int nbCharInName)
 {
     ezc3d::ParametersNS::GroupNS::Parameter p;
-    int nextParamByteInFile = p.read(c3d, file, nbCharInName);
+    int nextParamByteInFile = p.read(c3d, params, file, nbCharInName);
     parameter(p);
     return nextParamByteInFile;
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::parameter(const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
-    if (p.type() == ezc3d::DATA_TYPE::NONE)
+    if (p.type() == ezc3d::DATA_TYPE::NO_DATA_TYPE)
         throw std::runtime_error("Data type is not set");
 
     size_t alreadyExistIdx(SIZE_MAX);

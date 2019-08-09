@@ -8,6 +8,8 @@
 ///
 
 #include "Data.h"
+#include "Header.h"
+#include "Parameters.h"
 
 ezc3d::DataNS::Data::Data()
 {
@@ -16,11 +18,8 @@ ezc3d::DataNS::Data::Data()
 
 ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
 {
-    // Firstly read a dummy value just prior to the data so it moves the pointer to the right place
-    c3d.readInt(file, ezc3d::DATA_TYPE::BYTE,
-                 static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader() +
-                 256*ezc3d::DATA_TYPE::WORD*c3d.parameters().nbParamBlock() -
-                 ezc3d::DATA_TYPE::BYTE), std::ios::beg); // "- BYTE" so it is just prior
+    // Firstly move the pointer to the data start position
+    file.seekg( static_cast<int>(c3d.header().dataStart()-1)*512, std::ios::beg);
 
     // Get names of the data
     std::vector<std::string> pointNames;
@@ -30,57 +29,54 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
     if (c3d.header().nbAnalogs() > 0)
         analogNames = c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
 
-    // Read the actual data
+    // Read the data
+    PROCESSOR_TYPE processorType(c3d.parameters().processorType());
+    float pointScaleFactor(c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0]);
+    std::vector<float> analogScaleFactors(c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat());
+    float analogGeneralFactor(c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0]);
+    std::vector<int> analogZeroOffset(c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt());
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
             break;
 
         ezc3d::DataNS::Frame f;
-        if (c3d.header().scaleFactor() < 0){ // if it is float
-            // Read point 3d
-            ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(c3d.header().nb3dPoints());
-            for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
-                ezc3d::DataNS::Points3dNS::Point pt;
-                pt.x(c3d.readFloat(file));
-                pt.y(c3d.readFloat(file));
-                pt.z(c3d.readFloat(file));
-                pt.residual(c3d.readFloat(file));
-                if (i < pointNames.size())
-                    pt.name(pointNames[i]);
-                else {
-                    std::stringstream unlabel;
-                    unlabel << "unlabeled_point_" << i;
-                    pt.name(unlabel.str());
-                }
-                ptsAtAFrame.point(pt, i);
+        // Read point 3d
+        ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(c3d.header().nb3dPoints());
+        for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
+            ezc3d::DataNS::Points3dNS::Point pt;
+            if (c3d.header().scaleFactor() < 0){ // if it is float
+                pt.x(c3d.readFloat(processorType, file));
+                pt.y(c3d.readFloat(processorType, file));
+                pt.z(c3d.readFloat(processorType, file));
+                pt.residual(c3d.readFloat(processorType, file));
+            } else {
+                pt.x(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.y(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.z(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.residual(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
             }
-            f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
-
-            // Read analogs
-            ezc3d::DataNS::AnalogsNS::Analogs analog;
-            analog.nbSubframes(c3d.header().nbAnalogByFrame());
-            for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
-                ezc3d::DataNS::AnalogsNS::SubFrame sub;
-                sub.nbChannels(c3d.header().nbAnalogs());
-                for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
-                    ezc3d::DataNS::AnalogsNS::Channel c;
-                    c.data(c3d.readFloat(file));
-                    if (i < analogNames.size())
-                        c.name(analogNames[i]);
-                    else {
-                        std::stringstream unlabel;
-                        unlabel << "unlabeled_analog_" << i;
-                        c.name(unlabel.str());
-                    }
-                    sub.channel(c, i);
-                }
-                analog.subframe(sub, k);
-            }
-            f.add(analog);
-            _frames.push_back(f);
+            ptsAtAFrame.point(pt, i);
         }
-        else
-            throw std::invalid_argument("Points were recorded using int number which is not implemented yet");
+        f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
+
+        // Read analogs
+        ezc3d::DataNS::AnalogsNS::Analogs analog;
+        analog.nbSubframes(c3d.header().nbAnalogByFrame());
+        for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
+            ezc3d::DataNS::AnalogsNS::SubFrame sub;
+            sub.nbChannels(c3d.header().nbAnalogs());
+            for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
+                ezc3d::DataNS::AnalogsNS::Channel c;
+                if (c3d.header().scaleFactor() < 0) // if it is float
+                    c.data( (c3d.readFloat(processorType, file) - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor );
+                else
+                    c.data( (static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD))  - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor ); // * scaleFactor);
+                sub.channel(c, i);
+            }
+            analog.subframe(sub, k);
+        }
+        f.add(analog);
+        _frames.push_back(f);
     }
 
     // remove the trailing empty frames if they exist
