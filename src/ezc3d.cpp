@@ -8,6 +8,10 @@
 ///
 
 #include "ezc3d.h"
+#include "Header.h"
+#include "Data.h"
+#include "Parameters.h"
+
 
 void ezc3d::removeTrailingSpaces(std::string& s){
     // Remove the spaces at the end of the strings
@@ -26,9 +30,13 @@ std::string ezc3d::toUpper(const std::string &str){
 
 ezc3d::c3d::c3d():
     _filePath(""),
-    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
+    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
+    m_nByteToReadMax_int(100)
 {
     c_float = new char[m_nByteToRead_float + 1];
+    c_float_tp = new char[m_nByteToRead_float + 1];
+    c_int = new char[m_nByteToReadMax_int + 1];
+    c_int_tp = new char[m_nByteToReadMax_int + 1];
 
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(new ezc3d::ParametersNS::Parameters());
@@ -37,10 +45,14 @@ ezc3d::c3d::c3d():
 
 ezc3d::c3d::c3d(const std::string &filePath):
     _filePath(filePath),
-    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE)
+    m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
+    m_nByteToReadMax_int(100)
 {
     std::fstream stream(_filePath, std::ios::in | std::ios::binary);
     c_float = new char[m_nByteToRead_float + 1];
+    c_float_tp = new char[m_nByteToRead_float + 1];
+    c_int = new char[m_nByteToReadMax_int + 1];
+    c_int_tp = new char[m_nByteToReadMax_int + 1];
 
     if (!stream.is_open())
         throw std::ios_base::failure("Could not open the c3d file");
@@ -52,10 +64,10 @@ ezc3d::c3d::c3d(const std::string &filePath):
     // header may be inconsistent with the parameters, so it must be update to make sure sizes are consistent
     updateHeader();
 
-    // Now read the actual data
+    // Now read the data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data(*this, stream));
 
-    // Parameters and header may be inconsistent with actual data, so reprocess them if needed
+    // Parameters and header may be inconsistent with data, so reprocess them if needed
     updateParameters();
 
     // Close the file
@@ -65,6 +77,9 @@ ezc3d::c3d::c3d(const std::string &filePath):
 ezc3d::c3d::~c3d()
 {
     delete c_float;
+    delete c_float_tp;
+    delete c_int;
+    delete c_int_tp;
 }
 
 void ezc3d::c3d::print() const
@@ -79,7 +94,8 @@ void ezc3d::c3d::write(const std::string& filePath) const
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
     // Write the header
-    this->header().write(f);
+    std::streampos dataStartHeader;
+    header().write(f, dataStartHeader);
 
     // Write the parameters
     // We must copy parameters since there is no way to make sure that the number of frames is not higher than 0xFFFF
@@ -90,12 +106,26 @@ void ezc3d::c3d::write(const std::string& filePath) const
         frames.set(-1);
         params.group_nonConst("POINT").parameter(frames);
     }
-    params.write(f);
+    std::streampos dataStartParameters;
+    params.write(f, dataStartParameters);
+
+    // Write the data start parameter in header and parameter sections
+    writeDataStart(f, dataStartHeader, DATA_TYPE::WORD);
+    writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
 
     // Write the data
-    this->data().write(f);
+    data().write(f);
 
     f.close();
+}
+
+void ezc3d::c3d::resizeCharHolder(unsigned int nByteToRead)
+{
+    delete[] c_int;
+    delete[] c_int_tp;
+    m_nByteToReadMax_int = nByteToRead;
+    c_int = new char[m_nByteToReadMax_int + 1];
+    c_int_tp = new char[m_nByteToReadMax_int + 1];
 }
 
 void ezc3d::c3d::readFile(std::fstream &file, unsigned int nByteToRead, char * c, int nByteFromPrevious,
@@ -133,41 +163,102 @@ int ezc3d::c3d::hex2int(const char * val, unsigned int len){
     return out;
 }
 
-int ezc3d::c3d::readInt(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
+void ezc3d::c3d::writeDataStart(std::fstream &f, const std::streampos &dataStartPosition, const DATA_TYPE& type) const
+{
+    // Go back to data start blank space and write the current position (assuming current is the position of data!)
+    std::streampos dataPos = f.tellg();
+    f.seekg(dataStartPosition);
+    if (int(dataPos) % 512 > 0)
+        throw std::out_of_range("Something went wrong in the positioning of the pointer for writting the data. "
+                                "Please report this error.");
+    int nBlocksToNext = int(dataPos)/512 + 1; // DATA_START is 1-based
+    f.write(reinterpret_cast<const char*>(&nBlocksToNext), type);
+    f.seekg(dataPos);
+}
+
+int ezc3d::c3d::readInt(PROCESSOR_TYPE processorType, std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
-    char* c = new char[nByteToRead + 1];
-    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+    if (nByteToRead > m_nByteToReadMax_int)
+        resizeCharHolder(nByteToRead);
 
-    // make sure it is an int and not an unsigned int
-    int out(hex2int(c, nByteToRead));
-    delete[] c;
+    readFile(file, nByteToRead, c_int, nByteFromPrevious, pos);
+
+    int out;
+    if (processorType == PROCESSOR_TYPE::MIPS){
+        // This is more or less good. Sometimes, it should not reverse...
+        for (size_t i=0; i<nByteToRead; ++i){
+            c_int_tp[i] = c_int[nByteToRead-1 - i];
+        }
+        c_int_tp[nByteToRead] = '\0';
+        out = hex2int(c_int_tp, nByteToRead);
+    } else {
+        // make sure it is an int and not an unsigned int
+        out = hex2int(c_int, nByteToRead);
+    }
+
     return out;
 }
 
-size_t ezc3d::c3d::readUint(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
+size_t ezc3d::c3d::readUint(PROCESSOR_TYPE processorType, std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
             const std::ios_base::seekdir &pos)
 {
-    char* c = new char[nByteToRead + 1];
-    readFile(file, nByteToRead, c, nByteFromPrevious, pos);
+    if (nByteToRead > m_nByteToReadMax_int)
+        resizeCharHolder(nByteToRead);
 
-    // make sure it is an int and not an unsigned int
-    size_t out(hex2uint(c, nByteToRead));
-    delete[] c;
+    readFile(file, nByteToRead, c_int, nByteFromPrevious, pos);
+
+    size_t out;
+    if (processorType == PROCESSOR_TYPE::MIPS){
+        // This is more or less good. Sometimes, it should not reverse...
+        for (size_t i=0; i<nByteToRead; ++i){
+            c_int_tp[i] = c_int[nByteToRead-1 - i];
+        }
+        c_int_tp[nByteToRead] = '\0';
+        // make sure it is an int and not an unsigned int
+        out = hex2uint(c_int_tp, nByteToRead);
+    } else {
+        // make sure it is an int and not an unsigned int
+        out = hex2uint(c_int, nByteToRead);
+    }
+
     return out;
 }
 
-float ezc3d::c3d::readFloat(std::fstream &file, int nByteFromPrevious,
+float ezc3d::c3d::readFloat(PROCESSOR_TYPE processorType, std::fstream &file, int nByteFromPrevious,
                 const std::ios_base::seekdir &pos)
 {
     readFile(file, m_nByteToRead_float, c_float, nByteFromPrevious, pos);
-    float out (*reinterpret_cast<float*>(c_float));
+    float out;
+    if (processorType == PROCESSOR_TYPE::INTEL) {
+        out = *reinterpret_cast<float*>(c_float);
+    } else if (processorType == PROCESSOR_TYPE::DEC){
+        c_float_tp[0] = c_float[2];
+        c_float_tp[1] = c_float[3];
+        c_float_tp[2] = c_float[0];
+        if (c_float[1] != 0)
+            c_float_tp[3] = c_float[1]-1;
+        else
+            c_float_tp[3] = c_float[1];
+        c_float_tp[4] = '\0';
+        out = *reinterpret_cast<float*>(c_float_tp);
+    } else if (processorType == PROCESSOR_TYPE::MIPS) {
+        for (unsigned int i=0; i<m_nByteToRead_float; ++i)
+            c_float_tp[i] = c_float[m_nByteToRead_float-1 - i];
+        c_float_tp[m_nByteToRead_float] = '\0';
+        out = *reinterpret_cast<float*>(c_float_tp);
+    } else {
+        throw std::runtime_error("Wrong type of processor for floating points");
+    }
     return out;
 }
 
 std::string ezc3d::c3d::readString(std::fstream &file, unsigned int nByteToRead, int nByteFromPrevious,
                               const std::ios_base::seekdir &pos)
 {
+    if (nByteToRead > m_nByteToReadMax_int)
+        resizeCharHolder(nByteToRead);
+
     char* c = new char[nByteToRead + 1];
     readFile(file, nByteToRead, c, nByteFromPrevious, pos);
     std::string out(c);
@@ -175,24 +266,24 @@ std::string ezc3d::c3d::readString(std::fstream &file, unsigned int nByteToRead,
     return out;
 }
 
-void ezc3d::c3d::readParam(std::fstream &file, unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(PROCESSOR_TYPE processorType, std::fstream &file, unsigned int dataLenghtInBytes, const std::vector<size_t> &dimension,
                        std::vector<int> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readInt(file, dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
+            param_data.push_back (readInt(processorType, file, dataLenghtInBytes*ezc3d::DATA_TYPE::BYTE));
         else
-            readParam(file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
+            readParam(processorType, file, dataLenghtInBytes, dimension, param_data, currentIdx + 1);
 }
 
-void ezc3d::c3d::readParam(std::fstream &file, const std::vector<size_t> &dimension,
+void ezc3d::c3d::readParam(PROCESSOR_TYPE processorType, std::fstream &file, const std::vector<size_t> &dimension,
                        std::vector<float> &param_data, size_t currentIdx)
 {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
-            param_data.push_back (readFloat(file));
+            param_data.push_back (readFloat(processorType, file));
         else
-            readParam(file, dimension, param_data, currentIdx + 1);
+            readParam(processorType, file, dimension, param_data, currentIdx + 1);
 }
 
 void ezc3d::c3d::readParam(std::fstream &file, const std::vector<size_t> &dimension,
@@ -261,6 +352,35 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const
     return *_data;
 }
 
+const std::vector<std::string> &ezc3d::c3d::pointNames() const
+{
+    return parameters().group("POINT").parameter("LABELS").valuesAsString();
+}
+
+size_t ezc3d::c3d::pointIdx(const std::string &pointName) const
+{
+    const std::vector<std::string> &currentNames(pointNames());
+    for (size_t i = 0; i < currentNames.size(); ++i)
+        if (!currentNames[i].compare(pointName))
+            return i;
+    throw std::invalid_argument("ezc3d::pointIdx could not find " + pointName + " in the points data set.");
+}
+
+const std::vector<std::string> &ezc3d::c3d::channelNames() const
+{
+    return parameters().group("ANALOG").parameter("LABELS").valuesAsString();
+}
+
+size_t ezc3d::c3d::channelIdx(const std::string &channelName) const
+{
+    const std::vector<std::string> &currentNames(channelNames());
+    for (size_t i = 0; i < currentNames.size(); ++i)
+        if (!currentNames[i].compare(channelName))
+            return i;
+    throw std::invalid_argument("ezc3d::channelIdx could not find " + channelName +
+                                " in the analogous data set");
+}
+
 void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &p)
 {
     if (!p.name().compare("")){
@@ -302,7 +422,7 @@ void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx)
     std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
     for (size_t i=0; i<labels.size(); ++i)
         try {
-            f.points().pointIdx(labels[i]);
+            pointIdx(labels[i]);
         } catch (std::invalid_argument) {
             throw std::invalid_argument("All the points in the frame must appear in the POINT:LABELS parameter");
         }
@@ -334,19 +454,24 @@ void ezc3d::c3d::point(const std::string &name){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
         ezc3d::DataNS::Points3dNS::Point emptyPoint;
-        emptyPoint.name(name);
         dummy_pts.point(emptyPoint);
         ezc3d::DataNS::Frame frame;
         frame.add(dummy_pts);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        point(dummy_frames);
+        point(name, dummy_frames);
     } else {
         updateParameters({name});
     }
 }
 
-void ezc3d::c3d::point(const std::vector<ezc3d::DataNS::Frame>& frames)
+void ezc3d::c3d::point(const std::string& pointName, const std::vector<ezc3d::DataNS::Frame>& frames){
+    std::vector<std::string> names;
+    names.push_back(pointName);
+    point(names, frames);
+}
+
+void ezc3d::c3d::point(const std::vector<std::string>& ptsNames, const std::vector<ezc3d::DataNS::Frame>& frames)
 {
     if (frames.size() == 0 || frames.size() != data().nbFrames())
         throw std::invalid_argument("Size of the array of frames must equal the number of frames already "
@@ -354,17 +479,17 @@ void ezc3d::c3d::point(const std::vector<ezc3d::DataNS::Frame>& frames)
     if (frames[0].points().nbPoints() == 0)
         throw std::invalid_argument("Points in the frames cannot be empty");
 
-    std::vector<std::string> labels(parameters().group("POINT").parameter("LABELS").valuesAsString());
-    for (size_t idx = 0; idx < frames[0].points().nbPoints(); ++idx){
-        const std::string &name(frames[0].points().point(idx).name());
+    const std::vector<std::string>& labels(pointNames());
+
+    for (size_t idx = 0; idx<ptsNames.size(); ++idx){
         for (size_t i=0; i<labels.size(); ++i)
-            if (!name.compare(labels[i]))
+            if (!ptsNames[idx].compare(labels[i]))
                 throw std::invalid_argument("The point you try to create already exists in the data set");
 
         for (size_t f=0; f<data().nbFrames(); ++f)
             _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
     }
-    updateParameters();
+    updateParameters(ptsNames);
 }
 
 void ezc3d::c3d::analog(const std::string &name)
@@ -373,7 +498,6 @@ void ezc3d::c3d::analog(const std::string &name)
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
         ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
-        emptyChannel.name(name);
         emptyChannel.data(0);
         ezc3d::DataNS::Frame frame;
         dummy_subframes.channel(emptyChannel);
@@ -381,13 +505,20 @@ void ezc3d::c3d::analog(const std::string &name)
             frame.analogs_nonConst().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        analog(dummy_frames);
+        analog(name, dummy_frames);
     } else {
         updateParameters({}, {name});
     }
 }
 
-void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
+void ezc3d::c3d::analog(std::string channelName, const std::vector<ezc3d::DataNS::Frame> &frames)
+{
+    std::vector<std::string> names;
+    names.push_back(channelName);
+    analog(names, frames);
+}
+
+void ezc3d::c3d::analog(const std::vector<std::string> &chanNames, const std::vector<ezc3d::DataNS::Frame> &frames)
 {
     if (frames.size() != data().nbFrames())
         throw std::invalid_argument("Size of the array of frames must equal the number of frames already "
@@ -398,11 +529,10 @@ void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
     if (frames[0].analogs().subframe(0).nbChannels() == 0)
         throw std::invalid_argument("Channels in the frame cannot be empty");
 
-    std::vector<std::string> labels(parameters().group("ANALOG").parameter("LABELS").valuesAsString());
-    for (size_t idx = 0; idx < frames[0].analogs().subframe(0).nbChannels(); ++idx){
-        const std::string &name(frames[0].analogs().subframe(0).channel(idx).name());
+    const std::vector<std::string>& labels(channelNames());
+    for (size_t idx = 0; idx < chanNames.size(); ++idx){
         for (size_t i=0; i<labels.size(); ++i)
-            if (!name.compare(labels[i]))
+            if (!chanNames[idx].compare(labels[i]))
                 throw std::invalid_argument("The channel you try to create already exists in the data set");
 
         for (size_t f=0; f < data().nbFrames(); ++f){
@@ -411,15 +541,15 @@ void ezc3d::c3d::analog(const std::vector<ezc3d::DataNS::Frame> &frames)
             }
         }
     }
-    updateParameters();
+    updateParameters({}, chanNames);
 }
 
 void ezc3d::c3d::updateHeader()
 {
-    // Parameter is always consider as the right value. If there is a discrepancy between them, change the header
+    // Parameter is always consider as the right value.
     if (static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) != header().nbFrames()){
-        _header->firstFrame(0);
-        _header->lastFrame(static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) - 1);
+        // If there is a discrepancy between them, change the header, while keeping the firstFrame value
+        _header->lastFrame(static_cast<size_t>(parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]) + _header->firstFrame() - 1);
     }
     float pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
     float buffer(10000); // For decimal truncature
@@ -450,11 +580,6 @@ void ezc3d::c3d::updateHeader()
 
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, const std::vector<std::string> &newAnalogs)
 {
-    if (data().nbFrames() != 0 && newPoints.size() > 0)
-        throw std::runtime_error("newPoints in updateParameters should only be called on empty c3d");
-    if (data().nbFrames() != 0 && newAnalogs.size() > 0)
-        throw std::runtime_error("newAnalogs in updateParameters should only be called on empty c3d");
-
     // If frames has been added
     ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
     size_t nFrames(data().nbFrames());
@@ -478,6 +603,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
         std::vector<std::string> labels;
         std::vector<std::string> descriptions;
         std::vector<std::string> units;
+        std::vector<std::string> ptsNames(pointNames());
+        ptsNames.insert( ptsNames.end(), newPoints.begin(), newPoints.end() );
         for (size_t i = 0; i < nPoints; ++i){
             std::string name;
             if (data().nbFrames() == 0){
@@ -486,7 +613,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
                 else
                     name = newPoints[i - parameters().group("POINT").parameter("LABELS").valuesAsString().size()];
             } else {
-                name = data().frame(0).points().point(i).name();
+                name = ptsNames[i];
+                removeTrailingSpaces(name);
             }
             labels.push_back(name);
             descriptions.push_back("");
@@ -517,6 +645,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
             size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
             std::vector<std::string> labels;
             std::vector<std::string> descriptions;
+            std::vector<std::string> chanNames(channelNames());
+            chanNames.insert( chanNames.end(), newAnalogs.begin(), newAnalogs.end() );
             for (size_t i = 0; i<nAnalogs; ++i){
                 std::string name;
                 if (data().nbFrames() == 0){
@@ -525,7 +655,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
                     else
                         name = newAnalogs[i-parameters().group("ANALOG").parameter("LABELS").valuesAsString().size()];
                 } else {
-                    name = data().frame(0).analogs().subframe(0).channel(i).name();
+                    name = chanNames[i];
+                    removeTrailingSpaces(name);
                 }
                 labels.push_back(name);
                 descriptions.push_back("");
@@ -550,7 +681,6 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
             for (size_t i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i < nAnalogs; ++i)
                 units.push_back("V");
             grpAnalog.parameter_nonConst(idxUnits).set(units);
-
         }
     }
     updateHeader();

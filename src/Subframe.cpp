@@ -38,15 +38,6 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::nbChannels(size_t nChannels)
     _channels.resize(nChannels);
 }
 
-size_t ezc3d::DataNS::AnalogsNS::SubFrame::channelIdx(const std::string &channelName) const
-{
-    for (size_t i = 0; i < nbChannels(); ++i)
-        if (!channel(i).name().compare(channelName))
-            return i;
-    throw std::invalid_argument("Subframe::channelIdx could not find " + channelName +
-                                " in the analogous data set");
-}
-
 const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(size_t idx) const
 {
     try {
@@ -69,16 +60,6 @@ ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel_n
                                 " while the maximum number of channels is "
                                 + std::to_string(nbChannels()) + ".");
     }
-}
-
-const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(const std::string &channelName) const
-{
-    return _channels.at(channelIdx(channelName));
-}
-
-ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel_nonConst(const std::string &channelName)
-{
-    return _channels.at(channelIdx(channelName));
 }
 
 void ezc3d::DataNS::AnalogsNS::SubFrame::channel(const ezc3d::DataNS::AnalogsNS::Channel &channel, size_t idx)
