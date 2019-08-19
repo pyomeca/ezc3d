@@ -85,7 +85,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
                 writeImbricatedParameter(f, _dimension, 1);
             }
         } else {
-            if (!_name.compare("DATA_START")){
+            if (dataStartPosition != -1 && !_name.compare("DATA_START")){ // -1 means that it is not the POINT group
                 // This is a special case defined in the standard where you write the number of blocks up to the data
                 dataStartPosition = f.tellg();
                 f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::DATA_TYPE::BYTE);
