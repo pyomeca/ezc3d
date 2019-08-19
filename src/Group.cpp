@@ -57,9 +57,12 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, s
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(currentPos);
 
+    std::streampos defaultDataStartPosition(-1);
     for (size_t i=0; i < nbParameters(); ++i)
-        parameter(i).write(f, -groupIdx, dataStartPosition);
-
+        if (name() != "POINT")
+            parameter(i).write(f, -groupIdx, dataStartPosition);
+        else
+            parameter(i).write(f, -groupIdx, defaultDataStartPosition);
 }
 
 int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &c3d, const ezc3d::ParametersNS::Parameters &params,
