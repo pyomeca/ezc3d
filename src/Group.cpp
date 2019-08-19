@@ -59,7 +59,7 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, s
 
     std::streampos defaultDataStartPosition(-1);
     for (size_t i=0; i < nbParameters(); ++i)
-        if (name() != "POINT")
+        if (!name().compare("POINT"))
             parameter(i).write(f, -groupIdx, dataStartPosition);
         else
             parameter(i).write(f, -groupIdx, defaultDataStartPosition);

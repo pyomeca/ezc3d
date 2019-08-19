@@ -106,7 +106,7 @@ void ezc3d::c3d::write(const std::string& filePath) const
         frames.set(-1);
         params.group_nonConst("POINT").parameter(frames);
     }
-    std::streampos dataStartParameters(-1);
+    std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);
 
     // Write the data start parameter in header and parameter sections
