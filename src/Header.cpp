@@ -174,8 +174,8 @@ void ezc3d::Header::read(ezc3d::c3d &c3d, std::fstream &file)
     _firstFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
     if (_firstFrame != 0) // First frame is 1-based, but some forgot hence they put 0..
         _firstFrame -= 1;
-    _lastFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD) - 1;
-    if (_lastFrame != 0) // Las frame is 1-based, but some forgot  hence they put 0..
+    _lastFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
+    if (_lastFrame != 0) // Last frame is 1-based, but some forgot  hence they put 0..
         _lastFrame -= 1;
 
     // Some info
