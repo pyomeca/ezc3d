@@ -64,7 +64,7 @@ public:
     /// Get a reference to the STL vector where the 3D point is store in the form of a non-const reference.
     /// The user can thereafter modify these points at will, but with the caution it requires.
     ///
-    std::vector<float> data_nonConst();
+    std::vector<float> data();
 
     ///
     /// \brief Get the X component of the 3D point
