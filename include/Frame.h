@@ -59,7 +59,7 @@ public:
     /// Get all the points in the form of a non-const reference.
     /// The user can thereafter modify these points at will, but with the caution it requires.
     ///
-    ezc3d::DataNS::Points3dNS::Points& points_nonConst() const;
+    ezc3d::DataNS::Points3dNS::Points& points();
 
 
     //---- ANALOGS ----//
@@ -79,7 +79,7 @@ public:
     /// Get all the analogs in the form of a non-const reference.
     /// The user can thereafter modify these analogs at will, but with the caution it requires.
     ///
-    ezc3d::DataNS::AnalogsNS::Analogs& analogs_nonConst() const;
+    ezc3d::DataNS::AnalogsNS::Analogs& analogs();
 
 
     //---- ACCESSORS ----//

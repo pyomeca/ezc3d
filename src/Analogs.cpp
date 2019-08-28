@@ -52,7 +52,7 @@ const ezc3d::DataNS::AnalogsNS::SubFrame& ezc3d::DataNS::AnalogsNS::Analogs::sub
     }
 }
 
-ezc3d::DataNS::AnalogsNS::SubFrame &ezc3d::DataNS::AnalogsNS::Analogs::subframe_nonConst(size_t idx)
+ezc3d::DataNS::AnalogsNS::SubFrame &ezc3d::DataNS::AnalogsNS::Analogs::subframe(size_t idx)
 {
     try {
         return _subframe.at(idx);
