@@ -146,6 +146,13 @@ public:
 
     //---- DATA ----//
 protected:
+    bool _isEmpty; ///< If the parameter is empty
+
+    ///
+    /// \brief Set the empty flag to true if the parameter is actually empty
+    ///
+    void setEmptyFlag();
+
     std::vector<int> _param_data_int; ///< Parameter values if the parameter type is DATA_TYPE::BYTE of DATA_TYPE::INT
     std::vector<float> _param_data_float; ///< Parameter values if the parameter type is DATA_TYPE::FLOAT
     std::vector<std::string> _param_data_string; ///< Parameter values if the parameter type is DATA_TYPE::CHAR
