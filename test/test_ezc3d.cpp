@@ -420,11 +420,40 @@ TEST(c3dModifier, specificParameters){
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(nPointParams), std::out_of_range);
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), std::invalid_argument);
 
-    // Try to read a parameter into the wrong format
-    EXPECT_THROW(p.valuesAsByte(), std::invalid_argument);
-    EXPECT_THROW(p.valuesAsInt(), std::invalid_argument);
-    EXPECT_THROW(p.valuesAsFloat(), std::invalid_argument);
-    EXPECT_THROW(p.valuesAsString(), std::invalid_argument);
+    // Reading an empty parameter is actually type irrelevant
+    EXPECT_NO_THROW(p.valuesAsByte());
+    EXPECT_NO_THROW(p.valuesAsInt());
+    EXPECT_NO_THROW(p.valuesAsFloat());
+    EXPECT_NO_THROW(p.valuesAsString());
+
+    {
+        // There is no pNonEmptyByte, since the only way to declare a byte
+        // is from the .c3d file itself. Otherwise it is always an int
+
+        ezc3d::ParametersNS::GroupNS::Parameter pNonEmptyInt;
+        pNonEmptyInt.name("NewIntParam");
+        pNonEmptyInt.set(std::vector<int>(1));
+        EXPECT_THROW(pNonEmptyInt.valuesAsByte(), std::invalid_argument);
+        EXPECT_NO_THROW(pNonEmptyInt.valuesAsInt());
+        EXPECT_THROW(pNonEmptyInt.valuesAsFloat(), std::invalid_argument);
+        EXPECT_THROW(pNonEmptyInt.valuesAsString(), std::invalid_argument);
+
+        ezc3d::ParametersNS::GroupNS::Parameter pNonEmptyFloat;
+        pNonEmptyFloat.name("NewFloatParam");
+        pNonEmptyFloat.set(std::vector<float>(1));
+        EXPECT_THROW(pNonEmptyFloat.valuesAsByte(), std::invalid_argument);
+        EXPECT_THROW(pNonEmptyFloat.valuesAsInt(), std::invalid_argument);
+        EXPECT_NO_THROW(pNonEmptyFloat.valuesAsFloat());
+        EXPECT_THROW(pNonEmptyFloat.valuesAsString(), std::invalid_argument);
+
+        ezc3d::ParametersNS::GroupNS::Parameter pNonEmptyChar;
+        pNonEmptyChar.name("NewCharParam");
+        pNonEmptyChar.set(std::vector<std::string>(1));
+        EXPECT_THROW(pNonEmptyChar.valuesAsByte(), std::invalid_argument);
+        EXPECT_THROW(pNonEmptyChar.valuesAsInt(), std::invalid_argument);
+        EXPECT_THROW(pNonEmptyChar.valuesAsFloat(), std::invalid_argument);
+        EXPECT_NO_THROW(pNonEmptyChar.valuesAsString());
+    }
 
     // Lock and unlock a parameter
     EXPECT_EQ(p.isLocked(), false);
