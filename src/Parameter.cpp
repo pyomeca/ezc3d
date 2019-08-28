@@ -14,7 +14,8 @@ ezc3d::ParametersNS::GroupNS::Parameter::Parameter(const std::string &name, cons
     _name(name),
     _description(description),
     _isLocked(false),
-    _data_type(ezc3d::DATA_TYPE::NO_DATA_TYPE)
+    _data_type(ezc3d::DATA_TYPE::NO_DATA_TYPE),
+    _isEmpty(true)
 {
 
 }
@@ -185,6 +186,7 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &c3d, const Paramet
     // Byte 6+nbCharInName ==> Group description
     if (nbCharInDesc)
         _description = c3d.readString(file, static_cast<unsigned int>(nbCharInDesc));
+    setEmptyFlag();
 
     // Return how many bytes
     return nextParamByteInFile;
@@ -250,6 +252,14 @@ bool ezc3d::ParametersNS::GroupNS::Parameter::isDimensionConsistent(size_t dataS
         return false;
 }
 
+void ezc3d::ParametersNS::GroupNS::Parameter::setEmptyFlag()
+{
+    if (_dimension.size() ==0 || (_dimension.size() == 1 && _dimension[0] == 0))
+        _isEmpty = true;
+    else
+        _isEmpty = false;
+}
+
 ezc3d::DATA_TYPE ezc3d::ParametersNS::GroupNS::Parameter::type() const
 {
     return _data_type;
@@ -278,6 +288,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<int> &data, 
     _data_type = ezc3d::DATA_TYPE::INT;
     _param_data_int = data;
     _dimension = dimensionCopy;
+    setEmptyFlag();
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::set(float data)
@@ -300,9 +311,11 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data
     }
     if (!isDimensionConsistent(data.size(), dimensionCopy))
         throw std::range_error("Dimension of the data does not correspond to sent dimensions");
+
     _data_type = ezc3d::DATA_TYPE::FLOAT;
     _param_data_float = data;
     _dimension = dimensionCopy;
+    setEmptyFlag();
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::string& data)
@@ -331,33 +344,34 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string>
     _data_type = ezc3d::DATA_TYPE::CHAR;
     _param_data_string = data;
     _dimension = dimensionWithStrLen;
+    setEmptyFlag();
 }
 
 const std::vector<int> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const
 {
-    if (_data_type != DATA_TYPE::BYTE)
-        throw std::invalid_argument("This parameter is not a BYTE");
+    if (!_isEmpty && _data_type != DATA_TYPE::BYTE)
+        throw std::invalid_argument(_name + " parameter is not a BYTE");
     return _param_data_int;
 }
 
 const std::vector<int> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const
 {
-    if (_data_type != DATA_TYPE::INT)
-        throw std::invalid_argument("This parameter is not an INT");
+    if (!_isEmpty && _data_type != DATA_TYPE::INT)
+        throw std::invalid_argument(_name + " parameter is not an INT");
     return _param_data_int;
 }
 
 const std::vector<float> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsFloat() const
 {
-    if (_data_type != DATA_TYPE::FLOAT)
-        throw std::invalid_argument("This parameter is not a FLOAT");
+    if (!_isEmpty && _data_type != DATA_TYPE::FLOAT)
+        throw std::invalid_argument(_name + " parameter is not a FLOAT");
     return _param_data_float;
 }
 
 const std::vector<std::string>& ezc3d::ParametersNS::GroupNS::Parameter::valuesAsString() const
 {
-    if (_data_type != DATA_TYPE::CHAR)
-        throw std::invalid_argument("This parameter is not string");
+    if (!_isEmpty && _data_type != DATA_TYPE::CHAR)
+        throw std::invalid_argument(_name + " parameter is not string");
 
     return _param_data_string;
 }
