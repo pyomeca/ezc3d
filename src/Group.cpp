@@ -155,7 +155,7 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
     }
 }
 
-ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter_nonConst(size_t idx)
+ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter(size_t idx)
 {
     try {
         return _parameters.at(idx);
@@ -172,9 +172,9 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
     return parameter(parameterIdx(parameterName));
 }
 
-ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter_nonConst(std::string parameterName)
+ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter(std::string parameterName)
 {
-    return parameter_nonConst(parameterIdx(parameterName));
+    return parameter(parameterIdx(parameterName));
 }
 
 int ezc3d::ParametersNS::GroupNS::Group::parameter(ezc3d::c3d &c3d, const Parameters &params, std::fstream &file, int nbCharInName)
