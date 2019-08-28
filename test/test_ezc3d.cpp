@@ -535,6 +535,7 @@ TEST(c3dModifier, addPoints) {
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isempty(), false);
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
@@ -548,6 +549,7 @@ TEST(c3dModifier, addPoints) {
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), data[2]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
         }
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isempty(), true);
     }
 
     // Add frame with a new point with not enough frames
@@ -739,11 +741,14 @@ TEST(c3dModifier, addAnalogs) {
     }
 
     // DATA
-    for (size_t f = 0; f < new_c3d.nFrames; ++f)
+    for (size_t f = 0; f < new_c3d.nFrames; ++f){
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isempty(), true);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isempty(), false);
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
                 EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
+    }
 }
 
 TEST(c3dModifier, removeAnalog){
@@ -1063,6 +1068,9 @@ TEST(c3dModifier, specificFrames){
     // Get a frame and some inexistant one
     EXPECT_THROW(new_c3d.c3d.data().frame(new_c3d.nFrames), std::out_of_range);
 
+    // Try to get a all subframes and an out-of-range subframe
+    EXPECT_NO_THROW(new_c3d.c3d.data().frame(0).analogs().subframes());
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0), std::out_of_range);
 
     // HEADER
     // Things that should remain as default
