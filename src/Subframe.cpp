@@ -50,7 +50,7 @@ const ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::cha
     }
 }
 
-ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel_nonConst(size_t idx)
+ezc3d::DataNS::AnalogsNS::Channel &ezc3d::DataNS::AnalogsNS::SubFrame::channel(size_t idx)
 {
     try {
         return _channels.at(idx);

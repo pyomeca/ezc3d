@@ -122,7 +122,7 @@ const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(size_t idx) const
     }
 }
 
-ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame_nonConst(size_t idx)
+ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx)
 {
     try {
         return _frames.at(idx);
