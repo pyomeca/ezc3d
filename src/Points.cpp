@@ -49,7 +49,7 @@ const ezc3d::DataNS::Points3dNS::Point& ezc3d::DataNS::Points3dNS::Points::point
     }
 }
 
-ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point_nonConst(size_t idx)
+ezc3d::DataNS::Points3dNS::Point &ezc3d::DataNS::Points3dNS::Points::point(size_t idx)
 {
     try {
         return _points.at(idx);

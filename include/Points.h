@@ -76,7 +76,7 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
-    ezc3d::DataNS::Points3dNS::Point& point_nonConst(size_t idx);
+    ezc3d::DataNS::Points3dNS::Point& point(size_t idx);
 
     ///
     /// \brief Add/replace a point to the points data set

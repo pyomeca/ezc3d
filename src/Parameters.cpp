@@ -73,9 +73,9 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
 
         // Group ID always negative for groups and positive parameter of group ID
         if (id < 0)
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(abs(id)-1)).read(c3d, *this, file, nbCharInName);
+            nextParamByteInFile = group(static_cast<size_t>(abs(id)-1)).read(c3d, *this, file, nbCharInName);
         else
-            nextParamByteInFile = group_nonConst(static_cast<size_t>(id-1)).parameter(c3d, *this, file, nbCharInName);
+            nextParamByteInFile = group(static_cast<size_t>(id-1)).parameter(c3d, *this, file, nbCharInName);
     }
 }
 
@@ -321,7 +321,7 @@ const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::grou
     }
 }
 
-ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group_nonConst(size_t idx)
+ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(size_t idx)
 {
     try {
         return _groups.at(idx);
@@ -338,9 +338,9 @@ const ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::grou
     return group(groupIdx(groupName));
 }
 
-ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group_nonConst(const std::string &groupName)
+ezc3d::ParametersNS::GroupNS::Group &ezc3d::ParametersNS::Parameters::group(const std::string &groupName)
 {
-    return group_nonConst(groupIdx(groupName));
+    return group(groupIdx(groupName));
 }
 
 void ezc3d::ParametersNS::Parameters::group(const ezc3d::ParametersNS::GroupNS::Group &g)
