@@ -27,7 +27,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 # Add headers
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Installation
+# Install target
 if(WIN32)
     set(${PROJECT_NAME}_LIB_FOLDER Lib)
     set(${PROJECT_NAME}_BIN_FOLDER bin)
@@ -43,8 +43,19 @@ install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}
         )
 install(DIRECTORY include DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
-        
-# Add binding subdirectory
+
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
+
+# Binders
 add_subdirectory(binding)
 
 # Examples
