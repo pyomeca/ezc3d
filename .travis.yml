@@ -77,7 +77,8 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         ./runUnitTests;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        ./runUnitTests.exe;
+        dir;
+        runUnitTests.exe;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         cd ..;
