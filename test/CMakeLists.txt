@@ -7,7 +7,7 @@ find_path(GTEST_INCLUDE_DIR gtest.h HINTS ${CMAKE_SOURCE_DIR}/${RELATIVE_PATH_TO
 
 if((NOT GTEST_INCLUDE_DIR) OR (NOT EXISTS ${GTEST_INCLUDE_DIR}))
     # we couldn't find the header files for gtest or they don't exist
-    message("Unable to find gtest")
+    message("Unable to find gtest, try to automatically download it")
 
     # we have a submodule setup for gtest, assume it is under external/gtest
     # now we need to clone this submodule
@@ -66,7 +66,7 @@ endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
 set(TEST_FILES_TO_DOWNLOAD Sample01.zip Sample02.zip)
 foreach(FILE ${TEST_FILES_TO_DOWNLOAD})
     get_filename_component(FOLDER_NAME ${FILE} NAME_WE)
-    IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite)
+    IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE})
         file(
             DOWNLOAD https://www.c3d.org/data/${FILE}
             ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE}
