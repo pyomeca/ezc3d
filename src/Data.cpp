@@ -31,8 +31,12 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
 
     // Read the data
     PROCESSOR_TYPE processorType(c3d.parameters().processorType());
-    float pointScaleFactor(c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0]);
-    std::vector<float> analogScaleFactors(c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat());
+    float pointScaleFactor(-1);
+    if (c3d.header().nb3dPoints())
+        pointScaleFactor = c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0];
+    std::vector<float> analogScaleFactors;
+    if (c3d.header().nbAnalogs())
+        analogScaleFactors = c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat();
     float analogGeneralFactor(c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0]);
     std::vector<int> analogZeroOffset(c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt());
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
