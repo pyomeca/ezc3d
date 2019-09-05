@@ -68,6 +68,8 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         cd test;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+        cp bin/Release/*.dll ./test/Release;
+        cp Release/*.dll ./test/Release;
         cd test\\Release;
         mkdir .\\c3dTestFiles;
         xcopy ..\\c3dTestFiles .\\c3dTestFiles;
@@ -77,8 +79,7 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         ./runUnitTests;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        dir;
-        runUnitTests.exe;
+        ./runUnitTests.exe;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         cd ..;
