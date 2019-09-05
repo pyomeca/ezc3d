@@ -554,7 +554,13 @@ void ezc3d::c3d::updateHeader()
     float pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
     float buffer(10000); // For decimal truncature
     if (static_cast<int>(pointRate*buffer) != static_cast<int>(header().frameRate()*buffer)){
-        _header->frameRate(pointRate);
+        // If there are points but the rate don't match keep the one from header
+        if (static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0 && parameters().group("POINT").parameter("USED").valuesAsInt()[0] != 0){
+            ezc3d::ParametersNS::GroupNS::Parameter rate("RATE");
+            rate.set(header().frameRate());
+            parameter("POINT", rate);
+        } else
+            _header->frameRate(pointRate);
     }
     if (static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]) != header().nb3dPoints()){
         _header->nb3dPoints(static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]));
