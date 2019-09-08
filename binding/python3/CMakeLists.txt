@@ -1,12 +1,12 @@
 # Include python
 find_package(PYTHON3 REQUIRED)
 include_directories(${Python3_INCLUDE_DIRS})
+
 find_package(Numpy REQUIRED)
 
 include_directories(${NUMPY_INCLUDES})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 if(WIN32)
-	link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
+    link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
 endif()
 
 # Add swig module
@@ -17,6 +17,11 @@ set_property(SOURCE ${I_SOURCE_FILE} PROPERTY CPLUSPLUS ON)
 SWIG_ADD_LIBRARY(${PROJECT_NAME} TYPE MODULE LANGUAGE python SOURCES ${I_SOURCE_FILE})
 swig_link_libraries(${PROJECT_NAME} ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_LIBRARIES})
 
+# Add headers
+target_include_directories(_${PROJECT_NAME} PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
+
 if(APPLE)
     SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES SUFFIX ".so" INSTALL_RPATH ${${PROJECT_NAME}_BIN_FOLDER})
     SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -25,7 +30,6 @@ else()
     SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES INSTALL_RPATH ${${PROJECT_NAME}_BIN_FOLDER})
     SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
-
 
 # Install to the proper directories
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.py 
