@@ -77,7 +77,3 @@ option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
 if (BUILD_TESTS)
     add_subdirectory(test)
 endif()
-
-
-
-
