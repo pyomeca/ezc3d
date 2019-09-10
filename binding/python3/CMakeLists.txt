@@ -21,11 +21,7 @@ swig_link_libraries(${PROJECT_NAME} ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_
 target_include_directories(_${PROJECT_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}/include
 )
-if (${CMAKE_VERSION} VERSION_GREATER "3.10.0")
-    set_target_properties(_${PROJECT_NAME} PROPERTIES SWIG_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/include)
-else()
-    include_directories(${CMAKE_SOURCE_DIR}/include)
-endif()
+set_target_properties(_${PROJECT_NAME} PROPERTIES SWIG_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 if(APPLE)
     SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES SUFFIX ".so" INSTALL_RPATH ${${PROJECT_NAME}_BIN_FOLDER})
