@@ -236,8 +236,7 @@ protected:
     ///
     /// \brief Write the data_start parameter where demanded
     /// \param file opened file stream to be read
-    /// \param dataPosition The position in block of the data
-    /// \param paramPosition The position in byte to write the
+    /// \param dataStartPosition The position in block of the data
     /// \param type The type of data to write
     ///
     void writeDataStart(std::fstream &file,

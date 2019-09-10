@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0048 NEW)
-project(ezc3d VERSION 1.1.0)
+project(ezc3d VERSION 1.1.1)
 set(CMAKE_CXX_STANDARD 11)
 
 # Set some variables
@@ -27,7 +27,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 # Add headers
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Installation
+# Install target
 if(WIN32)
     set(${PROJECT_NAME}_LIB_FOLDER Lib)
     set(${PROJECT_NAME}_BIN_FOLDER bin)
@@ -43,141 +43,37 @@ install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}
         )
 install(DIRECTORY include DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
-        
-# Add binding subdirectory
+
+# uninstall target
+if(NOT TARGET uninstall)
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
+
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
+
+# Binders
 add_subdirectory(binding)
 
-# Add the example if asked
+# Examples
 if(NOT WIN32)
-	set(BUILD_EXAMPLE TRUE CACHE BOOL "Build a C++ example")
+	option(BUILD_EXAMPLE "Build a C++ example" ON)
 	if (BUILD_EXAMPLE)
 		add_subdirectory(example)
 	endif()
 endif(NOT WIN32)
 
-
-################################
-# Documentation
-################################
-
-# first we can indicate the documentation build as an option and set it to ON by default
+# Doc
 option(BUILD_DOC "Build documentation" OFF)
-
 if (BUILD_DOC)
-    # check if Doxygen is installed
-    find_package(Doxygen)
-    if (DOXYGEN_FOUND)
-        # set input and output files
-        set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-        set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-
-        # request to configure the file
-        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-
-        # note the option ALL which allows to build the docs together with the application
-        add_custom_target( doc_doxygen ALL
-            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            COMMENT "Generating API documentation with Doxygen"
-            VERBATIM )
-    else (DOXYGEN_FOUND)
-      message("Doxygen need to be installed to generate the doxygen documentation")
-    endif (DOXYGEN_FOUND)
+    add_subdirectory(docs)
 endif (BUILD_DOC)
 
-
-################################
 # Testing
-################################
-
-# Options. Turn on with 'cmake -DBUILD_TESTS=ON'.
 option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
-
 if (BUILD_TESTS)
-    # Download gtest if necessary
-    set(RELATIVE_PATH_TO_GTEST external/gtest)
-    find_path(GTEST_INCLUDE_DIR gtest.h HINTS ${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest)
-
-    if((NOT GTEST_INCLUDE_DIR) OR (NOT EXISTS ${GTEST_INCLUDE_DIR}))
-        # we couldn't find the header files for gtest or they don't exist
-        message("Unable to find gtest")
-
-        # we have a submodule setup for gtest, assume it is under external/gtest
-        # now we need to clone this submodule
-        execute_process(COMMAND git submodule update --init -- external/gtest
-                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-        find_path(GTEST_INCLUDE_DIR gtest.h HINTS ${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest)
-    endif()
-
-    # Prevent overriding the parent project's compiler/linker
-    # settings on Windows
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-    # Add googletest directly to our build. This defines
-    # the gtest and gtest_main targets.
-    set(BUILD_GMOCK OFF)
-    set(INSTALL_GTEST OFF)
-    add_subdirectory(${RELATIVE_PATH_TO_GTEST}
-                     ${CMAKE_BINARY_DIR}/gtest
-                     EXCLUDE_FROM_ALL)
-
-    ##############
-    # Unit Tests
-    ##############
-    enable_testing()
-
-    file(GLOB TEST_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp)
-    add_executable(runUnitTests ${TEST_SRC_FILES})
-
-    # Standard linking to gtest stuff.
-    target_link_libraries(runUnitTests gtest_main)
-
-    # Extra linking for the project.
-    target_link_libraries(runUnitTests ${PROJECT_NAME})
-
-    # This is so you can do 'make test' to see all your tests run, instead of
-    # manually running the executable runUnitTests to see those specific tests.
-    add_test(UnitTests runUnitTests)
-
-    if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
-        set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/.travis/cmake)
-
-        include(CodeCoverage)
-        setup_target_for_coverage(${PROJECT_NAME}_coverage runUnitTests coverage)
-
-        SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-        SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
-
-    # Download and copy c3d test files from test test suite of c3d.org and add them to the local test files
-    IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite)
-        set(TEST_FILES_TO_DOWNLOAD Sample01.zip Sample02.zip)
-        foreach(FILE ${TEST_FILES_TO_DOWNLOAD})
-            file(
-                DOWNLOAD https://www.c3d.org/data/${FILE}
-                ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE}
-                TIMEOUT 60 # seconds
-                TLS_VERIFY ON
-                )
-            get_filename_component(FOLDER_NAME ${FILE} NAME_WE)
-            file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME})
-            execute_process(
-                COMMAND ${CMAKE_COMMAND} -E tar -xf ../${FILE}
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME}/
-                )
-            file(GLOB C3D_TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME}/*.c3d)
-            file(COPY ${C3D_TEST_FILES}
-                 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
-        endforeach()
-    endif()
-
-    # Copy also some local c3d test files
-    file(GLOB C3D_TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/test/c3dFiles/*.c3d)
-    file(COPY ${C3D_TEST_FILES}
-         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
+    add_subdirectory(test)
 endif()
-
-
-
-

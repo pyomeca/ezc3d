@@ -78,7 +78,7 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of subframes
     ///
-    ezc3d::DataNS::AnalogsNS::SubFrame& subframe_nonConst(size_t idx);
+    ezc3d::DataNS::AnalogsNS::SubFrame& subframe(size_t idx);
 
     ///
     /// \brief Add/replace a subframe to the analogous data set
