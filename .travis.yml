@@ -28,7 +28,7 @@ before_install:
         bash miniconda.sh -b -p $HOME/miniconda;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
         choco install miniconda3 --params="'/AddToPath:1'";
-        export PATH="/c/tools/miniconda3/scripts:/c/tools/miniconda3/:$PATH";
+        export PATH="/c/tools/miniconda3/scripts:/c/tools/miniconda3/:/c/Program Files/Git/miniconda3/bin/:$PATH";
       fi
     - export PATH="$HOME/miniconda/bin:$PATH"
     - hash -r
@@ -59,19 +59,32 @@ script:
         cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF .. ;
         make;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX= -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF ..;
+        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=$ToolsDir/miniconda3/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF ..;
         cmake --build ./ --config Release;
       fi
     # Only do the coverage on Linux, but run the test anyway to get a nice output
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        cp -r test/c3dTestFiles/ .;
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+        cd test;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+        cp bin/Release/*.dll ./test/Release;
+        cp Release/*.dll ./test/Release;
+        cd test\\Release;
+        mkdir .\\c3dTestFiles;
+        xcopy ..\\c3dTestFiles .\\c3dTestFiles;
+      fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
         make ezc3d_coverage;
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         ./runUnitTests;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        cp bin/Release/*.dll .;
-        cp Release/*.dll .;
-        cp Release/*.exe .;
         ./runUnitTests.exe;
+      fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
+        cd ..;
+      elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        cd ../..;
       fi
     - ctest
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 

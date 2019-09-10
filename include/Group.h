@@ -143,7 +143,7 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of parameters
     ///
-    ezc3d::ParametersNS::GroupNS::Parameter& parameter_nonConst(size_t idx);
+    ezc3d::ParametersNS::GroupNS::Parameter& parameter(size_t idx);
 
     ///
     /// \brief Get a particular parameter with the name parameterName from the group
@@ -164,7 +164,7 @@ public:
     ///
     /// Throw a std::invalid_argument if parameterName is not found
     ///
-    ezc3d::ParametersNS::GroupNS::Parameter& parameter_nonConst(std::string parameterName);
+    ezc3d::ParametersNS::GroupNS::Parameter& parameter(std::string parameterName);
 
     ///
     /// \brief Add a parameter to the group from a C3D file

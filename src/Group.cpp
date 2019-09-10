@@ -57,9 +57,12 @@ void ezc3d::ParametersNS::GroupNS::Group::write(std::fstream &f, int groupIdx, s
     f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(currentPos);
 
+    std::streampos defaultDataStartPosition(-1);
     for (size_t i=0; i < nbParameters(); ++i)
-        parameter(i).write(f, -groupIdx, dataStartPosition);
-
+        if (!name().compare("POINT"))
+            parameter(i).write(f, -groupIdx, dataStartPosition);
+        else
+            parameter(i).write(f, -groupIdx, defaultDataStartPosition);
 }
 
 int ezc3d::ParametersNS::GroupNS::Group::read(ezc3d::c3d &c3d, const ezc3d::ParametersNS::Parameters &params,
@@ -152,7 +155,7 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
     }
 }
 
-ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter_nonConst(size_t idx)
+ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter(size_t idx)
 {
     try {
         return _parameters.at(idx);
@@ -169,9 +172,9 @@ const ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Gro
     return parameter(parameterIdx(parameterName));
 }
 
-ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter_nonConst(std::string parameterName)
+ezc3d::ParametersNS::GroupNS::Parameter &ezc3d::ParametersNS::GroupNS::Group::parameter(std::string parameterName)
 {
-    return parameter_nonConst(parameterIdx(parameterName));
+    return parameter(parameterIdx(parameterName));
 }
 
 int ezc3d::ParametersNS::GroupNS::Group::parameter(ezc3d::c3d &c3d, const Parameters &params, std::fstream &file, int nbCharInName)

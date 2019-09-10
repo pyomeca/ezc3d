@@ -78,7 +78,7 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of channels
     ///
-    ezc3d::DataNS::AnalogsNS::Channel& channel_nonConst(size_t idx);
+    ezc3d::DataNS::AnalogsNS::Channel& channel(size_t idx);
 
     ///
     /// \brief Add/replace a channel to the analog subframe data set

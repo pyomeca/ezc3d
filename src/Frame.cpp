@@ -32,7 +32,7 @@ const ezc3d::DataNS::Points3dNS::Points& ezc3d::DataNS::Frame::points() const
     return *_points;
 }
 
-ezc3d::DataNS::Points3dNS::Points &ezc3d::DataNS::Frame::points_nonConst() const
+ezc3d::DataNS::Points3dNS::Points &ezc3d::DataNS::Frame::points()
 {
     return *_points;
 }
@@ -42,7 +42,7 @@ const ezc3d::DataNS::AnalogsNS::Analogs& ezc3d::DataNS::Frame::analogs() const
     return *_analogs;
 }
 
-ezc3d::DataNS::AnalogsNS::Analogs &ezc3d::DataNS::Frame::analogs_nonConst() const
+ezc3d::DataNS::AnalogsNS::Analogs &ezc3d::DataNS::Frame::analogs()
 {
     return *_analogs;
 }

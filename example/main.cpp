@@ -54,7 +54,7 @@ int main()
             ezc3d::DataNS::AnalogsNS::Channel c(subframes_analog.channel(0));
             c.data(sf + 1);
             subframes_analog.channel(c, 0);
-            frame.analogs_nonConst().subframe(subframes_analog);
+            frame.analogs().subframe(subframes_analog);
         }
         for (size_t f = 0; f < c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
@@ -189,7 +189,7 @@ int main()
             newChannel.data(sf+1);
             ezc3d::DataNS::AnalogsNS::SubFrame subframes_analog;
             subframes_analog.channel(newChannel);
-            frame.analogs_nonConst().subframe(subframes_analog);
+            frame.analogs().subframe(subframes_analog);
         }
         for (size_t f=0; f<c3d.data().nbFrames(); ++f)
             frames_analog.push_back(frame);
