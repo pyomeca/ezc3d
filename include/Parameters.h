@@ -140,7 +140,7 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of groups
     ///
-    ezc3d::ParametersNS::GroupNS::Group& group_nonConst(size_t idx);
+    ezc3d::ParametersNS::GroupNS::Group& group(size_t idx);
 
     ///
     /// \brief Get a particular group with the name groupName from the group holder
@@ -158,7 +158,7 @@ public:
     ///
     /// Throw a std::invalid_argument if groupName is not found
     ///
-    ezc3d::ParametersNS::GroupNS::Group& group_nonConst(const std::string& groupName);
+    ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName);
 
     ///
     /// \brief Add/replace a group in the group holder
