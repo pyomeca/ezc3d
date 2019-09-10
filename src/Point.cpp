@@ -41,7 +41,7 @@ const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const
     return _data;
 }
 
-std::vector<float> ezc3d::DataNS::Points3dNS::Point::data_nonConst()
+std::vector<float> ezc3d::DataNS::Points3dNS::Point::data()
 {
     return _data;
 }

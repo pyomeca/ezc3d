@@ -104,9 +104,9 @@ void ezc3d::c3d::write(const std::string& filePath) const
     if (nFrames > 0xFFFF){
         ezc3d::ParametersNS::GroupNS::Parameter frames("FRAMES");
         frames.set(-1);
-        params.group_nonConst("POINT").parameter(frames);
+        params.group("POINT").parameter(frames);
     }
-    std::streampos dataStartParameters;
+    std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);
 
     // Write the data start parameter in header and parameter sections
@@ -395,7 +395,7 @@ void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::Parameters
         idx = parameters().groupIdx(groupName);
     }
 
-    _parameters->group_nonConst(idx).parameter(p);
+    _parameters->group(idx).parameter(p);
 
     // Do a sanity check on the header if important stuff like number of frames or number of elements is changed
     updateHeader();
@@ -403,12 +403,12 @@ void ezc3d::c3d::parameter(const std::string &groupName, const ezc3d::Parameters
 
 void ezc3d::c3d::lockGroup(const std::string &groupName)
 {
-    _parameters->group_nonConst(groupName).lock();
+    _parameters->group(groupName).lock();
 }
 
 void ezc3d::c3d::unlockGroup(const std::string &groupName)
 {
-    _parameters->group_nonConst(groupName).unlock();
+    _parameters->group(groupName).unlock();
 }
 
 void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx)
@@ -487,7 +487,7 @@ void ezc3d::c3d::point(const std::vector<std::string>& ptsNames, const std::vect
                 throw std::invalid_argument("The point you try to create already exists in the data set");
 
         for (size_t f=0; f<data().nbFrames(); ++f)
-            _data->frame_nonConst(f).points_nonConst().point(frames[f].points().point(idx));
+            _data->frame(f).points().point(frames[f].points().point(idx));
     }
     updateParameters(ptsNames);
 }
@@ -502,7 +502,7 @@ void ezc3d::c3d::analog(const std::string &name)
         ezc3d::DataNS::Frame frame;
         dummy_subframes.channel(emptyChannel);
         for (size_t sf = 0; sf < header().nbAnalogByFrame(); ++sf)
-            frame.analogs_nonConst().subframe(dummy_subframes);
+            frame.analogs().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
         analog(name, dummy_frames);
@@ -537,7 +537,7 @@ void ezc3d::c3d::analog(const std::vector<std::string> &chanNames, const std::ve
 
         for (size_t f=0; f < data().nbFrames(); ++f){
             for (size_t sf=0; sf < header().nbAnalogByFrame(); ++sf){
-                _data->frame_nonConst(f).analogs_nonConst().subframe_nonConst(sf).channel(frames[f].analogs().subframe(sf).channel(idx));
+                _data->frame(f).analogs().subframe(sf).channel(frames[f].analogs().subframe(sf).channel(idx));
             }
         }
     }
@@ -554,7 +554,13 @@ void ezc3d::c3d::updateHeader()
     float pointRate(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]);
     float buffer(10000); // For decimal truncature
     if (static_cast<int>(pointRate*buffer) != static_cast<int>(header().frameRate()*buffer)){
-        _header->frameRate(pointRate);
+        // If there are points but the rate don't match keep the one from header
+        if (static_cast<double>(parameters().group("POINT").parameter("RATE").valuesAsFloat()[0]) == 0.0 && parameters().group("POINT").parameter("USED").valuesAsInt()[0] != 0){
+            ezc3d::ParametersNS::GroupNS::Parameter rate("RATE");
+            rate.set(header().frameRate());
+            parameter("POINT", rate);
+        } else
+            _header->frameRate(pointRate);
     }
     if (static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]) != header().nb3dPoints()){
         _header->nb3dPoints(static_cast<size_t>(parameters().group("POINT").parameter("USED").valuesAsInt()[0]));
@@ -581,11 +587,11 @@ void ezc3d::c3d::updateHeader()
 void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, const std::vector<std::string> &newAnalogs)
 {
     // If frames has been added
-    ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group_nonConst(parameters().groupIdx("POINT")));
+    ezc3d::ParametersNS::GroupNS::Group& grpPoint(_parameters->group(parameters().groupIdx("POINT")));
     size_t nFrames(data().nbFrames());
     if (nFrames != static_cast<size_t>(grpPoint.parameter("FRAMES").valuesAsInt()[0])){
         size_t idx(grpPoint.parameterIdx("FRAMES"));
-        grpPoint.parameter_nonConst(idx).set(nFrames);
+        grpPoint.parameter(idx).set(nFrames);
     }
 
     // If points has been added
@@ -595,7 +601,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
     else
         nPoints = parameters().group("POINT").parameter("LABELS").valuesAsString().size() + newPoints.size();
     if (nPoints != static_cast<size_t>(grpPoint.parameter("USED").valuesAsInt()[0])){
-        grpPoint.parameter_nonConst("USED").set(nPoints);
+        grpPoint.parameter("USED").set(nPoints);
 
         size_t idxLabels(grpPoint.parameterIdx("LABELS"));
         size_t idxDescriptions(grpPoint.parameterIdx("DESCRIPTIONS"));
@@ -620,13 +626,13 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
             descriptions.push_back("");
             units.push_back("mm");
         }
-        grpPoint.parameter_nonConst(idxLabels).set(labels);
-        grpPoint.parameter_nonConst(idxDescriptions).set(descriptions);
-        grpPoint.parameter_nonConst(idxUnits).set(units);
+        grpPoint.parameter(idxLabels).set(labels);
+        grpPoint.parameter(idxDescriptions).set(descriptions);
+        grpPoint.parameter(idxUnits).set(units);
     }
 
     // If analogous data has been added
-    ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group_nonConst(parameters().groupIdx("ANALOG")));
+    ezc3d::ParametersNS::GroupNS::Group& grpAnalog(_parameters->group(parameters().groupIdx("ANALOG")));
     size_t nAnalogs;
     if (data().nbFrames() > 0){
         if (data().frame(0).analogs().nbSubframes() > 0)
@@ -639,7 +645,7 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
     // Should always be greater than 0..., but we have to take in account Optotrak lazyness
     if (parameters().group("ANALOG").nbParameters()){
         if (nAnalogs != static_cast<size_t>(grpAnalog.parameter("USED").valuesAsInt()[0])){
-            grpAnalog.parameter_nonConst("USED").set(nAnalogs);
+            grpAnalog.parameter("USED").set(nAnalogs);
 
             size_t idxLabels(static_cast<size_t>(grpAnalog.parameterIdx("LABELS")));
             size_t idxDescriptions(static_cast<size_t>(grpAnalog.parameterIdx("DESCRIPTIONS")));
@@ -661,26 +667,26 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints, con
                 labels.push_back(name);
                 descriptions.push_back("");
             }
-            grpAnalog.parameter_nonConst(idxLabels).set(labels);
-            grpAnalog.parameter_nonConst(idxDescriptions).set(descriptions);
+            grpAnalog.parameter(idxLabels).set(labels);
+            grpAnalog.parameter(idxDescriptions).set(descriptions);
 
             size_t idxScale(grpAnalog.parameterIdx("SCALE"));
             std::vector<float> scales(grpAnalog.parameter(idxScale).valuesAsFloat());
             for (size_t i = grpAnalog.parameter(idxScale).valuesAsFloat().size(); i < nAnalogs; ++i)
                 scales.push_back(1);
-            grpAnalog.parameter_nonConst(idxScale).set(scales);
+            grpAnalog.parameter(idxScale).set(scales);
 
             size_t idxOffset(grpAnalog.parameterIdx("OFFSET"));
             std::vector<int> offset(grpAnalog.parameter(idxOffset).valuesAsInt());
             for (size_t i = grpAnalog.parameter(idxOffset).valuesAsInt().size(); i < nAnalogs; ++i)
                 offset.push_back(0);
-            grpAnalog.parameter_nonConst(idxOffset).set(offset);
+            grpAnalog.parameter(idxOffset).set(offset);
 
             size_t idxUnits(grpAnalog.parameterIdx("UNITS"));
             std::vector<std::string> units(grpAnalog.parameter(idxUnits).valuesAsString());
             for (size_t i = grpAnalog.parameter(idxUnits).valuesAsString().size(); i < nAnalogs; ++i)
                 units.push_back("V");
-            grpAnalog.parameter_nonConst(idxUnits).set(units);
+            grpAnalog.parameter(idxUnits).set(units);
         }
     }
     updateHeader();
