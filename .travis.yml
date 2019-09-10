@@ -28,7 +28,7 @@ before_install:
         bash miniconda.sh -b -p $HOME/miniconda;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
         choco install miniconda3 --params="'/AddToPath:1'";
-        export PATH="/c/tools/miniconda3/scripts:/c/tools/miniconda3/:/c/Program\ Files/Git/miniconda3/Lib/:$PATH";
+        export PATH="/c/tools/miniconda3/scripts:/c/tools/miniconda3/:/c/Program\ Files/Git/miniconda3/bin/:$PATH";
       fi
     - export PATH="$HOME/miniconda/bin:$PATH"
     - hash -r
