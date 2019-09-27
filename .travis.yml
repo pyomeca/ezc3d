@@ -107,12 +107,6 @@ after_success:
         bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
       fi
     
-    # # Code coverage for python (Not sure yet how to merge the two results)
-    # if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-    #     conda install -c conda-forge codecov;
-    #     codecov;
-    # fi
-    
 notifications:
     email:
         on_success: never
