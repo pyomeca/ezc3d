@@ -23,10 +23,13 @@ conda install -c conda-forge ezc3d
 The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 binder will also be installed in the environment.
 
 ## Compiling (For Windows, Linux and Mac)
-The main drawback with downloading the pre-compiled version from Anaconda is that this version may be out-of-date (even if I do my best to keep the release version up-to-date). Moreover, since it is already compiled, it doesn't allow you to modify EZC3D if you need to. Therefore, a more versatile way to enjoy EZC3D is to compile it by yourself.
+The main drawback with downloading the pre-compiled version from Anaconda is that it may be out-of-date. Moreover, since it is already compiled, it doesn't allow you to modify EZC3D if you need it. Therefore, a more versatile way to enjoy EZC3D is to compile it by yourself.
 
 ### Dependencies
-EZC3D has no external dependency and therefore should not require any further work to compile.
+EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
+
+### CMake
+EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples via Internet. The main variables to set are:
 
 That said, the Python3 interface requires *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/) to compile EZC3D. One could easily install these dependencies from Anaconda using the following command:
 ```bash
@@ -47,21 +50,21 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 >
 > `BUILD_EXAMPLE` If you want (`TRUE`) or not (`FALSE`) to build the C++ example. Default is `TRUE`.
 > 
-> `BUILD_TESTS` If you want (`ON`) or not (`OFF`) to build the tests of the project. Please note that this will download gtest (https://github.com/google/googletest). Default is `OFF`.
+> `BUILD_TESTS` If you want `ON` or not `OFF` to build the tests of the project. Please note that this will automatically download gtest (https://github.com/google/googletest). Default is `OFF`.
 > 
 > `BUILD_DOC` If you want (`ON`) or not (`OFF`) to build the documentation of the project. Default is `OFF`.
 > 
 > `BINDER_PYTHON3` If you want (`ON`) or not (`OFF`) to build the Python binder. Default is `OFF`.
 > 
-> `Python3_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the Python executable. This python should have *SWIG* and *Numpy* installed with it. This variable should be found automatically, but anaconda seems to find the base prior to the actual environment, so one should gives attention to that particular variable.
+> `Python3_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the Python executable. This python should have *SWIG* and *Numpy* installed with it. This variable should be found automatically, but Anaconda finds the base prior to the actual environment, so one should gives attention to that particular variable.
 > 
-> `SWIG_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the SWIG executable. This variable should be found automatically.
+> `SWIG_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the SWIG executable. This variable will be found automatically if `Python3_EXECUTABLE` is properly set.
 > 
 > `BINDER_MATLAB` If you want (`ON`) or not (`OFF`) to build the MATLAB binder. Default is `OFF`.
 > 
 > `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory. Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
 > 
-> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, this is {MY DOCUMENTS}/MATLAB. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install ezc3d. Typically, this is `{MY DOCUMENTS}/MATLAB`. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 
 # How to use
 The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
@@ -81,9 +84,9 @@ ezc3d::c3d c3d;
 ### Read a C3D
 To read a C3D file you simply have to call the `c3d` class with a path
 ```C++
-ezc3d::c3d c3d("path_to_c3d.c3d");
+ezc3d::c3d c3d("path/to/c3d.c3d");
 ```
-Please note that on Windows, the path must be `/` or `\\` separated, for obvious reasons. 
+Please note that on Windows, the path must be `/` or `\\` separated (and not only`\`), for obvious reasons. 
 
 ### Write a C3D
 A `c3d` class is able to write itself to a file using the method `write`
@@ -225,12 +228,12 @@ c3d.frame(frame);
 // Print it
 c3d.print();
 ```
-Please note that this method by-passes some protection and may create invalid C3D if not used properly.
+Please note that this method by-passes some protections and may create invalid C3D if not used properly.
 
 ## MATLAB
-MATLAB (https://www.mathworks.com/) is a prototyping langage largely used in industry and faily used by the biomecanical scientific community. Despite the growing popularity of Python as a free and open-source alternative or Octave as a very similar langage open-source, MATLAB remains an important player. Therefore EZC3D comes with a binder for MATLAB.
+MATLAB (https://www.mathworks.com/) is a prototyping langage largely used in industry and faily used by the biomechanical scientific community. Despite the existance of Octave as an open-source and very similar langage or the growing popularity of Python as a free and open-source alternative, MATLAB remains an important player as a programming languages. Therefore EZC3D comes with a binder for MATLAB (that can theoretically used with Octave as well with some minor changes to the CMakeLists.txt file).
 
-MATLAB stands for Matrix laboratory. As the name suggest, it is mainly used to perform operation on matrix. With that in mind, the binder was written to organize the point so it is easy to perform matrix multiplication on them. Hence, EZC3D works on MATLAB structure that separate the `header`, the `parameter` and the `data`. Into the `header` structure, you will find information on the `points`, the `analogs` and the `events`. Into the `parameter`, you will find all the groups and parameters as they appear in the C3D file. Finally, in the `data`, there is the `points` values organized into a 3d hypermatrix (XYZ x N_POINTS x N_FRAMES) and the `analogs` values organized into a 2d matrix (N_FRAMES x N_CHANNELS).
+MATLAB stands for MATrix LABoratory. As the name suggest, it is mainly used to perform operation on matrix. With that in mind, the binder was written to organize the point so it is easy to perform matrix multiplication on them. Hence, EZC3D works on MATLAB structure that separate the `header`, the `parameter` and the `data`. Into the `header` structure, you will find information on the `points`, the `analogs` and the `events`. Into the `parameter`, you will find all the groups and parameters as they appear in the C3D file. Finally, in the `data`, there is the `points` values organized into a 3d hypermatrix (XYZ x N_POINTS x N_FRAMES) and the `analogs` values organized into a 2d matrix (N_FRAMES x N_CHANNELS).
 
 ### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `ezc3dRead` without any argument. 
@@ -262,9 +265,9 @@ c3d.data.points = rand(3,1,100);
 ezc3dWrite('path_to_c3d.c3d', c3d);
 ```
 ## Python 3
-Python (https://www.python.org/) is a scripting langage that has taken more and more importance over the past years. So much that now it is one of the prefered langage of the scientific community. It simplicity yet its large power perform a large variety of tasks makes it almost a certainty that its popularity won't decrease for the next years.
+Python (https://www.python.org/) is a scripting langage that has taken more and more importance over the past years. So much that now it is one of the prefered langage of the scientific community. Its simplicity yet its large power to perform a large variety of tasks makes it a certainty that its popularity won't decrease for the next years.
 
-To interface the C++ code with Python, SWIG is a great tool. It creates very efficiently an interface in the target langage with minimal code to write. However, the resulting code in the target langage is far from being easy to use. Actually, it gives a mixed-API not far from the original C++ langage. When this is useful to rapidly create the interface, it lacks of user-friendlyness. EZC3D interface the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organized the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to used this python interface. 
+To interface the C++ code with Python, SWIG is a great tool. It creates very rapidly an interface in the target langage with minimal code to write. However, the resulting code in the target language can be far from being easy to use. In effect, it gives a mixed-API not far from the original C++ language, which may not comply to best practises of the target language. When this is useful to rapidly create an interface, it lacks of user-friendlyness. EZC3D interfaces the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organized the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to used this python interface. 
 
 Please note, to navigate the c3d struture provided by the interface, the easiest way is to use the `keys()` method since this is a dictionary. 
 
@@ -330,7 +333,7 @@ c3d.write("path_to_c3d.c3d")
 # How to contribute
 You are very welcome to contribute to the project! There are to main ways to contribute. 
 
-The first way is to actually code new features to EZC3D. The easiest way to do so is to fork the project make the modifications and then open a pull request to the main project. Don't forget to add your name to the contributor in the documentation of the page if you do so!
+The first way is to actually code new features for EZC3D. The easiest way to do so is to fork the project make the modifications and then open a pull request to the main project. Don't forget to add your name to the contributor in the documentation of the page if you do so!
 
 The second way is to provide me with non-working C3D files (See the C3D Softwares section below for more details). There is another repository for test files in the pyomeca (https://github.com/pyomeca/ezc3d_c3dTestFiles). You can fork this project, add your C3D in according to the recommandations and pull request it. This will be greatly appreciated by me and the biomechanics community!
 
@@ -352,14 +355,14 @@ If you experience a slow C3D opening (more than 10 seconds), even for a huge C3D
 
 First, mak sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
 
-If you actually are using a released level of optimization, you may actually experience a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
+If you actually are using a released level of optimization, you may actually experiencing a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
 
 ## Non-working C3D
 The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. Since it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
 
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
-## Cite
+# Cite
 If you use ezc3d, we would be grateful if you could cite it as follows:
 
 ```
@@ -371,19 +374,3 @@ If you use ezc3d, we would be grateful if you could cite it as follows:
     year = {2018}
 }
 ```
-
-# Changes log
-## Version 0.1.0
-First working version of a C++ C3D reader. 
-
-## Version 0.2.0
-Reader and writer in C++, Python interface with SWIG for the reader, MATLAB interface for the reader and writer
-
-## Version 0.3.0
-Pythonic interface for the python reader and started to interface the writer. 
-
-## Version 0.3.1
-Documentation using Doxygen added for the C++ code, Major refactor of the code in order to harmonized it across the classes.
-
-## Version 0.3.2
-Added tests and example files for Python3 and MATLAB. 
