@@ -8,11 +8,8 @@ include_directories(${NUMPY_INCLUDES})
 if(WIN32)
     link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
 endif()
-if (APPLE)
-    # For unknown reason the later set properties over SWIG_INCLUDE_DIRECTORIES doesn't work
-    # on travis
-    include_directories(${CMAKE_SOURCE_DIR}/include)
-endif ()
+# For some reasons, target_include_directories later in the file sometime fails
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Add swig module
 set(CMAKE_SWIG_FLAGS "")
