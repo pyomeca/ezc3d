@@ -25,7 +25,6 @@ ezc3d::ParametersNS::Parameters::Parameters(
     _checksum(0),
     _nbParamBlock(0),
     _processorType(PROCESSOR_TYPE::NO_PROCESSOR_TYPE) {
-    setMandatoryParameters();
     // Read the Parameters Header (assuming Intel processor)
     _parametersStart = c3d.readUint(
                 processorType(),
@@ -103,6 +102,10 @@ ezc3d::ParametersNS::Parameters::Parameters(
                         c3d, *this, file, nbCharInName);
         }
     }
+
+    // If some mandatory groups/parameters are not set by having a non
+    // compliant C3D, fix it
+    setMandatoryParameters();
 }
 
 void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
