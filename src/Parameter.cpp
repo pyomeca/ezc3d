@@ -10,66 +10,82 @@
 #include "Parameter.h"
 #include "Parameters.h"
 
-ezc3d::ParametersNS::GroupNS::Parameter::Parameter(const std::string &name, const std::string &description) :
+ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
+        const std::string &name,
+        const std::string &description) :
     _name(name),
     _description(description),
     _isLocked(false),
     _data_type(ezc3d::DATA_TYPE::NO_DATA_TYPE),
-    _isEmpty(true)
-{
+    _isEmpty(true) {
 
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::print() const
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
     std::cout << "parameterName = " << name() << std::endl;
     std::cout << "isLocked = " << isLocked() << std::endl;
 
     // Data are not separated according to _dimension, which could help to read
     if (_data_type == DATA_TYPE::CHAR)
         for (unsigned int i = 0; i < _param_data_string.size(); ++i)
-            std::cout << "param_data_string[" << i << "] = " << _param_data_string[i] << std::endl;
+            std::cout << "param_data_string[" << i << "] = "
+                      << _param_data_string[i] << std::endl;
     if (_data_type == DATA_TYPE::BYTE)
         for (unsigned int i = 0; i < _param_data_int.size(); ++i)
-            std::cout << "param_data[" << i << "] = " << _param_data_int[i] << std::endl;
+            std::cout << "param_data[" << i << "] = "
+                      << _param_data_int[i] << std::endl;
     if (_data_type == DATA_TYPE::INT)
         for (unsigned int i = 0; i < _param_data_int.size(); ++i)
-            std::cout << "param_data[" << i << "] = " << _param_data_int[i] << std::endl;
+            std::cout << "param_data[" << i << "] = "
+                      << _param_data_int[i] << std::endl;
     if (_data_type == DATA_TYPE::FLOAT)
         for (unsigned int i = 0; i < _param_data_float.size(); ++i)
-            std::cout << "param_data[" << i << "] = " << _param_data_float[i] << std::endl;
+            std::cout << "param_data[" << i << "] = "
+                      << _param_data_float[i] << std::endl;
 
     std::cout << "description = " << _description << std::endl;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::write(
+        std::fstream &f,
+        int groupIdx,
+        std::streampos &dataStartPosition) const {
     int nCharName(static_cast<int>(name().size()));
     if (isLocked())
         nCharName *= -1;
-    f.write(reinterpret_cast<const char*>(&nCharName), 1*ezc3d::DATA_TYPE::BYTE);
+    f.write(reinterpret_cast<const char*>(&nCharName),
+            1*ezc3d::DATA_TYPE::BYTE);
     if (isLocked())
         nCharName *= -1;
-    f.write(reinterpret_cast<const char*>(&groupIdx), 1*ezc3d::DATA_TYPE::BYTE);
-    f.write(ezc3d::toUpper(name()).c_str(), nCharName*ezc3d::DATA_TYPE::BYTE);
+    f.write(reinterpret_cast<const char*>(&groupIdx),
+            1*ezc3d::DATA_TYPE::BYTE);
+    f.write(ezc3d::toUpper(name()).c_str(),
+            nCharName*ezc3d::DATA_TYPE::BYTE);
 
-    // It is not possible already to know in how many bytes the next parameter is
+    // It is not possible already to know in how many
+    // bytes the next parameter is
     int blank(0);
     std::streampos pos(f.tellg());
-    f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::DATA_TYPE::BYTE);
+    f.write(reinterpret_cast<const char*>(&blank),
+            2*ezc3d::DATA_TYPE::BYTE);
 
     // Write the parameter values
-    f.write(reinterpret_cast<const char*>(&_data_type), 1*ezc3d::DATA_TYPE::BYTE);
+    f.write(reinterpret_cast<const char*>(&_data_type),
+            1*ezc3d::DATA_TYPE::BYTE);
     size_t size_dim(_dimension.size());
     // If it is a scalar, store it as so
-    if (_dimension.size() == 1 && _dimension[0] == 1 && _data_type != DATA_TYPE::CHAR){
+    if (_dimension.size() == 1 && _dimension[0] == 1
+            && _data_type != DATA_TYPE::CHAR){
         int _size_dim(0);
-        f.write(reinterpret_cast<const char*>(&_size_dim), 1*ezc3d::DATA_TYPE::BYTE);
+        f.write(reinterpret_cast<const char*>(&_size_dim),
+                1*ezc3d::DATA_TYPE::BYTE);
     }
     else{
-        f.write(reinterpret_cast<const char*>(&size_dim), 1*ezc3d::DATA_TYPE::BYTE);
+        f.write(reinterpret_cast<const char*>(&size_dim),
+                1*ezc3d::DATA_TYPE::BYTE);
         for (unsigned int i=0; i<_dimension.size(); ++i)
-            f.write(reinterpret_cast<const char*>(&_dimension[i]), 1*ezc3d::DATA_TYPE::BYTE);
+            f.write(reinterpret_cast<const char*>(&_dimension[i]),
+                    1*ezc3d::DATA_TYPE::BYTE);
     }
 
     int hasSize(0);
@@ -81,15 +97,23 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
     if (hasSize > 0){
         if (_data_type == DATA_TYPE::CHAR){
             if (_dimension.size() == 1){
-                f.write(_param_data_string[0].c_str(), static_cast<int>(_param_data_string[0].size())*static_cast<int>(DATA_TYPE::BYTE));
+                f.write(_param_data_string[0].c_str(),
+                        static_cast<int>(
+                            _param_data_string[0].size())
+                        * static_cast<int>(DATA_TYPE::BYTE));
             } else {
                 writeImbricatedParameter(f, _dimension, 1);
             }
         } else {
-            if (static_cast<int>(dataStartPosition) != -1 && !_name.compare("DATA_START")){ // -1 means that it is not the POINT group
-                // This is a special case defined in the standard where you write the number of blocks up to the data
+            if (static_cast<int>(dataStartPosition) != -1
+                    && !_name.compare("DATA_START")){
+                // -1 means that it is not the POINT group
+
+                // This is a special case defined in the standard where you write
+                // the number of blocks up to the data
                 dataStartPosition = f.tellg();
-                f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::DATA_TYPE::BYTE);
+                f.write(reinterpret_cast<const char*>(&blank),
+                        2*ezc3d::DATA_TYPE::BYTE);
             } else
                 writeImbricatedParameter(f, _dimension);
         }
@@ -97,30 +121,43 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(std::fstream &f, int groupId
 
     // Write description of the parameter
     int nCharDescription(static_cast<int>(description().size()));
-    f.write(reinterpret_cast<const char*>(&nCharDescription), 1*ezc3d::DATA_TYPE::BYTE);
-    f.write(description().c_str(), nCharDescription*ezc3d::DATA_TYPE::BYTE);
+    f.write(reinterpret_cast<const char*>(&nCharDescription),
+            1*ezc3d::DATA_TYPE::BYTE);
+    f.write(description().c_str(),
+            nCharDescription*ezc3d::DATA_TYPE::BYTE);
 
     // Go back at the left blank space and write the current position
     std::streampos currentPos(f.tellg());
     f.seekg(pos);
     int nCharToNext = int(currentPos - pos);
-    f.write(reinterpret_cast<const char*>(&nCharToNext), 2*ezc3d::DATA_TYPE::BYTE);
+    f.write(reinterpret_cast<const char*>(&nCharToNext),
+            2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(currentPos);
 }
 
-size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fstream &f, const std::vector<size_t>& dim, size_t currentIdx, size_t cmp) const{
+size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(
+        std::fstream &f,
+        const std::vector<size_t>& dim,
+        size_t currentIdx, size_t cmp) const {
     for (size_t i=0; i<dim[currentIdx]; ++i)
         if (currentIdx == dim.size()-1){
             if (_data_type == DATA_TYPE::BYTE)
-                f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])), static_cast<int>(_data_type));
+                f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])),
+                        static_cast<int>(_data_type));
             else if (_data_type == DATA_TYPE::INT)
-                f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])), static_cast<int>(_data_type));
+                f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])),
+                        static_cast<int>(_data_type));
             else if (_data_type == DATA_TYPE::FLOAT)
-                f.write(reinterpret_cast<const char*>(&(_param_data_float[cmp])), static_cast<int>(_data_type));
+                f.write(reinterpret_cast<const char*>(
+                            &(_param_data_float[cmp])),
+                        static_cast<int>(_data_type));
             else if (_data_type == DATA_TYPE::CHAR){
-                f.write(_param_data_string[cmp].c_str(), static_cast<int>(_param_data_string[cmp].size())*static_cast<int>(DATA_TYPE::BYTE));
+                f.write(_param_data_string[cmp].c_str(),
+                        static_cast<int>(_param_data_string[cmp].size())
+                        * static_cast<int>(DATA_TYPE::BYTE));
                 const char buffer = ' ';
-                for (size_t j=_param_data_string[cmp].size(); j<_dimension[0]; ++j)
+                for (size_t j=_param_data_string[cmp].size()
+                     ; j<_dimension[0]; ++j)
                     f.write(&buffer, static_cast<int>(DATA_TYPE::BYTE));
             }
             ++cmp;
@@ -130,27 +167,35 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(std::fs
     return cmp;
 }
 
-int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &c3d, const Parameters &params, std::fstream &file, int nbCharInName)
-{
+int ezc3d::ParametersNS::GroupNS::Parameter::read(
+        ezc3d::c3d &c3d,
+        const Parameters &params,
+        std::fstream &file,
+        int nbCharInName) {
     if (nbCharInName < 0)
         _isLocked = true;
     else
         _isLocked = false;
 
     // Read name of the group
-    _name = c3d.readString(file, static_cast<unsigned int>(abs(nbCharInName) * ezc3d::DATA_TYPE::BYTE));
+    _name = c3d.readString(file,
+                           static_cast<unsigned int>(abs(nbCharInName)
+                                                     * ezc3d::DATA_TYPE::BYTE));
 
     // number of byte to the next group from here
-    int offsetNext(static_cast<int>(c3d.readUint(params.processorType(), file, 2*ezc3d::DATA_TYPE::BYTE)));
+    int offsetNext(static_cast<int>(c3d.readUint(params.processorType(), file,
+                                                 2*ezc3d::DATA_TYPE::BYTE)));
     // Compute the position of the element in the file
     int nextParamByteInFile;
     if (offsetNext == 0)
         nextParamByteInFile = 0;
     else
-        nextParamByteInFile = static_cast<int>(file.tellg()) + offsetNext - ezc3d::DATA_TYPE::WORD;
+        nextParamByteInFile = static_cast<int>(file.tellg())
+                + offsetNext - ezc3d::DATA_TYPE::WORD;
 
     // -1 sizeof(char), 1 byte, 2 int, 4 float
-    int lengthInByte(c3d.readInt(params.processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));
+    int lengthInByte(c3d.readInt(params.processorType(), file,
+                                 1*ezc3d::DATA_TYPE::BYTE));
     if (lengthInByte == -1)
         _data_type = DATA_TYPE::CHAR;
     else if (lengthInByte == 1)
@@ -163,76 +208,85 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(ezc3d::c3d &c3d, const Paramet
         throw std::ios_base::failure ("Parameter type unrecognized");
 
     // number of dimension of parameter (0 for scalar)
-    int nDimensions(c3d.readInt(params.processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));
-    if (nDimensions == 0 && _data_type != DATA_TYPE::CHAR) // In the special case of a scalar
+    int nDimensions(c3d.readInt(params.processorType(), file,
+                                1*ezc3d::DATA_TYPE::BYTE));
+    if (nDimensions == 0 && _data_type != DATA_TYPE::CHAR)
+        // In the special case of a scalar
         _dimension.push_back(1);
     else // otherwise it's a matrix
         for (int i=0; i<nDimensions; ++i)
-            _dimension.push_back (c3d.readUint(params.processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));    // Read the dimension size of the matrix
+            // Read the dimension size of the matrix
+            _dimension.push_back (c3d.readUint(params.processorType(), file,
+                                               1*ezc3d::DATA_TYPE::BYTE));
 
     // Read the data for the parameters
     if (_data_type == DATA_TYPE::CHAR)
         c3d.readParam(file, _dimension, _param_data_string);
     else if (_data_type == DATA_TYPE::BYTE)
-        c3d.readParam(params.processorType(), file, static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
+        c3d.readParam(params.processorType(), file,
+                      static_cast<unsigned int>(_data_type), _dimension,
+                      _param_data_int);
     else if (_data_type == DATA_TYPE::INT)
-        c3d.readParam(params.processorType(), file, static_cast<unsigned int>(_data_type), _dimension, _param_data_int);
+        c3d.readParam(params.processorType(), file,
+                      static_cast<unsigned int>(_data_type), _dimension,
+                      _param_data_int);
     else if (_data_type == DATA_TYPE::FLOAT)
-        c3d.readParam(params.processorType(), file, _dimension, _param_data_float);
+        c3d.readParam(params.processorType(), file, _dimension,
+                      _param_data_float);
 
 
     // Byte 5+nbCharInName ==> Number of characters in group description
-    int nbCharInDesc(c3d.readInt(params.processorType(), file, 1*ezc3d::DATA_TYPE::BYTE));
+    int nbCharInDesc(c3d.readInt(params.processorType(), file,
+                                 1*ezc3d::DATA_TYPE::BYTE));
     // Byte 6+nbCharInName ==> Group description
     if (nbCharInDesc)
-        _description = c3d.readString(file, static_cast<unsigned int>(nbCharInDesc));
+        _description = c3d.readString(
+                    file, static_cast<unsigned int>(nbCharInDesc));
     setEmptyFlag();
 
     // Return how many bytes
     return nextParamByteInFile;
 }
 
-const std::string& ezc3d::ParametersNS::GroupNS::Parameter::name() const
-{
+const std::string& ezc3d::ParametersNS::GroupNS::Parameter::name() const {
     return _name;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::name(const std::string paramName)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::name(
+        const std::string paramName) {
     _name = paramName;
 }
 
-const std::string& ezc3d::ParametersNS::GroupNS::Parameter::description() const
-{
+const std::string&
+ezc3d::ParametersNS::GroupNS::Parameter::description() const {
     return _description;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::description(const std::string description)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::description(
+        const std::string description) {
     _description = description;
 }
 
-bool ezc3d::ParametersNS::GroupNS::Parameter::isLocked() const
-{
+bool ezc3d::ParametersNS::GroupNS::Parameter::isLocked() const {
     return _isLocked;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::lock()
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::lock() {
     _isLocked = true;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::unlock()
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::unlock() {
     _isLocked = false;
 }
 
-const std::vector<size_t> ezc3d::ParametersNS::GroupNS::Parameter::dimension() const
-{
+const std::vector<size_t>
+ezc3d::ParametersNS::GroupNS::Parameter::dimension() const {
     return _dimension;
 }
 
-bool ezc3d::ParametersNS::GroupNS::Parameter::isDimensionConsistent(size_t dataSize, const std::vector<size_t> &dimension) const {
+bool ezc3d::ParametersNS::GroupNS::Parameter::isDimensionConsistent(
+        size_t dataSize,
+        const std::vector<size_t> &dimension) const {
     if (dataSize == 0){
         int dim(1);
         for (unsigned int i=0; i<dimension.size(); ++i)
@@ -252,31 +306,28 @@ bool ezc3d::ParametersNS::GroupNS::Parameter::isDimensionConsistent(size_t dataS
         return false;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::setEmptyFlag()
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::setEmptyFlag() {
     if (_dimension.size() ==0 || (_dimension.size() == 1 && _dimension[0] == 0))
         _isEmpty = true;
     else
         _isEmpty = false;
 }
 
-ezc3d::DATA_TYPE ezc3d::ParametersNS::GroupNS::Parameter::type() const
-{
+ezc3d::DATA_TYPE ezc3d::ParametersNS::GroupNS::Parameter::type() const {
     return _data_type;
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(int data)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(int data) {
     set(std::vector<int>()={data});
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(size_t data)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(size_t data) {
     set(static_cast<int>(data));
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<int> &data, const std::vector<size_t> &dimension)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(
+        const std::vector<int> &data,
+        const std::vector<size_t> &dimension) {
     std::vector<size_t> dimensionCopy;
     if (dimension.size() == 0){
         dimensionCopy.push_back(data.size());
@@ -284,25 +335,25 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<int> &data, 
         dimensionCopy = dimension;
     }
     if (!isDimensionConsistent(data.size(), dimensionCopy))
-        throw std::range_error("Dimension of the data does not correspond to sent dimensions");
+        throw std::range_error(
+                "Dimension of the data does not correspond to sent dimensions");
     _data_type = ezc3d::DATA_TYPE::INT;
     _param_data_int = data;
     _dimension = dimensionCopy;
     setEmptyFlag();
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(float data)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(float data) {
     set(std::vector<float>()={data});
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(double data)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(double data) {
     set(std::vector<float>()={static_cast<float>(data)});
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data, const std::vector<size_t> &dimension)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(
+        const std::vector<float> &data,
+        const std::vector<size_t> &dimension) {
     std::vector<size_t> dimensionCopy;
     if (dimension.size() == 0){
         dimensionCopy.push_back(data.size());
@@ -310,7 +361,8 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data
         dimensionCopy = dimension;
     }
     if (!isDimensionConsistent(data.size(), dimensionCopy))
-        throw std::range_error("Dimension of the data does not correspond to sent dimensions");
+        throw std::range_error(
+                "Dimension of the data does not correspond to sent dimensions");
 
     _data_type = ezc3d::DATA_TYPE::FLOAT;
     _param_data_float = data;
@@ -318,13 +370,14 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<float> &data
     setEmptyFlag();
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::string& data)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(
+        const std::string& data) {
     set(std::vector<std::string>() = {data});
 }
 
-void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string> &data, const std::vector<size_t> &dimension)
-{
+void ezc3d::ParametersNS::GroupNS::Parameter::set(
+        const std::vector<std::string> &data,
+        const std::vector<size_t> &dimension) {
     std::vector<size_t> dimensionCopy;
     if (dimension.size() == 0){
         dimensionCopy.push_back(data.size());
@@ -332,7 +385,8 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string>
         dimensionCopy = dimension;
     }
     if (!isDimensionConsistent(data.size(), dimensionCopy))
-        throw std::range_error("Dimension of the data does not correspond to sent dimensions");
+        throw std::range_error(
+                "Dimension of the data does not correspond to sent dimensions");
     // Insert the length of the longest string
     size_t first_dim(0);
     for (unsigned int i=0; i<data.size(); ++i)
@@ -347,34 +401,32 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::vector<std::string>
     setEmptyFlag();
 }
 
-const std::vector<int> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const
-{
+const std::vector<int>&
+ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const {
     if (!_isEmpty && _data_type != DATA_TYPE::BYTE)
         throw std::invalid_argument(_name + " parameter is not a BYTE");
     return _param_data_int;
 }
 
-const std::vector<int> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const
-{
+const std::vector<int>&
+ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const {
     if (!_isEmpty && _data_type != DATA_TYPE::INT)
         throw std::invalid_argument(_name + " parameter is not an INT");
     return _param_data_int;
 }
 
-const std::vector<float> &ezc3d::ParametersNS::GroupNS::Parameter::valuesAsFloat() const
-{
+const std::vector<float>&
+ezc3d::ParametersNS::GroupNS::Parameter::valuesAsFloat() const {
     if (!_isEmpty && _data_type != DATA_TYPE::FLOAT)
         throw std::invalid_argument(_name + " parameter is not a FLOAT");
     return _param_data_float;
 }
 
-const std::vector<std::string>& ezc3d::ParametersNS::GroupNS::Parameter::valuesAsString() const
-{
+const std::vector<std::string>&
+ezc3d::ParametersNS::GroupNS::Parameter::valuesAsString() const {
     if (!_isEmpty && _data_type != DATA_TYPE::CHAR)
         throw std::invalid_argument(_name + " parameter is not string");
 
     return _param_data_string;
 }
-
-
 
