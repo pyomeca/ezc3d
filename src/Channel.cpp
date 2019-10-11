@@ -9,41 +9,36 @@
 
 #include "Channel.h"
 
-ezc3d::DataNS::AnalogsNS::Channel::Channel()
-{
+ezc3d::DataNS::AnalogsNS::Channel::Channel() {
 
 }
 
-ezc3d::DataNS::AnalogsNS::Channel::Channel(const ezc3d::DataNS::AnalogsNS::Channel &channel) :
-    _data(channel._data)
-{
-
+ezc3d::DataNS::AnalogsNS::Channel::Channel(
+        const ezc3d::DataNS::AnalogsNS::Channel &channel) :
+    _data(channel._data) {
 }
 
-void ezc3d::DataNS::AnalogsNS::Channel::print() const
-{
+void ezc3d::DataNS::AnalogsNS::Channel::print() const {
     std::cout << "Analog = " << data() << std::endl;
 }
 
-void ezc3d::DataNS::AnalogsNS::Channel::write(std::fstream &f) const
-{
+void ezc3d::DataNS::AnalogsNS::Channel::write(std::fstream &f) const {
     f.write(reinterpret_cast<const char*>(&_data), ezc3d::DATA_TYPE::FLOAT);
 }
 
-float ezc3d::DataNS::AnalogsNS::Channel::data() const
-{
+float ezc3d::DataNS::AnalogsNS::Channel::data() const {
     return _data;
 }
 
-void ezc3d::DataNS::AnalogsNS::Channel::data(float v)
-{
+void ezc3d::DataNS::AnalogsNS::Channel::data(float v) {
     _data = v;
 }
 
-bool ezc3d::DataNS::AnalogsNS::Channel::isempty() const
-{
-    if (static_cast<double>(data()) == 0.0)
+bool ezc3d::DataNS::AnalogsNS::Channel::isempty() const {
+    if (static_cast<double>(data()) == 0.0) {
         return true;
-    else
+    }
+    else {
         return false;
+    }
 }
