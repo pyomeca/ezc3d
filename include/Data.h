@@ -28,8 +28,9 @@ public:
     /// \param c3d Reference to the c3d to copy the data in
     /// \param file File to copy the data from
     ///
-    Data(ezc3d::c3d &c3d,
-         std::fstream &file);
+    Data(
+            ezc3d::c3d &c3d,
+            std::fstream &file);
 
 
     //---- STREAM ----//
@@ -48,7 +49,8 @@ public:
     ///
     /// Write all the data to a file by calling sequentially all the write method for all the frames
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- FRAME ----//
@@ -70,7 +72,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
-    const ezc3d::DataNS::Frame& frame(size_t idx) const;
+    const ezc3d::DataNS::Frame& frame(
+            size_t idx) const;
 
     ///
     /// \brief Get the frame of index idx in order to be modified by the caller
@@ -83,7 +86,8 @@ public:
     /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
     ///
-    ezc3d::DataNS::Frame& frame(size_t idx);
+    ezc3d::DataNS::Frame& frame(
+            size_t idx);
 
     ///
     /// \brief Add/replace a frame to the data set
@@ -97,7 +101,9 @@ public:
     /// If idx is outside the data set, it resize the data set accordingly and add the frame where it belongs
     /// but leaves the other created frames empty.
     ///
-    void frame(const ezc3d::DataNS::Frame& frame, size_t idx = SIZE_MAX);
+    void frame(
+            const ezc3d::DataNS::Frame& frame,
+            size_t idx = SIZE_MAX);
 
     ///
     /// \brief Get all the frames from the data set
