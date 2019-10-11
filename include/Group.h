@@ -21,7 +21,9 @@ public:
     /// \param name The name of the group of parameter
     /// \param description The description of the group of parameter
     ///
-    Group(const std::string &name = "", const std::string &description = "");
+    Group(
+            const std::string &name = "",
+            const std::string &description = "");
 
 
     //---- STREAM ----//
@@ -70,7 +72,7 @@ public:
     /// \brief Set the name of the group
     /// \param name The name of the group
     ///
-    void name(const std::string name);
+    void name(const std::string& name);
 
     ///
     /// \brief Get the description of the group
@@ -82,7 +84,7 @@ public:
     /// \brief Set the description of the group
     /// \param description The description of the group
     ///
-    void description(const std::string description);
+    void description(const std::string& description);
 
     ///
     /// \brief Get the locking status of the group
@@ -120,7 +122,7 @@ public:
     ///
     /// Throw a std::invalid_argument if parameterName is not found
     ///
-    size_t parameterIdx(std::string parameterName) const;
+    size_t parameterIdx(const std::string& parameterName) const;
 
     ///
     /// \brief Get a particular parameter of index idx from the group
@@ -152,7 +154,8 @@ public:
     ///
     /// Throw a std::invalid_argument if parameterName is not found
     ///
-    const ezc3d::ParametersNS::GroupNS::Parameter& parameter(std::string parameterName) const;
+    const ezc3d::ParametersNS::GroupNS::Parameter& parameter(
+            const std::string& parameterName) const;
 
     ///
     /// \brief Get a particular parameter with the name parameterName from the group in the form of a non-const reference.
@@ -164,7 +167,8 @@ public:
     ///
     /// Throw a std::invalid_argument if parameterName is not found
     ///
-    ezc3d::ParametersNS::GroupNS::Parameter& parameter(std::string parameterName);
+    ezc3d::ParametersNS::GroupNS::Parameter& parameter(
+            const std::string& parameterName);
 
     ///
     /// \brief Add a parameter to the group from a C3D file
@@ -174,10 +178,11 @@ public:
     /// \param nbCharInName The number of character of the parameter name
     /// \return
     ///
-    int parameter(c3d &c3d,
-                  const Parameters &params,
-                  std::fstream &file,
-                  int nbCharInName);
+    int parameter(
+            c3d &c3d,
+            const Parameters &params,
+            std::fstream &file,
+            int nbCharInName);
 
     ///
     /// \brief Add/replace a parameter to the group
@@ -185,7 +190,8 @@ public:
     ///
     /// If the parameter sent does not exist in the group, it is appended. Otherwise it is replaced
     ///
-    void parameter(const ezc3d::ParametersNS::GroupNS::Parameter& parameter);
+    void parameter(
+            const ezc3d::ParametersNS::GroupNS::Parameter& parameter);
 
     ///
     /// \brief Get all the parameter from the group
