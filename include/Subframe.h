@@ -38,7 +38,8 @@ public:
     ///
     /// Write the subframe to a file by calling sequentially the write method of all of the analog channels
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- CHANNELS ----//
@@ -55,7 +56,8 @@ public:
     /// \brief Resize the number of channels. Warning, this function drops data if channels are downsized.
     /// \param nChannels Number of channels in the subframe
     ///
-    void nbChannels(size_t nChannels);
+    void nbChannels(
+            size_t nChannels);
 
     ///
     /// \brief Get a particular analog channel of index idx from the analogous data
@@ -66,7 +68,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of channels
     ///
-    const ezc3d::DataNS::AnalogsNS::Channel& channel(size_t idx) const;
+    const ezc3d::DataNS::AnalogsNS::Channel& channel(
+            size_t idx) const;
 
     ///
     /// \brief Get a particular analog channel of index idx from the analogous data with write access
@@ -78,7 +81,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of channels
     ///
-    ezc3d::DataNS::AnalogsNS::Channel& channel(size_t idx);
+    ezc3d::DataNS::AnalogsNS::Channel& channel(
+            size_t idx);
 
     ///
     /// \brief Add/replace a channel to the analog subframe data set
@@ -92,7 +96,9 @@ public:
     /// If idx is larger than the number of channels, it resize the subframe accordingly and add the channel
     /// where it belongs but leaves the other created channels empty.
     ///
-    void channel(const ezc3d::DataNS::AnalogsNS::Channel& channel, size_t idx = SIZE_MAX);
+    void channel(
+            const ezc3d::DataNS::AnalogsNS::Channel& channel,
+            size_t idx = SIZE_MAX);
 
     ///
     /// \brief Get all the analog channels from the analogous data

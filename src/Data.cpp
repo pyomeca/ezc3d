@@ -11,41 +11,53 @@
 #include "Header.h"
 #include "Parameters.h"
 
-ezc3d::DataNS::Data::Data()
-{
-
+ezc3d::DataNS::Data::Data() {
 }
 
-ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
-{
+ezc3d::DataNS::Data::Data(
+        ezc3d::c3d &c3d, std::fstream &file) {
     // Firstly move the pointer to the data start position
-    file.seekg( static_cast<int>(c3d.header().dataStart()-1)*512, std::ios::beg);
+    file.seekg(static_cast<int>(c3d.header().dataStart()-1)*512, std::ios::beg);
 
     // Get names of the data
     std::vector<std::string> pointNames;
     if (c3d.header().nb3dPoints() > 0)
-        pointNames = c3d.parameters().group("POINT").parameter("LABELS").valuesAsString();
+        pointNames = c3d.parameters()
+                .group("POINT").parameter("LABELS")
+                .valuesAsString();
     std::vector<std::string> analogNames;
     if (c3d.header().nbAnalogs() > 0)
-        analogNames = c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString();
+        analogNames = c3d.parameters()
+                .group("ANALOG").parameter("LABELS")
+                .valuesAsString();
 
     // Read the data
     PROCESSOR_TYPE processorType(c3d.parameters().processorType());
     float pointScaleFactor(-1);
     if (c3d.header().nb3dPoints())
-        pointScaleFactor = c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0];
+        pointScaleFactor = c3d.parameters()
+                .group("POINT").parameter("SCALE")
+                .valuesAsFloat()[0];
     std::vector<float> analogScaleFactors;
     if (c3d.header().nbAnalogs())
-        analogScaleFactors = c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat();
-    float analogGeneralFactor(c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0]);
-    std::vector<int> analogZeroOffset(c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt());
+        analogScaleFactors = c3d.parameters()
+                .group("ANALOG").parameter("SCALE")
+                .valuesAsFloat();
+    float analogGeneralFactor(c3d.parameters()
+                              .group("ANALOG").parameter("GEN_SCALE")
+                              .valuesAsFloat()[0]);
+    std::vector<int> analogZeroOffset(
+                c3d.parameters()
+                .group("ANALOG").parameter("OFFSET")
+                .valuesAsInt());
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
             break;
 
         ezc3d::DataNS::Frame f;
         // Read point 3d
-        ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(c3d.header().nb3dPoints());
+        ezc3d::DataNS::Points3dNS::Points ptsAtAFrame(
+                    c3d.header().nb3dPoints());
         for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             if (c3d.header().scaleFactor() < 0){ // if it is float
@@ -54,14 +66,27 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
                 pt.z(c3d.readFloat(processorType, file));
                 pt.residual(c3d.readFloat(processorType, file));
             } else {
-                pt.x(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
-                pt.y(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
-                pt.z(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
-                pt.residual(static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD)) * pointScaleFactor);
+                pt.x(static_cast<float>(
+                         c3d.readInt(
+                             processorType, file, ezc3d::DATA_TYPE::WORD))
+                     * pointScaleFactor);
+                pt.y(static_cast<float>(
+                         c3d.readInt(
+                             processorType, file, ezc3d::DATA_TYPE::WORD))
+                     * pointScaleFactor);
+                pt.z(static_cast<float>(
+                         c3d.readInt(
+                             processorType, file, ezc3d::DATA_TYPE::WORD))
+                     * pointScaleFactor);
+                pt.residual(static_cast<float>(
+                                c3d.readInt(processorType,
+                                            file, ezc3d::DATA_TYPE::WORD))
+                            * pointScaleFactor);
             }
             ptsAtAFrame.point(pt, i);
         }
-        f.add(ptsAtAFrame); // modified by pts_tp which is an nonconst ref to internal points
+        // modified by pts_tp which is an nonconst ref to internal points
+        f.add(ptsAtAFrame);
 
         // Read analogs
         ezc3d::DataNS::AnalogsNS::Analogs analog;
@@ -72,9 +97,15 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
             for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 if (c3d.header().scaleFactor() < 0) // if it is float
-                    c.data( (c3d.readFloat(processorType, file) - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor );
+                    c.data( (c3d.readFloat(processorType, file)
+                             - analogZeroOffset[i])
+                            *  analogScaleFactors[i] * analogGeneralFactor );
                 else
-                    c.data( (static_cast<float>(c3d.readInt(processorType, file, ezc3d::DATA_TYPE::WORD))  - analogZeroOffset[i]) *  analogScaleFactors[i] * analogGeneralFactor ); // * scaleFactor);
+                    c.data( (static_cast<float>(
+                                 c3d.readInt(processorType, file,
+                                             ezc3d::DATA_TYPE::WORD))
+                             - analogZeroOffset[i])
+                            *  analogScaleFactors[i] * analogGeneralFactor );
                 sub.channel(c, i);
             }
             analog.subframe(sub, k);
@@ -86,7 +117,8 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
     // remove the trailing empty frames if they exist
     size_t nFrames(_frames.size());
     if (nFrames > 0)
-        for (size_t i=0; i<nFrames-1; i--){ // -1 so we at least keep one frame if frames are empty
+        for (size_t i=0; i<nFrames-1; i--){
+            // -1 so we at least keep one frame if frames are empty
             if (_frames.back().isempty())
                 _frames.pop_back();
             else
@@ -94,8 +126,7 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
         }
 }
 
-void ezc3d::DataNS::Data::print() const
-{
+void ezc3d::DataNS::Data::print() const {
     for (size_t i = 0; i < nbFrames(); ++i){
         std::cout << "Frame " << i << std::endl;
         frame(i).print();
@@ -103,43 +134,45 @@ void ezc3d::DataNS::Data::print() const
     }
 }
 
-void ezc3d::DataNS::Data::write(std::fstream &f) const
-{
+void ezc3d::DataNS::Data::write(
+        std::fstream &f) const {
     for (size_t i = 0; i < nbFrames(); ++i)
         frame(i).write(f);
 }
 
-size_t ezc3d::DataNS::Data::nbFrames() const
-{
+size_t ezc3d::DataNS::Data::nbFrames() const {
     return _frames.size();
 }
 
-const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(size_t idx) const
-{
+const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(
+        size_t idx) const {
     try {
         return _frames.at(idx);
     } catch(std::out_of_range) {
-        throw std::out_of_range("Data::frame method is trying to access the frame "
-                                + std::to_string(idx) +
-                                " while the maximum number of frame is "
-                                + std::to_string(nbFrames()) + ".");
+        throw std::out_of_range(
+                    "Data::frame method is trying to access the frame "
+                    + std::to_string(idx) +
+                    " while the maximum number of frame is "
+                    + std::to_string(nbFrames()) + ".");
     }
 }
 
-ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx)
-{
+ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(
+        size_t idx) {
     try {
         return _frames.at(idx);
     } catch(std::out_of_range) {
-        throw std::out_of_range("Data::frame method is trying to access the frame "
-                                + std::to_string(idx) +
-                                " while the maximum number of frames is "
-                                + std::to_string(nbFrames()) + ".");
+        throw std::out_of_range(
+                    "Data::frame method is trying to access the frame "
+                    + std::to_string(idx) +
+                    " while the maximum number of frames is "
+                    + std::to_string(nbFrames()) + ".");
     }
 }
 
-void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &frame, size_t idx)
-{
+void ezc3d::DataNS::Data::frame(
+        const ezc3d::DataNS::Frame &frame,
+        size_t idx) {
     if (idx == SIZE_MAX)
         _frames.push_back(frame);
     else {
@@ -149,8 +182,7 @@ void ezc3d::DataNS::Data::frame(const ezc3d::DataNS::Frame &frame, size_t idx)
     }
 }
 
-const std::vector<ezc3d::DataNS::Frame> &ezc3d::DataNS::Data::frames() const
-{
+const std::vector<ezc3d::DataNS::Frame> &ezc3d::DataNS::Data::frames() const {
     return _frames;
 }
 
