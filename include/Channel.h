@@ -25,7 +25,8 @@ public:
     /// \brief Copy an analog channel
     /// \param channel The channel to copy
     ///
-    Channel(const ezc3d::DataNS::AnalogsNS::Channel &channel);
+    Channel(
+            const ezc3d::DataNS::AnalogsNS::Channel &channel);
 
 
     //---- STREAM ----//
@@ -44,7 +45,8 @@ public:
     ///
     /// Write the value of the analog data to a file
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- DATA ----//
@@ -61,7 +63,8 @@ public:
     /// \brief Set the value of the analog data
     /// \param value The value of the analog data
     ///
-    void data(float value);
+    void data(
+            float value);
 
     ///
     /// \brief Return if the channel is empty

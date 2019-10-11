@@ -39,7 +39,8 @@ public:
     ///
     /// Write the frame to a file by calling sequentially the write method for points and analogs
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- POINTS ----//
@@ -88,26 +89,31 @@ public:
     /// \brief Add a frame by copying a sent frame
     /// \param frame The frame to copy
     ///
-    void add(const ezc3d::DataNS::Frame &frame);
+    void add(
+            const ezc3d::DataNS::Frame &frame);
 
     ///
     /// \brief Add points to a frame
     /// \param points The 3D points to add
     ///
-    void add(const ezc3d::DataNS::Points3dNS::Points &points);
+    void add(
+            const ezc3d::DataNS::Points3dNS::Points &points);
 
     ///
     /// \brief Add analogs to a frame
     /// \param analogs The analogous data to add
     ///
-    void add(const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
+    void add(
+            const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
 
     ///
     /// \brief Add points and analogs to a frame
     /// \param points The 3D points to add
     /// \param analogs The analogous data to add
     ///
-    void add(const ezc3d::DataNS::Points3dNS::Points &points, const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
+    void add(
+            const ezc3d::DataNS::Points3dNS::Points &points,
+            const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
 
     ///
     /// \brief Return if the frame is empty
