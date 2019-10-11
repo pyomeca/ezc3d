@@ -25,7 +25,8 @@ public:
     /// \brief Create an empty holder for 3D points preallocating the size of it
     /// \param nbPoints Number of 3D points to be in the holder
     ///
-    Points(size_t nbPoints);
+    Points(
+            size_t nbPoints);
 
 
     //---- STREAM ----//
@@ -44,7 +45,8 @@ public:
     ///
     /// Write all the points to a file by calling sequentially the write method of each point
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- POINT ----//
@@ -64,7 +66,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
-    const ezc3d::DataNS::Points3dNS::Point& point(size_t idx) const;
+    const ezc3d::DataNS::Points3dNS::Point& point(
+            size_t idx) const;
 
     ///
     /// \brief Get a particular point of index idx from the 3D points data in order to be modified by the caller
@@ -76,7 +79,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of frames
     ///
-    ezc3d::DataNS::Points3dNS::Point& point(size_t idx);
+    ezc3d::DataNS::Points3dNS::Point& point(
+            size_t idx);
 
     ///
     /// \brief Add/replace a point to the points data set
@@ -90,7 +94,9 @@ public:
     /// If idx is larger than the number of points, it resize the points accordingly and add the point
     /// where it belongs but leaves the other created points empty.
     ///
-    void point(const ezc3d::DataNS::Points3dNS::Point& point, size_t idx = SIZE_MAX);
+    void point(
+            const ezc3d::DataNS::Points3dNS::Point& point,
+            size_t idx = SIZE_MAX);
 
     ///
     /// \brief Get all the points from the 3D points data

@@ -26,8 +26,9 @@ public:
     /// \param c3d C3D reference to copy the data in
     /// \param file Already opened fstream file with read access
     ///
-    Header(c3d &c3d,
-           std::fstream &file);
+    Header(
+            c3d &c3d,
+            std::fstream &file);
 
 
     //---- STREAM ----//
@@ -42,15 +43,18 @@ public:
     /// \param f Already opened fstream file with write access
     /// \param dataStartPosition Returns the byte where to put the data start parameter
     ///
-    void write(std::fstream &f, std::streampos &dataStartPosition) const;
+    void write(
+            std::fstream &f,
+            std::streampos &dataStartPosition) const;
 
     ///
     /// \brief Read and store a header from an opened C3D file
     /// \param c3d C3D reference to copy the data in
     /// \param file The file stream already opened with read access
     ///
-    void read(c3d &c3d,
-              std::fstream &file);
+    void read(
+            c3d &c3d,
+            std::fstream &file);
 
 
     //---- HEADER ----//
@@ -82,7 +86,9 @@ protected:
     /// \param file opened file stream to be read
     /// \return The processor type as specified in the c3d file (83-Intel, 84-DEC, 85-MIPS)
     ///
-    PROCESSOR_TYPE readProcessorType(c3d &c3d, std::fstream &file);
+    PROCESSOR_TYPE readProcessorType(
+            c3d &c3d,
+            std::fstream &file);
 
 protected:
     size_t _checksum;   ///< Byte 1.2
@@ -132,7 +138,8 @@ public:
     /// \brief Set the number of analogs
     /// \param nbOfAnalogs The number of analogs
     ///
-    void nbAnalogs(size_t nbOfAnalogs);
+    void nbAnalogs(
+            size_t nbOfAnalogs);
 
     ///
     /// \brief Get the number of recorded analogs
@@ -169,7 +176,8 @@ public:
     /// \brief Set the first frame
     /// \param frame
     ///
-    void firstFrame(size_t frame);
+    void firstFrame(
+            size_t frame);
 
     ///
     /// \brief Get the last frame
@@ -181,7 +189,8 @@ public:
     /// \brief Set the last frame
     /// \param frame
     ///
-    void lastFrame(size_t frame);
+    void lastFrame(
+            size_t frame);
 
 protected:
     size_t _nbMaxInterpGap; ///< Byte 6
@@ -237,7 +246,8 @@ public:
     /// \brief Set the number of analog by frame
     /// \param nbOfAnalogsByFrame The number of analog by frame
     ///
-    void nbAnalogByFrame(size_t nbOfAnalogsByFrame);
+    void nbAnalogByFrame(
+            size_t nbOfAnalogsByFrame);
 
 protected:
     float _frameRate;   ///< Byte 11-12
@@ -255,7 +265,8 @@ public:
     /// \brief Set the points frame rate in Hz
     /// \param pointFrameRate The points frame rate in Hz
     ///
-    void frameRate(float pointFrameRate);
+    void frameRate(
+            float pointFrameRate);
 
 protected:
     int _emptyBlock1;   ///< Byte 13-147
@@ -373,7 +384,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of events
     ///
-    float eventsTime(size_t idx) const;
+    float eventsTime(
+            size_t idx) const;
 
     ///
     /// \brief Get the display flags
@@ -394,7 +406,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of events
     ///
-    size_t eventsDisplay(size_t idx) const;
+    size_t eventsDisplay(
+            size_t idx) const;
 
     ///
     /// \brief Get the event labels
@@ -409,7 +422,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of events
     ///
-    const std::string& eventsLabel(size_t idx) const;
+    const std::string& eventsLabel(
+            size_t idx) const;
 
 };
 

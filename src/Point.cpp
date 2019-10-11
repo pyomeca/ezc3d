@@ -14,8 +14,8 @@ ezc3d::DataNS::Points3dNS::Point::Point()
     _data.resize(4);
 }
 
-ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &p)
-{
+ezc3d::DataNS::Points3dNS::Point::Point(
+        const ezc3d::DataNS::Points3dNS::Point &p) {
     _data.resize(4);
     x(p.x());
     y(p.y());
@@ -23,71 +23,64 @@ ezc3d::DataNS::Points3dNS::Point::Point(const ezc3d::DataNS::Points3dNS::Point &
     residual(0);
 }
 
-void ezc3d::DataNS::Points3dNS::Point::print() const
-{
-    std::cout << " Position = [" << x() << ", " << y() << ", " << z() << "]; Residual = " << residual() << std::endl;
+void ezc3d::DataNS::Points3dNS::Point::print() const {
+    std::cout << " Position = [" << x() << ", " << y() << ", " << z()
+              << "]; Residual = " << residual() << std::endl;
 }
 
-void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const
-{
+void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const {
     f.write(reinterpret_cast<const char*>(&_data[0]), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char*>(&_data[1]), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char*>(&_data[2]), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
 }
 
-const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const
-{
+const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const {
     return _data;
 }
 
-std::vector<float> ezc3d::DataNS::Points3dNS::Point::data()
-{
+std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() {
     return _data;
 }
 
-float ezc3d::DataNS::Points3dNS::Point::x() const
-{
+float ezc3d::DataNS::Points3dNS::Point::x() const {
     return _data[0];
 }
 
-void ezc3d::DataNS::Points3dNS::Point::x(float x)
-{
+void ezc3d::DataNS::Points3dNS::Point::x(
+        float x) {
     _data[0] = x;
 }
 
-float ezc3d::DataNS::Points3dNS::Point::y() const
-{
+float ezc3d::DataNS::Points3dNS::Point::y() const {
     return _data[1];
 }
 
-void ezc3d::DataNS::Points3dNS::Point::y(float y)
-{
+void ezc3d::DataNS::Points3dNS::Point::y(
+        float y) {
     _data[1] = y;
 }
 
-float ezc3d::DataNS::Points3dNS::Point::z() const
-{
+float ezc3d::DataNS::Points3dNS::Point::z() const {
     return _data[2];
 }
 
-void ezc3d::DataNS::Points3dNS::Point::z(float z)
-{
+void ezc3d::DataNS::Points3dNS::Point::z(
+        float z) {
     _data[2] = z;
 }
 
 
-float ezc3d::DataNS::Points3dNS::Point::residual() const
-{
+float ezc3d::DataNS::Points3dNS::Point::residual() const {
     return _data[3];
 }
 
-void ezc3d::DataNS::Points3dNS::Point::residual(float residual){
+void ezc3d::DataNS::Points3dNS::Point::residual(
+        float residual) {
     _data[3] = residual;
 }
 
-bool ezc3d::DataNS::Points3dNS::Point::isempty() const
-{
+bool ezc3d::DataNS::Points3dNS::Point::isempty() const {
     if (static_cast<double>(x()) == 0.0 &&
             static_cast<double>(y()) == 0.0 &&
             static_cast<double>(z()) == 0.0 &&

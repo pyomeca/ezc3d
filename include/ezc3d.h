@@ -443,7 +443,9 @@ public:
     ///
     /// Throw a std::invalid_argument if the name of the parameter is not specified
     ///
-    void parameter(const std::string &groupName, const ezc3d::ParametersNS::GroupNS::Parameter &parameter);
+    void parameter(
+            const std::string &groupName,
+            const ezc3d::ParametersNS::GroupNS::Parameter &parameter);
 
     ///
     /// \brief Lock a particular group named groupName
@@ -451,7 +453,8 @@ public:
     ///
     /// Throw a std::invalid_argument exception if the group name does not exist
     ///
-    void lockGroup(const std::string &groupName);
+    void lockGroup(
+            const std::string &groupName);
 
     ///
     /// \brief Unlock a particular group named groupName
@@ -459,7 +462,8 @@ public:
     ///
     /// Throw a std::invalid_argument exception if the group name does not exist
     ///
-    void unlockGroup(const std::string &groupName);
+    void unlockGroup(
+            const std::string &groupName);
 
     ///
     /// \brief Add/replace a frame to the data set
@@ -482,7 +486,9 @@ public:
     /// Throw a std::runtime_error if at least a point was added to the frame but POINT:RATE is equal to 0
     /// and/or if at least an analog data was added to the frame and ANALOG:RATE is equal to 0
     ///
-    void frame(const ezc3d::DataNS::Frame &frame, size_t idx = SIZE_MAX);
+    void frame(
+            const ezc3d::DataNS::Frame &frame,
+            size_t idx = SIZE_MAX);
 
     ///
     /// \brief Create a point to the data set of name name
@@ -495,7 +501,8 @@ public:
     ///
     /// Throw the same errors as updateParameter as it calls it after the point is created
     ///
-    void point(const std::string &name);
+    void point(
+            const std::string &name);
 
     ///
     /// \brief Add a new point to the data set
@@ -510,7 +517,9 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
     ///
-    void point(const std::string &pointName, const std::vector<ezc3d::DataNS::Frame> &frames);
+    void point(
+            const std::string &pointName,
+            const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
     /// \brief Add a new point to the data set
@@ -525,7 +534,9 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the point is added
     ///
-    void point(const std::vector<std::string> &pointNames, const std::vector<ezc3d::DataNS::Frame> &frames);
+    void point(
+            const std::vector<std::string> &pointNames,
+            const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
     /// \brief Create a channel of analog data to the data set of name name
@@ -538,7 +549,8 @@ public:
     ///
     /// Throw the same errors as updateParameter as it calls it after the channel is created
     ///
-    void analog(const std::string &name);
+    void analog(
+            const std::string &name);
 
     ///
     /// \brief Add a new channel to the data set
@@ -554,7 +566,9 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
     ///
-    void analog(std::string channelName, const std::vector<ezc3d::DataNS::Frame> &frames);
+    void analog(
+            std::string channelName,
+            const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
     /// \brief Add a new channel to the data set
@@ -570,7 +584,9 @@ public:
     ///
     /// Moreover it throws the same errors as updateParameter as it calls it after the channel is added
     ///
-    void analog(const std::vector<std::string>& channelNames, const std::vector<ezc3d::DataNS::Frame> &frames);
+    void analog(
+            const std::vector<std::string>& channelNames,
+            const std::vector<ezc3d::DataNS::Frame> &frames);
 
 
     // ---- UPDATER ---- //
@@ -588,7 +604,9 @@ protected:
     /// Throw a std::runtime_error if newPoints or newAnalogs was added while the data set is not empty.
     /// If you want to add a new point after having data in the data set, you must use the frame method.
     ///
-    void updateParameters(const std::vector<std::string> &newPoints = std::vector<std::string>(), const std::vector<std::string> &newAnalogs = std::vector<std::string>());
+    void updateParameters(
+            const std::vector<std::string> &newPoints = std::vector<std::string>(),
+            const std::vector<std::string> &newAnalogs = std::vector<std::string>());
 
 };
 

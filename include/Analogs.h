@@ -38,7 +38,8 @@ public:
     ///
     /// Write all the subframes to a file by calling sequentially the write method of each subframe
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- SUBFRAME ----//
@@ -55,7 +56,8 @@ public:
     /// \brief Resize the number of subframes. Warning, this function drops data if subframes is downsized
     /// \param nbSubframes The number of subframes to be in the holder
     ///
-    void nbSubframes(size_t nbSubframes);
+    void nbSubframes(
+            size_t nbSubframes);
 
     ///
     /// \brief Get a particular subframe of index idx from the analogous data set
@@ -66,7 +68,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of subframes
     ///
-    const ezc3d::DataNS::AnalogsNS::SubFrame& subframe(size_t idx) const;
+    const ezc3d::DataNS::AnalogsNS::SubFrame& subframe(
+            size_t idx) const;
 
     ///
     /// \brief Get a particular subframe of index idx from the analogous data set in order to be modified by the caller
@@ -78,7 +81,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of subframes
     ///
-    ezc3d::DataNS::AnalogsNS::SubFrame& subframe(size_t idx);
+    ezc3d::DataNS::AnalogsNS::SubFrame& subframe(
+            size_t idx);
 
     ///
     /// \brief Add/replace a subframe to the analogous data set
@@ -92,7 +96,9 @@ public:
     /// If idx is larger than the number of subframes, it resize the analogous data set accordingly and add the subframe
     /// where it belongs but leaves the other created subframes empty.
     ///
-    void subframe(const ezc3d::DataNS::AnalogsNS::SubFrame& subframe, size_t idx = SIZE_MAX);
+    void subframe(
+            const ezc3d::DataNS::AnalogsNS::SubFrame& subframe,
+            size_t idx = SIZE_MAX);
 
     ///
     /// \brief Get all the subframes from the analogous data set
