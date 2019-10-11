@@ -111,148 +111,157 @@ ezc3d::ParametersNS::Parameters::Parameters(
 void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
     // Mandatory groups
     {
-        ezc3d::ParametersNS::GroupNS::Group grp("POINT", "");
-        {
+        if (!isGroup("POINT")){
+            group(ezc3d::ParametersNS::GroupNS::Group ("POINT"));
+        }
+
+        ezc3d::ParametersNS::GroupNS::Group& grp(group("POINT"));
+        if (!grp.isParameter("USED")){
             ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
             p.set(0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("SCALE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
             p.set(-1.0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("RATE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
             p.set(0.0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("DATA_START")){
             ezc3d::ParametersNS::GroupNS::Parameter p("DATA_START", "");
             p.set(0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("FRAMES")){
             ezc3d::ParametersNS::GroupNS::Parameter p("FRAMES", "");
             p.set(0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("LABELS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("DESCRIPTIONS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("UNITS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        group(grp);
     }
     {
-        ezc3d::ParametersNS::GroupNS::Group grp("ANALOG", "");
-        {
+        if (!isGroup("ANALOG")){
+            group(ezc3d::ParametersNS::GroupNS::Group ("ANALOG"));
+        }
+
+        ezc3d::ParametersNS::GroupNS::Group& grp(group("ANALOG"));
+        if (!grp.isParameter("USED")){
             ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
             p.set(0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("LABELS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("DESCRIPTIONS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("GEN_SCALE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("GEN_SCALE", "");
             p.set(1.0);
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("SCALE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
             p.set(std::vector<float>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("OFFSET")){
             ezc3d::ParametersNS::GroupNS::Parameter p("OFFSET", "");
             p.set(std::vector<int>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("UNITS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("RATE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
             p.set(0.0);
             p.lock();
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("FORMAT")){
             ezc3d::ParametersNS::GroupNS::Parameter p("FORMAT", "");
             p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("BITS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("BITS", "");
             p.set(std::vector<int>()={});
             grp.parameter(p);
         }
-        group(grp);
     }
     {
-        ezc3d::ParametersNS::GroupNS::Group grp("FORCE_PLATFORM", "");
-        {
+        if (!isGroup("FORCE_PLATFORM")){
+            group(ezc3d::ParametersNS::GroupNS::Group ("FORCE_PLATFORM"));
+        }
+
+        ezc3d::ParametersNS::GroupNS::Group& grp(group("FORCE_PLATFORM"));
+        if (!grp.isParameter("USED")){
             ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
             p.set(0);
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("TYPE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("TYPE", "");
             p.set(std::vector<int>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("ZERO")){
             ezc3d::ParametersNS::GroupNS::Parameter p("ZERO", "");
             p.set(std::vector<int>()={1,0});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("CORNERS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("CORNERS", "");
             p.set(std::vector<float>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("ORIGIN")){
             ezc3d::ParametersNS::GroupNS::Parameter p("ORIGIN", "");
             p.set(std::vector<float>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("CHANNEL")){
             ezc3d::ParametersNS::GroupNS::Parameter p("CHANNEL", "");
             p.set(std::vector<int>()={});
             grp.parameter(p);
         }
-        {
+        if (!grp.isParameter("CAL_MATRIX")){
             ezc3d::ParametersNS::GroupNS::Parameter p("CAL_MATRIX", "");
             p.set(std::vector<float>()={});
             grp.parameter(p);
         }
-        group(grp);
     }
 }
 
@@ -322,6 +331,17 @@ ezc3d::PROCESSOR_TYPE ezc3d::ParametersNS::Parameters::processorType() const {
 
 size_t ezc3d::ParametersNS::Parameters::nbGroups() const {
     return _groups.size();
+}
+
+bool ezc3d::ParametersNS::Parameters::isGroup(
+        const std::string &groupName) const
+{
+    try {
+        groupIdx(groupName);
+        return true;
+    } catch (std::invalid_argument) {
+        return false;
+    }
 }
 
 size_t ezc3d::ParametersNS::Parameters::groupIdx(

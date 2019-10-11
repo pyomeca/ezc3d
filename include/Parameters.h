@@ -112,6 +112,14 @@ public:
     size_t nbGroups() const;
 
     ///
+    /// \brief Return if a group of a specific name exists
+    /// \param groupName The group name to return
+    /// \return If the group exists (true) or not (false)
+    ///
+    bool isGroup(
+            const std::string& groupName) const;
+
+    ///
     /// \brief Get the index of a group in the group holder
     /// \param groupName Name of the group
     /// \return The index of the group
