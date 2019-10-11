@@ -253,7 +253,7 @@ const std::string& ezc3d::ParametersNS::GroupNS::Parameter::name() const {
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::name(
-        const std::string paramName) {
+        const std::string &paramName) {
     _name = paramName;
 }
 
@@ -263,7 +263,7 @@ ezc3d::ParametersNS::GroupNS::Parameter::description() const {
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::description(
-        const std::string description) {
+        const std::string &description) {
     _description = description;
 }
 

@@ -118,7 +118,7 @@ const std::string& ezc3d::ParametersNS::GroupNS::Group::name() const {
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::name(
-        const std::string name) {
+        const std::string &name) {
     _name = name;
 }
 
@@ -127,7 +127,7 @@ const std::string& ezc3d::ParametersNS::GroupNS::Group::description() const {
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::description(
-        const std::string description) {
+        const std::string &description) {
     _description = description;
 }
 
@@ -147,7 +147,7 @@ size_t ezc3d::ParametersNS::GroupNS::Group::nbParameters() const {
 }
 
 size_t ezc3d::ParametersNS::GroupNS::Group::parameterIdx(
-        std::string parameterName) const {
+        const std::string &parameterName) const {
     for (size_t i = 0; i < nbParameters(); ++i)
         if (!parameter(i).name().compare(parameterName))
             return i;
@@ -190,13 +190,13 @@ ezc3d::ParametersNS::GroupNS::Parameter
 
 const ezc3d::ParametersNS::GroupNS::Parameter
 &ezc3d::ParametersNS::GroupNS::Group::parameter(
-        std::string parameterName) const {
+        const std::string &parameterName) const {
     return parameter(parameterIdx(parameterName));
 }
 
 ezc3d::ParametersNS::GroupNS::Parameter
 &ezc3d::ParametersNS::GroupNS::Group::parameter(
-        std::string parameterName) {
+        const std::string &parameterName) {
     return parameter(parameterIdx(parameterName));
 }
 
