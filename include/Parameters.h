@@ -26,8 +26,9 @@ public:
     /// \param c3d C3D reference to copy the data in
     /// \param file Already opened fstream file with read access
     ///
-    Parameters(c3d &c3d,
-               std::fstream &file);
+    Parameters(
+            c3d &c3d,
+            std::fstream &file);
 
 protected:
     ///
@@ -47,7 +48,9 @@ public:
     /// \param f Already opened fstream file with write access
     /// \param dataStartPosition Returns the byte where to put the data start parameter
     ///
-    void write(std::fstream &f, std::streampos &dataStartPosition) const;
+    void write(
+            std::fstream &f,
+            std::streampos &dataStartPosition) const;
 
 
     //---- PARAMETER METADATA ----//
@@ -117,7 +120,8 @@ public:
     ///
     /// Throw a std::invalid_argument if groupName is not found
     ///
-    size_t groupIdx(const std::string& groupName) const;
+    size_t groupIdx(
+            const std::string& groupName) const;
 
     ///
     /// \brief Get a particular group of index idx from the group holder
@@ -128,7 +132,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of groups
     ///
-    const ezc3d::ParametersNS::GroupNS::Group& group(size_t idx) const;
+    const ezc3d::ParametersNS::GroupNS::Group& group(
+            size_t idx) const;
 
     ///
     /// \brief Get a particular group of index idx from the group holder in order to be modified by the caller
@@ -140,7 +145,8 @@ public:
     ///
     /// Throw a std::out_of_range exception if idx is larger than the number of groups
     ///
-    ezc3d::ParametersNS::GroupNS::Group& group(size_t idx);
+    ezc3d::ParametersNS::GroupNS::Group& group(
+            size_t idx);
 
     ///
     /// \brief Get a particular group with the name groupName from the group holder
@@ -149,7 +155,8 @@ public:
     ///
     /// Throw a std::invalid_argument if groupName is not found
     ///
-    const ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName) const;
+    const ezc3d::ParametersNS::GroupNS::Group& group(
+            const std::string& groupName) const;
 
     ///
     /// \brief Get a particular group with the name groupName from the group holder
@@ -158,7 +165,8 @@ public:
     ///
     /// Throw a std::invalid_argument if groupName is not found
     ///
-    ezc3d::ParametersNS::GroupNS::Group& group(const std::string& groupName);
+    ezc3d::ParametersNS::GroupNS::Group& group(
+            const std::string& groupName);
 
     ///
     /// \brief Add/replace a group in the group holder
@@ -166,7 +174,8 @@ public:
     ///
     /// If the group sent does not exist in the group holder, it is appended. Otherwise it is replaced
     ///
-    void group(const ezc3d::ParametersNS::GroupNS::Group& group);
+    void group(
+            const ezc3d::ParametersNS::GroupNS::Group& group);
 
     ///
     /// \brief Get all groups the group holder with read-only access
