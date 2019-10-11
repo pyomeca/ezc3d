@@ -114,6 +114,14 @@ public:
     size_t nbParameters() const;
 
     ///
+    /// \brief Return if a parameter of a specific name exists
+    /// \param parameterName The parameter name to return
+    /// \return If the parameter exists (true) or not (false)
+    ///
+    bool isParameter(
+            const std::string& parameterName) const;
+
+    ///
     /// \brief Get the index of a parameter in the group
     /// \param parameterName Name of the parameter
     /// \return The index of the parameter
