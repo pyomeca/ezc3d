@@ -146,6 +146,17 @@ size_t ezc3d::ParametersNS::GroupNS::Group::nbParameters() const {
     return _parameters.size();
 }
 
+bool ezc3d::ParametersNS::GroupNS::Group::isParameter(
+        const std::string &parameterName) const
+{
+    try {
+        parameterIdx(parameterName);
+        return true;
+    } catch (std::invalid_argument) {
+        return false;
+    }
+}
+
 size_t ezc3d::ParametersNS::GroupNS::Group::parameterIdx(
         const std::string &parameterName) const {
     for (size_t i = 0; i < nbParameters(); ++i)
