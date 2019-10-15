@@ -9,7 +9,7 @@ if(WIN32)
     link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
 endif()
 # For some reasons, target_include_directories later in the file sometime fails
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
 
 # Add swig module
 set(CMAKE_SWIG_FLAGS "")
@@ -21,7 +21,7 @@ swig_link_libraries(${PROJECT_NAME} ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_
 
 # Add headers
 target_include_directories(_${PROJECT_NAME} PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include
 )
 set_target_properties(_${PROJECT_NAME} PROPERTIES SWIG_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/include)
 

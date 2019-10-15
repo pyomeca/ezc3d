@@ -214,7 +214,7 @@ void compareData(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2){
 void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     if (type == PARAMETER_TYPE::HEADER){
         EXPECT_EQ(new_c3d.parameters().checksum(), 80);
-        EXPECT_EQ(new_c3d.parameters().nbGroups(), 3);
+        EXPECT_EQ(new_c3d.parameters().nbGroups(), 4);
     } else if (type == PARAMETER_TYPE::POINT){
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
@@ -1177,6 +1177,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     defaultParametersTest(read_c3d, PARAMETER_TYPE::FORCE_PLATFORM);
 
     // Things that should have change
+    EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("VERSION").valuesAsString()[0].c_str(), EZC3D_VERSION);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], ref_c3d.nPoints);
@@ -1303,7 +1304,7 @@ TEST(c3dFileIO, readViconC3D){
 
     // Parameter tests
     EXPECT_EQ(Vicon.parameters().checksum(), 80);
-    EXPECT_EQ(Vicon.parameters().nbGroups(), 9);
+    EXPECT_EQ(Vicon.parameters().nbGroups(), 10);
 
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
@@ -1423,7 +1424,7 @@ TEST(c3dFileIO, readQualisysC3D){
 
     // Parameter tests
     EXPECT_EQ(Qualisys.parameters().checksum(), 80);
-    EXPECT_EQ(Qualisys.parameters().nbGroups(), 7);
+    EXPECT_EQ(Qualisys.parameters().nbGroups(), 8);
 
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
@@ -1546,7 +1547,7 @@ TEST(c3dFileIO, readOptotrakC3D){
 
     // Parameter tests
     EXPECT_EQ(Optotrak.parameters().checksum(), 80);
-    EXPECT_EQ(Optotrak.parameters().nbGroups(), 3);
+    EXPECT_EQ(Optotrak.parameters().nbGroups(), 4);
 
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);

@@ -205,8 +205,8 @@ const ezc3d::ParametersNS::GroupNS::Parameter
     return parameter(parameterIdx(parameterName));
 }
 
-ezc3d::ParametersNS::GroupNS::Parameter
-&ezc3d::ParametersNS::GroupNS::Group::parameter(
+ezc3d::ParametersNS::GroupNS::Parameter&
+ezc3d::ParametersNS::GroupNS::Group::parameter(
         const std::string &parameterName) {
     return parameter(parameterIdx(parameterName));
 }

@@ -102,8 +102,9 @@ void ezc3d::c3d::write(
     header().write(f, dataStartHeader);
 
     // Write the parameters
-    // We must copy parameters since there is no way to make sure that the
-    // number of frames is not higher than 0xFFFF
+    // We must copy parameters since we will change some stuff
+
+    // Check for the number of frames
     ezc3d::ParametersNS::Parameters params(parameters());
     int nFrames(this->parameters()
                 .group("POINT").parameter("FRAMES")
@@ -113,6 +114,10 @@ void ezc3d::c3d::write(
         frames.set(-1);
         params.group("POINT").parameter(frames);
     }
+
+    // Force the ezc3d
+    params.group("EZC3D").parameter("VERSION").set(std::string(EZC3D_VERSION));
+
     std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);
 

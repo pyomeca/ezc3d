@@ -263,6 +263,17 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
             grp.parameter(p);
         }
     }
+    {
+        if (!isGroup("EZC3D")){
+            group(ezc3d::ParametersNS::GroupNS::Group ("EZC3D"));
+        }
+        ezc3d::ParametersNS::GroupNS::Group& grp(group("EZC3D"));
+        if (!grp.isParameter("VERSION")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("VERSION", "");
+            p.set(std::vector<std::string>()={EZC3D_VERSION});
+            grp.parameter(p);
+        }
+    }
 }
 
 void ezc3d::ParametersNS::Parameters::print() const {
