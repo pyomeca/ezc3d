@@ -19,4 +19,9 @@ __pycache__
 # Testing suite
 Testing
 test/c3dFiles/*
+
+# Examples
 example/c3dFiles/*
+
+# Documentation
+doc/*.pdf
