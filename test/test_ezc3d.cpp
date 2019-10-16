@@ -1173,7 +1173,8 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
     // PARAMETERS
     // Things that should remain as default
-    defaultParametersTest(read_c3d, PARAMETER_TYPE::HEADER);
+    EXPECT_EQ(read_c3d.parameters().checksum(), 80);
+    EXPECT_EQ(read_c3d.parameters().nbGroups(), 4);
     defaultParametersTest(read_c3d, PARAMETER_TYPE::FORCE_PLATFORM);
 
     // Things that should have change
