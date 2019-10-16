@@ -65,7 +65,7 @@ endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
 
 # Download and copy c3d test files from test suite of pyomeca
 # Get the test suite from the pyomeca repository
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/${FILE})
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/ezc3d-testFiles-master)
     file(
         DOWNLOAD https://github.com/pyomeca/ezc3d-testFiles/archive/master.zip
         ${CMAKE_SOURCE_DIR}/test/c3dFiles/ezc3d-testFiles-master.zip
