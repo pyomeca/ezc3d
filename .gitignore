@@ -19,3 +19,4 @@ __pycache__
 # Testing suite
 Testing
 test/c3dFiles/*
+example/c3dFiles/*
