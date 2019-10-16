@@ -35,17 +35,6 @@
 /// Enjoy C3D files!
 ///
 
-// dllexport/import declaration
-#ifdef _WIN32
-#  ifdef EZC3D_API_EXPORTS
-#    define EZC3D_API __declspec(dllexport)
-#  else
-#    define EZC3D_API __declspec(dllimport)
-#  endif
-#else
-#  define EZC3D_API
-#endif
-
 // Includes for standard library
 #include <sstream>
 #include <iostream>
@@ -59,6 +48,8 @@
 #ifdef _WIN32
 #include <string>
 #endif
+
+#include "ezc3dConfig.h"
 
 ///
 /// \brief Namespace ezc3d

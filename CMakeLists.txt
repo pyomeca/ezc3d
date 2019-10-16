@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0048 NEW)
-project(ezc3d VERSION 1.1.1)
+project(ezc3d VERSION 1.2.1)
 set(CMAKE_CXX_STANDARD 11)
 
 # Set some variables
@@ -24,8 +24,14 @@ else()
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 
+# Create the configuration header file associated with the asked options
+configure_file(${CMAKE_SOURCE_DIR}/include/ezc3dConfig.h.in ${CMAKE_BINARY_DIR}/include/ezc3dConfig.h)
+
 # Add headers
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/include
+)
 
 # Install target
 if(WIN32)
@@ -43,6 +49,7 @@ install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}
         )
 install(DIRECTORY include DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
+install(FILES ${CMAKE_BINARY_DIR}/include/ezc3dConfig.h DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
 
 # uninstall target
 if(NOT TARGET uninstall)

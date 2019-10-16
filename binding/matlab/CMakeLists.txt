@@ -23,7 +23,12 @@ foreach(SUFFIXES Read Write)
 	endif(WIN32)
 
     # Add headers
-    target_include_directories(${PROJECT_NAME}_${SUFFIXES} PRIVATE ${Matlab_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+    target_include_directories(${PROJECT_NAME}_${SUFFIXES} PUBLIC
+        ${Matlab_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}/include
+    )
 
     # Set the name of the library
     if(WIN32)
