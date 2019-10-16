@@ -63,17 +63,36 @@ if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
     SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
 endif() #CMAKE_BUILD_TYPE STREQUAL "Coverage"
 
-# Download and copy c3d test files from test test suite of c3d.org and add them to the local test files
+# Download and copy c3d test files from test suite of pyomeca
+# Get the test suite from the pyomeca repository
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE})
+    file(
+        DOWNLOAD https://github.com/pyomeca/ezc3d-testFiles/archive/master.zip
+        ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/ezc3d-testFiles-master.zip
+        TIMEOUT 60 # seconds
+        TLS_VERIFY ON
+    )
+endif()
+
+# Get the test suite from c3d.org
 set(TEST_FILES_TO_DOWNLOAD Sample01.zip Sample02.zip)
 foreach(FILE ${TEST_FILES_TO_DOWNLOAD})
-    get_filename_component(FOLDER_NAME ${FILE} NAME_WE)
-    IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE})
+    # Get the test suite from c3d.org
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE})
         file(
             DOWNLOAD https://www.c3d.org/data/${FILE}
             ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FILE}
             TIMEOUT 60 # seconds
             TLS_VERIFY ON
-            )
+        )
+    endif()
+endforeach()
+
+# Copy all c3d to the test folder
+set(TEST_FILES_UNZIP ezc3d-testFiles-master.zip Sample01.zip Sample02.zip)
+foreach(FILE ${TEST_FILES_UNZIP})
+    get_filename_component(FOLDER_NAME ${FILE} NAME_WE)
+    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME})
         file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/test/c3dFiles/C3dTestSuite/${FOLDER_NAME})
         execute_process(
             COMMAND ${CMAKE_COMMAND} -E tar -xf ../${FILE}
@@ -87,8 +106,3 @@ foreach(FILE ${TEST_FILES_TO_DOWNLOAD})
     file(COPY ${C3D_TEST_FILES}
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
 endforeach()
-
-# Copy also some local c3d test files
-file(GLOB C3D_TEST_FILES ${CMAKE_SOURCE_DIR}/test/c3dFiles/*.c3d)
-file(COPY ${C3D_TEST_FILES}
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
