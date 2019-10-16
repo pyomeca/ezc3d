@@ -5,7 +5,11 @@ add_executable(${PROJECT_NAME} "main.cpp")
 add_dependencies(${PROJECT_NAME} ${MASTER_PROJECT_NAME})
 
 # Headers
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/include
+)
 
 # Libraries linker
 get_target_property(DEBUG_POSTFIX ${MASTER_PROJECT_NAME} DEBUG_POSTFIX)
