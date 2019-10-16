@@ -1,0 +1,18 @@
+#ifndef EZC3D_CONFIG_H
+#define EZC3D_CONFIG_H
+
+// dllexport/import declaration
+#ifdef _WIN32
+    #ifdef EZC3D_API_EXPORTS
+        #define EZC3D_API __declspec(dllexport)
+    #else
+        #define EZC3D_API __declspec(dllimport)
+    #endif
+#else
+    #define EZC3D_API
+#endif
+
+// Write down the version of the ezc3d
+#define EZC3D_VERSION "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+
+#endif // EZC3D_CONFIG_H
