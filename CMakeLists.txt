@@ -76,7 +76,7 @@ endif(NOT WIN32)
 # Doc
 option(BUILD_DOC "Build documentation" OFF)
 if (BUILD_DOC)
-    add_subdirectory(docs)
+    add_subdirectory(doc)
 endif (BUILD_DOC)
 
 # Testing
