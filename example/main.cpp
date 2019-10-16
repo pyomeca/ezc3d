@@ -17,7 +17,7 @@ int main()
         // Speed test
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < 50; ++i){
-            ezc3d::c3d c3d("markers_analogs.c3d");
+            ezc3d::c3d c3d("c3dExampleFiles/Vicon.c3d");
         }
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
@@ -25,7 +25,7 @@ int main()
     }
 
     {
-        ezc3d::c3d c3d("markers_analogs.c3d");
+        ezc3d::c3d c3d("c3dExampleFiles/Vicon.c3d");
 
         // Add two new points to the c3d (one filled with zeros, the other one with data)
         c3d.point("new_point1"); // Add empty
@@ -162,7 +162,7 @@ int main()
 int main()
 {
     {
-        ezc3d::c3d c3d("markers_analogs.c3d");
+        ezc3d::c3d c3d("c3dExampleFiles/Vicon.c3d");
 
         // Add two new points to the c3d (one filled with zeros, the other one with data)
         c3d.point("new_point1"); // Add empty
