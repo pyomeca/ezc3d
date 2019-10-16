@@ -76,8 +76,18 @@ endif(NOT WIN32)
 # Doc
 option(BUILD_DOC "Build documentation" OFF)
 if (BUILD_DOC)
-    add_subdirectory(docs)
+    add_subdirectory(doc)
 endif (BUILD_DOC)
+
+option(GET_OFFICIAL_DOCUMENTATION "Automatically download the C3D documentation" OFF)
+if (GET_OFFICIAL_DOCUMENTATION)
+    file(
+        DOWNLOAD https://www.c3d.org/docs/C3D_User_Guide.pdf
+        ${CMAKE_SOURCE_DIR}/doc/C3D_User_Guide.pdf
+        TIMEOUT 60 # seconds
+        TLS_VERIFY ON
+    )
+endif()
 
 # Testing
 option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
