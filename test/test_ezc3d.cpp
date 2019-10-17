@@ -1619,7 +1619,38 @@ TEST(c3dFileio,readBtsC3D){
 
     EXPECT_EQ(BTS.header().firstFrame(), 0);
     EXPECT_EQ(BTS.header().lastFrame(), 674);
-    EXPECT_EQ(BTS.header().nbFrames(), 675);    
+    EXPECT_EQ(BTS.header().nbFrames(), 675);
+
+    // Parameter tests
+    EXPECT_EQ(BTS.parameters().checksum(), 80);
+    EXPECT_EQ(BTS.parameters().nbGroups(), 20);
+
+
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 22);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-0.1));
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 100);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 675); // ignore because it changes if analog is present
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 22);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), 22);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), 1); //This might be weird. Shouldn't there be 22 as well?
+    // EXPECT_EQ(1,2);
+
+    defaultParametersTest(BTS, PARAMETER_TYPE::ANALOG);
+    defaultParametersTest(BTS, PARAMETER_TYPE::FORCE_PLATFORM);
+
+    // DATA
+    for (size_t f = 0; f < 675; ++f)
+        EXPECT_EQ(BTS.data().frame(f).points().nbPoints(), 22);    
 }
 
 TEST(c3dFileIO, comparedIdenticalFilesSample1){
