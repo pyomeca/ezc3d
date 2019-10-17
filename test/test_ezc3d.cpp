@@ -1575,6 +1575,53 @@ TEST(c3dFileIO, readOptotrakC3D){
         EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 54);
 }
 
+TEST(c3dFileio,readBtsC3D){
+    ezc3d::c3d BTS("c3dTestFiles/BTS.c3d");
+    // Header test
+    // Generic stuff
+    EXPECT_EQ(BTS.header().checksum(), 80);
+    EXPECT_EQ(BTS.header().keyLabelPresent(), 0);
+    EXPECT_EQ(BTS.header().firstBlockKeyLabel(), 0);
+    EXPECT_EQ(BTS.header().fourCharPresent(), 12345);
+    EXPECT_EQ(BTS.header().emptyBlock1(), 0);
+    EXPECT_EQ(BTS.header().emptyBlock2(), 0);
+    EXPECT_EQ(BTS.header().emptyBlock3(), 0);
+    EXPECT_EQ(BTS.header().emptyBlock4(), 0);
+
+    // Point stuff
+    EXPECT_EQ(BTS.header().nb3dPoints(), 22);
+    EXPECT_EQ(BTS.header().nbMaxInterpGap(), 10);
+    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), -0.1);
+    EXPECT_FLOAT_EQ(BTS.header().frameRate(), 100);
+
+    // Analog stuff
+    EXPECT_EQ(BTS.header().nbAnalogsMeasurement(), 440);
+    EXPECT_EQ(BTS.header().nbAnalogByFrame(), 10);
+    EXPECT_EQ(BTS.header().nbAnalogs(), 44);
+
+    // Event stuff
+    EXPECT_EQ(BTS.header().nbEvents(), 0);
+
+    EXPECT_EQ(BTS.header().eventsTime().size(), 18);
+    for (size_t e = 0; e < BTS.header().eventsTime().size(); ++e)
+        EXPECT_FLOAT_EQ(BTS.header().eventsTime(e), 0);
+    EXPECT_THROW(BTS.header().eventsTime(BTS.header().eventsTime().size()), std::out_of_range);
+
+    EXPECT_EQ(BTS.header().eventsLabel().size(), 18);
+    for (size_t e = 0; e < BTS.header().eventsLabel().size(); ++e)
+        EXPECT_STREQ(BTS.header().eventsLabel(e).c_str(), "");
+    EXPECT_THROW(BTS.header().eventsLabel(BTS.header().eventsLabel().size()), std::out_of_range);
+
+    EXPECT_EQ(BTS.header().eventsDisplay().size(), 9);
+    for (size_t e = 0; e < BTS.header().eventsDisplay().size(); ++e)
+        EXPECT_EQ(BTS.header().eventsDisplay(e), 0);
+    EXPECT_THROW(BTS.header().eventsDisplay(BTS.header().eventsDisplay().size()), std::out_of_range);
+
+    EXPECT_EQ(BTS.header().firstFrame(), 0);
+    EXPECT_EQ(BTS.header().lastFrame(), 674);
+    EXPECT_EQ(BTS.header().nbFrames(), 675);    
+}
+
 TEST(c3dFileIO, comparedIdenticalFilesSample1){
     ezc3d::c3d c3d_pr("c3dTestFiles/Eb015pr.c3d"); // Intel floating format
     ezc3d::c3d c3d_pi("c3dTestFiles/Eb015pi.c3d"); // Intel integer format
