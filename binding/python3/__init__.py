@@ -20,6 +20,11 @@ class C3dMapper(Mapping):
     def keys(self):
         return self._storage.keys()
 
+    # Am I right to add this? Useful for testing
+    def __eq__(self,other):
+        return self._storage == other._storage
+
+
 
 class C3dMutableMapper(C3dMapper):
     def __init__(self):
@@ -31,9 +36,6 @@ class C3dMutableMapper(C3dMapper):
 
     def __delitem__(self, key):
         del self._storage[key]
-
-    def __iter__(self):
-        return iter(self._storage)
 
 
 class c3d(C3dMapper):
