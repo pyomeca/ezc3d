@@ -295,8 +295,11 @@ void ezc3d::ParametersNS::Parameters::write(
     f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
 
     // Write each groups
-    for (size_t i=0; i < nbGroups(); ++i)
-        group(i).write(f, -static_cast<int>(i+1), dataStartPosition);
+    for (size_t i=0; i < nbGroups(); ++i){
+        const ezc3d::ParametersNS::GroupNS::Group& currentGroup(group(i));
+        if (!currentGroup.isEmpty())
+            currentGroup.write(f, -static_cast<int>(i+1), dataStartPosition);
+    }
 
     // Move the cursor to a beginning of a block
     std::streampos currentPos(f.tellg());
