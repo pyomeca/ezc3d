@@ -1593,8 +1593,8 @@ TEST(c3dFileio,readBtsC3D){
     // Point stuff
     EXPECT_EQ(BTS.header().nb3dPoints(), 22);
     EXPECT_EQ(BTS.header().nbMaxInterpGap(), 10);
-    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), -0.1);
-    EXPECT_FLOAT_EQ(BTS.header().frameRate(), 100);
+    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), static_cast<float>(-0.1));
+    EXPECT_FLOAT_EQ(BTS.header().frameRate(), static_cast<float>(100.0));
 
     // Analog stuff
     EXPECT_EQ(BTS.header().nbAnalogsMeasurement(), 440);
