@@ -74,7 +74,7 @@ class c3d(C3dMapper):
             self._storage['events'] = {
                 'size': len(self.header.eventsTime()),
                 'events_time': self.header.eventsTime(),
-                'events_label': self.header.eventsLabel()  # TODO mapping of std::vector<std::string>
+                'events_label': self.header.eventsLabel()
             }
             self._storage.keys()
             return
@@ -87,15 +87,18 @@ class c3d(C3dMapper):
             self.parameters = swig_param
 
             for group in self.parameters.groups():
+                # If the group does not exist create it
+                if group.name() not in self._storage:
+                    self._storage[group.name()] = dict()
+                # Add the meta data of the group
+                self._storage[group.name()]['__METADATA__'] = dict()
+                self._storage[group.name()]['__METADATA__']['DESCRIPTION'] = group.description()
+                self._storage[group.name()]['__METADATA__']['IS_LOCKED'] = group.isLocked()
                 for parameter in group.parameters():
                     self.add_parameter(group.name(), parameter)
             return
 
         def add_parameter(self, group_name, param_ezc3d):
-            # If the group does not exist create it
-            if group_name not in self._storage:
-                self._storage[group_name] = dict()
-
             param = dict()
             param['type'] = param_ezc3d.type()
             param['description'] = param_ezc3d.description()
@@ -266,6 +269,4 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
-
-
 
