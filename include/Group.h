@@ -54,6 +54,11 @@ public:
              std::fstream &file,
              int nbCharInName);
 
+    ///
+    /// \brief isEmpty If the group has no name and no parameter, it is considered empty
+    /// \return If the group is empty
+    ///
+    bool isEmpty() const;
 
     //---- METADATA ----//
 protected:
