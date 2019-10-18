@@ -149,7 +149,7 @@ def test_create_and_read_c3d():
 
 @pytest.fixture(scope='module',params=["BTS","Optotrak","Qualisys","Vicon"])
 def c3d_build_rebuild(request):
-    base_folder = Path("test/c3dFiles/ezc3d-testFiles-master/ezc3d-testFiles-master/")
+    base_folder = Path("test/c3dTestFiles")
     orig_file = Path(base_folder / (request.param + ".c3d"))
     rebuild_file = Path(base_folder / (request.param + "_after.c3d"))
 
