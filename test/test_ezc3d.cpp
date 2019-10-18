@@ -1726,3 +1726,50 @@ TEST(c3dFileIO, comparedIdenticalFilesSample2){
     compareData(c3d_pr, c3d_vr);
     compareData(c3d_pr, c3d_vi);
 }
+
+TEST(c3dFileIO, parseAndBuildSameFileBTS){
+    ezc3d::c3d original("c3dTestFiles/BTS.c3d");
+    std::string savePath("c3dTestFiles/BTS_after.c3d");
+    original.write(savePath.c_str());
+    ezc3d::c3d rebuilt(savePath.c_str());
+
+    compareHeader(original, rebuilt);
+    compareData(original, rebuilt);
+
+    remove(savePath.c_str());        
+}
+
+TEST(c3dFileIO, parseAndBuildSameFileQualisys){
+    ezc3d::c3d original("c3dTestFiles/Qualisys.c3d");
+    std::string savePath("c3dTestFiles/Qualisys_after.c3d");
+    original.write(savePath.c_str());
+    ezc3d::c3d rebuilt(savePath.c_str());
+
+    compareHeader(original, rebuilt);
+    compareData(original, rebuilt);
+
+    remove(savePath.c_str());        
+}
+TEST(c3dFileIO, parseAndBuildSameFileOptoTrack){
+    ezc3d::c3d original("c3dTestFiles/Optotrak.c3d");
+    std::string savePath("c3dTestFiles/Optotrak_after.c3d");
+    original.write(savePath.c_str());
+    ezc3d::c3d rebuilt(savePath.c_str());
+
+    compareHeader(original, rebuilt);
+    compareData(original, rebuilt);
+
+    remove(savePath.c_str());        
+}
+TEST(c3dFileIO, parseAndBuildSameFileVicon){
+    ezc3d::c3d original("c3dTestFiles/Vicon.c3d");
+    std::string savePath("c3dTestFiles/Vicon_after.c3d");
+    original.write(savePath.c_str());
+    ezc3d::c3d rebuilt(savePath.c_str());
+
+    compareHeader(original, rebuilt);
+    compareData(original, rebuilt);
+
+    remove(savePath.c_str());        
+}
+
