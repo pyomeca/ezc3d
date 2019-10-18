@@ -1234,6 +1234,8 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "V");
     }
 
+    EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("VERSION").valuesAsString()[0].c_str(), EZC3D_VERSION);
+    EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("CONTACT").valuesAsString()[0].c_str(), EZC3D_CONTACT);
 
     // DATA
     for (size_t f = 0; f < ref_c3d.nFrames; ++f){
