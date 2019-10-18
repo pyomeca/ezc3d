@@ -1635,7 +1635,7 @@ TEST(c3dFileio,readBtsC3D){
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
     EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 100);
-    EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 675); // ignore because it changes if analog is present
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 675);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 22);
@@ -1643,14 +1643,50 @@ TEST(c3dFileio,readBtsC3D){
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("DESCRIPTIONS").valuesAsString().size(), 22);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("UNITS").valuesAsString().size(), 1); //This might be weird. Shouldn't there be 22 as well?
-    // EXPECT_EQ(1,2);
 
-    defaultParametersTest(BTS, PARAMETER_TYPE::ANALOG);
-    defaultParametersTest(BTS, PARAMETER_TYPE::FORCE_PLATFORM);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("USED").valuesAsInt()[0], 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
+    EXPECT_FLOAT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 1000);
 
-    // DATA
-    for (size_t f = 0; f < 675; ++f)
-        EXPECT_EQ(BTS.data().frame(f).points().nbPoints(), 22);    
+
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt()[0], 6);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("TYPE").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("TYPE").valuesAsInt().size(), 6);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ZERO").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt().size(), 2);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 0);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 72);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 18);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 36);
+
+        // DATA
+    for (size_t f = 0; f < 675; ++f){
+        EXPECT_EQ(BTS.data().frame(f).points().nbPoints(), 22);
+        for (size_t sf = 0; sf < 10; ++sf)
+            EXPECT_EQ(BTS.data().frame(f).analogs().subframe(sf).nbChannels(), 44);
+    }
 }
 
 TEST(c3dFileIO, comparedIdenticalFilesSample1){
