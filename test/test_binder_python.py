@@ -147,3 +147,35 @@ def test_create_and_read_c3d():
     np.testing.assert_almost_equal(c3d_to_compare['data']['points'][0:3, :, :], points)
     np.testing.assert_almost_equal(c3d_to_compare['data']['analogs'], analogs)
 
+@pytest.fixture(scope='module',params=["BTS","Optotrak","Qualisys","Vicon"])
+def c3d_build_rebuild(request):
+    base_folder = Path("test/c3dTestFiles")
+    orig_file = Path(base_folder / (request.param + ".c3d"))
+    rebuild_file = Path(base_folder / (request.param + "_after.c3d"))
+
+    original = ezc3d.c3d(orig_file.as_posix())
+    original.write(rebuild_file.as_posix())
+    rebuilt = ezc3d.c3d(rebuild_file.as_posix())
+
+    yield (original, rebuilt)
+
+    Path.unlink(rebuild_file)
+
+def test_parse_and_rebuild_header(c3d_build_rebuild):
+    for i in c3d_build_rebuild:
+        assert isinstance(i,ezc3d.c3d)
+
+    orig,rebuilt = c3d_build_rebuild
+    
+    for key in orig["header"].keys():
+        assert orig["header"][key] == rebuilt["header"][key]
+
+def test_parse_and_rebuild_parameters(c3d_build_rebuild):
+    orig,rebuilt = c3d_build_rebuild    
+    for key in orig["parameters"].keys():
+        assert orig["parameters"][key] == rebuilt["parameters"][key]
+
+def test_parse_and_rebuild_data(c3d_build_rebuild):
+    orig,rebuilt = c3d_build_rebuild    
+    for key in orig["data"].keys():
+        np.testing.assert_array_equal(orig["data"][key],rebuilt["data"][key],err_msg=f"Different {key} values found")
