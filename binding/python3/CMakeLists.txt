@@ -55,8 +55,12 @@ else()
     message( FATAL_ERROR "Swig must be version 3 or 4" )
 endif()
 
+# Create the version file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_version.py.i ${CMAKE_CURRENT_BINARY_DIR}/_version.py)
+
 # Install the library
 INSTALL(TARGETS _${PROJECT_NAME}
     DESTINATION ${PYTHON_INSTALL_DESTINATION}
 )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_version.py DESTINATION ${PYTHON_INSTALL_DESTINATION}/${PROJECT_NAME})
 
