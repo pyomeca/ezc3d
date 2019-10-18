@@ -174,3 +174,8 @@ def test_parse_and_rebuild_parameters(c3d_build_rebuild):
     orig,rebuilt = c3d_build_rebuild    
     for key in orig["parameters"].keys():
         assert orig["parameters"][key] == rebuilt["parameters"][key]
+
+def test_parse_and_rebuild_data(c3d_build_rebuild):
+    orig,rebuilt = c3d_build_rebuild    
+    for key in orig["data"].keys():
+        np.testing.assert_array_equal(orig["data"][key],rebuilt["data"][key],err_msg=f"Different {key} values found")
