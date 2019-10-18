@@ -306,6 +306,7 @@ std::string ezc3d::c3d::readString(
     char* c = new char[nByteToRead + 1];
     readFile(file, nByteToRead, c, nByteFromPrevious, pos);
     std::string out(c);
+    out.resize(nByteToRead);
     delete[] c;
     return out;
 }
