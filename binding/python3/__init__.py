@@ -21,10 +21,8 @@ class C3dMapper(Mapping):
     def keys(self):
         return self._storage.keys()
 
-    # Am I right to add this? Useful for testing
     def __eq__(self,other):
         return self._storage == other._storage
-
 
 
 class C3dMutableMapper(C3dMapper):
