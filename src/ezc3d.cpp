@@ -115,7 +115,7 @@ void ezc3d::c3d::write(
         params.group("POINT").parameter(frames);
     }
 
-    // Add the parameter EZC3D:VERSION
+    // Add the parameter EZC3D:VERSION and EZC3D:CONTACT
     if (!params.isGroup("EZC3D")){
         params.group(ezc3d::ParametersNS::GroupNS::Group("EZC3D"));
     }
@@ -123,6 +123,10 @@ void ezc3d::c3d::write(
     ezc3d::ParametersNS::GroupNS::Parameter version("VERSION");
     version.set(EZC3D_VERSION);
     params.group("EZC3D").parameter(version);
+    // Add/replace the CONTACT in the EZC3D group
+    ezc3d::ParametersNS::GroupNS::Parameter contact("CONTACT");
+    contact.set(EZC3D_CONTACT);
+    params.group("EZC3D").parameter(contact);
 
     std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);

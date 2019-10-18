@@ -1,6 +1,7 @@
 from collections.abc import Mapping, MutableMapping
 
 from . import ezc3d
+from ._version import __version__
 
 
 class C3dMapper(Mapping):
