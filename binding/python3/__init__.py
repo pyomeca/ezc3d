@@ -1,4 +1,5 @@
 from collections.abc import Mapping, MutableMapping
+import numpy as np
 
 from . import ezc3d
 from ._version import __version__
@@ -22,7 +23,64 @@ class C3dMapper(Mapping):
         return self._storage.keys()
 
     def __eq__(self,other):
-        return self._storage == other._storage
+        # If the dimensions are wrong, then they are not equal
+        if 'EZC3D' in self._storage and not 'EZC3D' in other._storage:
+            if len(self._storage) != len(other._storage) + 1:
+                return False
+        elif not 'EZC3D' in self._storage and 'EZC3D' in other._storage:
+            if len(self._storage) + 1 != len(other._storage):
+                return False
+        elif len(self._storage) != len(other._storage):
+            return False
+
+        # Check for each element (skipping the EZC3D element if exists)
+        for key in self._storage:
+            if key == '':
+                # If empty
+                continue
+            elif key == 'EZC3D':
+                # All keys must be equal except for EZC3D
+                continue
+            elif not key in other._storage:
+                return False
+
+            if isinstance(self._storage[key], C3dMapper) and isinstance(other._storage[key], C3dMapper):
+                # If it is a c3d, the child is also a C3DMapper. Recursively call __eq__
+                return self._storage[key] == other._storage[key]
+            elif isinstance(self._storage[key], dict) and isinstance(other._storage[key], dict):
+                if not self.__eq_param__(key, self._storage[key], other._storage[key]):
+                    return False
+            elif isinstance(self._storage[key], np.ndarray) and isinstance(other._storage[key], np.ndarray):
+                return np.array_equal(self._storage[key], other._storage[key])
+            else:
+                # Otherwise it is unknown data, therefore assume they are different
+                return False
+        return True
+
+    @staticmethod
+    def __eq_param__(group, dict1, dict2):
+        if len(dict1) != len(dict2):
+            return false
+        for key in dict1:
+            if isinstance(dict1[key], (int, float, str)) and isinstance(dict2[key], (int, float, str)):
+                if dict1[key] != dict2[key]:
+                    return False
+                continue
+
+            if group == "POINT" and key == "DATA_START":
+                # POINT:DATA_START is a special key which should not be compared
+                continue
+            if 'value' in dict1[key] and 'value' in dict2[key] \
+                    and not dict1[key]['value'] and not dict2[key]['value']:
+                # When data are empty type INT or FLOAT is irrelevant
+                if (dict1[key]['type'] == 1 or dict1[key]['type'] == 2) \
+                    and (dict2[key]['type'] == 1 or dict2[key]['type'] == 2):
+                    continue
+            if not key in dict2:
+                return False
+            if dict1[key] != dict2[key]:
+                return False
+        return True
 
 
 class C3dMutableMapper(C3dMapper):
@@ -87,21 +145,30 @@ class c3d(C3dMapper):
             self.parameters = swig_param
 
             for group in self.parameters.groups():
-                # If the group does not exist create it
-                if group.name() not in self._storage:
-                    self._storage[group.name()] = dict()
-                # Add the meta data of the group
-                self._storage[group.name()]['__METADATA__'] = dict()
-                self._storage[group.name()]['__METADATA__']['DESCRIPTION'] = group.description()
-                self._storage[group.name()]['__METADATA__']['IS_LOCKED'] = group.isLocked()
+                group_name = group.name().upper()
+                self.create_group_if_needed(group_name)
+                self._storage[group_name]['__METADATA__']['DESCRIPTION'] = group.description()
+                self._storage[group_name]['__METADATA__']['IS_LOCKED'] = group.isLocked()
                 for parameter in group.parameters():
-                    self.add_parameter(group.name(), parameter)
+                    self.add_parameter(group_name, parameter)
             return
 
+        def create_group_if_needed(self, group_name):
+            # If the group does not exist create it
+            if group_name not in self._storage:
+                self._storage[group_name] = dict()
+
+                # Add the meta data of the group
+                self._storage[group_name]['__METADATA__'] = dict()
+                self._storage[group_name]['__METADATA__']['DESCRIPTION'] = ""
+                self._storage[group_name]['__METADATA__']['IS_LOCKED'] = False
+
         def add_parameter(self, group_name, param_ezc3d):
+            self.create_group_if_needed(group_name)
             param = dict()
             param['type'] = param_ezc3d.type()
             param['description'] = param_ezc3d.description()
+            param['is_locked'] = param_ezc3d.isLocked()
             if param_ezc3d.type() == ezc3d.BYTE:
                 value = param_ezc3d.valuesAsByte()
             elif param_ezc3d.type() == ezc3d.INT:
@@ -115,9 +182,10 @@ class c3d(C3dMapper):
                     value.append(element)
             param['value'] = value
 
-            if param_ezc3d.name() not in self._storage[group_name]:
-                self._storage[group_name][param_ezc3d.name()] = dict()
-            self._storage[group_name][param_ezc3d.name()] = param
+            param_name = param_ezc3d.name().upper()
+            if param_name not in self._storage[group_name]:
+                self._storage[group_name][param_name] = dict()
+            self._storage[group_name][param_name] = param
 
 
     class Data(C3dMutableMapper):
@@ -190,6 +258,9 @@ class c3d(C3dMapper):
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
 
+        # Fill the header
+        new_c3d.header().firstFrame(self._storage['header']['points']['first_frame'])
+
         # Fill the parameters
         groups = self._storage['parameters']
 
@@ -203,29 +274,39 @@ class c3d(C3dMapper):
             new_c3d.analog(analog_label)
 
         for group in groups:
+            # Write the metadata of the group
+            if not new_c3d.parameters().isGroup(group):
+                new_c3d.parameters().group(ezc3d.Group(group))
+            new_c3d.parameters().group(group).description(groups[group]['__METADATA__']['DESCRIPTION'])
+            if groups[group]['__METADATA__']['IS_LOCKED']:
+                new_c3d.parameters().group(group).lock()
+            else:
+                new_c3d.parameters().group(group).unlock()
+
+            # Write the parameters of the group
             for param in groups[group]:
+                if param == '__METADATA__':
+                    continue
+
+                old_param = groups[group][param]
+                new_param = ezc3d.Parameter(param)
+                dim = [len(old_param["value"])]
+
                 # Copy the parameters into the c3d, but skip those who will be updated automatically later
-                if (
-                    not (group == "POINT" and param == "USED")
-                    and (not (group == "POINT" and param == "FRAMES"))
-                    and (not (group == "POINT" and param == "LABELS"))
+                if not (
+                    (group == "POINT" and param == "USED")
+                    or (group == "POINT" and param == "FRAMES")
+                    or (group == "POINT" and param == "LABELS")
+                    or (group == "POINT" and param == "DESCRIPTIONS" and dim[0] != nb_points)
 
-                    and (not (group == "ANALOG" and param == "USED"))
-                    and (not (group == "ANALOG" and param == "LABELS"))
-                    and (not (group == "ANALOG" and param == "SCALE"))
-                    and (not (group == "ANALOG" and param == "OFFSET"))
-                    and (not (group == "ANALOG" and param == "UNITS"))
+                    or (group == "ANALOG" and param == "USED")
+                    or (group == "ANALOG" and param == "LABELS")
+                    or (group == "ANALOG" and param == "SCALE" and len(old_param["value"]) != nb_analogs)
+                    or (group == "ANALOG" and param == "OFFSET")
+                    or (group == "ANALOG" and param == "UNITS" and len(old_param["value"]) != nb_analogs)
+                    or (group == "ANALOG" and param == "DESCRIPTIONS" and dim[0] != nb_analogs)
                 ):
-                    old_param = groups[group][param]
-                    new_param = ezc3d.Parameter(param)
-                    dim = [len(old_param["value"])]
-
-                    # Special cases
-                    if group == "POINT" and param == "DESCRIPTIONS" and dim[0] != nb_points:
-                        continue
-                    if group == "ANALOG" and param == "DESCRIPTIONS" and dim[0] != nb_analogs:
-                        continue
-
+                    # Copy data
                     if old_param["type"] == ezc3d.BYTE or old_param["type"] == ezc3d.INT:
                         new_param.set(ezc3d.VecInt(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.FLOAT:
@@ -235,6 +316,13 @@ class c3d(C3dMapper):
                     else:
                         raise NotImplementedError("Parameter type not implemented yet")
                     new_c3d.parameter(group, new_param)
+
+                # Copy metadata
+                new_c3d.parameters().group(group).parameter(param).description(old_param['description'])
+                if old_param['is_locked']:
+                    new_c3d.parameters().group(group).parameter(param).lock()
+                else:
+                    new_c3d.parameters().group(group).parameter(param).unlock()
 
         # Initialization for speed
         pt = ezc3d.Point()

@@ -170,23 +170,23 @@ def c3d_build_rebuild(request):
     Path.unlink(rebuild_file)
 
 
-def test_parse_and_rebuild_header(c3d_build_rebuild):
+def test_parse_and_rebuild(c3d_build_rebuild):
     for i in c3d_build_rebuild:
         assert isinstance(i, ezc3d.c3d)
-
     orig, rebuilt = c3d_build_rebuild
-    
-    for key in orig["header"].keys():
-        assert orig["header"][key] == rebuilt["header"][key]
+    assert orig == rebuilt
+
+
+def test_parse_and_rebuild_header(c3d_build_rebuild):
+    orig, rebuilt = c3d_build_rebuild
+    assert orig['header'] == rebuilt['header']
 
 
 def test_parse_and_rebuild_parameters(c3d_build_rebuild):
     orig, rebuilt = c3d_build_rebuild
-    for key in orig["parameters"].keys():
-        assert orig["parameters"][key] == rebuilt["parameters"][key]
+    assert orig['parameters'] == rebuilt['parameters']
 
 
 def test_parse_and_rebuild_data(c3d_build_rebuild):
     orig, rebuilt = c3d_build_rebuild
-    for key in orig["data"].keys():
-        np.testing.assert_array_equal(orig["data"][key], rebuilt["data"][key], err_msg=f"Different {key} values found")
+    assert orig['data'] == rebuilt['data']
