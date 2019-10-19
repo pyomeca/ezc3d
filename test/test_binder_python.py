@@ -130,7 +130,7 @@ def test_create_and_read_c3d():
     assert c3d_to_compare['parameters']['ANALOG']['GEN_SCALE']['value'][0] == 1
     assert c3d_to_compare['parameters']['ANALOG']['SCALE']['value'] == tuple([1.0 for _ in analog_names])
     assert c3d_to_compare['parameters']['ANALOG']['OFFSET']['value'] == tuple([0 for _ in analog_names])
-    assert c3d_to_compare['parameters']['ANALOG']['UNITS']['value'] == ["V" for _ in analog_names]
+    assert c3d_to_compare['parameters']['ANALOG']['UNITS']['value'] == ["" for _ in analog_names]
     assert c3d_to_compare['parameters']['ANALOG']['RATE']['value'][0] == analog_frame_rate
     assert len(c3d_to_compare['parameters']['ANALOG']['FORMAT']['value']) == 0
     assert len(c3d_to_compare['parameters']['ANALOG']['BITS']['value']) == 0
