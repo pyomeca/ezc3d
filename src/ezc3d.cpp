@@ -841,7 +841,7 @@ void ezc3d::c3d::updateParameters(
                                                idxUnits).valuesAsString());
             for (size_t i = grpAnalog.parameter(idxUnits)
                  .valuesAsString().size(); i < nAnalogs; ++i)
-                units.push_back("V");
+                units.push_back("");
             grpAnalog.parameter(idxUnits).set(units);
         }
     }
