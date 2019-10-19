@@ -162,7 +162,7 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(
             else if (_data_type == DATA_TYPE::CHAR){
                 std::string toWrite(_param_data_string[cmp]);
                 toWrite.resize(dim[0]); // Pad with \0
-                f.write(_param_data_string[cmp].c_str(),
+                f.write(toWrite.c_str(),
                         static_cast<int>(dim[0] * DATA_TYPE::BYTE));
             }
             ++cmp;
