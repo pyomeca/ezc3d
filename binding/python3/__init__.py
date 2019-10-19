@@ -60,7 +60,7 @@ class C3dMapper(Mapping):
     @staticmethod
     def __eq_param__(group, dict1, dict2):
         if len(dict1) != len(dict2):
-            return false
+            return False
         for key in dict1:
             if isinstance(dict1[key], (int, float, str)) and isinstance(dict2[key], (int, float, str)):
                 if dict1[key] != dict2[key]:
@@ -71,15 +71,22 @@ class C3dMapper(Mapping):
                 # POINT:DATA_START is a special key which should not be compared
                 continue
             if 'value' in dict1[key] and 'value' in dict2[key] \
-                    and not dict1[key]['value'] and not dict2[key]['value']:
+                and isinstance(dict1[key]['value'], (np.ndarray)) and isinstance(dict2[key]['value'], (np.ndarray)) \
+                and not dict1[key]['value'].any() and not dict2[key]['value'].any():
                 # When data are empty type INT or FLOAT is irrelevant
                 if (dict1[key]['type'] == 1 or dict1[key]['type'] == 2) \
                     and (dict2[key]['type'] == 1 or dict2[key]['type'] == 2):
                     continue
             if not key in dict2:
                 return False
-            if dict1[key] != dict2[key]:
-                return False
+            if 'type' in dict1[key] and dict1[key]['type'] > 0:
+                if dict1[key]['description'] != dict2[key]['description'] \
+                    or dict1[key]['is_locked'] != dict2[key]['is_locked'] \
+                    or not np.all(np.equal(dict1[key]['value'], dict2[key]['value'])):
+                    return False
+            else:
+                if dict1[key] != dict2[key]:
+                    return False
         return True
 
 
@@ -170,11 +177,11 @@ class c3d(C3dMapper):
             param['description'] = param_ezc3d.description()
             param['is_locked'] = param_ezc3d.isLocked()
             if param_ezc3d.type() == ezc3d.BYTE:
-                value = param_ezc3d.valuesAsByte()
+                value = np.array(param_ezc3d.valuesAsByte(), dtype='int').reshape(param_ezc3d.dimension())
             elif param_ezc3d.type() == ezc3d.INT:
-                value = param_ezc3d.valuesAsInt()
+                value = np.array(param_ezc3d.valuesAsInt(), dtype='int').reshape(param_ezc3d.dimension())
             elif param_ezc3d.type() == ezc3d.FLOAT:
-                value = param_ezc3d.valuesAsFloat()
+                value = np.array(param_ezc3d.valuesAsFloat()).reshape(param_ezc3d.dimension())
             elif param_ezc3d.type() == ezc3d.CHAR:
                 table = param_ezc3d.valuesAsString()
                 value = []
@@ -242,10 +249,10 @@ class c3d(C3dMapper):
                     raise ValueError("Number of frames in the data set must match the analog rate X point frame")
 
             nb_analog_subframes = int(nb_analog_frames / nb_point_frames)
-            self._storage['parameters']['ANALOG']['RATE']['value'] = (
+            self._storage['parameters']['ANALOG']['RATE']['value'] = np.array((
                 nb_analog_subframes
                 * self._storage['parameters']['POINT']['RATE']['value'][0],
-            )
+            ))
             nb_frames = nb_point_frames
         else:
             nb_frames = nb_analog_frames
@@ -308,9 +315,10 @@ class c3d(C3dMapper):
                 ):
                     # Copy data
                     if old_param["type"] == ezc3d.BYTE or old_param["type"] == ezc3d.INT:
-                        new_param.set(ezc3d.VecInt(old_param["value"]), dim)
+                        new_param.set(ezc3d.VecInt([int(x) for x in old_param["value"].ravel()]),
+                                      old_param["value"].shape)
                     elif old_param["type"] == ezc3d.FLOAT:
-                        new_param.set(ezc3d.VecFloat(old_param["value"]), dim)
+                        new_param.set(ezc3d.VecFloat(old_param["value"].ravel()), old_param["value"].shape)
                     elif old_param["type"] == ezc3d.CHAR:
                         new_param.set(ezc3d.VecString(old_param["value"]), dim)
                     else:
