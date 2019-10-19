@@ -155,6 +155,39 @@ def test_create_and_read_c3d():
     np.testing.assert_almost_equal(c3d_to_compare['data']['analogs'], analogs)
 
 
+def test_create_and_read_c3d_with_nan():
+    # Load an empty c3d structure
+    c3d = ezc3d.c3d()
+
+    # Fill it with random data
+    point_names = ('point1', 'point2')
+    point_frame_rate = 100
+    n_second = 2
+    points = np.random.rand(3, len(point_names), point_frame_rate * n_second) * np.nan
+
+    analog_names = ('analog1', 'analog2')
+    analog_frame_rate = 1000
+    analogs = np.random.rand(1, len(analog_names), analog_frame_rate * n_second) * np.nan
+
+    c3d['parameters']['POINT']['RATE']['value'] = [100]
+    c3d['parameters']['POINT']['LABELS']['value'] = point_names
+    c3d['data']['points'] = points
+
+    c3d['parameters']['ANALOG']['RATE']['value'] = [1000]
+    c3d['parameters']['ANALOG']['LABELS']['value'] = analog_names
+    c3d['data']['analogs'] = analogs
+
+    # Write and read back the data
+    c3d.write("temporary.c3d")
+    c3d_to_compare = ezc3d.c3d("temporary.c3d")
+
+    # Compare the read c3d
+    np.testing.assert_equal(np.sum(np.isnan(c3d_to_compare['data']['points'])),
+                            3 * len(point_names) * point_frame_rate * n_second)
+    np.testing.assert_equal(np.sum(np.isnan(c3d_to_compare['data']['analogs'])),
+                            len(analog_names) * analog_frame_rate * n_second)
+
+
 @pytest.fixture(scope='module', params=["BTS", "Optotrak", "Qualisys", "Vicon"])
 def c3d_build_rebuild(request):
     base_folder = Path("test/c3dTestFiles")

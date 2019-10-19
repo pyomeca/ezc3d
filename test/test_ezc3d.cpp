@@ -1255,6 +1255,50 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 }
 
 
+TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
+    // Create an empty c3d fill it with data and reopen
+    c3dTestStruct ref_c3d;
+    fillC3D(ref_c3d, true, true);
+
+    // Lock Point parameter
+    ref_c3d.c3d.lockGroup("POINT");
+
+    // Change some values for Nan
+    size_t idxFrame(1);
+    size_t idxSubframe(2);
+    size_t idxPoint(1);
+    size_t idxChannel(2);
+    // For some reason, the compiler doesn't notice that
+    // data is supposed to be const...
+    ezc3d::DataNS::Frame frame(ref_c3d.c3d.data().frame(idxFrame));
+    frame.points().point(idxPoint).x(NAN);
+    frame.points().point(idxPoint).y(NAN);
+    frame.points().point(idxPoint).z(NAN);
+    frame.points().point(idxPoint).residual(NAN);
+    frame.analogs().subframe(idxSubframe).channel(idxChannel).data(NAN);
+
+    // Write the c3d on the disk
+    std::string savePath("temporary.c3d");
+    ref_c3d.c3d.write(savePath.c_str());
+
+    // Open it back and delete it
+    ezc3d::c3d read_c3d(savePath.c_str());
+    remove(savePath.c_str());
+
+    ezc3d::DataNS::Points3dNS::Point point(
+                read_c3d.data().frame(idxFrame).points().point(idxPoint));
+    EXPECT_TRUE(std::isnan(point.x()));
+    EXPECT_TRUE(std::isnan(point.y()));
+    EXPECT_TRUE(std::isnan(point.z()));
+    EXPECT_EQ(point.residual(), 0);
+
+    ezc3d::DataNS::AnalogsNS::Channel channel(
+                read_c3d.data().frame(idxFrame).analogs().subframe(idxSubframe)
+                .channel(idxChannel));
+    EXPECT_TRUE(std::isnan(channel.data()));
+}
+
+
 TEST(c3dFileIO, readViconC3D){
     ezc3d::c3d Vicon("c3dTestFiles/Vicon.c3d");
 
