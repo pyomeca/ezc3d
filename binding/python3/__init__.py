@@ -315,10 +315,17 @@ class c3d(C3dMapper):
                 ):
                     # Copy data
                     if old_param["type"] == ezc3d.BYTE or old_param["type"] == ezc3d.INT:
-                        new_param.set(ezc3d.VecInt([int(x) for x in old_param["value"].ravel()]),
-                                      old_param["value"].shape)
+                        if isinstance(old_param["value"], np.ndarray):
+                            new_param.set(ezc3d.VecInt([int(x) for x in old_param["value"].ravel()]),
+                                          old_param["value"].shape)
+                        else:
+                            new_param.set(ezc3d.VecInt(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.FLOAT:
-                        new_param.set(ezc3d.VecFloat(old_param["value"].ravel()), old_param["value"].shape)
+                        if isinstance(old_param["value"], np.ndarray):
+                            new_param.set(ezc3d.VecFloat(old_param["value"].ravel().astype('float')),
+                                          old_param["value"].shape)
+                        else:
+                            new_param.set(ezc3d.VecFloat(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.CHAR:
                         new_param.set(ezc3d.VecString(old_param["value"]), dim)
                     else:
