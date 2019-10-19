@@ -51,7 +51,7 @@ def test_create_c3d():
     
     assert c3d['parameters']['FORCE_PLATFORM']['USED']['value'][0] == 0
     assert len(c3d['parameters']['FORCE_PLATFORM']['TYPE']['value']) == 0
-    assert c3d['parameters']['FORCE_PLATFORM']['ZERO']['value'] == (1, 0)
+    assert np.all(c3d['parameters']['FORCE_PLATFORM']['ZERO']['value'] == (1, 0))
     assert len(c3d['parameters']['FORCE_PLATFORM']['CORNERS']['value']) == 0
     assert len(c3d['parameters']['FORCE_PLATFORM']['ORIGIN']['value']) == 0
     assert len(c3d['parameters']['FORCE_PLATFORM']['CHANNEL']['value']) == 0
@@ -121,15 +121,15 @@ def test_create_and_read_c3d():
     assert c3d_to_compare['parameters']['POINT']['LABELS']['value'] == list(point_names)
     assert c3d_to_compare['parameters']['POINT']['DESCRIPTIONS']['value'] == ["" for _ in point_names]
     assert len(c3d_to_compare['parameters']['POINT']['UNITS']['value']) == 0
-    assert c3d_to_compare['parameters'][point_new_param[0].upper()][point_new_param[1].upper()]['value'] \
-        == point_new_param[2]
+    assert np.all(c3d_to_compare['parameters'][point_new_param[0].upper()][point_new_param[1].upper()]['value']
+                  == point_new_param[2])
     
     assert c3d_to_compare['parameters']['ANALOG']['USED']['value'][0] == len(analog_names)
     assert c3d_to_compare['parameters']['ANALOG']['LABELS']['value'] == list(analog_names)
     assert c3d_to_compare['parameters']['ANALOG']['DESCRIPTIONS']['value'] == ["" for _ in analog_names]
     assert c3d_to_compare['parameters']['ANALOG']['GEN_SCALE']['value'][0] == 1
-    assert c3d_to_compare['parameters']['ANALOG']['SCALE']['value'] == tuple([1.0 for _ in analog_names])
-    assert c3d_to_compare['parameters']['ANALOG']['OFFSET']['value'] == tuple([0 for _ in analog_names])
+    assert np.all(c3d_to_compare['parameters']['ANALOG']['SCALE']['value'] == tuple([1.0 for _ in analog_names]))
+    assert np.all(c3d_to_compare['parameters']['ANALOG']['OFFSET']['value'] == tuple([0 for _ in analog_names]))
     assert c3d_to_compare['parameters']['ANALOG']['UNITS']['value'] == ["" for _ in analog_names]
     assert c3d_to_compare['parameters']['ANALOG']['RATE']['value'][0] == analog_frame_rate
     assert len(c3d_to_compare['parameters']['ANALOG']['FORMAT']['value']) == 0
@@ -137,7 +137,7 @@ def test_create_and_read_c3d():
     
     assert c3d_to_compare['parameters']['FORCE_PLATFORM']['USED']['value'][0] == 0
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['TYPE']['value']) == 0
-    assert c3d_to_compare['parameters']['FORCE_PLATFORM']['ZERO']['value'] == (1, 0)
+    assert np.all(c3d_to_compare['parameters']['FORCE_PLATFORM']['ZERO']['value'] == (1, 0))
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['CORNERS']['value']) == 0
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['ORIGIN']['value']) == 0
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['CHANNEL']['value']) == 0
