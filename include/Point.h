@@ -69,6 +69,23 @@ public:
     std::vector<float> data();
 
     ///
+    /// \brief set All the point at once
+    /// \param x The X-component of the point
+    /// \param y The Y-component of the point
+    /// \param z The Z-component of the point
+    /// \param residual The residual of the point
+    ///
+    void set(float x, float y, float z, float residual);
+
+    ///
+    /// \brief set All the point at once. Don't change the residual value
+    /// \param x The X-component of the point
+    /// \param y The Y-component of the point
+    /// \param z The Z-component of the point
+    ///
+    void set(float x, float y, float z);
+
+    ///
     /// \brief Get the X component of the 3D point
     /// \return The X component of the 3d point
     ///

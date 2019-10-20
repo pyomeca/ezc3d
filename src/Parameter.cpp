@@ -298,11 +298,11 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::longestElement() const{
     if (_dimension.size() == 1)
         return _param_data_string[0].size();
     else {
-        if (_dimension.size() != 2)
+        if (_dimension.size() != 2) {
             throw std::runtime_error(
                     "longestElement is only implemented for 1d or 2d CHAR matrix. "
                     "Please report this error for help improving ezc3d.");
-
+        }
         size_t longestSoFar(0);
         for (size_t i = 0; i<_dimension[1]; ++i){
             if (_param_data_string[i].size() > longestSoFar)
