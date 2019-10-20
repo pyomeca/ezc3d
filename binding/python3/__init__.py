@@ -51,7 +51,11 @@ class C3dMapper(Mapping):
                 if not self.__eq_param__(key, self._storage[key], other._storage[key]):
                     return False
             elif isinstance(self._storage[key], np.ndarray) and isinstance(other._storage[key], np.ndarray):
-                return np.array_equal(self._storage[key], other._storage[key])
+                try:
+                    np.testing.assert_array_equal(self._storage[key], other._storage[key])
+                    return True
+                except AssertionError:
+                    return False
             else:
                 # Otherwise it is unknown data, therefore assume they are different
                 return False
@@ -355,9 +359,10 @@ class c3d(C3dMapper):
         # Fill the data
         for f in range(nb_frames):
             for i in range(nb_points):
-                pt.x(data_points[0, i, f])
-                pt.y(data_points[1, i, f])
-                pt.z(data_points[2, i, f])
+                if np.isnan(data_points[:, i, f]).any():
+                    pt.set(0, 0, 0, -1)
+                else:
+                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f], 0)
                 pts.point(pt, i)
 
             for sf in range(nb_analog_subframes):

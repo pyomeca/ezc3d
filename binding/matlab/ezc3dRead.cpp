@@ -225,12 +225,22 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 for (size_t p = 0; p < frame.points().nbPoints(); ++p){
                     ezc3d::DataNS::Points3dNS::Point point(
                                 frame.points().point(p));
-                    valPoints[f*nPoints*3+3*p+0] =
-                            static_cast<double>(point.x());
-                    valPoints[f*nPoints*3+3*p+1] =
-                            static_cast<double>(point.y());
-                    valPoints[f*nPoints*3+3*p+2] =
-                            static_cast<double>(point.z());
+                    if (point.residual() < 0){
+                        valPoints[f*nPoints*3+3*p+0] =
+                                static_cast<double>(NAN);
+                        valPoints[f*nPoints*3+3*p+1] =
+                                static_cast<double>(NAN);
+                        valPoints[f*nPoints*3+3*p+2] =
+                                static_cast<double>(NAN);
+                    }
+                    else {
+                        valPoints[f*nPoints*3+3*p+0] =
+                                static_cast<double>(point.x());
+                        valPoints[f*nPoints*3+3*p+1] =
+                                static_cast<double>(point.y());
+                        valPoints[f*nPoints*3+3*p+2] =
+                                static_cast<double>(point.z());
+                    }
                 }
 
                 // Analogs side
