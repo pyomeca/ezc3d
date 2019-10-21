@@ -338,9 +338,9 @@ The first way is to actually code new features for EZC3D. The easiest way to do 
 The second way is to provide me with non-working C3D files (See the C3D Softwares section below for more details). There is another repository for test files in the pyomeca (https://github.com/pyomeca/ezc3d_c3dTestFiles). You can fork this project, add your C3D in according to the recommendations and pull request it. This will be greatly appreciated by me and the biomechanics community!
 
 ## Using the test suite
-`EZC3D` is tested with the test suite from google `gtest` (https://github.com/google/googletest). 
+EZC3D is tested with the test suite from google `gtest` (https://github.com/google/googletest). 
 
-If you want to add or change some tests, you are very welcome to do so (actually it makes me very happy!). You should compile `ezc3d` with the `BUILD_TESTS` options turned on. The google test suite should download itself automatically. 
+If you want to add or change some tests, you are very welcome to do so (actually it makes me very happy!). You should compile EZC3D with the `BUILD_TESTS` options turned on. The google test suite should download itself automatically. 
 
 Afterwards, you can create a new test with the following function declaration
 ```c++
