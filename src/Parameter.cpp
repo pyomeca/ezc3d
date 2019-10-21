@@ -69,12 +69,20 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
     f.write(reinterpret_cast<const char*>(&blank),
             2*ezc3d::DATA_TYPE::BYTE);
 
+    // Recalculate the dimension of the values
+    std::vector<size_t> dimension(_dimension);
+    if (_data_type == DATA_TYPE::CHAR) {
+        // Assusimng dimension[0] is the number of characters
+        // and dimension[1] is the number of string
+        dimension[0] = longestElement();
+    }
+
     // Write the parameter values
     f.write(reinterpret_cast<const char*>(&_data_type),
             1*ezc3d::DATA_TYPE::BYTE);
-    size_t size_dim(_dimension.size());
+    size_t size_dim(dimension.size());
     // If it is a scalar, store it as so
-    if (_dimension.size() == 1 && _dimension[0] == 1
+    if (dimension.size() == 1 && dimension[0] == 1
             && _data_type != DATA_TYPE::CHAR){
         int _size_dim(0);
         f.write(reinterpret_cast<const char*>(&_size_dim),
@@ -83,26 +91,26 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
     else{
         f.write(reinterpret_cast<const char*>(&size_dim),
                 1*ezc3d::DATA_TYPE::BYTE);
-        for (unsigned int i=0; i<_dimension.size(); ++i)
-            f.write(reinterpret_cast<const char*>(&_dimension[i]),
+        for (unsigned int i=0; i<dimension.size(); ++i)
+            f.write(reinterpret_cast<const char*>(&dimension[i]),
                     1*ezc3d::DATA_TYPE::BYTE);
     }
 
     int hasSize(0);
-    if (_dimension.size() > 0){
+    if (dimension.size() > 0){
         hasSize = 1;
-        for (unsigned int i=0; i<_dimension.size(); ++i)
-            hasSize *= _dimension[i];
+        for (unsigned int i=0; i<dimension.size(); ++i)
+            hasSize *= dimension[i];
     }
     if (hasSize > 0){
         if (_data_type == DATA_TYPE::CHAR){
-            if (_dimension.size() == 1){
+            if (dimension.size() == 1){
                 f.write(_param_data_string[0].c_str(),
                         static_cast<int>(
                             _param_data_string[0].size())
                         * static_cast<int>(DATA_TYPE::BYTE));
             } else {
-                writeImbricatedParameter(f, _dimension, 1);
+                writeImbricatedParameter(f, dimension, 1);
             }
         } else {
             if (static_cast<int>(dataStartPosition) != -1
@@ -115,7 +123,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
                 f.write(reinterpret_cast<const char*>(&blank),
                         2*ezc3d::DATA_TYPE::BYTE);
             } else
-                writeImbricatedParameter(f, _dimension);
+                writeImbricatedParameter(f, dimension);
         }
     }
 
@@ -152,13 +160,10 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(
                             &(_param_data_float[cmp])),
                         static_cast<int>(_data_type));
             else if (_data_type == DATA_TYPE::CHAR){
-                f.write(_param_data_string[cmp].c_str(),
-                        static_cast<int>(_param_data_string[cmp].size())
-                        * static_cast<int>(DATA_TYPE::BYTE));
-                const char buffer = ' ';
-                for (size_t j=_param_data_string[cmp].size()
-                     ; j<_dimension[0]; ++j)
-                    f.write(&buffer, static_cast<int>(DATA_TYPE::BYTE));
+                std::string toWrite(_param_data_string[cmp]);
+                toWrite.resize(dim[0]); // Pad with \0
+                f.write(toWrite.c_str(),
+                        static_cast<int>(dim[0] * DATA_TYPE::BYTE));
             }
             ++cmp;
         }
@@ -220,8 +225,15 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(
                                                1*ezc3d::DATA_TYPE::BYTE));
 
     // Read the data for the parameters
-    if (_data_type == DATA_TYPE::CHAR)
+    if (_data_type == DATA_TYPE::CHAR){
         c3d.readParam(file, _dimension, _param_data_string);
+        // Readjust dimension in case the original c3d put
+        // trailling \0
+        for (unsigned int i=0; i<_dimension.size(); ++i){
+            _dimension[i];
+        }
+
+    }
     else if (_data_type == DATA_TYPE::BYTE)
         c3d.readParam(params.processorType(), file,
                       static_cast<unsigned int>(_data_type), _dimension,
@@ -277,6 +289,27 @@ void ezc3d::ParametersNS::GroupNS::Parameter::lock() {
 
 void ezc3d::ParametersNS::GroupNS::Parameter::unlock() {
     _isLocked = false;
+}
+
+size_t ezc3d::ParametersNS::GroupNS::Parameter::longestElement() const{
+    if (_data_type != DATA_TYPE::CHAR)
+        throw std::invalid_argument(
+                "longestElement only make sense for CHAR data");
+    if (_dimension.size() == 1)
+        return _param_data_string[0].size();
+    else {
+        if (_dimension.size() != 2) {
+            throw std::runtime_error(
+                    "longestElement is only implemented for 1d or 2d CHAR matrix. "
+                    "Please report this error for help improving ezc3d.");
+        }
+        size_t longestSoFar(0);
+        for (size_t i = 0; i<_dimension[1]; ++i){
+            if (_param_data_string[i].size() > longestSoFar)
+                longestSoFar = _param_data_string[i].size();
+        }
+        return longestSoFar;
+    }
 }
 
 const std::vector<size_t>

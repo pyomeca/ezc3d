@@ -131,6 +131,11 @@ public:
 protected:
     std::vector<size_t> _dimension; ///< Mapping of the data vector to the matrix of parameter
 
+    ///
+    /// \brief longestElement Compute the longest element in the holder. This is interesting solely for char
+    /// \return The longest element. If 0 is return, then no element is present
+    ///
+    size_t longestElement() const;
 public:
     ///
     /// \brief Return the vector mapping the dimension of the parameter matrix

@@ -737,7 +737,7 @@ TEST(c3dModifier, addAnalogs) {
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString()[a].c_str(), "");
         EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat()[a], 1);
         EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt()[a], 0);
-        EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "V");
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
     // DATA
@@ -952,7 +952,7 @@ TEST(c3dModifier, addPointsAndAnalogs){
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString()[a].c_str(), "");
         EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat()[a], 1);
         EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt()[a], 0);
-        EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "V");
+        EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
 
@@ -1231,7 +1231,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString()[a].c_str(), "");
         EXPECT_FLOAT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat()[a], 1);
         EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt()[a], 0);
-        EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "V");
+        EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("VERSION").valuesAsString()[0].c_str(), EZC3D_VERSION);
@@ -1252,6 +1252,50 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
                                 static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
 
     }
+}
+
+
+TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
+    // Create an empty c3d fill it with data and reopen
+    c3dTestStruct ref_c3d;
+    fillC3D(ref_c3d, true, true);
+
+    // Lock Point parameter
+    ref_c3d.c3d.lockGroup("POINT");
+
+    // Change some values for Nan
+    size_t idxFrame(1);
+    size_t idxSubframe(2);
+    size_t idxPoint(1);
+    size_t idxChannel(2);
+    // For some reason, the compiler doesn't notice that
+    // data is supposed to be const...
+    ezc3d::DataNS::Frame frame(ref_c3d.c3d.data().frame(idxFrame));
+    frame.points().point(idxPoint).x(NAN);
+    frame.points().point(idxPoint).y(NAN);
+    frame.points().point(idxPoint).z(NAN);
+    frame.points().point(idxPoint).residual(NAN);
+    frame.analogs().subframe(idxSubframe).channel(idxChannel).data(NAN);
+
+    // Write the c3d on the disk
+    std::string savePath("temporary.c3d");
+    ref_c3d.c3d.write(savePath.c_str());
+
+    // Open it back and delete it
+    ezc3d::c3d read_c3d(savePath.c_str());
+    remove(savePath.c_str());
+
+    ezc3d::DataNS::Points3dNS::Point point(
+                read_c3d.data().frame(idxFrame).points().point(idxPoint));
+    EXPECT_TRUE(std::isnan(point.x()));
+    EXPECT_TRUE(std::isnan(point.y()));
+    EXPECT_TRUE(std::isnan(point.z()));
+    EXPECT_EQ(point.residual(), 0);
+
+    ezc3d::DataNS::AnalogsNS::Channel channel(
+                read_c3d.data().frame(idxFrame).analogs().subframe(idxSubframe)
+                .channel(idxChannel));
+    EXPECT_TRUE(std::isnan(channel.data()));
 }
 
 
@@ -1593,8 +1637,8 @@ TEST(c3dFileio,readBtsC3D){
     // Point stuff
     EXPECT_EQ(BTS.header().nb3dPoints(), 22);
     EXPECT_EQ(BTS.header().nbMaxInterpGap(), 10);
-    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), -0.1);
-    EXPECT_FLOAT_EQ(BTS.header().frameRate(), 100);
+    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), static_cast<float>(-0.1));
+    EXPECT_FLOAT_EQ(BTS.header().frameRate(), static_cast<float>(100.0));
 
     // Analog stuff
     EXPECT_EQ(BTS.header().nbAnalogsMeasurement(), 440);
