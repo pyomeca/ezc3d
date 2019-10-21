@@ -424,6 +424,26 @@ public:
 
     // ---- PUBLIC C3D MODIFICATION INTERFACE ---- //
 public:
+
+    ///
+    /// \brief setFirstFrame Set the time stamp of the first frame in the header
+    /// \param firstFrame The first frame time stamp
+    ///
+    void setFirstFrame(
+            size_t firstFrame);
+
+    ///
+    /// \brief setGroupMetadata Set the metadata of a specific group. If group
+    /// doesn't exist, it is created
+    /// \param groupName The name of the group to set the metadata
+    /// \param description The description of the group
+    /// \param isLocked If the group is locked
+    ///
+    void setGroupMetadata(
+            const std::string& groupName,
+            const std::string& description,
+            bool isLocked);
+
     ///
     /// \brief Add/replace a parameter to a group named groupName
     /// \param groupName The name of the group to add the parameter to

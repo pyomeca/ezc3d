@@ -20,7 +20,7 @@ ezc3d::DataNS::Points3dNS::Point::Point(
     x(p.x());
     y(p.y());
     z(p.z());
-    residual(0);
+    residual(p.residual());
 }
 
 void ezc3d::DataNS::Points3dNS::Point::print() const {
@@ -29,10 +29,19 @@ void ezc3d::DataNS::Points3dNS::Point::print() const {
 }
 
 void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const {
-    f.write(reinterpret_cast<const char*>(&_data[0]), ezc3d::DATA_TYPE::FLOAT);
-    f.write(reinterpret_cast<const char*>(&_data[1]), ezc3d::DATA_TYPE::FLOAT);
-    f.write(reinterpret_cast<const char*>(&_data[2]), ezc3d::DATA_TYPE::FLOAT);
-    f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
+    if (residual() >= 0){
+        f.write(reinterpret_cast<const char*>(&_data[0]), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&_data[1]), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&_data[2]), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
+    }
+    else {
+        float zero(0);
+        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
+    }
 }
 
 const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const {
@@ -41,6 +50,28 @@ const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const {
 
 std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() {
     return _data;
+}
+
+void ezc3d::DataNS::Points3dNS::Point::set(
+        float x,
+        float y,
+        float z,
+        float residual)
+{
+    _data[0] = x;
+    _data[1] = y;
+    _data[2] = z;
+    _data[3] = residual;
+}
+
+void ezc3d::DataNS::Points3dNS::Point::set(
+        float x,
+        float y,
+        float z)
+{
+    _data[0] = x;
+    _data[1] = y;
+    _data[2] = z;
 }
 
 float ezc3d::DataNS::Points3dNS::Point::x() const {

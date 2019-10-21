@@ -113,6 +113,16 @@ int ezc3d::ParametersNS::GroupNS::Group::read(
     return nextParamByteInFile;
 }
 
+bool ezc3d::ParametersNS::GroupNS::Group::isEmpty() const
+{
+    if (!name().compare("") && nbParameters() == 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 const std::string& ezc3d::ParametersNS::GroupNS::Group::name() const {
     return _name;
 }

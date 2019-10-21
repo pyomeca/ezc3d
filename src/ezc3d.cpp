@@ -435,6 +435,31 @@ size_t ezc3d::c3d::channelIdx(
                                 + channelName + " in the analogous data set");
 }
 
+void ezc3d::c3d::setFirstFrame(size_t firstFrame) {
+    _header->firstFrame(firstFrame);
+}
+
+void ezc3d::c3d::setGroupMetadata(
+        const std::string &groupName,
+        const std::string &description,
+        bool isLocked) {
+    size_t idx;
+    try {
+        idx = parameters().groupIdx(groupName);
+    } catch (std::invalid_argument) {
+        _parameters->group(ezc3d::ParametersNS::GroupNS::Group(groupName));
+        idx = parameters().groupIdx(groupName);
+    }
+
+    _parameters->group(idx).description(description);
+    if (isLocked) {
+        _parameters->group(idx).lock();
+    }
+    else {
+        _parameters->group(idx).unlock();
+    }
+}
+
 void ezc3d::c3d::parameter(
         const std::string &groupName,
         const ezc3d::ParametersNS::GroupNS::Parameter &p) {
@@ -841,7 +866,7 @@ void ezc3d::c3d::updateParameters(
                                                idxUnits).valuesAsString());
             for (size_t i = grpAnalog.parameter(idxUnits)
                  .valuesAsString().size(); i < nAnalogs; ++i)
-                units.push_back("V");
+                units.push_back("");
             grpAnalog.parameter(idxUnits).set(units);
         }
     }

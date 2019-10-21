@@ -163,9 +163,10 @@ void ezc3d::Header::write(
                 1*ezc3d::DATA_TYPE::WORD);
     f.write(reinterpret_cast<const char*>(&_emptyBlock3),
             1*ezc3d::DATA_TYPE::WORD);
-    for (unsigned int i = 0; i < _eventsLabel.size(); ++i){
-        const char* event = _eventsLabel[i].c_str();
-        f.write(event, 2*ezc3d::DATA_TYPE::WORD);
+    std::vector<std::string> eventsLabel(_eventsLabel);
+    for (unsigned int i = 0; i < eventsLabel.size(); ++i){
+        eventsLabel[i].resize(2*ezc3d::DATA_TYPE::WORD);
+        f.write(eventsLabel[i].c_str(), 2*ezc3d::DATA_TYPE::WORD);
     }
     for (int i=0; i<22; ++i)
         f.write(reinterpret_cast<const char*>(&_emptyBlock4),

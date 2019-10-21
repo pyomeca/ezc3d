@@ -83,6 +83,8 @@ ezc3d::DataNS::Data::Data(
                                             file, ezc3d::DATA_TYPE::WORD))
                             * pointScaleFactor);
             }
+            if (pt.residual() < 0)
+                pt.set(NAN, NAN, NAN);
             ptsAtAFrame.point(pt, i);
         }
         // modified by pts_tp which is an nonconst ref to internal points
