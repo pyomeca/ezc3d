@@ -75,6 +75,11 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
         // Assusimng dimension[0] is the number of characters
         // and dimension[1] is the number of string
         dimension[0] = longestElement();
+
+        // Remove unecessary dimension
+        if (dimension.size() == 2 && dimension[1] == 1) {
+            dimension = {dimension[0]};
+        }
     }
 
     // Write the parameter values
@@ -161,7 +166,7 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(
                         static_cast<int>(_data_type));
             else if (_data_type == DATA_TYPE::CHAR){
                 std::string toWrite(_param_data_string[cmp]);
-                toWrite.resize(dim[0]); // Pad with \0
+                toWrite.resize(dim[0], ' '); // Pad with x20
                 f.write(toWrite.c_str(),
                         static_cast<int>(dim[0] * DATA_TYPE::BYTE));
             }
@@ -298,13 +303,8 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::longestElement() const{
     if (_dimension.size() == 1)
         return _param_data_string[0].size();
     else {
-        if (_dimension.size() != 2) {
-            throw std::runtime_error(
-                    "longestElement is only implemented for 1d or 2d CHAR matrix. "
-                    "Please report this error for help improving ezc3d.");
-        }
         size_t longestSoFar(0);
-        for (size_t i = 0; i<_dimension[1]; ++i){
+        for (size_t i = 0; i<_param_data_string.size(); ++i){
             if (_param_data_string[i].size() > longestSoFar)
                 longestSoFar = _param_data_string[i].size();
         }

@@ -194,14 +194,27 @@ void compareHeader(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2){
     }
 }
 
-void compareData(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2){
+void compareData(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2
+                 , bool skipResidual = false){
     // All the data should be the same
     for (size_t f=0; f<c3d1.header().nbFrames(); ++f){
         for (size_t p=0; p<c3d1.header().nb3dPoints(); ++p){
-            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).x(), c3d2.data().frame(f).points().point(p).x());
-            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).y(), c3d2.data().frame(f).points().point(p).y());
-            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).z(), c3d2.data().frame(f).points().point(p).z());
-            EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).residual(), c3d2.data().frame(f).points().point(p).residual());
+            if (c3d1.data().frame(f).points().point(p).residual() < 0) {
+                ASSERT_TRUE(std::isnan(c3d1.data().frame(f).points().point(p).x()));
+                ASSERT_TRUE(std::isnan(c3d1.data().frame(f).points().point(p).y()));
+                ASSERT_TRUE(std::isnan(c3d1.data().frame(f).points().point(p).z()));
+
+                ASSERT_TRUE(std::isnan(c3d2.data().frame(f).points().point(p).x()));
+                ASSERT_TRUE(std::isnan(c3d2.data().frame(f).points().point(p).y()));
+                ASSERT_TRUE(std::isnan(c3d2.data().frame(f).points().point(p).z()));
+            }
+            else {
+                EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).x(), c3d2.data().frame(f).points().point(p).x());
+                EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).y(), c3d2.data().frame(f).points().point(p).y());
+                EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).z(), c3d2.data().frame(f).points().point(p).z());
+            }
+            if (!skipResidual)
+                EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).residual(), c3d2.data().frame(f).points().point(p).residual());
         }
         for (size_t sf=0; sf<c3d1.data().frame(f).analogs().nbSubframes(); ++sf){
             for (size_t c=0; c<c3d1.header().nbAnalogByFrame(); ++c){
@@ -1260,9 +1273,6 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     c3dTestStruct ref_c3d;
     fillC3D(ref_c3d, true, true);
 
-    // Lock Point parameter
-    ref_c3d.c3d.lockGroup("POINT");
-
     // Change some values for Nan
     size_t idxFrame(1);
     size_t idxSubframe(2);
@@ -1274,7 +1284,7 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     frame.points().point(idxPoint).x(NAN);
     frame.points().point(idxPoint).y(NAN);
     frame.points().point(idxPoint).z(NAN);
-    frame.points().point(idxPoint).residual(NAN);
+    frame.points().point(idxPoint).residual(-1);
     frame.analogs().subframe(idxSubframe).channel(idxChannel).data(NAN);
 
     // Write the c3d on the disk
@@ -1290,7 +1300,7 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     EXPECT_TRUE(std::isnan(point.x()));
     EXPECT_TRUE(std::isnan(point.y()));
     EXPECT_TRUE(std::isnan(point.z()));
-    EXPECT_EQ(point.residual(), 0);
+    EXPECT_EQ(point.residual(), -1);
 
     ezc3d::DataNS::AnalogsNS::Channel channel(
                 read_c3d.data().frame(idxFrame).analogs().subframe(idxSubframe)
@@ -1749,9 +1759,9 @@ TEST(c3dFileIO, comparedIdenticalFilesSample1){
     compareHeader(c3d_pr, c3d_vi);
 
     // All the data should be the same
-    compareData(c3d_pr, c3d_pi);
-    compareData(c3d_pr, c3d_vr);
-    compareData(c3d_pr, c3d_vi);
+    compareData(c3d_pr, c3d_pi, true);
+    compareData(c3d_pr, c3d_vr, true);
+    compareData(c3d_pr, c3d_vi, true);
 }
 
 TEST(c3dFileIO, comparedIdenticalFilesSample2){
@@ -1769,8 +1779,8 @@ TEST(c3dFileIO, comparedIdenticalFilesSample2){
 
     // All the data should be the same
     // compareData(c3d_pr, c3d_pi); // Data are actually sligthly different
-    compareData(c3d_pr, c3d_vr);
-    compareData(c3d_pr, c3d_vi);
+    compareData(c3d_pr, c3d_vr, true);
+    compareData(c3d_pr, c3d_vi, true);
 }
 
 TEST(c3dFileIO, parseAndBuildSameFileBTS){
