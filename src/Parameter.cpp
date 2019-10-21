@@ -75,6 +75,11 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
         // Assusimng dimension[0] is the number of characters
         // and dimension[1] is the number of string
         dimension[0] = longestElement();
+
+        // Remove unecessary dimension
+        if (dimension.size() == 2 && dimension[1] == 1) {
+            dimension = {dimension[0]};
+        }
     }
 
     // Write the parameter values
