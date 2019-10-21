@@ -337,6 +337,22 @@ The first way is to actually code new features for EZC3D. The easiest way to do 
 
 The second way is to provide me with non-working C3D files (See the C3D Softwares section below for more details). There is another repository for test files in the pyomeca (https://github.com/pyomeca/ezc3d_c3dTestFiles). You can fork this project, add your C3D in according to the recommendations and pull request it. This will be greatly appreciated by me and the biomechanics community!
 
+## Using the test suite
+`EZC3D` is tested with the test suite from google `gtest` (https://github.com/google/googletest). 
+
+If you want to add or change some tests, you are very welcome to do so (actually it makes me very happy!). You should compile `ezc3d` with the `BUILD_TESTS` options turned on. The google test suite should download itself automatically. 
+
+Afterwards, you can create a new test with the following function declaration
+```c++
+TEST(NameOfTestStructure, NameOfTest) {
+  // Your test here...
+}
+```
+
+You are invited to write tests for true positive, false positive, true negative and false negative using different combinations of `EXPECT_EQ` (or `EXPECT_FLOAT_EQ` if you compare float-precision numbers), `EXPECT_NE`, `ASSERT_TRUE`, `EXPECT_THROW` and `EXPECT_NO_THROW`. For a complete explaination of the google test suite, please refer to one of the numerous tutorial on the web.
+
+I also implemented some useful function such as `compareHeader(myFirstC3d, mySecondC3d)` and `compareData(myFirstC3d, mySecondC3d)` which strickly compares header and data respectively. If you expect differences though, these function are for no use and you should copy-paste the content of them in your test (and change whatever is expected to be different). It is also possible to create a fully filled structure using the `fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs)` function and it can be tested with the `defaultHeaderTest` and `defaultParametersTest` function. Again, if you expect differences with the default setting, you should not use these default testing functions, but copy the relevant part in you extra test. 
+
 # Supported generated C3D
 The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from three different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/) and Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
