@@ -37,10 +37,11 @@ void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const {
     }
     else {
         float zero(0);
+        float minusOne(-1);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
-        f.write(reinterpret_cast<const char*>(&_data[3]), ezc3d::DATA_TYPE::FLOAT);
+        f.write(reinterpret_cast<const char*>(&minusOne), ezc3d::DATA_TYPE::FLOAT);
     }
 }
 
