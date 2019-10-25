@@ -10,9 +10,6 @@ EZC3D addresses these issues. It offers a comprehensive and light API to read an
 
 So, without further ado, let's begin C3Ding!
 
-# Build status
-[![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d)
-
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
@@ -25,8 +22,21 @@ conda install -c conda-forge ezc3d
 ```
 The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 binder will also be installed in the environment.
 
+The current building status for Anaconda release is as follow.
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-ezc3d-green.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) |
+
 ## Compiling (For Windows, Linux and Mac)
 The main drawback with downloading the pre-compiled version from Anaconda is that it may be out-of-date. Moreover, since it is already compiled, it doesn't allow you to modify EZC3D if you need it. Therefore, a more versatile way to enjoy EZC3D is to compile it by yourself.
+
+The building status for the current EZC3D branches is as follow
+
+| Name | Status |
+| --- | --- |
+| Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
+| dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 
 ### Dependencies
 EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
