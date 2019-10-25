@@ -10,6 +10,9 @@ EZC3D addresses these issues. It offers a comprehensive and light API to read an
 
 So, without further ado, let's begin C3Ding!
 
+# Build status
+[![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d)
+
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
