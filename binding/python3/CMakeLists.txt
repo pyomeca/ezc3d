@@ -45,6 +45,10 @@ INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.py
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py
     DESTINATION ${Python3_SITELIB}/${PROJECT_NAME}
 )
+
+
+# Create the version file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_version.py.i ${CMAKE_CURRENT_BINARY_DIR}/_version.py)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_version.py
     DESTINATION ${Python3_SITELIB}/${PROJECT_NAME}
 )
@@ -57,9 +61,6 @@ elseif(${SWIG_VERSION} MATCHES "^4(\.[0-9]*)*$")
 else()
     message( FATAL_ERROR "Swig must be version 3 or 4" )
 endif()
-
-# Create the version file
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_version.py.i ${CMAKE_CURRENT_BINARY_DIR}/_version.py)
 
 # Install the library
 INSTALL(TARGETS _${PROJECT_NAME}
