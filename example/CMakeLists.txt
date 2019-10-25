@@ -5,7 +5,11 @@ add_executable(${PROJECT_NAME} "main.cpp")
 add_dependencies(${PROJECT_NAME} ${MASTER_PROJECT_NAME})
 
 # Headers
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(
+    ${PROJECT_NAME} PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_BINARY_DIR}/include
+)
 
 # Libraries linker
 get_target_property(DEBUG_POSTFIX ${MASTER_PROJECT_NAME} DEBUG_POSTFIX)
@@ -27,6 +31,29 @@ endif()
 set(${MASTER_PROJECT_NAME}_LIBRARY ${CMAKE_BINARY_DIR}/${${MASTER_PROJECT_NAME}_LIB_NAME})
 target_link_libraries(${PROJECT_NAME} ${${MASTER_PROJECT_NAME}_LIBRARY})
 
-# Copy the c3d of the example
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/markers_analogs.c3d
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Get the test suite from the pyomeca repository
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/example/c3dFiles/ezc3d-testFiles-master)
+    file(
+        DOWNLOAD https://github.com/pyomeca/ezc3d-testFiles/archive/master.zip
+        ${CMAKE_SOURCE_DIR}/example/c3dFiles/ezc3d-testFiles-master.zip
+        TIMEOUT 60 # seconds
+        TLS_VERIFY ON
+    )
+endif()
+
+# Copy all c3d to the test folder
+set(FILE ezc3d-testFiles-master.zip)
+get_filename_component(FOLDER_NAME ${FILE} NAME_WE)
+if(NOT EXISTS ${CMAKE_SOURCE_DIR}/example/c3dFiles/${FOLDER_NAME})
+    file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/example/c3dFiles/${FOLDER_NAME})
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar -xf ../${FILE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/example/c3dFiles/${FOLDER_NAME}/
+        )
+endif()
+file(GLOB C3D_EXAMPLE_FILES ${CMAKE_SOURCE_DIR}/example/c3dFiles/${FOLDER_NAME}/*.c3d)
+if (NOT C3D_EXAMPLE_FILES)
+    file(GLOB C3D_EXAMPLE_FILES ${CMAKE_SOURCE_DIR}/example/c3dFiles/${FOLDER_NAME}/${FOLDER_NAME}/*.c3d)
+endif()
+file(COPY ${C3D_EXAMPLE_FILES}
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dExampleFiles/)

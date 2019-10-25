@@ -21,7 +21,9 @@ public:
     /// \param name The name of the parameter
     /// \param description The description of the parameter
     ///
-    Parameter(const std::string &name = "", const std::string &description = "");
+    Parameter(
+            const std::string &name = "",
+            const std::string &description = "");
 
 
     //---- STREAM ----//
@@ -39,7 +41,10 @@ public:
     ///
     /// Write the parameter and its values to a file
     ///
-    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
+    void write(
+            std::fstream &f,
+            int groupIdx,
+            std::streampos &dataStartPosition) const;
 
 protected:
     ///
@@ -50,7 +55,10 @@ protected:
     /// \param cmp Internal variable that keep track where it is in the parameter recursive calls. It should be set to 0 when called the first time.
     /// \return The internal variable cmp. It should be ignore by the user.
     ///
-    size_t writeImbricatedParameter(std::fstream &f, const std::vector<size_t> &dim, size_t currentIdx=0, size_t cmp=0) const;
+    size_t writeImbricatedParameter(
+            std::fstream &f,
+            const std::vector<size_t> &dim,
+            size_t currentIdx=0, size_t cmp=0) const;
 
 public:
     ///
@@ -61,10 +69,11 @@ public:
     /// \param nbCharInName The number of character of the parameter name
     /// \return The position in the file of the next Group/Parameter
     ///
-    int read(c3d &c3d,
-             const Parameters &params,
-             std::fstream &file,
-             int nbCharInName);
+    int read(
+            c3d &c3d,
+            const Parameters &params,
+            std::fstream &file,
+            int nbCharInName);
 
 
     //---- METADATA ----//
@@ -85,7 +94,8 @@ public:
     /// \brief Set the name of the parameter
     /// \param name The name of the parameter
     ///
-    void name(const std::string name);
+    void name(
+            const std::string& name);
 
     ///
     /// \brief Get the description of the parameter
@@ -97,7 +107,8 @@ public:
     /// \brief Set the description of the parameter
     /// \param description The description of the parameter
     ///
-    void description(const std::string description);
+    void description(
+            const std::string& description);
 
     ///
     /// \brief Get the locking status of the parameter
@@ -120,6 +131,11 @@ public:
 protected:
     std::vector<size_t> _dimension; ///< Mapping of the data vector to the matrix of parameter
 
+    ///
+    /// \brief longestElement Compute the longest element in the holder. This is interesting solely for char
+    /// \return The longest element. If 0 is return, then no element is present
+    ///
+    size_t longestElement() const;
 public:
     ///
     /// \brief Return the vector mapping the dimension of the parameter matrix
@@ -141,7 +157,9 @@ public:
     /// equals the dataSize. For example, if dimension == {2, 3, 4}, a consistent dataSize would be
     /// 24 (2*3*4).
     ///
-    bool isDimensionConsistent(size_t dataSize, const std::vector<size_t>& dimension) const;
+    bool isDimensionConsistent(
+            size_t dataSize,
+            const std::vector<size_t>& dimension) const;
 
 
     //---- DATA ----//
@@ -210,7 +228,8 @@ public:
     ///
     /// Set the scalar value for a parameter assuming this value is an integer.
     ///
-    void set(int data);
+    void set(
+            int data);
 
     ///
     /// \brief Set the size_t scalar value as integer for the parameter
@@ -218,7 +237,8 @@ public:
     ///
     /// Set the scalar value as integer for a parameter assuming this value is an size_t.
     ///
-    void set(size_t data);
+    void set(
+            size_t data);
 
     ///
     /// \brief Set the integer vector of values for the parameter
@@ -229,7 +249,9 @@ public:
     /// If no dimension mapping is provided, it assumes to be a scalar if the data is the size of 1 or a vector
     /// if the data has a size higher than 1.
     ///
-    void set(const std::vector<int>& data, const std::vector<size_t>& dimension = {});
+    void set(
+            const std::vector<int>& data,
+            const std::vector<size_t>& dimension = {});
 
     ///
     /// \brief Set the float scalar value for the parameter
@@ -237,7 +259,8 @@ public:
     ///
     /// Set the scalar value for a parameter assuming this value is a float.
     ///
-    void set(float data);
+    void set(
+            float data);
 
     ///
     /// \brief Set the double scalar value as float for the parameter
@@ -245,7 +268,8 @@ public:
     ///
     /// Set the scalar value as a flot for a parameter assuming this value is a double.
     ///
-    void set(double data);
+    void set(
+            double data);
 
     ///
     /// \brief Set the float vector of values for the parameter
@@ -256,13 +280,16 @@ public:
     /// If no dimension mapping is provided, it assumes to be a scalar if the data is the size of 1 or a vector
     /// if the data has a size higher than 1.
     ///
-    void set(const std::vector<float>& data, const std::vector<size_t>& dimension = {});
+    void set(
+            const std::vector<float>& data,
+            const std::vector<size_t>& dimension = {});
 
     ///
     /// \brief Set the single string value for the parameter
     /// \param data The string data
     ///
-    void set(const std::string& data);
+    void set(
+            const std::string& data);
 
     ///
     /// \brief Set the vector of strings for the parameter
@@ -273,7 +300,9 @@ public:
     /// If no dimension mapping is provided, it assumes to be a single string if the data is the size of 1 or a vector
     /// if the data has a size higher than 1.
     ///
-    void set(const std::vector<std::string>& data, const std::vector<size_t>& dimension = {});
+    void set(
+            const std::vector<std::string>& data,
+            const std::vector<size_t>& dimension = {});
 
 };
 

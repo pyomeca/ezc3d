@@ -13,52 +13,80 @@ So, without further ado, let's begin C3Ding!
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
-## Anaconda (For Windows and Linux, Mac is coming)
-The easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories. The project is host on the pyomeca channel (https://anaconda.org/pyomeca/ezc3d).
+## Anaconda (For Windows, Linux and Mac)
+The easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories (binaries are not available though for MATLAB). The project is hosted on the conda-forge channel (https://anaconda.org/conda-forge/ezc3d).
 
-After having install properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command:
+After having installed properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command:
 ```bash
 conda install -c conda-forge ezc3d
 ```
 The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 binder will also be installed in the environment.
 
-## Compiling (For Windows, Linux and Mac)
-The main drawback with downloading the pre-compiled version from Anaconda is that this version may be out-of-date. Moreover, since it is already compiled, it doesn't allow you to modify EZC3D if you need it. Therefore, a more versatile way to enjoy EZC3D is to compile it by yourself.
+The current building status for Anaconda release is as follow.
 
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-ezc3d-green.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) |
+
+## Compiling (For Windows, Linux and Mac)
+The main drawback with downloading the pre-compiled version from Anaconda is that it may be out-of-date. Moreover, since it is already compiled, it doesn't allow you to modify EZC3D if you need it. Therefore, a more versatile way to enjoy EZC3D is to compile it by yourself.
+
+The building status for the current EZC3D branches is as follow
+
+| Name | Status |
+| --- | --- |
+| Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
+| dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+
+### Dependencies
+EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
+
+### CMake
 EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples via Internet. The main variables to set are:
+
+That said, the Python3 interface requires *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/) to compile EZC3D. One could easily install these dependencies from Anaconda using the following command:
+```bash
+conda install -c conda-forge numpy swig
+```
+or directly from their respective websites. 
+
+Finally, the MATLAB interface requires MATLAB to be installed.
+
+### CMake
+EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. The main variables to set are:
 
 > `CMAKE_INSTALL_PREFIX` Which is the `path/to/install` EZC3D in. If you compile the Python3 binder, a valid installation of Python with Numpy should be installed relatived to this path.
 >
-> `BUILD_SHARED_LIBS` If you wan to build ezc3d in a shared `TRUE` or static `FALSE` library manner. Default is `TRUE`.
+> `BUILD_SHARED_LIBS` If you wan to build EZC3D in a shared `TRUE` or static `FALSE` library manner. Default is `TRUE`.
 >
 > `CMAKE_BUILD_TYPE` Which type of build you want. Options are `Debug`, `RelWithDebInfo`, `MinSizeRel` or `Release`. This is relevant only for the build done using the `make` command. Please note that you may experience a slow EZC3D library if you compile it without any optimization (i.e. `Debug`) especially on Windows. 
 >
-> `BUILD_EXAMPLE` If you want `TRUE` or not `FALSE` to build the C++ example. Default is `TRUE`.
+> `BUILD_EXAMPLE` If you want (`TRUE`) or not (`FALSE`) to build the C++ example. Default is `TRUE`.
 > 
-> `BUILD_TESTS` If you want `ON` or not `OFF` to build the tests of the project. Please note that this will download gtest (https://github.com/google/googletest). Default is `OFF`.
+> `BUILD_TESTS` If you want `ON` or not `OFF` to build the tests of the project. Please note that this will automatically download gtest (https://github.com/google/googletest). Default is `OFF`.
 > 
-> `BUILD_DOC` If you want `ON` or not `OFF` to build the documentation of the project. Default is `OFF`.
+> `BUILD_DOC` If you want (`ON`) or not (`OFF`) to build the documentation of the project. Default is `OFF`.
 > 
-> `BINDER_PYTHON3` If you want `ON` or not `OFF` to build the Python binder. Default is `OFF`.
+> `BINDER_PYTHON3` If you want (`ON`) or not (`OFF`) to build the Python binder. Default is `OFF`.
 > 
-> `Python3_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the Python executable. This python should have swig and Numpy installed with it. This variable should be found automatically.
+> `Python3_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the Python executable. This python should have *SWIG* and *Numpy* installed with it. This variable should be found automatically, but Anaconda finds the base prior to the actual environment, so one should gives attention to that particular variable.
 > 
-> `SWIG_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the SWIG executable. This variable should be found automatically.
+> `SWIG_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the SWIG executable. This variable will be found automatically if `Python3_EXECUTABLE` is properly set.
 > 
-> `BINDER_MATLAB` If you want `ON` or not `OFF` to build the MATLAB binder. Default is `OFF`.
+> `BINDER_MATLAB` If you want (`ON`) or not (`OFF`) to build the MATLAB binder. Default is `OFF`.
 > 
-> `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory. Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically.
+> `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory. Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
 > 
-> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install ezc3d. Typically, this is {MY DOCUMENTS}/MATLAB. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, this is `{MY DOCUMENTS}/MATLAB`. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 
 # How to use
-The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires so time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
+The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
 
-There is example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
+There are example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
 
 ## The C++ API
-The core code is written in C++, meaning you can fully create from scratch, read and write C3D from C++. 
-The informations that follows is a basic guide that should allow you to perform anything you want to do.
+The core code is written in C++, meaning that you can fully create from scratch, read and write C3D from C++. 
+The informations that follows is a basic guide that should allow you to perform everything you want to do.
 
 ### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `c3d` class without parameter.
@@ -69,9 +97,9 @@ ezc3d::c3d c3d;
 ### Read a C3D
 To read a C3D file you simply have to call the `c3d` class with a path
 ```C++
-ezc3d::c3d c3d("path_to_c3d.c3d");
+ezc3d::c3d c3d("path/to/c3d.c3d");
 ```
-Please note that on Windows, the path must be `/` or `\\` separated, for obvious reasons. 
+Please note that on Windows, the path must be `/` or `\\` separated (and not only`\`), for obvious reasons. 
 
 ### Write a C3D
 A `c3d` class is able to write itself to a file using the method `write`
@@ -106,17 +134,17 @@ for (size_t m = 0; m < point_labels.size(); ++m){
 For more information on what you can get from the parameters, please refer to the documentation on [parameters](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1ParametersNS_1_1Parameters.html).
 
 #### Set a parameter 
-To set a parameter into a group, you must call an accessor method provided into the `c3d` class. The first parameter of the function is the name of the group to set the new parameter in, and the second parameter of the function is the actual parameter to set.
+To set a parameter into a group, you must call the accessor method provided into the `c3d` class. The first parameter of the function is the name of the group to set the new parameter in, and the second parameter of the function is the actual parameter to set.
 ```C++
 ezc3d::c3d c3d;
 ezc3d::ParametersNS::GroupNS::Parameter param("name_of_my_new_parameter"); // Create a new parameter
 param.set(2.0); // Give a value to the parameter
 c3d.parameter("GroupName", param); // Add the parameter to the c3d structure
 ```
-Please note that if this parameter already exist in the group named "GroupName", then this parameter is replaced by the new one. Otherwise, if it doesn't exist or the group doesn't exist, then it is added to the group. For more information on how to set a new parameter from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
+Please note that if this parameter already exist in the group named "GroupName", then this parameter is replaced by the new one. Otherwise, if it doesn't exist or the group doesn't exist, then it is added to the group or the group is created then the parameter is added. For more information on how to set a new parameter from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
 
 #### Get data
-Point and analogous data are the core of the C3D file. To understand the structure though it is essential to understand that everything is based on points. For example, the base frame rate the point frame rate, while the analogous data is based on the number of data per point frame. Therefor to get a particular point in time, you must get the data at a certain frame and specify which point you are interested in, while to get a particular analogous data you must also specify the subframe.
+Point and analogous data are the core of the C3D file. To understand the structure though it is essential to understand that everything is based on points. For example, the base frame rate the point frame rate, while the analogous data is based on the number of data per point frame. Therefore to get a particular point in time, you must get the data at a certain frame and specify which point you are interested in, while to get a particular analogous data you must also specify the subframe.
 ```C++
 ezc3d::c3d c3d("path_to_c3d.c3d");
 ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(f).points().point(0));
@@ -213,12 +241,12 @@ c3d.frame(frame);
 // Print it
 c3d.print();
 ```
-Please note that this method by-passes some protection and may create invalid C3D if not used properly.
+Please note that this method by-passes some protections and may create invalid C3D if not used properly.
 
 ## MATLAB
-MATLAB (https://www.mathworks.com/) is a prototyping langage largely used in industry and faily used by the biomecanical scientific community. Despite the growing popularity of Python as a free and open-source alternative or Octave as a very similar langage open-source, MATLAB remains an important player. Therefore EZC3D comes with a binder for MATLAB.
+MATLAB (https://www.mathworks.com/) is a prototyping language largely used in industry and fairly used by the biomechanical scientific community. Despite the existence of Octave as an open-source and very similar language or the growing popularity of Python as a free and open-source alternative, MATLAB remains an important player as a programming languages. Therefore EZC3D comes with a binder for MATLAB (that can theoretically used with Octave as well with some minor changes to the CMakeLists.txt file).
 
-MATLAB stands for Matrix laboratory. As the name suggest, it is mainly used to perform operation on matrix. With that in mind, the binder was written to organize the point so it is easy to perform matrix multiplication on them. Hence, EZC3D works on MATLAB structure that separate the `header`, the `parameter` and the `data`. Into the `header` structure, you will find information on the `points`, the `analogs` and the `events`. Into the `parameter`, you will find all the groups and parameters as they appear in the C3D file. Finally, in the `data`, there is the `points` values organized into a 3d hypermatrix (XYZ x N_POINTS x N_FRAMES) and the `analogs` values organized into a 2d matrix (N_FRAMES x N_CHANNELS).
+MATLAB stands for MATrix LABoratory. As the name suggest, it is mainly used to perform operation on matrix. With that in mind, the binder was written to organize the point so it is easy to perform matrix multiplication on them. Hence, EZC3D works on MATLAB structure that separate the `header`, the `parameter` and the `data`. Into the `header` structure, you will find information on the `points`, the `analogs` and the `events`. Into the `parameter`, you will find all the groups and parameters as they appear in the C3D file. Finally, in the `data`, there is the `points` values organized into a 3d hypermatrix (XYZ x N_POINTS x N_FRAMES) and the `analogs` values organized into a 2d matrix (N_FRAMES x N_CHANNELS).
 
 ### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `ezc3dRead` without any argument. 
@@ -250,9 +278,9 @@ c3d.data.points = rand(3,1,100);
 ezc3dWrite('path_to_c3d.c3d', c3d);
 ```
 ## Python 3
-Python (https://www.python.org/) is a scripting langage that has taken more and more importance over the past years. So much that now it is one of the prefered langage of the scientific community. It simplicity yet its large power perform a large variety of tasks makes it almost a certainty that its popularity won't decrease for the next years.
+Python (https://www.python.org/) is a scripting language that has taken more and more importance over the past years. So much that now it is one of the preferred language of the scientific community. Its simplicity yet its large power to perform a large variety of tasks makes it a certainty that its popularity won't decrease for the next years.
 
-To interface the C++ code with Python, SWIG is a great tool. It creates very efficiently an interface in the target langage with minimal code to write. However, the resulting code in the target langage is far from being easy to use. Actually, it gives a mixed-API not far from the original C++ langage. When this is useful to rapidly create the interface, it lacks of user-friendlyness. EZC3D interface the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organized the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to used this python interface. 
+To interface the C++ code with Python, SWIG is a great tool. It creates very rapidly an interface in the target language with minimal code to write. However, the resulting code in the target language can be far from being easy to use. In effect, it gives a mixed-API not far from the original C++ language, which may not comply to best practices of the target language. When this is useful to rapidly create an interface, it lacks of user-friendliness. EZC3D interfaces the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organized the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to used this python interface. 
 
 Please note, to navigate the c3d struture provided by the interface, the easiest way is to use the `keys()` method since this is a dictionary. 
 
@@ -318,19 +346,35 @@ c3d.write("path_to_c3d.c3d")
 # How to contribute
 You are very welcome to contribute to the project! There are to main ways to contribute. 
 
-The first way is to actually code new features to EZC3D. The easiest way to do so is to fork the project make the modifications and then open a pull request to the main project. Don't forget to add your name to the contributor in the documentation of the page if you do so!
+The first way is to actually code new features for EZC3D. The easiest way to do so is to fork the project, make the modifications and then open a pull request to the main project. Don't forget to add your name to the contributor in the documentation of the page if you do so!
 
-The second way is to provide me with non-working C3D files (See the C3D Softwares section below for more details). There is another repository for test files in the pyomeca (https://github.com/pyomeca/ezc3d_c3dTestFiles). You can fork this project, add your C3D in according to the recommandations and pull request it. This will be greatly appreciated by me and the biomechanics community!
+The second way is to provide me with non-working C3D files (See the C3D Softwares section below for more details). There is another repository for test files in the pyomeca (https://github.com/pyomeca/ezc3d_c3dTestFiles). You can fork this project, add your C3D in according to the recommendations and pull request it. This will be greatly appreciated by me and the biomechanics community!
+
+## Using the test suite
+EZC3D is tested with the test suite from google `gtest` (https://github.com/google/googletest). 
+
+If you want to add or change some tests, you are very welcome to do so (actually it makes me very happy!). You should compile EZC3D with the `BUILD_TESTS` options turned on. The google test suite should download itself automatically. 
+
+Afterwards, you can create a new test with the following function declaration
+```c++
+TEST(NameOfTestStructure, NameOfTest) {
+  // Your test here...
+}
+```
+
+You are invited to write tests for true positive, false positive, true negative and false negative using different combinations of `EXPECT_EQ` (or `EXPECT_FLOAT_EQ` if you compare float-precision numbers), `EXPECT_NE`, `ASSERT_TRUE`, `EXPECT_THROW` and `EXPECT_NO_THROW`. For a complete explaination of the google test suite, please refer to one of the numerous tutorial on the web.
+
+I also implemented some useful function such as `compareHeader(myFirstC3d, mySecondC3d)` and `compareData(myFirstC3d, mySecondC3d)` which strickly compares header and data respectively. If you expect differences though, these function are for no use and you should copy-paste the content of them in your test (and change whatever is expected to be different). It is also possible to create a fully filled structure using the `fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs)` function and it can be tested with the `defaultHeaderTest` and `defaultParametersTest` function. Again, if you expect differences with the default setting, you should not use these default testing functions, but copy the relevant part in you extra test. 
 
 # Supported generated C3D
 The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from three different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/) and Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
 # Documentation
 ## C3D format
-The C3D format is maintained by http://c3d.org. They provide recommandation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
+The C3D format is maintained by http://c3d.org. They provide recommendation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
 
 ## EZC3D
-The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it youself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d`. 
+The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d`. 
 
 # Troubleshoots
 Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. I will fill this section with the issue over time.
@@ -340,15 +384,15 @@ If you experience a slow C3D opening (more than 10 seconds), even for a huge C3D
 
 First, mak sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
 
-If you actually are using a released level of optimization, you may actually experience a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
+If you actually are using a released level of optimization, you may actually experiencing a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
 
 ## Non-working C3D
 The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. Since it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
 
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
-## Cite
-If you use ezc3d, we would be grateful if you could cite it as follows:
+# Cite
+If you use EZC3D, we would be grateful if you could cite it as follows:
 
 ```
 @misc{Michaud2018ezc3d,
@@ -359,19 +403,3 @@ If you use ezc3d, we would be grateful if you could cite it as follows:
     year = {2018}
 }
 ```
-
-# Changes log
-## Version 0.1.0
-First working version of a C++ C3D reader. 
-
-## Version 0.2.0
-Reader and writer in C++, Python interface with SWIG for the reader, MATLAB interface for the reader and writer
-
-## Version 0.3.0
-Pythonic interface for the python reader and started to interface the writer. 
-
-## Version 0.3.1
-Documentation using Doxygen added for the C++ code, Major refactor of the code in order to harmonized it across the classes.
-
-## Version 0.3.2
-Added tests and example files for Python3 and MATLAB. 

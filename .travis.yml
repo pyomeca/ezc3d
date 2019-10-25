@@ -34,7 +34,6 @@ before_install:
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda config --set auto_update_conda no
-    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then conda update -q conda; fi
     - source activate
 
 install:
@@ -106,12 +105,6 @@ after_success:
         lcov --list coverage.info;
         bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports";
       fi
-    
-    # # Code coverage for python (Not sure yet how to merge the two results)
-    # if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-    #     conda install -c conda-forge codecov;
-    #     codecov;
-    # fi
     
 notifications:
     email:

@@ -25,7 +25,8 @@ public:
     /// \brief Copy a 3D point
     /// \param point The point to copy
     ///
-    Point(const ezc3d::DataNS::Points3dNS::Point& point);
+    Point(
+            const ezc3d::DataNS::Points3dNS::Point& point);
 
 
     //---- STREAM ----//
@@ -44,7 +45,8 @@ public:
     ///
     /// Write the values of the point to a file
     ///
-    void write(std::fstream &f) const;
+    void write(
+            std::fstream &f) const;
 
 
     //---- DATA ----//
@@ -67,6 +69,23 @@ public:
     std::vector<float> data();
 
     ///
+    /// \brief set All the point at once
+    /// \param x The X-component of the point
+    /// \param y The Y-component of the point
+    /// \param z The Z-component of the point
+    /// \param residual The residual of the point
+    ///
+    void set(float x, float y, float z, float residual);
+
+    ///
+    /// \brief set All the point at once. Don't change the residual value
+    /// \param x The X-component of the point
+    /// \param y The Y-component of the point
+    /// \param z The Z-component of the point
+    ///
+    void set(float x, float y, float z);
+
+    ///
     /// \brief Get the X component of the 3D point
     /// \return The X component of the 3d point
     ///
@@ -76,7 +95,8 @@ public:
     /// \brief Set the X component of the 3D point
     /// \param x The X component of the 3d point
     ///
-    void x(float x);
+    void x(
+            float x);
 
     ///
     /// \brief Get the Y component of the 3D point
@@ -88,7 +108,8 @@ public:
     /// \brief Set the Y component of the 3D point
     /// \param y The Y component of the 3d point
     ///
-    void y(float y);
+    void y(
+            float y);
 
     ///
     /// \brief Get the Z component of the 3D point
@@ -100,7 +121,8 @@ public:
     /// \brief Set the Z component of the 3D point
     /// \param z The Z component of the 3d point
     ///
-    void z(float z);
+    void z(
+            float z);
 
     ///
     /// \brief Get the residual component of the 3D point
@@ -112,7 +134,8 @@ public:
     /// \brief Set the residualZ component of the 3D point
     /// \param residual The residual component of the 3d point
     ///
-    void residual(float residual);
+    void residual(
+            float residual);
 
     ///
     /// \brief Return if the point is empty
