@@ -25,7 +25,7 @@ endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 
 # Create the configuration header file associated with the asked options
-configure_file(${CMAKE_SOURCE_DIR}/include/ezc3dConfig.h.in ${CMAKE_BINARY_DIR}/include/ezc3dConfig.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in ${CMAKE_BINARY_DIR}/include/ezc3dConfig.h)
 
 # Add headers
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -83,7 +83,7 @@ option(GET_OFFICIAL_DOCUMENTATION "Automatically download the C3D documentation"
 if (GET_OFFICIAL_DOCUMENTATION)
     file(
         DOWNLOAD https://www.c3d.org/docs/C3D_User_Guide.pdf
-        ${CMAKE_SOURCE_DIR}/doc/C3D_User_Guide.pdf
+        ${CMAKE_CURRENT_SOURCE_DIR}/doc/C3D_User_Guide.pdf
         TIMEOUT 60 # seconds
         TLS_VERIFY ON
     )
