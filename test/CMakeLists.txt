@@ -40,7 +40,7 @@ add_dependencies(runUnitTests ${MASTER_PROJECT_NAME})
 # headers for the project
 target_include_directories(runUnitTests PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_BINARY_DIR}/include
+    ${EZC3D_BINARY_DIR}/include
 )
 
 # Standard linking to gtest stuff.

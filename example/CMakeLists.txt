@@ -8,7 +8,7 @@ add_dependencies(${PROJECT_NAME} ${MASTER_PROJECT_NAME})
 target_include_directories(
     ${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_BINARY_DIR}/include
+    ${EZC3D_BINARY_DIR}/include
 )
 
 # Libraries linker
@@ -28,7 +28,7 @@ elseif(WIN32)
 else()
     message(FATAL_ERROR "Unrecognized system")
 endif()
-set(${MASTER_PROJECT_NAME}_LIBRARY ${CMAKE_BINARY_DIR}/${${MASTER_PROJECT_NAME}_LIB_NAME})
+set(${MASTER_PROJECT_NAME}_LIBRARY ${EZC3D_BINARY_DIR}/${${MASTER_PROJECT_NAME}_LIB_NAME})
 target_link_libraries(${PROJECT_NAME} ${${MASTER_PROJECT_NAME}_LIBRARY})
 
 # Get the test suite from the pyomeca repository

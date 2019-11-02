@@ -11,7 +11,7 @@ endif()
 # For some reasons, target_include_directories later in the file sometime fails
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-    ${CMAKE_CURRENT_BINARY_DIR}/include
+    ${EZC3D_BINARY_DIR}/include
 )
 
 # Add swig module
@@ -25,7 +25,7 @@ swig_link_libraries(${PROJECT_NAME} ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_
 # Add headers
 target_include_directories(_${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-    ${CMAKE_BINARY_DIR}/include
+    ${EZC3D_BINARY_DIR}/include
 )
 set_target_properties(_${PROJECT_NAME} PROPERTIES SWIG_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
