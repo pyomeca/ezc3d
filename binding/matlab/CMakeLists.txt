@@ -26,8 +26,8 @@ foreach(SUFFIXES Read Write)
     target_include_directories(${PROJECT_NAME}_${SUFFIXES} PUBLIC
         ${Matlab_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_BINARY_DIR}/include
+        ${CMAKE_CUREENT_SOURCE_DIR}/../../include
+        ${EZC3D_BINARY_DIR}/include
     )
 
     # Set the name of the library

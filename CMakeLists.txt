@@ -24,13 +24,16 @@ else()
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 
+# Remember the CMAKE_CURRENT_BINARY_DIR (important if ezc3d is used as submodule)
+set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
 # Create the configuration header file associated with the asked options
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in ${CMAKE_BINARY_DIR}/include/ezc3dConfig.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h)
 
 # Add headers
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_BINARY_DIR}/include
+    ${EZC3D_BINARY_DIR}/include
 )
 
 # Install target
@@ -49,17 +52,17 @@ install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}
         )
 install(DIRECTORY include DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
-install(FILES ${CMAKE_BINARY_DIR}/include/ezc3dConfig.h DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
+install(FILES ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
 
 # uninstall target
 if(NOT TARGET uninstall)
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        "${EZC3D_BINARY_DIR}/cmake_uninstall.cmake"
         IMMEDIATE @ONLY)
 
     add_custom_target(uninstall
-        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+        COMMAND ${CMAKE_COMMAND} -P ${EZC3D_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
 
 # Binders
