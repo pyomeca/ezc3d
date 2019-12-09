@@ -31,7 +31,7 @@ PyObject * _get_points(const ezc3d::c3d& c3d, const std::vector<int>& points)
             data[nPoints*nFrames*0+nFrames*m+f] = point.x();
             data[nPoints*nFrames*1+nFrames*m+f] = point.y();
             data[nPoints*nFrames*2+nFrames*m+f] = point.z();
-            data[nPoints*nFrames*3+nFrames*m+f] = 1;
+            data[nPoints*nFrames*3+nFrames*m+f] = point.residual();
         }
     }
 

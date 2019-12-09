@@ -362,7 +362,7 @@ class c3d(C3dMapper):
                 if np.isnan(data_points[:, i, f]).any():
                     pt.set(0, 0, 0, -1)
                 else:
-                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f], 0)
+                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f], data_points[3, i, f])
                 pts.point(pt, i)
 
             for sf in range(nb_analog_subframes):
