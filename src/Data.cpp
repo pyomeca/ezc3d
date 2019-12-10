@@ -61,10 +61,14 @@ ezc3d::DataNS::Data::Data(
         for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             if (c3d.header().scaleFactor() < 0){ // if it is float
-                pt.x(c3d.readFloat(processorType, file));
-                pt.y(c3d.readFloat(processorType, file));
-                pt.z(c3d.readFloat(processorType, file));
-                pt.residual(c3d.readFloat(processorType, file));
+                pt.x(c3d.readFloat(processorType, file) * -pointScaleFactor);
+                pt.y(c3d.readFloat(processorType, file) * -pointScaleFactor);
+                pt.z(c3d.readFloat(processorType, file) * -pointScaleFactor);
+                pt.cameraMask(c3d.readInt(
+                                  processorType, file, ezc3d::DATA_TYPE::BYTE));
+                pt.residual(static_cast<float>(c3d.readInt(
+                                processorType, file, ezc3d::DATA_TYPE::BYTE))
+                            * -pointScaleFactor);
             } else {
                 pt.x(static_cast<float>(
                          c3d.readInt(
@@ -78,9 +82,10 @@ ezc3d::DataNS::Data::Data(
                          c3d.readInt(
                              processorType, file, ezc3d::DATA_TYPE::WORD))
                      * pointScaleFactor);
-                pt.residual(static_cast<float>(
-                                c3d.readInt(processorType,
-                                            file, ezc3d::DATA_TYPE::WORD))
+                pt.cameraMask(c3d.readInt(
+                                  processorType, file, ezc3d::DATA_TYPE::BYTE));
+                pt.residual(static_cast<float>(c3d.readInt(
+                                processorType, file, ezc3d::DATA_TYPE::BYTE))
                             * pointScaleFactor);
             }
             if (pt.residual() < 0)

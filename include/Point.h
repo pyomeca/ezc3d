@@ -52,6 +52,15 @@ public:
     //---- DATA ----//
 protected:
     std::vector<float> _data; ///< Value of the point
+    float _residual; ///< Residual of the point
+    std::vector<bool> _cameraMasks; ///< If the cameras 1-7 are masked
+
+    ///
+    /// \brief If any point componen is a NAN then the point is invalid.
+    /// \return If the point is invalid
+    ///
+    bool isPointValid() const;
+
 public:
     ///
     /// \brief Get a reference to the STL vector where the 3D point is store
@@ -136,6 +145,26 @@ public:
     ///
     void residual(
             float residual);
+
+    ///
+    /// \brief Return if the cameras of index 0 to 6 are masked
+    /// \return If the camera are masked
+    ///
+    const std::vector<bool>& cameraMask() const;
+
+    ///
+    /// \brief Set the masks for the camera of index 0 to 6
+    /// \param masks If the cameras are masked or not
+    ///
+    void cameraMask(
+            const std::vector<bool>& masks);
+
+    ///
+    /// \brief Set the masks. The byte is break down into 7 camera bit by bit
+    /// \param byte The cameras masks into a byte format
+    ///
+    void cameraMask(
+            int byte);
 
     ///
     /// \brief Return if the point is empty

@@ -291,14 +291,6 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     }
 }
 
-TEST(c3dShow, printIt){
-    // Create an empty c3d and print it
-    c3dTestStruct new_c3d;
-    fillC3D(new_c3d, true, true);
-
-    EXPECT_NO_THROW(new_c3d.c3d.print());
-}
-
 
 TEST(initialize, newC3D){
     // Create an empty c3d and load a new one
@@ -1284,7 +1276,6 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     frame.points().point(idxPoint).x(NAN);
     frame.points().point(idxPoint).y(NAN);
     frame.points().point(idxPoint).z(NAN);
-    frame.points().point(idxPoint).residual(-1);
     frame.analogs().subframe(idxSubframe).channel(idxChannel).data(NAN);
 
     // Write the c3d on the disk
@@ -1829,3 +1820,11 @@ TEST(c3dFileIO, parseAndBuildSameFileVicon){
     remove(savePath.c_str());        
 }
 
+
+TEST(c3dShow, printIt){
+    // Create an empty c3d and print it
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    EXPECT_NO_THROW(new_c3d.c3d.print());
+}
