@@ -42,11 +42,13 @@ public:
     ///
     /// \brief Write the point to an opened file
     /// \param f Already opened fstream file with write access
+    /// \param scaleFactor The factor to scale the data with
     ///
     /// Write the values of the point to a file
     ///
     void write(
-            std::fstream &f) const;
+            std::fstream &f,
+            float scaleFactor) const;
 
 
     //---- DATA ----//

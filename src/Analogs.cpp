@@ -21,9 +21,10 @@ void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
 }
 
 void ezc3d::DataNS::AnalogsNS::Analogs::write(
-        std::fstream &f) const {
+        std::fstream &f,
+        std::vector<float> scaleFactors) const {
     for (size_t i = 0; i < nbSubframes(); ++i) {
-        subframe(i).write(f);
+        subframe(i).write(f, scaleFactors);
     }
 }
 

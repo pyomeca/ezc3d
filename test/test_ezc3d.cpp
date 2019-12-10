@@ -213,8 +213,15 @@ void compareData(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2
                 EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).y(), c3d2.data().frame(f).points().point(p).y());
                 EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).z(), c3d2.data().frame(f).points().point(p).z());
             }
-            if (!skipResidual)
+            if (!skipResidual) {
                 EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).residual(), c3d2.data().frame(f).points().point(p).residual());
+                std::vector<bool> cameraMasks1(c3d1.data().frame(f).points().point(p).cameraMask());
+                std::vector<bool> cameraMasks2(c3d1.data().frame(f).points().point(p).cameraMask());
+                EXPECT_EQ(cameraMasks1.size(), cameraMasks2.size());
+                for (size_t cam = 0; cam < cameraMasks1.size(); ++cam){
+                    EXPECT_EQ(cameraMasks1[cam], cameraMasks2[cam]);
+                }
+            }
         }
         for (size_t sf=0; sf<c3d1.data().frame(f).analogs().nbSubframes(); ++sf){
             for (size_t c=0; c<c3d1.header().nbAnalogByFrame(); ++c){

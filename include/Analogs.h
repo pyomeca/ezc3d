@@ -35,11 +35,12 @@ public:
     ///
     /// \brief Write the subframes to an opened file
     /// \param f Already opened fstream file with write access
+    /// \param scaleFactors The factor to scale the data with
     ///
     /// Write all the subframes to a file by calling sequentially the write method of each subframe
     ///
-    void write(
-            std::fstream &f) const;
+    void write(std::fstream &f,
+            std::vector<float> scaleFactors) const;
 
 
     //---- SUBFRAME ----//

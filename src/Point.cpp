@@ -9,6 +9,8 @@
 
 #include "Point.h"
 
+#include <bitset>
+
 ezc3d::DataNS::Points3dNS::Point::Point() :
     _residual(-1)
 {
@@ -31,14 +33,27 @@ void ezc3d::DataNS::Points3dNS::Point::print() const {
               << "]; Residual = " << residual() << std::endl;
 }
 
-void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f) const {
+void ezc3d::DataNS::Points3dNS::Point::write(
+        std::fstream &f,
+        float scaleFactor) const {
     if (residual() >= 0){
-        f.write(reinterpret_cast<const char*>(&_data[0]), ezc3d::DATA_TYPE::FLOAT);
-        f.write(reinterpret_cast<const char*>(&_data[1]), ezc3d::DATA_TYPE::FLOAT);
-        f.write(reinterpret_cast<const char*>(&_data[2]), ezc3d::DATA_TYPE::FLOAT);
-        int residual(static_cast<int>(_residual));
-f.write(reinterpret_cast<const char*>(&residual), ezc3d::DATA_TYPE::BYTE);
-        f.write(reinterpret_cast<const char*>(&residual), ezc3d::DATA_TYPE::BYTE);
+        for (size_t i = 0; i<_data.size(); ++i) {
+            f.write(reinterpret_cast<const char*>(&_data[i]), ezc3d::DATA_TYPE::FLOAT);
+        }
+        std::bitset<8> cameraMasksBits;
+        for (size_t i = 0; i < _cameraMasks.size(); ++i){
+            if (_cameraMasks[i]){
+                cameraMasksBits[i] = 1;
+            }
+            else {
+                cameraMasksBits[i] = 0;
+            }
+        }
+        cameraMasksBits[7] = 0;
+        size_t cameraMasks(cameraMasksBits.to_ulong());
+        f.write(reinterpret_cast<const char*>(&cameraMasks), ezc3d::DATA_TYPE::WORD);
+        int residual(static_cast<int>(_residual / fabsf(scaleFactor)));
+        f.write(reinterpret_cast<const char*>(&residual), ezc3d::DATA_TYPE::WORD);
     }
     else {
         float zero(0);
@@ -46,8 +61,8 @@ f.write(reinterpret_cast<const char*>(&residual), ezc3d::DATA_TYPE::BYTE);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
-        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::BYTE);
-        f.write(reinterpret_cast<const char*>(&minusOne), ezc3d::DATA_TYPE::BYTE);
+        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::WORD);
+        f.write(reinterpret_cast<const char*>(&minusOne), ezc3d::DATA_TYPE::WORD);
     }
 }
 

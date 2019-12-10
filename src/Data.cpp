@@ -61,14 +61,28 @@ ezc3d::DataNS::Data::Data(
         for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
             ezc3d::DataNS::Points3dNS::Point pt;
             if (c3d.header().scaleFactor() < 0){ // if it is float
-                pt.x(c3d.readFloat(processorType, file) * -pointScaleFactor);
-                pt.y(c3d.readFloat(processorType, file) * -pointScaleFactor);
-                pt.z(c3d.readFloat(processorType, file) * -pointScaleFactor);
-                pt.cameraMask(c3d.readInt(
-                                  processorType, file, ezc3d::DATA_TYPE::BYTE));
-                pt.residual(static_cast<float>(c3d.readInt(
-                                processorType, file, ezc3d::DATA_TYPE::BYTE))
-                            * -pointScaleFactor);
+                pt.x(c3d.readFloat(processorType, file));
+                pt.y(c3d.readFloat(processorType, file));
+                pt.z(c3d.readFloat(processorType, file));
+                if (processorType == PROCESSOR_TYPE::INTEL){
+                    pt.cameraMask(c3d.readInt(
+                                      processorType, file, ezc3d::DATA_TYPE::WORD));
+                    pt.residual(static_cast<float>(c3d.readInt(
+                                    processorType, file, ezc3d::DATA_TYPE::WORD))
+                                * -pointScaleFactor);
+                }
+                else if (processorType == PROCESSOR_TYPE::DEC){
+                    pt.residual(static_cast<float>(c3d.readInt(
+                                    processorType, file, ezc3d::DATA_TYPE::WORD))
+                                * -pointScaleFactor);
+                    pt.cameraMask(c3d.readInt(
+                                      processorType, file, ezc3d::DATA_TYPE::WORD));
+                }
+                else if (processorType == PROCESSOR_TYPE::MIPS){
+                    throw std::runtime_error(
+                                "MIPS processor type not supported yet, please open a "
+                                "GitHub issue to report that you want this feature!");
+                }
             } else {
                 pt.x(static_cast<float>(
                          c3d.readInt(
@@ -82,11 +96,27 @@ ezc3d::DataNS::Data::Data(
                          c3d.readInt(
                              processorType, file, ezc3d::DATA_TYPE::WORD))
                      * pointScaleFactor);
-                pt.cameraMask(c3d.readInt(
-                                  processorType, file, ezc3d::DATA_TYPE::BYTE));
-                pt.residual(static_cast<float>(c3d.readInt(
-                                processorType, file, ezc3d::DATA_TYPE::BYTE))
-                            * pointScaleFactor);
+                if (processorType == PROCESSOR_TYPE::INTEL){
+                    pt.cameraMask(c3d.readInt(
+                                      processorType, file, ezc3d::DATA_TYPE::BYTE));
+                    pt.residual(static_cast<float>(
+                                    c3d.readInt(processorType,
+                                                file, ezc3d::DATA_TYPE::BYTE))
+                                * pointScaleFactor);
+                }
+                else if (processorType == PROCESSOR_TYPE::DEC){
+                    pt.cameraMask(c3d.readInt(
+                                      processorType, file, ezc3d::DATA_TYPE::BYTE));
+                    pt.residual(static_cast<float>(
+                                    c3d.readInt(processorType,
+                                                file, ezc3d::DATA_TYPE::BYTE))
+                                * pointScaleFactor);
+                }
+                else if (processorType == PROCESSOR_TYPE::MIPS){
+                    throw std::runtime_error(
+                                "MIPS processor type not supported yet, please open a "
+                                "GitHub issue to report that you want this feature!");
+                }
             }
             if (pt.residual() < 0)
                 pt.set(NAN, NAN, NAN);
@@ -142,9 +172,11 @@ void ezc3d::DataNS::Data::print() const {
 }
 
 void ezc3d::DataNS::Data::write(
-        std::fstream &f) const {
+        std::fstream &f,
+        float pointScaleFactor,
+        std::vector<float> analogScaleFactors) const {
     for (size_t i = 0; i < nbFrames(); ++i)
-        frame(i).write(f);
+        frame(i).write(f, pointScaleFactor, analogScaleFactors);
 }
 
 size_t ezc3d::DataNS::Data::nbFrames() const {
