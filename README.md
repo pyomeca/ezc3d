@@ -301,7 +301,7 @@ print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of poin
 point_data = c['data']['points']
 analog_data = c['data']['analogs']
 ```
-> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZR (the XYZ stand for the 3D coordinates of the point and the R stands for the residual; a negative value being an occluded, therefore invalid, point), N is the number of points and T is the number of frames. 
+> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 
 ### Write a C3D
@@ -342,7 +342,7 @@ c3d.add_parameter("NewGroup", "newParam", ["MyParam1", "MyParam2"])
 # Write the data
 c3d.write("path_to_c3d.c3d")
 ```
-> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZR (the XYZ stand for the 3D coordinates of the point and the R stands for the residual; a negative value being an occluded, therefore invalid, point), N is the number of points and T is the number of frames. 
+> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 
 # How to contribute

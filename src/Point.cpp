@@ -181,10 +181,8 @@ void ezc3d::DataNS::Points3dNS::Point::cameraMask(
 
 void ezc3d::DataNS::Points3dNS::Point::cameraMask(int byte)
 {
-    if (byte != 0){
-        for (size_t i=0; i<7; ++i) {
-            _cameraMasks[i] = ((byte & ( 1 << i )) >> i);
-        }
+    for (size_t i=0; i<7; ++i) {
+        _cameraMasks[i] = ((byte & ( 1 << i )) >> i);
     }
 }
 
