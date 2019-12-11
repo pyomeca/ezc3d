@@ -124,8 +124,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             for (size_t g = 0; g < nbGroups; ++g){
                 groupsFieldsNames[g] = new char[c3d->parameters()
                         .group(g).name().length() + 1];
-                strcpy( groupsFieldsNames[g], ezc3d::toUpper(
-                            c3d->parameters().group(g).name()).c_str());
+                strcpy( groupsFieldsNames[g], c3d->parameters().group(g).name().c_str());
             }
             mwSize groupsFieldsDims[2] = {1, 1};
             mxArray * groupsStruct =

@@ -59,8 +59,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
         nCharName *= -1;
     f.write(reinterpret_cast<const char*>(&groupIdx),
             1*ezc3d::DATA_TYPE::BYTE);
-    f.write(ezc3d::toUpper(name()).c_str(),
-            nCharName*ezc3d::DATA_TYPE::BYTE);
+    f.write(name().c_str(), nCharName*ezc3d::DATA_TYPE::BYTE);
 
     // It is not possible already to know in how many
     // bytes the next parameter is
