@@ -12,6 +12,7 @@
 
 // Instantiate templates
 namespace std {
+    %template(VecBool) vector<bool>;
     %template(VecInt) vector<int>;
     %template(VecUInt) vector<size_t>;
     %template(VecFloat) vector<float>;

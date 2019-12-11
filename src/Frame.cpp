@@ -22,9 +22,11 @@ void ezc3d::DataNS::Frame::print() const {
 }
 
 void ezc3d::DataNS::Frame::write(
-        std::fstream &f) const {
-    points().write(f);
-    analogs().write(f);
+        std::fstream &f,
+        float pointScaleFactor,
+        std::vector<float> analogScaleFactors) const {
+    points().write(f, pointScaleFactor);
+    analogs().write(f, analogScaleFactors);
 }
 
 const ezc3d::DataNS::Points3dNS::Points& ezc3d::DataNS::Frame::points() const {

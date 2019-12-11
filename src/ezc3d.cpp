@@ -136,7 +136,23 @@ void ezc3d::c3d::write(
     writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
 
     // Write the data
-    data().write(f);
+    float pointScaleFactor;
+    std::vector<float> pointAnalogFactors;
+    if (params.group("POINT").parameter("SCALE").valuesAsFloat().size() ){
+        pointScaleFactor =
+                params.group("POINT").parameter("SCALE").valuesAsFloat()[0];
+    }
+    else {
+        pointScaleFactor = header().scaleFactor();
+    }
+    if (params.group("ANALOG").parameter("SCALE").valuesAsFloat().size() > 0) {
+        pointAnalogFactors =
+                params.group("ANALOG").parameter("SCALE").valuesAsFloat();
+    }
+    else {
+        pointAnalogFactors.push_back(header().scaleFactor());
+    }
+    data().write(f, pointScaleFactor, pointAnalogFactors);
 
     f.close();
 }
