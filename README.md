@@ -299,10 +299,13 @@ from ezc3d import c3d
 c = c3d('path_to_c3d.c3d')
 print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of points used
 point_data = c['data']['points']
+points_residuals = c['data']['meta_points']['residuals']
 analog_data = c['data']['analogs']
 ```
 > Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
+> The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT.
+
 
 ### Write a C3D
 To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
@@ -344,6 +347,7 @@ c3d.write("path_to_c3d.c3d")
 ```
 > Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
+> The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion, the default value is 0.0) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values, the default values are `False` for all the cameras). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT. If no `meta_point` are provided, the default values are used. 
 
 # How to contribute
 You are very welcome to contribute to the project! There are to main ways to contribute. 
