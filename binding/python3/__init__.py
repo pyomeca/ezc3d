@@ -239,7 +239,7 @@ class c3d(C3dMapper):
             
         data_meta_points = self._storage['data']['meta_points']
         if data_meta_points['residuals'].size == 0:
-            data_meta_points['residuals'] = -1 * np.ones((1, nb_points, nb_point_frames))
+            data_meta_points['residuals'] = np.zeros((1, nb_points, nb_point_frames))
         else:
             if data_meta_points['residuals'].shape[0] != 1:
                 raise ValueError("'c3d['data']['meta_points']['residuals']' must have its first dimension's shape equals to 1.")
@@ -248,7 +248,7 @@ class c3d(C3dMapper):
             if data_meta_points['residuals'].shape[2] != nb_point_frames:
                 raise ValueError("'c3d['data']['meta_points']['residuals']' must have its third dimension's shape equals to the number of frames.")
         if data_meta_points['camera_masks'].size == 0:
-            np.zeros((7, nb_points, nb_point_frames), dtype=bool)
+            data_meta_points['camera_masks'] = np.zeros((7, nb_points, nb_point_frames), dtype=bool)
         else:
             if data_meta_points['camera_masks'].dtype != np.dtype('bool'):
                 raise ValueError("'c3d['data']['meta_points']['camera_masks']' must be of dtype 'bool'.")
