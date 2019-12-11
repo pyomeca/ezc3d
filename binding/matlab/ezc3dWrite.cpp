@@ -116,6 +116,7 @@ void mexFunction(
     if (!data)
         mexErrMsgTxt("'data' is not accessible in the structure.");
     mxArray *dataPoints = mxGetField(data, 0, "points");
+    mxArray *dataMetaPoints = mxGetField(data, 0, "meta_points");
     mxArray *dataAnalogs = mxGetField(data, 0, "analogs");
 
     // Setup important factors
@@ -137,6 +138,51 @@ void mexFunction(
     if (nPointsComponents < 3 || nPointsComponents > 4)
         mexErrMsgTxt("'data.points' should be in "
                      "format XYZ x nPoints x nFrames.");
+
+    // Check if metadat exists and if so their dimensions
+    mxArray *metadataResidual = nullptr;
+    mxArray *metadataCamMasks = nullptr;
+    if (dataMetaPoints) {
+        metadataResidual = mxGetField(dataMetaPoints, 0, "residuals");
+        if (metadataResidual){
+            if (mxGetNumberOfDimensions(metadataResidual) == 3) {
+                const mwSize *dimsResiduals = mxGetDimensions(metadataResidual);
+                if (dimsResiduals[0] * dimsResiduals[1] * dimsResiduals[2] == 0) {
+                    // Act as if there is no residual
+                    metadataResidual = nullptr;
+                }
+                else if(!(dimsResiduals[0] == 1 && dimsResiduals[1] == nPoints
+                          && dimsResiduals[2] == nFramesPoints) ){
+                    mexErrMsgTxt("'data.meta_points.residuals' should be in "
+                                 "format 1 x nPoints x nFrames.");
+                }
+            }
+            else {
+                mexErrMsgTxt("'data.meta_points.residuals' should be in "
+                             "format 1 x nPoints x nFrames.");
+            }
+        }
+
+        metadataCamMasks = mxGetField(dataMetaPoints, 0, "camera_masks");
+        if (metadataCamMasks){
+            if (mxGetNumberOfDimensions(metadataCamMasks) == 3) {
+                const mwSize *dimsResiduals = mxGetDimensions(metadataCamMasks);
+                if (dimsResiduals[0] * dimsResiduals[1] * dimsResiduals[2] == 0) {
+                    // Act as if there is no masks
+                    metadataCamMasks = nullptr;
+                }
+                else if(!(dimsResiduals[0] == 7 && dimsResiduals[1] == nPoints
+                          && dimsResiduals[2] == nFramesPoints) ){
+                    mexErrMsgTxt("'data.meta_points.camera_masks' should be in "
+                                 "format 7 x nPoints x nFrames.");
+                }
+            }
+            else {
+                mexErrMsgTxt("'data.meta_points.camera_masks' should be in "
+                             "format 7 x nPoints x nFrames.");
+            }
+        }
+    }
 
     if (!dataAnalogs)
         mexErrMsgTxt("'data.analogs' is not accessible in the structure.");
@@ -383,6 +429,16 @@ void mexFunction(
 
     // Fill the data
     mxDouble* allDataPoints = mxGetDoubles(dataPoints);
+    mxDouble* allResiduals = nullptr;
+    mxDouble* allMasks = nullptr;
+    if (dataMetaPoints){
+        if (metadataResidual){
+            allResiduals = mxGetDoubles(metadataResidual);
+        }
+        if (metadataCamMasks){
+            allMasks = mxGetDoubles(metadataCamMasks);
+        }
+    }
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
     for (size_t f=0; f<nFrames; ++f){
         ezc3d::DataNS::Frame frame;
@@ -395,8 +451,16 @@ void mexFunction(
                      allDataPoints[nPointsComponents*i+1+f*3*nPoints]));
             pt.z(static_cast<float>(
                      allDataPoints[nPointsComponents*i+2+f*3*nPoints]));
-            if (std::isnan(pt.x()) || std::isnan(pt.y()) || std::isnan(pt.z())){
-                pt.residual(-1);
+            if (allResiduals) {
+                pt.residual(static_cast<float>(allResiduals[i+f*nPoints]));
+            }
+            if (allMasks) {
+                std::vector<bool> camMasks;
+                for (size_t c = 0; c<7; ++c){
+                    camMasks.push_back(
+                                static_cast<bool>(allMasks[c+7*i+f*7*nPoints]));
+                }
+                pt.cameraMask(camMasks);
             }
             pts.point(pt);
         }

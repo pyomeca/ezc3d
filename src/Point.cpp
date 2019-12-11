@@ -30,7 +30,14 @@ ezc3d::DataNS::Points3dNS::Point::Point(
 
 void ezc3d::DataNS::Points3dNS::Point::print() const {
     std::cout << " Position = [" << x() << ", " << y() << ", " << z()
-              << "]; Residual = " << residual() << std::endl;
+              << "]; Residual = " << residual() << "; Masks = [";
+    for (size_t i = 0; i<_cameraMasks.size()-1; ++i){
+        std::cout << _cameraMasks[i] << ", ";
+    }
+    if (_cameraMasks.size() > 0){
+        std::cout << _cameraMasks[_cameraMasks.size()-1] << "]";
+    }
+    std::cout << std::endl;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::write(
