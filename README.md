@@ -214,8 +214,8 @@ c3d_empty.print();
 ```
 For more information on how to set data from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
 
-##### Using the nonConst reference
-The second method is more designed for internal purpose. However, you may find yourself in situation where the normal method is just to long or restrictive for what you want to do. Then you can access directly the data via a nonConst reference. For example, you can add channels that way:
+##### Using the "non-const" reference
+The second method is more designed for internal purpose. However, you may find yourself in situation where the normal method is just to long or restrictive for what you want to do. Then you can access directly the data via a reference. For example, you can add channels that way:
 ```C++
 // Add a new analog to the c3d (one filled with zeros, the other one with data)
 ezc3d::c3d c3d;
@@ -230,11 +230,11 @@ std::vector<ezc3d::DataNS::Frame> frames_analog;
 ezc3d::DataNS::Frame frame;
 // Fill the frame
 for (size_t sf = 0; sf < c3d.header().nbAnalogByFrame(); ++sf){
-    ezc3d::DataNS::AnalogsNS::Channel newChannel("new_analogs2");
-    newChannel.data(sf+1);
+    ezc3d::DataNS::AnalogsNS::Channel newChannel;
+    newChannel.data(sf+100);
     ezc3d::DataNS::AnalogsNS::SubFrame subframes_analog;
     subframes_analog.channel(newChannel);
-    frame.analogs_nonConst().subframe(subframes_analog); // The non-const reference makes it easier to add the subframe
+    frame.analogs().subframe(subframes_analog); // The non-const reference makes it easier to add the subframe
 }
 c3d.frame(frame);
 
@@ -299,10 +299,13 @@ from ezc3d import c3d
 c = c3d('path_to_c3d.c3d')
 print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of points used
 point_data = c['data']['points']
+points_residuals = c['data']['meta_points']['residuals']
 analog_data = c['data']['analogs']
 ```
-> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the extra 1 allows for rototranslation multiplications), N is the number of points and T is the number of frames. 
+> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
+> The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT.
+
 
 ### Write a C3D
 To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
@@ -342,6 +345,9 @@ c3d.add_parameter("NewGroup", "newParam", ["MyParam1", "MyParam2"])
 # Write the data
 c3d.write("path_to_c3d.c3d")
 ```
+> Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
+> Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
+> The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion, the default value is 0.0) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values, the default values are `False` for all the cameras). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT. If no `meta_point` are provided, the default values are used. 
 
 # How to contribute
 You are very welcome to contribute to the project! There are to main ways to contribute. 
@@ -367,7 +373,7 @@ You are invited to write tests for true positive, false positive, true negative 
 I also implemented some useful function such as `compareHeader(myFirstC3d, mySecondC3d)` and `compareData(myFirstC3d, mySecondC3d)` which strickly compares header and data respectively. If you expect differences though, these function are for no use and you should copy-paste the content of them in your test (and change whatever is expected to be different). It is also possible to create a fully filled structure using the `fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs)` function and it can be tested with the `defaultHeaderTest` and `defaultParametersTest` function. Again, if you expect differences with the default setting, you should not use these default testing functions, but copy the relevant part in you extra test. 
 
 # Supported generated C3D
-The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from three different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/) and Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
+The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from four different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/), Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/) and BTS Bioengineering (https://www.btsbioengineering.com/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
 # Documentation
 ## C3D format

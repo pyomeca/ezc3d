@@ -213,8 +213,15 @@ void compareData(const ezc3d::c3d& c3d1, const ezc3d::c3d& c3d2
                 EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).y(), c3d2.data().frame(f).points().point(p).y());
                 EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).z(), c3d2.data().frame(f).points().point(p).z());
             }
-            if (!skipResidual)
+            if (!skipResidual) {
                 EXPECT_FLOAT_EQ(c3d1.data().frame(f).points().point(p).residual(), c3d2.data().frame(f).points().point(p).residual());
+                std::vector<bool> cameraMasks1(c3d1.data().frame(f).points().point(p).cameraMask());
+                std::vector<bool> cameraMasks2(c3d1.data().frame(f).points().point(p).cameraMask());
+                EXPECT_EQ(cameraMasks1.size(), cameraMasks2.size());
+                for (size_t cam = 0; cam < cameraMasks1.size(); ++cam){
+                    EXPECT_EQ(cameraMasks1[cam], cameraMasks2[cam]);
+                }
+            }
         }
         for (size_t sf=0; sf<c3d1.data().frame(f).analogs().nbSubframes(); ++sf){
             for (size_t c=0; c<c3d1.header().nbAnalogByFrame(); ++c){
@@ -289,14 +296,6 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CAL_MATRIX").type(), ezc3d::FLOAT);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CAL_MATRIX").valuesAsFloat().size(), 0);
     }
-}
-
-TEST(c3dShow, printIt){
-    // Create an empty c3d and print it
-    c3dTestStruct new_c3d;
-    fillC3D(new_c3d, true, true);
-
-    EXPECT_NO_THROW(new_c3d.c3d.print());
 }
 
 
@@ -1284,7 +1283,6 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     frame.points().point(idxPoint).x(NAN);
     frame.points().point(idxPoint).y(NAN);
     frame.points().point(idxPoint).z(NAN);
-    frame.points().point(idxPoint).residual(-1);
     frame.analogs().subframe(idxSubframe).channel(idxChannel).data(NAN);
 
     // Write the c3d on the disk
@@ -1829,3 +1827,11 @@ TEST(c3dFileIO, parseAndBuildSameFileVicon){
     remove(savePath.c_str());        
 }
 
+
+TEST(c3dShow, printIt){
+    // Create an empty c3d and print it
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    EXPECT_NO_THROW(new_c3d.c3d.print());
+}

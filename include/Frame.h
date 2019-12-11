@@ -36,11 +36,14 @@ public:
     ///
     /// \brief Write a frame to an opened file
     /// \param f Already opened fstream file with write access
+    /// \param pointScaleFactor The factor to scale the point data with
+    /// \param analogScaleFactors The factor to scale the analog data with
     ///
     /// Write the frame to a file by calling sequentially the write method for points and analogs
     ///
-    void write(
-            std::fstream &f) const;
+    void write(std::fstream &f,
+            float pointScaleFactor,
+            std::vector<float> analogScaleFactors) const;
 
 
     //---- POINTS ----//

@@ -124,8 +124,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             for (size_t g = 0; g < nbGroups; ++g){
                 groupsFieldsNames[g] = new char[c3d->parameters()
                         .group(g).name().length() + 1];
-                strcpy( groupsFieldsNames[g], ezc3d::toUpper(
-                            c3d->parameters().group(g).name()).c_str());
+                strcpy( groupsFieldsNames[g], c3d->parameters().group(g).name().c_str());
             }
             mwSize groupsFieldsDims[2] = {1, 1};
             mxArray * groupsStruct =
@@ -195,10 +194,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
         // Fill the data
         {
-        const char *dataFieldsNames[] = {"points", "analogs"};
-        mwSize dataFieldsDims[2] = {1, 1};
+        const char *dataFieldsNames[] = {"points", "meta_points", "analogs"};
+        mwSize dataFieldsDims[3] = {1, 1, 1};
         mxArray * dataStruct =
-                mxCreateStructArray(2, dataFieldsDims, 2, dataFieldsNames);
+                mxCreateStructArray(3, dataFieldsDims, 3, dataFieldsNames);
         mxSetFieldByNumber(plhs[0], 0, dataIdx, dataStruct);
 
             // Fill the point data and analogous data
@@ -210,6 +209,21 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         3, dataPointsFieldsDims, mxDOUBLE_CLASS, mxREAL);
             double * valPoints = mxGetPr(dataPoints);
 
+            const char *dataMetaPointsFieldsNames[] = {"residuals", "camera_masks"};
+            mwSize dataMetaPointsFieldsDims[2] = {1, 1};
+            mxArray * dataMetaPointsStruct =
+                    mxCreateStructArray(2, dataMetaPointsFieldsDims, 2, dataMetaPointsFieldsNames);
+            mwSize dataMetaResidualsFieldsDims[3] = {1, nPoints, nFramesPoints};
+            mxArray * dataMetaResiduals = mxCreateNumericArray(
+                        3, dataMetaResidualsFieldsDims, mxDOUBLE_CLASS, mxREAL);
+            double * valMetaResiduals = mxGetPr(dataMetaResiduals);
+            mwSize dataMetaCameraMasksFieldsDims[3] = {7, nPoints, nFramesPoints};
+            mxArray * dataMetaCameraMasks = mxCreateNumericArray(
+                        3, dataMetaCameraMasksFieldsDims, mxDOUBLE_CLASS, mxREAL);
+            double * valMetaCameraMasks = mxGetPr(dataMetaCameraMasks);
+            mxSetFieldByNumber(dataMetaPointsStruct, 0, 0, dataMetaResiduals);
+            mxSetFieldByNumber(dataMetaPointsStruct, 0, 1, dataMetaCameraMasks);
+
             size_t nFramesAnalogs(
                         static_cast<size_t>(
                             nFramesPoints * c3d->header().nbAnalogByFrame()));
@@ -219,11 +233,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         nFramesAnalogs, nAnalogs, mxREAL);
             double * valAnalogs = mxGetPr(dataAnalogs);
 
-            for (size_t f=0; f<nFramesPoints; ++f){
+            for (size_t f=0; f<nFramesPoints; ++f) {
                 ezc3d::DataNS::Frame frame(c3d->data().frame(f));
+
                 // Points side
                 for (size_t p = 0; p < frame.points().nbPoints(); ++p){
-                    ezc3d::DataNS::Points3dNS::Point point(
+                    const ezc3d::DataNS::Points3dNS::Point& point(
                                 frame.points().point(p));
                     if (point.residual() < 0){
                         valPoints[f*nPoints*3+3*p+0] =
@@ -241,7 +256,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         valPoints[f*nPoints*3+3*p+2] =
                                 static_cast<double>(point.z());
                     }
+
+                    // Metadata for points
+                    valMetaResiduals[f*nPoints+p] = static_cast<double>(point.residual());
+                    std::vector<bool> cameraMasks(point.cameraMask());
+                    for (size_t cam = 0; cam < 7; ++cam){
+                        valMetaCameraMasks[f*nPoints*7+7*p+cam] = cameraMasks[cam];
+                    }
                 }
+
 
                 // Analogs side
                 for (size_t sf=0; sf<frame.analogs().nbSubframes(); ++sf)
@@ -253,7 +276,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                                     .channel(c).data());
             }
             mxSetFieldByNumber(dataStruct, 0, 0, dataPoints);
-            mxSetFieldByNumber(dataStruct, 0, 1, dataAnalogs);
+            mxSetFieldByNumber(dataStruct, 0, 1, dataMetaPointsStruct);
+            mxSetFieldByNumber(dataStruct, 0, 2, dataAnalogs);
             }
         }
     }

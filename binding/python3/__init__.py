@@ -207,6 +207,9 @@ class c3d(C3dMapper):
             self.data = swig_c3d.data()
 
             self._storage['points'] = swig_c3d.get_points()
+            self._storage['meta_points'] = {'residuals': swig_c3d.get_point_residuals(), 
+                                            'camera_masks': swig_c3d.get_point_camera_masks()
+                                           }
             self._storage['analogs'] = swig_c3d.get_analogs()
             return
 
@@ -233,6 +236,29 @@ class c3d(C3dMapper):
             raise TypeError("Points should be a numpy with first dimension exactly equals to 3 or 4 elements")
         if nb_points != len(self._storage['parameters']['POINT']['LABELS']['value']):
             raise ValueError("'c3d['parameters']['POINT']['LABELS']' must have the same length as nPoints of the data.")
+            
+        data_meta_points = self._storage['data']['meta_points']
+        if data_meta_points['residuals'].size == 0:
+            data_meta_points['residuals'] = np.zeros((1, nb_points, nb_point_frames))
+        else:
+            if data_meta_points['residuals'].shape[0] != 1:
+                raise ValueError("'c3d['data']['meta_points']['residuals']' must have its first dimension's shape equals to 1.")
+            if data_meta_points['residuals'].shape[1] != nb_points:
+                raise ValueError("'c3d['data']['meta_points']['residuals']' must have its second dimension's shape equals to the number of points.")
+            if data_meta_points['residuals'].shape[2] != nb_point_frames:
+                raise ValueError("'c3d['data']['meta_points']['residuals']' must have its third dimension's shape equals to the number of frames.")
+        if data_meta_points['camera_masks'].size == 0:
+            data_meta_points['camera_masks'] = np.zeros((7, nb_points, nb_point_frames), dtype=bool)
+        else:
+            if data_meta_points['camera_masks'].dtype != np.dtype('bool'):
+                raise ValueError("'c3d['data']['meta_points']['camera_masks']' must be of dtype 'bool'.")
+            if data_meta_points['camera_masks'].shape[0] != 7:
+                raise ValueError("'c3d['data']['meta_points']['camera_masks']' must have its first dimension's shape equals to 7.")
+            if data_meta_points['camera_masks'].shape[1] != nb_points:
+                raise ValueError("'c3d['data']['meta_points']['camera_masks']' must have its second dimension's shape equals to the number of points.")
+            if data_meta_points['camera_masks'].shape[2] != nb_point_frames:
+                raise ValueError("'c3d['data']['meta_points']['camera_masks']' must have its third dimension's shape equals to the number of frames.")
+        
 
         data_analogs = self._storage['data']['analogs']
         if len(data_analogs.shape) != 3:
@@ -362,7 +388,9 @@ class c3d(C3dMapper):
                 if np.isnan(data_points[:, i, f]).any():
                     pt.set(0, 0, 0, -1)
                 else:
-                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f], 0)
+                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
+                    pt.residual(data_meta_points['residuals'][0, i, f])
+                    pt.cameraMask(data_meta_points['camera_masks'][:, i, f].tolist())
                 pts.point(pt, i)
 
             for sf in range(nb_analog_subframes):
