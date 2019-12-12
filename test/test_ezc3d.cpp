@@ -1156,6 +1156,10 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
     // Lock Point parameter
     ref_c3d.c3d.lockGroup("POINT");
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.name("MyNewParameter");
+    p.set("ThisIsEmpty");
+    ref_c3d.c3d.parameter("MyNewGroup", p);
 
     // Write the c3d on the disk
     std::string savePath("temporary.c3d");
@@ -1186,7 +1190,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     // PARAMETERS
     // Things that should remain as default
     EXPECT_EQ(read_c3d.parameters().checksum(), 80);
-    EXPECT_EQ(read_c3d.parameters().nbGroups(), 4);
+    EXPECT_EQ(read_c3d.parameters().nbGroups(), 5);
     defaultParametersTest(read_c3d, PARAMETER_TYPE::FORCE_PLATFORM);
 
     // Things that should have change
@@ -1246,6 +1250,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
+    EXPECT_STREQ(read_c3d.parameters().group("MyNewGroup").parameter("MyNewParameter").valuesAsString()[0].c_str(), "ThisIsEmpty");
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("VERSION").valuesAsString()[0].c_str(), EZC3D_VERSION);
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("CONTACT").valuesAsString()[0].c_str(), EZC3D_CONTACT);
 

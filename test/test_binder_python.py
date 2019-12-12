@@ -121,7 +121,7 @@ def test_create_and_read_c3d():
     assert c3d_to_compare['parameters']['POINT']['LABELS']['value'] == list(point_names)
     assert c3d_to_compare['parameters']['POINT']['DESCRIPTIONS']['value'] == ["" for _ in point_names]
     assert len(c3d_to_compare['parameters']['POINT']['UNITS']['value']) == 0
-    assert np.all(c3d_to_compare['parameters'][point_new_param[0].upper()][point_new_param[1].upper()]['value']
+    assert np.all(c3d_to_compare['parameters'][point_new_param[0]][point_new_param[1]]['value']
                   == point_new_param[2])
     
     assert c3d_to_compare['parameters']['ANALOG']['USED']['value'][0] == len(analog_names)
@@ -143,7 +143,7 @@ def test_create_and_read_c3d():
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['CHANNEL']['value']) == 0
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['CAL_MATRIX']['value']) == 0
     
-    assert c3d_to_compare['parameters'][new_group_param[0].upper()][new_group_param[1].upper()]['value'] \
+    assert c3d_to_compare['parameters'][new_group_param[0]][new_group_param[1]]['value'] \
         == new_group_param[2]
     
     # Test the data

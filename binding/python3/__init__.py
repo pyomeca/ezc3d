@@ -156,7 +156,7 @@ class c3d(C3dMapper):
             self.parameters = swig_param
 
             for group in self.parameters.groups():
-                group_name = group.name().upper()
+                group_name = group.name()
                 self.create_group_if_needed(group_name)
                 self._storage[group_name]['__METADATA__']['DESCRIPTION'] = group.description()
                 self._storage[group_name]['__METADATA__']['IS_LOCKED'] = group.isLocked()
@@ -193,7 +193,7 @@ class c3d(C3dMapper):
                     value.append(element)
             param['value'] = value
 
-            param_name = param_ezc3d.name().upper()
+            param_name = param_ezc3d.name()
             if param_name not in self._storage[group_name]:
                 self._storage[group_name][param_name] = dict()
             self._storage[group_name][param_name] = param

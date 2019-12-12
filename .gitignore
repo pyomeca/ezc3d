@@ -25,3 +25,6 @@ example/c3dFiles/*
 
 # Documentation
 doc/*.pdf
+
+# Pycharm
+.idea
