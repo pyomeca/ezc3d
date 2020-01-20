@@ -57,12 +57,6 @@ protected:
     float _residual; ///< Residual of the point
     std::vector<bool> _cameraMasks; ///< If the cameras 1-7 are masked
 
-    ///
-    /// \brief If any point componen is a NAN then the point is invalid.
-    /// \return If the point is invalid
-    ///
-    bool isPointValid() const;
-
 public:
     ///
     /// \brief Get a reference to the STL vector where the 3D point is store
@@ -167,6 +161,12 @@ public:
     ///
     void cameraMask(
             int byte);
+
+    ///
+    /// \brief If any point component is a NAN then the point is invalid.
+    /// \return If the point is invalid
+    ///
+    bool isPointValid() const;
 
     ///
     /// \brief Return if the point is empty
