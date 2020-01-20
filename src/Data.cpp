@@ -118,8 +118,10 @@ ezc3d::DataNS::Data::Data(
                                 "GitHub issue to report that you want this feature!");
                 }
             }
-            if (pt.residual() < 0)
+            if (pt.residual() < 0){
                 pt.set(NAN, NAN, NAN);
+                pt.print();
+            }
             ptsAtAFrame.point(pt, i);
         }
         // modified by pts_tp which is an nonconst ref to internal points
