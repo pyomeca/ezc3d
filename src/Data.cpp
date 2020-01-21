@@ -120,7 +120,6 @@ ezc3d::DataNS::Data::Data(
             }
             if (pt.residual() < 0){
                 pt.set(NAN, NAN, NAN);
-                pt.print();
             }
             ptsAtAFrame.point(pt, i);
         }
