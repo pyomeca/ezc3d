@@ -1429,6 +1429,23 @@ TEST(c3dFileIO, readViconC3D){
         for (size_t sf = 0; sf < 10; ++sf)
             EXPECT_EQ(Vicon.data().frame(f).analogs().subframe(sf).nbChannels(), 38);
     }
+    // Test some values randomly
+    EXPECT_NEAR(Vicon.data().frame(0).points().point(0).x(), 44.16278839111328, 1e-10);
+    EXPECT_NEAR(Vicon.data().frame(Vicon.data().frames().size()-1).points().point(50).z(), 99.682586669921875, 1e-10);
+
+    // Test sum of all values
+    double sumValues(0);
+    for (size_t f = 0; f < 580; ++f){
+        EXPECT_EQ(Vicon.data().frame(f).points().nbPoints(), 51);
+        for (auto pt : Vicon.data().frame(f).points().points()){
+            if (pt.isPointValid()){
+                sumValues += pt.x();
+                sumValues += pt.y();
+                sumValues += pt.z();
+            }
+        }
+    }
+    EXPECT_NEAR(sumValues, 42506014.918278672, 1e-10);
 }
 
 

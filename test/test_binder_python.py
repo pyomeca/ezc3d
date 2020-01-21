@@ -188,6 +188,41 @@ def test_create_and_read_c3d_with_nan():
                             len(analog_names) * analog_frame_rate * n_second)
 
 
+def test_values():
+    c3d = ezc3d.c3d("test/c3dTestFiles/Vicon.c3d")
+    array = c3d["data"]["points"]
+    decimal = 6
+
+    np.testing.assert_array_equal(
+        x=array.shape, y=(4, 51, 580), err_msg="Shape does not match"
+    )
+    raveled = array.ravel()
+    np.testing.assert_array_almost_equal(
+        x=raveled[0],
+        y=44.16278839111328,
+        decimal=decimal,
+    )
+    np.testing.assert_array_almost_equal(
+        x=raveled[-1], y=1.0, decimal=decimal,
+    )
+    np.testing.assert_array_almost_equal(
+        x=np.nanmean(array),
+        y=362.2979849093196,
+        decimal=decimal
+    )
+    np.testing.assert_array_almost_equal(
+        x=np.nanmedian(array),
+        y=337.7519226074219,
+        decimal=decimal
+    )
+    np.testing.assert_allclose(
+        actual=np.nansum(array),
+        desired=42535594.91827867,
+        rtol=0.05
+    )
+    np.testing.assert_array_equal(x=np.isnan(array).sum(), y=915)
+
+
 @pytest.fixture(scope='module', params=["BTS", "Optotrak", "Qualisys", "Vicon"])
 def c3d_build_rebuild(request):
     base_folder = Path("test/c3dTestFiles")
