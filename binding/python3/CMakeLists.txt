@@ -1,5 +1,7 @@
 # Include python
 find_package(PYTHON3 REQUIRED)
+mark_as_advanced(CLEAR Python3_EXECUTABLE)
+
 include_directories(${Python3_INCLUDE_DIRS})
 
 find_package(Numpy REQUIRED)
