@@ -50,7 +50,7 @@ INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py
 
 
 # Create the version file
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_version.py.i ${CMAKE_CURRENT_BINARY_DIR}/_version.py)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in ${CMAKE_CURRENT_BINARY_DIR}/_version.py)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_version.py
     DESTINATION ${Python3_SITELIB}/${PROJECT_NAME}
 )
