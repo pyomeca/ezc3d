@@ -181,11 +181,11 @@ class c3d(C3dMapper):
             param['description'] = param_ezc3d.description()
             param['is_locked'] = param_ezc3d.isLocked()
             if param_ezc3d.type() == ezc3d.BYTE:
-                value = np.array(param_ezc3d.valuesAsByte(), dtype='int').reshape(param_ezc3d.dimension())
+                value = np.array(param_ezc3d.valuesAsByte(), dtype='int').reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.INT:
-                value = np.array(param_ezc3d.valuesAsInt(), dtype='int').reshape(param_ezc3d.dimension())
+                value = np.array(param_ezc3d.valuesAsInt(), dtype='int').reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.FLOAT:
-                value = np.array(param_ezc3d.valuesAsFloat()).reshape(param_ezc3d.dimension())
+                value = np.array(param_ezc3d.valuesAsFloat()).reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.CHAR:
                 table = param_ezc3d.valuesAsString()
                 value = []
