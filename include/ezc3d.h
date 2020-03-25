@@ -118,6 +118,7 @@ namespace ezc3d {
     /// \brief Namespace that holds the Data hierarchy
     ///
     namespace DataNS {
+        class EZC3D_API Vector3d;
         class EZC3D_API Data;
 
         class Frame;

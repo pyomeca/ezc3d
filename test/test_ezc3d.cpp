@@ -1438,7 +1438,7 @@ TEST(c3dFileIO, readViconC3D){
     for (size_t f = 0; f < 580; ++f){
         EXPECT_EQ(Vicon.data().frame(f).points().nbPoints(), 51);
         for (auto pt : Vicon.data().frame(f).points().points()){
-            if (pt.isPointValid()){
+            if (pt.isValid()){
                 sumValues += pt.x();
                 sumValues += pt.y();
                 sumValues += pt.z();
