@@ -185,7 +185,7 @@ class c3d(C3dMapper):
             elif param_ezc3d.type() == ezc3d.INT:
                 value = np.array(param_ezc3d.valuesAsInt(), dtype='int').reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.FLOAT:
-                value = np.array(param_ezc3d.valuesAsFloat()).reshape(param_ezc3d.dimension(), order='F')
+                value = np.array(param_ezc3d.valuesAsDouble()).reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.CHAR:
                 table = param_ezc3d.valuesAsString()
                 value = []

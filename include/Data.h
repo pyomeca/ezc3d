@@ -51,9 +51,10 @@ public:
     ///
     /// Write all the data to a file by calling sequentially all the write method for all the frames
     ///
-    void write(std::fstream &f,
+    void write(
+            std::fstream &f,
             float pointScaleFactor,
-            std::vector<float> analogScaleFactors) const;
+            std::vector<double> analogScaleFactors) const;
 
 
     //---- FRAME ----//

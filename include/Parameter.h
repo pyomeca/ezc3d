@@ -172,7 +172,7 @@ protected:
     void setEmptyFlag();
 
     std::vector<int> _param_data_int; ///< Parameter values if the parameter type is DATA_TYPE::BYTE of DATA_TYPE::INT
-    std::vector<float> _param_data_float; ///< Parameter values if the parameter type is DATA_TYPE::FLOAT
+    std::vector<double> _param_data_double; ///< Parameter values if the parameter type is DATA_TYPE::FLOAT
     std::vector<std::string> _param_data_string; ///< Parameter values if the parameter type is DATA_TYPE::CHAR
 
 public:
@@ -209,8 +209,9 @@ public:
     /// Return the vector of values that was previously stored into the parameter.
     ///
     /// Throw an std::invalid_argument if the asked type was wrong (i.e. not DATA_TYPE::FLOAT).
+    /// Internally, float are converted to double and converted back to float when written to the file
     ///
-    const std::vector<float>& valuesAsFloat() const;
+    const std::vector<double>& valuesAsDouble() const;
 
     ///
     /// \brief Return the vector of values of the parameter
@@ -281,7 +282,7 @@ public:
     /// if the data has a size higher than 1.
     ///
     void set(
-            const std::vector<float>& data,
+            const std::vector<double>& data,
             const std::vector<size_t>& dimension = {});
 
     ///

@@ -16,6 +16,15 @@ ezc3d::Vector3d::Vector3d() :
 }
 
 ezc3d::Vector3d::Vector3d(
+        double x,
+        double y,
+        double z) :
+    ezc3d::Matrix(3, 1)
+{
+    set(x, y, z);
+}
+
+ezc3d::Vector3d::Vector3d(
         const ezc3d::Vector3d &p) :
     ezc3d::Matrix(p)
 {
@@ -44,38 +53,50 @@ bool ezc3d::Vector3d::isValid() const
 }
 
 void ezc3d::Vector3d::set(
-        float x,
-        float y,
-        float z)
+        double x,
+        double y,
+        double z)
 {
     _data[0] = x;
     _data[1] = y;
     _data[2] = z;
 }
 
-float ezc3d::Vector3d::x() const {
+double ezc3d::Vector3d::x() const {
     return _data[0];
 }
 
 void ezc3d::Vector3d::x(
-        float x) {
+        double x) {
     _data[0] = x;
 }
 
-float ezc3d::Vector3d::y() const {
+double ezc3d::Vector3d::y() const {
     return _data[1];
 }
 
 void ezc3d::Vector3d::y(
-        float y) {
+        double y) {
     _data[1] = y;
 }
 
-float ezc3d::Vector3d::z() const {
+double ezc3d::Vector3d::z() const {
     return _data[2];
 }
 
 void ezc3d::Vector3d::z(
-        float z) {
+        double z) {
     _data[2] = z;
+}
+
+double ezc3d::Vector3d::operator()(
+        size_t idx) const
+{
+    return this->ezc3d::Matrix::operator ()(idx, 0);
+}
+
+double& ezc3d::Vector3d::operator()(
+        size_t idx)
+{
+    return this->ezc3d::Matrix::operator ()(idx, 0);
 }

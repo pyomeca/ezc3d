@@ -73,19 +73,19 @@ void ezc3d::DataNS::Points3dNS::Point::write(
 }
 
 void ezc3d::DataNS::Points3dNS::Point::set(
-        float x,
-        float y,
-        float z,
-        float residual)
+        double x,
+        double y,
+        double z,
+        double residual)
 {
     ezc3d::Vector3d::set(x, y, z);
     _residual = residual;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::set(
-        float x,
-        float y,
-        float z)
+        double x,
+        double y,
+        double z)
 {
     ezc3d::Vector3d::set(x, y, z);
     if (isValid()) {
@@ -96,13 +96,13 @@ void ezc3d::DataNS::Points3dNS::Point::set(
     }
 }
 
-float ezc3d::DataNS::Points3dNS::Point::x() const
+double ezc3d::DataNS::Points3dNS::Point::x() const
 {
     return ezc3d::Vector3d::x();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::x(
-        float x) {
+        double x) {
     ezc3d::Vector3d::x(x);
     if (isValid()) {
         residual(0);
@@ -112,13 +112,13 @@ void ezc3d::DataNS::Points3dNS::Point::x(
     }
 }
 
-float ezc3d::DataNS::Points3dNS::Point::y() const
+double ezc3d::DataNS::Points3dNS::Point::y() const
 {
     return ezc3d::Vector3d::y();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::y(
-        float y) {
+        double y) {
     ezc3d::Vector3d::y(y);
     if (isValid()) {
         residual(0);
@@ -128,13 +128,13 @@ void ezc3d::DataNS::Points3dNS::Point::y(
     }
 }
 
-float ezc3d::DataNS::Points3dNS::Point::z() const
+double ezc3d::DataNS::Points3dNS::Point::z() const
 {
     return ezc3d::Vector3d::z();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::z(
-        float z) {
+        double z) {
     ezc3d::Vector3d::z(z);
     if (isValid()) {
         residual(0);
@@ -145,12 +145,12 @@ void ezc3d::DataNS::Points3dNS::Point::z(
 }
 
 
-float ezc3d::DataNS::Points3dNS::Point::residual() const {
+double ezc3d::DataNS::Points3dNS::Point::residual() const {
     return _residual;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::residual(
-        float residual) {
+        double residual) {
     _residual = residual;
 }
 

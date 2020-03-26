@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "Matrix.h"
+#include "Vector3d.h"
 double requiredPrecision(1e-10);
 
 TEST(Matrix, create){
@@ -22,6 +23,22 @@ TEST(Matrix, create){
     EXPECT_EQ(m1(1,0), 4.8);
     EXPECT_EQ(m1(1,1), 6.0);
     EXPECT_EQ(m1(1,2), 7.2);
+
+    ezc3d::Matrix m1_copy(m1);
+    EXPECT_EQ(m1_copy(0,0), 1.2);
+    EXPECT_EQ(m1_copy(0,1), 2.4);
+    EXPECT_EQ(m1_copy(0,2), 3.6);
+    EXPECT_EQ(m1_copy(1,0), 4.8);
+    EXPECT_EQ(m1_copy(1,1), 6.0);
+    EXPECT_EQ(m1_copy(1,2), 7.2);
+
+    ezc3d::Matrix m1_equal = m1;
+    EXPECT_EQ(m1_copy(0,0), 1.2);
+    EXPECT_EQ(m1_copy(0,1), 2.4);
+    EXPECT_EQ(m1_copy(0,2), 3.6);
+    EXPECT_EQ(m1_copy(1,0), 4.8);
+    EXPECT_EQ(m1_copy(1,1), 6.0);
+    EXPECT_EQ(m1_copy(1,2), 7.2);
 }
 
 TEST(Matrix, unittest){
@@ -65,4 +82,27 @@ TEST(Matrix, unittest){
     EXPECT_NEAR(m_mult(0,1), 71.94, requiredPrecision);
     EXPECT_NEAR(m_mult(1,0), 161.59, requiredPrecision);
     EXPECT_NEAR(m_mult(1,1), 174.24, requiredPrecision);
+}
+
+TEST(Vector3d, create){
+    ezc3d::Vector3d zeros;
+    EXPECT_NEAR(zeros(0), 0.0, requiredPrecision);
+    EXPECT_NEAR(zeros(1), 0.0, requiredPrecision);
+    EXPECT_NEAR(zeros(2), 0.0, requiredPrecision);
+
+    ezc3d::Vector3d random(1.1, 2.2, 3.3);
+    EXPECT_NEAR(random(0), 1.1, requiredPrecision);
+    EXPECT_NEAR(random(1), 2.2, requiredPrecision);
+    EXPECT_NEAR(random(2), 3.3, requiredPrecision);
+
+    ezc3d::Vector3d random_copy(random);
+    EXPECT_NEAR(random_copy(0), 1.1, requiredPrecision);
+    EXPECT_NEAR(random_copy(1), 2.2, requiredPrecision);
+    EXPECT_NEAR(random_copy(2), 3.3, requiredPrecision);
+
+    ezc3d::Vector3d random_equal = random;
+    EXPECT_NEAR(random_equal(0), 1.1, requiredPrecision);
+    EXPECT_NEAR(random_equal(1), 2.2, requiredPrecision);
+    EXPECT_NEAR(random_equal(2), 3.3, requiredPrecision);
+
 }

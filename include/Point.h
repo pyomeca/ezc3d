@@ -54,7 +54,7 @@ public:
 
     //---- DATA ----//
 protected:
-    float _residual; ///< Residual of the point
+    double _residual; ///< Residual of the point
     std::vector<bool> _cameraMasks; ///< If the cameras 1-7 are masked
 
 public:
@@ -66,10 +66,10 @@ public:
     /// \param residual The residual of the point
     ///
     virtual void set(
-            float x,
-            float y,
-            float z,
-            float residual);
+            double x,
+            double y,
+            double z,
+            double residual);
 
     ///
     /// \brief set All the point at once. Don't change the residual value
@@ -78,61 +78,61 @@ public:
     /// \param z The Z-component of the point
     ///
     virtual void set(
-            float x,
-            float y,
-            float z) override;
+            double x,
+            double y,
+            double z) override;
 
     ///
     /// \brief Get the X component of the Point
     /// \return The X component of the Point
     ///
-    virtual float x() const override;
+    virtual double x() const override;
 
     ///
     /// \brief Set the X component of the 3D Point
     /// \param x The X component of the 3d Point
     ///
     virtual void x(
-            float x) override;
+            double x) override;
 
     ///
     /// \brief Get the Y component of the Point
     /// \return The Y component of the Point
     ///
-    virtual float y() const override;
+    virtual double y() const override;
 
     ///
     /// \brief Set the Y component of the 3D Point
     /// \param y The Y component of the 3d Point
     ///
     virtual void y(
-            float y) override;
+            double y) override;
 
     ///
     /// \brief Get the Z component of the Point
     /// \return The Z component of the Point
     ///
-    virtual float z() const override;
+    virtual double z() const override;
 
     ///
     /// \brief Set the Z component of the 3D Point
     /// \param y The Z component of the 3d Point
     ///
     virtual void z(
-            float z) override;
+            double z) override;
 
     ///
     /// \brief Get the residual component of the 3D point
     /// \return The residual component of the 3d point
     ///
-    virtual float residual() const;
+    virtual double residual() const;
 
     ///
     /// \brief Set the residualZ component of the 3D point
     /// \param residual The residual component of the 3d point
     ///
     virtual void residual(
-            float residual);
+            double residual);
 
     ///
     /// \brief Return if the cameras of index 0 to 6 are masked

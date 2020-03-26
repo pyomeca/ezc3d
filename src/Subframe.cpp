@@ -21,7 +21,7 @@ void ezc3d::DataNS::AnalogsNS::SubFrame::print() const {
 
 void ezc3d::DataNS::AnalogsNS::SubFrame::write(
         std::fstream &f,
-        std::vector<float> scaleFactors) const {
+        std::vector<double> scaleFactors) const {
     for (size_t i = 0; i < nbChannels(); ++i){
         if (scaleFactors.size() > 1){
             channel(i).write(f, scaleFactors[i]);

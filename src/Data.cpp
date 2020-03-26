@@ -33,19 +33,19 @@ ezc3d::DataNS::Data::Data(
 
     // Read the data
     PROCESSOR_TYPE processorType(c3d.parameters().processorType());
-    float pointScaleFactor(-1);
+    double pointScaleFactor(-1);
     if (c3d.header().nb3dPoints())
         pointScaleFactor = c3d.parameters()
                 .group("POINT").parameter("SCALE")
-                .valuesAsFloat()[0];
-    std::vector<float> analogScaleFactors;
+                .valuesAsDouble()[0];
+    std::vector<double> analogScaleFactors;
     if (c3d.header().nbAnalogs())
         analogScaleFactors = c3d.parameters()
                 .group("ANALOG").parameter("SCALE")
-                .valuesAsFloat();
-    float analogGeneralFactor(c3d.parameters()
+                .valuesAsDouble();
+    double analogGeneralFactor(c3d.parameters()
                               .group("ANALOG").parameter("GEN_SCALE")
-                              .valuesAsFloat()[0]);
+                              .valuesAsDouble()[0]);
     std::vector<int> analogZeroOffset(
                 c3d.parameters()
                 .group("ANALOG").parameter("OFFSET")
@@ -175,7 +175,7 @@ void ezc3d::DataNS::Data::print() const {
 void ezc3d::DataNS::Data::write(
         std::fstream &f,
         float pointScaleFactor,
-        std::vector<float> analogScaleFactors) const {
+        std::vector<double> analogScaleFactors) const {
     for (size_t i = 0; i < nbFrames(); ++i)
         frame(i).write(f, pointScaleFactor, analogScaleFactors);
 }
