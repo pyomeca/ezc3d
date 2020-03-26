@@ -8,12 +8,12 @@
 /// \date March 25th, 2020
 ///
 
-#include <ezc3d.h>
+#include <Matrix.h>
 
 ///
 /// \brief 3D data
 ///
-class EZC3D_API ezc3d::DataNS::Vector3d {
+class EZC3D_API ezc3d::Vector3d : public ezc3d::Matrix {
     //---- CONSTRUCTORS ----//
 public:
     ///
@@ -26,7 +26,7 @@ public:
     /// \param vector The vector to copy
     ///
     Vector3d(
-            const ezc3d::DataNS::Vector3d& vector);
+            const ezc3d::Vector3d& vector);
 
 
     //---- STREAM ----//
@@ -37,29 +37,11 @@ public:
     ///
     /// Print the values of the 3D Vector to the console
     ///
-    virtual void print() const;
+    virtual void print() const override;
 
 
     //---- DATA ----//
-protected:
-    std::vector<float> _data; ///< Value of the Vector3d
-
 public:
-    ///
-    /// \brief Get a reference to the STL vector where the 3D Vector is store
-    /// \return The 3d Vector
-    ///
-    virtual const std::vector<float> data() const;
-
-    ///
-    /// \brief Get a reference to the STL vector where the 3D Vector is store in order to be modified by the caller
-    /// \return The 3d Vector
-    ///
-    /// Get a reference to the STL vector where the 3D Vector is store in the form of a non-const reference.
-    /// The user can thereafter modify the coordinates at will, but with the caution it requires.
-    ///
-    virtual std::vector<float> data();
-
     ///
     /// \brief set All the 3dVector at once
     /// \param x The X-component of the 3D Vector

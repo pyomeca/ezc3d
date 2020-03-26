@@ -12,7 +12,7 @@
 #include <bitset>
 
 ezc3d::DataNS::Points3dNS::Point::Point() :
-    ezc3d::DataNS::Vector3d(),
+    ezc3d::Vector3d(),
     _residual(-1)
 {
     _cameraMasks.resize(7, false);
@@ -20,14 +20,14 @@ ezc3d::DataNS::Points3dNS::Point::Point() :
 
 ezc3d::DataNS::Points3dNS::Point::Point(
         const ezc3d::DataNS::Points3dNS::Point &p) :
-    ezc3d::DataNS::Vector3d(p)
+    ezc3d::Vector3d(p)
 {
     residual(p.residual());
     _cameraMasks = p._cameraMasks;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::print() const {
-    ezc3d::DataNS::Vector3d::print();
+    ezc3d::Vector3d::print();
     std::cout << "Residual = " << residual() << "; Masks = [";
     for (size_t i = 0; i<_cameraMasks.size()-1; ++i){
         std::cout << _cameraMasks[i] << ", ";
@@ -43,7 +43,8 @@ void ezc3d::DataNS::Points3dNS::Point::write(
         float scaleFactor) const {
     if (residual() >= 0){
         for (size_t i = 0; i<_data.size(); ++i) {
-            f.write(reinterpret_cast<const char*>(&_data[i]), ezc3d::DATA_TYPE::FLOAT);
+            float data(static_cast<float>(_data[i]));
+            f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
         }
         std::bitset<8> cameraMasksBits;
         for (size_t i = 0; i < _cameraMasks.size(); ++i){
@@ -77,7 +78,7 @@ void ezc3d::DataNS::Points3dNS::Point::set(
         float z,
         float residual)
 {
-    ezc3d::DataNS::Vector3d::set(x, y, z);
+    ezc3d::Vector3d::set(x, y, z);
     _residual = residual;
 }
 
@@ -86,7 +87,7 @@ void ezc3d::DataNS::Points3dNS::Point::set(
         float y,
         float z)
 {
-    ezc3d::DataNS::Vector3d::set(x, y, z);
+    ezc3d::Vector3d::set(x, y, z);
     if (isValid()) {
         residual(0);
     }
@@ -97,12 +98,12 @@ void ezc3d::DataNS::Points3dNS::Point::set(
 
 float ezc3d::DataNS::Points3dNS::Point::x() const
 {
-    return ezc3d::DataNS::Vector3d::x();
+    return ezc3d::Vector3d::x();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::x(
         float x) {
-    ezc3d::DataNS::Vector3d::x(x);
+    ezc3d::Vector3d::x(x);
     if (isValid()) {
         residual(0);
     }
@@ -113,12 +114,12 @@ void ezc3d::DataNS::Points3dNS::Point::x(
 
 float ezc3d::DataNS::Points3dNS::Point::y() const
 {
-    return ezc3d::DataNS::Vector3d::y();
+    return ezc3d::Vector3d::y();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::y(
         float y) {
-    ezc3d::DataNS::Vector3d::y(y);
+    ezc3d::Vector3d::y(y);
     if (isValid()) {
         residual(0);
     }
@@ -129,12 +130,12 @@ void ezc3d::DataNS::Points3dNS::Point::y(
 
 float ezc3d::DataNS::Points3dNS::Point::z() const
 {
-    return ezc3d::DataNS::Vector3d::z();
+    return ezc3d::Vector3d::z();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::z(
         float z) {
-    ezc3d::DataNS::Vector3d::z(z);
+    ezc3d::Vector3d::z(z);
     if (isValid()) {
         residual(0);
     }

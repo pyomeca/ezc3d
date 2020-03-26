@@ -311,7 +311,7 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::longestElement() const{
     }
 }
 
-const std::vector<size_t>
+const std::vector<size_t>&
 ezc3d::ParametersNS::GroupNS::Parameter::dimension() const {
     return _dimension;
 }

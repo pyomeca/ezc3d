@@ -9,23 +9,21 @@
 
 #include "Vector3d.h"
 
-#include <bitset>
-
-ezc3d::DataNS::Vector3d::Vector3d()
+ezc3d::Vector3d::Vector3d() :
+    ezc3d::Matrix(3, 1)
 {
-    _data.resize(3, 0);
+
 }
 
-ezc3d::DataNS::Vector3d::Vector3d(
-        const ezc3d::DataNS::Vector3d &p) {
-    _data.resize(3);
-    x(p.x());
-    y(p.y());
-    z(p.z());
+ezc3d::Vector3d::Vector3d(
+        const ezc3d::Vector3d &p) :
+    ezc3d::Matrix(p)
+{
+
 }
 
-void ezc3d::DataNS::Vector3d::print() const {
-    std::cout << " Position = ["
+void ezc3d::Vector3d::print() const {
+    std::cout << " Vector = ["
               << x() << ", "
               << y() << ", "
               << z() << "];"
@@ -33,7 +31,7 @@ void ezc3d::DataNS::Vector3d::print() const {
 }
 
 
-bool ezc3d::DataNS::Vector3d::isValid() const
+bool ezc3d::Vector3d::isValid() const
 {
     if (std::isnan(_data[0])
             || std::isnan(_data[1])
@@ -45,15 +43,7 @@ bool ezc3d::DataNS::Vector3d::isValid() const
     }
 }
 
-const std::vector<float> ezc3d::DataNS::Vector3d::data() const {
-    return _data;
-}
-
-std::vector<float> ezc3d::DataNS::Vector3d::data() {
-    return _data;
-}
-
-void ezc3d::DataNS::Vector3d::set(
+void ezc3d::Vector3d::set(
         float x,
         float y,
         float z)
@@ -63,29 +53,29 @@ void ezc3d::DataNS::Vector3d::set(
     _data[2] = z;
 }
 
-float ezc3d::DataNS::Vector3d::x() const {
+float ezc3d::Vector3d::x() const {
     return _data[0];
 }
 
-void ezc3d::DataNS::Vector3d::x(
+void ezc3d::Vector3d::x(
         float x) {
     _data[0] = x;
 }
 
-float ezc3d::DataNS::Vector3d::y() const {
+float ezc3d::Vector3d::y() const {
     return _data[1];
 }
 
-void ezc3d::DataNS::Vector3d::y(
+void ezc3d::Vector3d::y(
         float y) {
     _data[1] = y;
 }
 
-float ezc3d::DataNS::Vector3d::z() const {
+float ezc3d::Vector3d::z() const {
     return _data[2];
 }
 
-void ezc3d::DataNS::Vector3d::z(
+void ezc3d::Vector3d::z(
         float z) {
     _data[2] = z;
 }

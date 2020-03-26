@@ -97,6 +97,8 @@ namespace ezc3d {
 
     // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
     class c3d;
+    class EZC3D_API Vector3d;
+    class EZC3D_API Matrix;
     class EZC3D_API Header;
 
     ///
@@ -118,7 +120,6 @@ namespace ezc3d {
     /// \brief Namespace that holds the Data hierarchy
     ///
     namespace DataNS {
-        class EZC3D_API Vector3d;
         class EZC3D_API Data;
 
         class Frame;

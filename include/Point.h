@@ -14,7 +14,7 @@
 /// \brief 3D point data
 ///
 class EZC3D_API ezc3d::DataNS::Points3dNS::Point :
-        public ezc3d::DataNS::Vector3d {
+        public ezc3d::Vector3d {
     //---- CONSTRUCTORS ----//
 public:
     ///

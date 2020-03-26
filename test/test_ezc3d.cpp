@@ -555,7 +555,7 @@ TEST(c3dModifier, addPoints) {
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
 
-            std::vector<float> data(new_c3d.c3d.data().frame(f).points().point(pointIdx).data());
+            std::vector<double> data(new_c3d.c3d.data().frame(f).points().point(pointIdx).data());
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), data[0]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), data[1]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), data[2]);

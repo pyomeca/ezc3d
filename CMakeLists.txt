@@ -16,19 +16,20 @@ ENDIF()
 
 # Prepare add library
 set(SRC_LIST
-	src/Analogs.cpp
-	src/Channel.cpp
-	src/Data.cpp
-	src/ezc3d.cpp
-        src/Vector3d.cpp
-	src/Frame.cpp
-	src/Group.cpp
-	src/Header.cpp
-	src/Parameter.cpp
-	src/Parameters.cpp
-	src/Point.cpp
-	src/Points.cpp
-	src/Subframe.cpp
+    src/Analogs.cpp
+    src/Channel.cpp
+    src/Data.cpp
+    src/ezc3d.cpp
+    src/Matrix.cpp
+    src/Vector3d.cpp
+    src/Frame.cpp
+    src/Group.cpp
+    src/Header.cpp
+    src/Parameter.cpp
+    src/Parameters.cpp
+    src/Point.cpp
+    src/Points.cpp
+    src/Subframe.cpp
 )
 set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
 if (BUILD_SHARED_LIBS)

@@ -145,7 +145,7 @@ public:
     /// of the dimension of the parameter. For example, if dimension == {2, 3, 4}, then the values of the
     /// parameters are organized into a 3-dimensional fashion with rows == 2, columns == 3 and sheets == 4.
     ///
-    const std::vector<size_t> dimension() const;
+    const std::vector<size_t>& dimension() const;
 
     ///
     /// \brief Check if the dimension parameter is consistent with the values
