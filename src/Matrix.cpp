@@ -78,15 +78,93 @@ ezc3d::Matrix ezc3d::Matrix::T()
 }
 
 ezc3d::Matrix ezc3d::Matrix::operator+(
-        const ezc3d::Matrix &other)
+        double scalar)
 {
-    ezc3d::Matrix result(nbRows(), nbCols());
+    ezc3d::Matrix result(*this);
+    return result += scalar;
+}
+
+ezc3d::Matrix& ezc3d::Matrix::operator+=(
+        double scalar)
+{
     for (size_t i=0; i<nbRows(); ++i){
         for (size_t j=0; j<nbCols(); ++j){
-            result(i, j) = (*this)(i, j) + other(i, j);
+            (*this)(i, j) += scalar;
         }
     }
-    return result;
+    return *this;
+}
+
+ezc3d::Matrix ezc3d::Matrix::operator+(
+        const ezc3d::Matrix &other)
+{
+    ezc3d::Matrix result(*this);
+    return result += other;
+}
+
+ezc3d::Matrix& ezc3d::Matrix::operator+=(
+        const ezc3d::Matrix &other)
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            (*this)(i, j) += other(i, j);
+        }
+    }
+    return *this;
+}
+
+ezc3d::Matrix ezc3d::Matrix::operator-(
+        double scalar)
+{
+    ezc3d::Matrix result(*this);
+    return result -= scalar;
+}
+
+ezc3d::Matrix& ezc3d::Matrix::operator-=(
+        double scalar)
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            (*this)(i, j) -= scalar;
+        }
+    }
+    return *this;
+}
+
+ezc3d::Matrix ezc3d::Matrix::operator-(
+        const ezc3d::Matrix &other)
+{
+    ezc3d::Matrix result(*this);
+    return result -= other;
+}
+
+ezc3d::Matrix& ezc3d::Matrix::operator-=(
+        const ezc3d::Matrix &other)
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            (*this)(i, j) -= other(i, j);
+        }
+    }
+    return *this;
+}
+
+ezc3d::Matrix ezc3d::Matrix::operator*(
+        double scalar)
+{
+    ezc3d::Matrix result(*this);
+    return result *= scalar;
+}
+
+ezc3d::Matrix& ezc3d::Matrix::operator*=(
+        double scalar)
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            (*this)(i, j) *= scalar;
+        }
+    }
+    return *this;
 }
 
 ezc3d::Matrix ezc3d::Matrix::operator*(
@@ -103,6 +181,19 @@ ezc3d::Matrix ezc3d::Matrix::operator*(
     return result;
 }
 
+ezc3d::Matrix ezc3d::Matrix::operator/(
+        double scalar)
+{
+    return *this * (1./scalar);
+}
+
+ezc3d::Matrix& ezc3d::Matrix::operator/=(
+        double scalar)
+{
+    *this *= 1./scalar;
+    return *this;
+}
+
 double ezc3d::Matrix::operator()(
         size_t row,
         size_t col) const
@@ -117,5 +208,26 @@ double &ezc3d::Matrix::operator()(
 {
     // The data are arrange column majors
     return _data[col*_nbRows + row];
+}
+
+ezc3d::Matrix operator+(
+        double scalar,
+        ezc3d::Matrix mat)
+{
+    return mat + scalar;
+}
+
+ezc3d::Matrix operator-(
+        double scalar,
+        ezc3d::Matrix mat)
+{
+    return -1.0*mat + scalar;
+}
+
+ezc3d::Matrix operator*(
+        double scalar,
+        ezc3d::Matrix mat)
+{
+    return mat * scalar;
 }
 

@@ -84,6 +84,22 @@ public:
     ezc3d::Matrix T();
 
     ///
+    /// \brief Defining the addition with a scalar
+    /// \param scalar The scalar to add with
+    /// \return The matrix added
+    ///
+    ezc3d::Matrix operator+(
+            double scalar);
+
+    ///
+    /// \brief Defining the addition with a scalar
+    /// \param scalar The scalar to add with
+    /// \return The matrix added
+    ///
+    ezc3d::Matrix& operator+=(
+            double scalar);
+
+    ///
     /// \brief Defining matrix addition
     /// \param other The matrix to add with
     /// \return The matrix added
@@ -92,12 +108,84 @@ public:
             const ezc3d::Matrix& other);
 
     ///
+    /// \brief Defining matrix addition
+    /// \param other The matrix to add with
+    /// \return The matrix added
+    ///
+    ezc3d::Matrix& operator+=(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining the subtraction with a scalar
+    /// \param scalar The scalar to subtract with
+    /// \return The matrix subtracted
+    ///
+    ezc3d::Matrix operator-(
+            double scalar);
+
+    ///
+    /// \brief Defining the subtraction with a scalar
+    /// \param scalar The scalar to subtract with
+    /// \return The matrix subtracted
+    ///
+    ezc3d::Matrix& operator-=(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix subtraction
+    /// \param other The matrix to subtract with
+    /// \return The matrix subtracted
+    ///
+    ezc3d::Matrix operator-(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix subtraction
+    /// \param other The matrix to subtract with
+    /// \return The matrix subtracted
+    ///
+    ezc3d::Matrix& operator-=(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix multiplication with a scalar
+    /// \param scalar The scalar to multiply with
+    /// \return The matrix multiplied
+    ///
+    ezc3d::Matrix operator*(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix multiplication with a scalar
+    /// \param scalar The scalar to multiply with
+    /// \return The matrix multiplied
+    ///
+    ezc3d::Matrix& operator*=(
+            double scalar);
+
+    ///
     /// \brief Defining matrix multiplication
     /// \param other The matrix to multiply with
     /// \return The matrix multiplied
     ///
     ezc3d::Matrix operator*(
             const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix division with a scalar
+    /// \param scalar The scalar to divide by
+    /// \return The matrix divided
+    ///
+    ezc3d::Matrix operator/(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix division with a scalar
+    /// \param scalar The scalar to divide by
+    /// \return The matrix divided
+    ///
+    ezc3d::Matrix& operator/=(
+            double scalar);
 
     ///
     /// \brief Get a specific value of the matrix
@@ -118,5 +206,32 @@ public:
             size_t col);
 
 };
+
+///
+/// \brief Defining matrix addition with a scalar
+/// \param scalar The scalar to add with
+/// \return The matrix added
+///
+ezc3d::Matrix operator+(
+        double scalar,
+        ezc3d::Matrix mat);
+
+///
+/// \brief Defining matrix addition with a scalar
+/// \param scalar The scalar to add with
+/// \return The matrix added
+///
+ezc3d::Matrix operator-(
+        double scalar,
+        ezc3d::Matrix mat);
+
+///
+/// \brief Defining matrix multiplication with a scalar
+/// \param scalar The scalar to multiply with
+/// \return The matrix multiplied
+///
+ezc3d::Matrix operator*(
+        double scalar,
+        ezc3d::Matrix mat);
 
 #endif

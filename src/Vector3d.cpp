@@ -31,7 +31,8 @@ ezc3d::Vector3d::Vector3d(
 
 }
 
-void ezc3d::Vector3d::print() const {
+void ezc3d::Vector3d::print() const
+{
     std::cout << " Vector = ["
               << x() << ", "
               << y() << ", "
@@ -62,31 +63,56 @@ void ezc3d::Vector3d::set(
     _data[2] = z;
 }
 
-double ezc3d::Vector3d::x() const {
+double ezc3d::Vector3d::x() const
+{
     return _data[0];
 }
 
 void ezc3d::Vector3d::x(
-        double x) {
+        double x)
+{
     _data[0] = x;
 }
 
-double ezc3d::Vector3d::y() const {
+double ezc3d::Vector3d::y() const
+{
     return _data[1];
 }
 
 void ezc3d::Vector3d::y(
-        double y) {
+        double y)
+{
     _data[1] = y;
 }
 
-double ezc3d::Vector3d::z() const {
+double ezc3d::Vector3d::z() const
+{
     return _data[2];
 }
 
 void ezc3d::Vector3d::z(
-        double z) {
+        double z)
+{
     _data[2] = z;
+}
+
+ezc3d::Vector3d ezc3d::Vector3d::cross(
+        const ezc3d::Vector3d &other)
+{
+    ezc3d::Vector3d result(
+                y()*other.z() - z()*other.y(),
+                z()*other.x() - x()*other.z(),
+                x()*other.y() - y()*other.x());
+}
+
+double ezc3d::Vector3d::norm()
+{
+    return sqrt(x()*x() + y()*y() + z()*z());
+}
+
+void ezc3d::Vector3d::normalize()
+{
+
 }
 
 double ezc3d::Vector3d::operator()(
