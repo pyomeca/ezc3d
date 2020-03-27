@@ -30,15 +30,8 @@ set(SRC_LIST
     src/Point.cpp
     src/Points.cpp
     src/Subframe.cpp
+    src/modules/ForcePlatforms.cpp
 )
-
-option(WITH_MODULE_PLATFORM 
-	"Add the force platform module that provides interpretation of the force platform in the C3D file (experimental)"
-	TRUE
-)
-if(WITH_MODULE_PLATFORM)
-	list(APPEND SRC_LIST src/modules/ForcePlatform.cpp)
-endif()
 
 set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
 if (BUILD_SHARED_LIBS)

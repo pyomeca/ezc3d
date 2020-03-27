@@ -7,12 +7,9 @@
 /// \date March 25th, 2020
 ///
 
-#include "modules/ForcePlatform.h"
+#include "modules/ForcePlatforms.h"
 
-#include "Header.h"
-#include "Parameters.h"
-#include "Parameter.h"
-#include "Data.h"
+#include "ezc3d_all.h"
 
 ezc3d::Modules::ForcePlatform::ForcePlatform(
         size_t idx,

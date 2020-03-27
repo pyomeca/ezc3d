@@ -1,7 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
-#include "modules/ForcePlatform.h"
+#include "modules/ForcePlatforms.h"
 
 static double requiredPrecision(1e-10);
 
