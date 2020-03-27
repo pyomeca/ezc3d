@@ -139,6 +139,14 @@ namespace ezc3d {
             class EZC3D_API Channel;
         }
     }
+
+    ///
+    /// \brief Namespace for all the analysis modules
+    ///
+    namespace Modules {
+        class EZC3D_API ForcePlatform;
+        class EZC3D_API ForcePlatforms;
+    }
 }
 
 ///

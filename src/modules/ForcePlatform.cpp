@@ -1,0 +1,246 @@
+#define EZC3D_API_EXPORTS
+///
+/// \file ForcePlatForm.cpp
+/// \brief Implementation of ForcePlatForm class
+/// \author Pariterre
+/// \version 1.0
+/// \date March 25th, 2020
+///
+
+#include "modules/ForcePlatform.h"
+
+#include "Header.h"
+#include "Parameters.h"
+#include "Parameter.h"
+#include "Data.h"
+
+ezc3d::Modules::ForcePlatform::ForcePlatform(
+        size_t idx,
+        const ezc3d::c3d& c3d)
+{
+    // Extract the required values from the C3D
+    extractType(idx, c3d);
+    extractCorners(idx, c3d);
+    extractOrigin(idx, c3d);
+    computePfReferenceFrame();
+    extractData(idx, c3d);
+}
+
+const std::vector<ezc3d::Vector3d>&
+ezc3d::Modules::ForcePlatform::force() const
+{
+    return _F;
+}
+
+void ezc3d::Modules::ForcePlatform::extractType(
+        size_t idx,
+        const ezc3d::c3d &c3d)
+{
+    const ezc3d::ParametersNS::GroupNS::Group &groupPF(
+                c3d.parameters().group("FORCE_PLATFORM"));
+
+    if (groupPF.parameter("TYPE").valuesAsInt().size() < idx + 1){
+        throw std::runtime_error("FORCE_PLATFORM:IDX is not fill properly "
+                                 "to extract Force platform informations");
+    }
+    _type = static_cast<size_t>(groupPF.parameter("TYPE").valuesAsInt()[idx]);
+
+    // Make sure that particular type is supported
+    if (_type == 1){
+        throw std::runtime_error("Type 1 is not supported yet, please "
+                                 "open an Issue on github for support");
+    }
+    else if (_type == 2 || _type == 4){
+        if (_type == 4){
+            throw std::runtime_error("Type 4 (and 7) that uses CAL_MATRIX is "
+                                     "not supported yet, please "
+                                     "open an Issue on github for support");
+        }
+    }
+    else if (_type == 3 || _type == 7){
+        throw std::runtime_error("Type 3 (and 7) is not supported yet, please "
+                                 "open an Issue on github for support");
+    }
+    else if (_type == 5){
+        throw std::runtime_error("Type 5 is not supported yet, please "
+                                 "open an Issue on github for support");
+    }
+    else if (_type == 6){
+        throw std::runtime_error("Type 6 is not supported yet, please "
+                                 "open an Issue on github for support");
+    }
+    else if (_type == 11 || _type == 12){
+        throw std::runtime_error("Kistler Split Belt Treadmill is not "
+                                 "supported for ForcePlatform analysis");
+    }
+    else if (_type == 21){
+        throw std::runtime_error("AMTI-stairs is not supported "
+                                 "for ForcePlatform analysis");
+    }
+    else {
+        throw std::runtime_error("Force platform type is non existant "
+                                 "or not supported yet");
+    }
+}
+
+ezc3d::Modules::ForcePlatforms::ForcePlatforms(
+        const ezc3d::c3d &c3d)
+{
+    size_t nbForcePF(c3d.parameters().group("FORCE_PLATFORM")
+                     .parameter("USED").valuesAsInt()[0]);
+    for (size_t i=0; i<nbForcePF; ++i){
+        _platforms.push_back(ezc3d::Modules::ForcePlatform(i, c3d));
+    }
+}
+
+void ezc3d::Modules::ForcePlatform::extractCorners(
+        size_t idx,
+        const ezc3d::c3d &c3d)
+{
+    const ezc3d::ParametersNS::GroupNS::Group &groupPF(
+                c3d.parameters().group("FORCE_PLATFORM"));
+
+    const std::vector<double>& all_corners(
+                groupPF.parameter("CORNERS").valuesAsDouble());
+    if (all_corners.size() < 12*(idx+1)){
+        throw std::runtime_error("FORCE_PLATFORM:CORNER is not fill properly "
+                                 "to extract Force platform informations");
+    }
+    _meanCorners.setZeros();
+    for (size_t i=0; i<4; ++i){
+        ezc3d::Vector3d corner;
+        for (size_t j=0; j<3; ++j){
+            corner(j) = all_corners[idx*12 + i*3 + j];
+        }
+        _corners.push_back(corner);
+        _meanCorners += corner;
+    }
+    _meanCorners /= 4;
+}
+
+void ezc3d::Modules::ForcePlatform::extractOrigin(
+        size_t idx,
+        const ezc3d::c3d &c3d)
+{
+    const ezc3d::ParametersNS::GroupNS::Group &groupPF(
+                c3d.parameters().group("FORCE_PLATFORM"));
+
+    const std::vector<double>& all_origins(
+                groupPF.parameter("ORIGIN").valuesAsDouble());
+    if (all_origins.size() < 3*(idx+1)){
+        throw std::runtime_error("FORCE_PLATFORM:ORIGIN is not fill properly "
+                                 "to extract Force platform informations");
+    }
+    for (size_t i=0; i<3; ++i){
+        _origin(i) = all_origins[idx*3 + i];
+    }
+
+    if (_type == 2 && _origin(2) > 0.0){
+        _origin = -1*_origin;
+    }
+}
+
+void ezc3d::Modules::ForcePlatform::computePfReferenceFrame()
+{
+    ezc3d::Vector3d axisX(_corners[0] - _corners[1]);
+    ezc3d::Vector3d axisY(_corners[0] - _corners[3]);
+    ezc3d::Vector3d axisZ(axisX.cross(axisY));
+    axisY = axisZ.cross(axisX);
+
+    axisX.normalize();
+    axisY.normalize();
+    axisZ.normalize();
+
+    _refFrame = ezc3d::Matrix(3, 3);
+    _refFrame.setIdentity();
+    for (size_t i=0; i<3; ++i){
+        _refFrame(i, 0) = axisX(i);
+        _refFrame(i, 1) = axisY(i);
+        _refFrame(i, 2) = axisZ(i);
+    }
+}
+
+void ezc3d::Modules::ForcePlatform::extractData(
+        size_t idx,
+        const ezc3d::c3d &c3d)
+{
+    const ezc3d::ParametersNS::GroupNS::Group &groupPF(
+                c3d.parameters().group("FORCE_PLATFORM"));
+
+    // Get elements from the force platform's type
+    size_t nChannels;
+    if (_type == 2){
+        nChannels = 6;
+    }
+
+    // Check the dimensions of FORCE_PLATFORM:CHANNEL are consistent
+    const std::vector<size_t>& dimensions(groupPF.parameter("CHANNEL").dimension());
+    if (dimensions[0] < nChannels){
+        throw std::runtime_error("FORCE_PLATFORM:CHANNEL is not fill properly "
+                                 "to extract Force platform informations");
+    }
+    if (dimensions[1] < idx + 1){
+        throw std::runtime_error("FORCE_PLATFORM:CHANNEL is not fill properly "
+                                 "to extract Force platform informations");
+    }
+
+    // Get the channels where the force platform are stored in the data
+    std::vector<size_t> channel_idx(nChannels);
+    const std::vector<int>& all_channel_idx(
+                groupPF.parameter("CHANNEL").valuesAsInt());
+    for (size_t i=0; i<nChannels; ++i){
+        channel_idx[i] = all_channel_idx[idx*dimensions[0] + i] - 1;  // 1-based
+    }
+
+    // Get the force and moment from these channel in global reference frame
+    size_t nFramesTotal(
+                c3d.header().nbFrames()
+                * c3d.header().nbAnalogByFrame());
+    _F.resize(nFramesTotal);
+    _M.resize(nFramesTotal);
+    _CoP.resize(nFramesTotal);
+    _Tz.resize(nFramesTotal);
+    size_t cmp(0);
+    for (const auto& frame : c3d.data().frames()){
+        for (size_t i=0; i<frame.analogs().nbSubframes(); ++i){
+            const auto& subframe(frame.analogs().subframe(i));
+
+            if (_type == 2){
+                ezc3d::Vector3d force_raw;
+                ezc3d::Vector3d moment_raw;
+                for (size_t j=0; j<3; ++j){
+                    force_raw(j) = subframe.channel(channel_idx[j]).data();
+                    moment_raw(j) = subframe.channel(channel_idx[j+3]).data();
+                }
+                _F[cmp] = _refFrame * force_raw;
+                moment_raw += force_raw.cross(_origin);
+                _M[cmp] = _refFrame * moment_raw;
+
+                ezc3d::Vector3d CoP_raw(
+                            -moment_raw(1)/force_raw(2),
+                            moment_raw(0)/force_raw(2),
+                            0);
+                _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
+
+                _Tz[cmp].setZeros();
+                _Tz[cmp](2) = (_refFrame
+                            * (moment_raw - force_raw.cross(-1*CoP_raw)))(2, 0);
+                ++cmp;
+            }
+
+        }
+    }
+}
+
+std::vector<ezc3d::Modules::ForcePlatform>
+ezc3d::Modules::ForcePlatforms::forcePlatforms() const
+{
+    return _platforms;
+}
+
+ezc3d::Modules::ForcePlatform
+ezc3d::Modules::ForcePlatforms::forcePlatform(
+        size_t idx) const
+{
+    return _platforms.at(idx);
+}
