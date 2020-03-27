@@ -187,9 +187,16 @@ TEST(Vector3d, unittest){
     ezc3d::Vector3d random(1.1, 2.2, 3.3);
     EXPECT_NEAR(random.norm(), 4.1158231254513353, requiredPrecision);
 
-//    ezc3d::Vector3d random_normalized(random.normalize());
-
+    ezc3d::Vector3d random_normalized(random);
+    random_normalized.normalize();
+    EXPECT_NEAR(random_normalized(0), 0.26726124191242445, requiredPrecision);
+    EXPECT_NEAR(random_normalized(1), 0.5345224838248489, requiredPrecision);
+    EXPECT_NEAR(random_normalized(2), 0.80178372573727319, requiredPrecision);
+    EXPECT_NEAR(random_normalized.norm(), 1.0, requiredPrecision);
 
     ezc3d::Vector3d random2(2.2, 3.3, 4.4);
-    EXPECT_NEAR(random.norm(), 4.1158231254513353, requiredPrecision);
+    ezc3d::Vector3d random_cross(random.cross(random2));
+    EXPECT_NEAR(random_cross(0), -1.21, requiredPrecision);
+    EXPECT_NEAR(random_cross(1), 2.42, requiredPrecision);
+    EXPECT_NEAR(random_cross(2), -1.21, requiredPrecision);
 }

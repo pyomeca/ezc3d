@@ -99,7 +99,7 @@ void ezc3d::Vector3d::z(
 ezc3d::Vector3d ezc3d::Vector3d::cross(
         const ezc3d::Vector3d &other)
 {
-    ezc3d::Vector3d result(
+    return ezc3d::Vector3d(
                 y()*other.z() - z()*other.y(),
                 z()*other.x() - x()*other.z(),
                 x()*other.y() - y()*other.x());
@@ -112,7 +112,7 @@ double ezc3d::Vector3d::norm()
 
 void ezc3d::Vector3d::normalize()
 {
-
+    *this /= norm();
 }
 
 double ezc3d::Vector3d::operator()(
