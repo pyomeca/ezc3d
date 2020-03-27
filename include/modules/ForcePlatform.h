@@ -43,7 +43,25 @@ public:
     /// \brief Returns the force vectors at each frame in the global reference frame
     /// \return The force vectors at each frame in the global reference frame
     ///
-    const std::vector<ezc3d::Vector3d>& force() const;
+    const std::vector<ezc3d::Vector3d>& forces() const;
+
+    ///
+    /// \brief Returns the moment vectors at each frame in the global reference frame at origin
+    /// \return The moment vectors at each frame in the global reference frame at origin
+    ///
+    const std::vector<ezc3d::Vector3d>& moments() const;
+
+    ///
+    /// \brief Returns the center of pressure at each frame in the global reference frame
+    /// \return The center of pressure at each frame in the global reference frame at origin
+    ///
+    const std::vector<ezc3d::Vector3d>& CoP() const;
+
+    ///
+    /// \brief Returns the moments at each frame in the global reference frame at center of pressure
+    /// \return The moments at each frame in the global reference frame at center of pressure
+    ///
+    const std::vector<ezc3d::Vector3d>& Tz() const;
 
 private:
     ///
@@ -109,14 +127,14 @@ public:
     /// \brief forcePlatform Returns the data from all the force plateforms
     /// \return The data from all the force plateforms
     ///
-    std::vector<ezc3d::Modules::ForcePlatform> forcePlatforms() const;
+    const std::vector<ezc3d::Modules::ForcePlatform>& forcePlatforms() const;
 
     ///
     /// \brief forcePlatform Returns the data from a specified force plateform
     /// \param idx The index of the platform
     /// \return The data from a specified force plateform
     ///
-    ezc3d::Modules::ForcePlatform forcePlatform(
+    const ForcePlatform& forcePlatform(
             size_t idx) const;
 
 };

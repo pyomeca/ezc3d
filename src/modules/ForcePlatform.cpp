@@ -27,9 +27,27 @@ ezc3d::Modules::ForcePlatform::ForcePlatform(
 }
 
 const std::vector<ezc3d::Vector3d>&
-ezc3d::Modules::ForcePlatform::force() const
+ezc3d::Modules::ForcePlatform::forces() const
 {
     return _F;
+}
+
+const std::vector<ezc3d::Vector3d>&
+ezc3d::Modules::ForcePlatform::moments() const
+{
+    return _M;
+}
+
+const std::vector<ezc3d::Vector3d>&
+ezc3d::Modules::ForcePlatform::CoP() const
+{
+    return _CoP;
+}
+
+const std::vector<ezc3d::Vector3d>&
+ezc3d::Modules::ForcePlatform::Tz() const
+{
+    return _Tz;
 }
 
 void ezc3d::Modules::ForcePlatform::extractType(
@@ -232,13 +250,13 @@ void ezc3d::Modules::ForcePlatform::extractData(
     }
 }
 
-std::vector<ezc3d::Modules::ForcePlatform>
+const std::vector<ezc3d::Modules::ForcePlatform>&
 ezc3d::Modules::ForcePlatforms::forcePlatforms() const
 {
     return _platforms;
 }
 
-ezc3d::Modules::ForcePlatform
+const ezc3d::Modules::ForcePlatform&
 ezc3d::Modules::ForcePlatforms::forcePlatform(
         size_t idx) const
 {

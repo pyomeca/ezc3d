@@ -3,7 +3,7 @@
 
 #include "Matrix.h"
 #include "Vector3d.h"
-double requiredPrecision(1e-10);
+static double requiredPrecision(1e-10);
 
 TEST(Matrix, create){
     ezc3d::Matrix m1(2, 3);
