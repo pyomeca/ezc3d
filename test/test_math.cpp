@@ -23,6 +23,8 @@ TEST(Matrix, create){
     EXPECT_EQ(m1(1,0), 4.8);
     EXPECT_EQ(m1(1,1), 6.0);
     EXPECT_EQ(m1(1,2), 7.2);
+    EXPECT_THROW(m1(2, 0), std::runtime_error);
+    EXPECT_THROW(m1(0, 3), std::runtime_error);
 
     ezc3d::Matrix m1_copy(m1);
     EXPECT_EQ(m1_copy.nbRows(), 2);
@@ -60,6 +62,34 @@ TEST(Matrix, create){
     m_toResize.resize(3, 4);
     EXPECT_EQ(m_toResize.nbRows(), 3);
     EXPECT_EQ(m_toResize.nbCols(), 4);
+
+    ezc3d::Matrix m_zeros(2, 3);
+    m_zeros.setZeros();
+    EXPECT_EQ(m_zeros(0,0), 0.0);
+    EXPECT_EQ(m_zeros(0,1), 0.0);
+    EXPECT_EQ(m_zeros(0,2), 0.0);
+    EXPECT_EQ(m_zeros(1,0), 0.0);
+    EXPECT_EQ(m_zeros(1,1), 0.0);
+    EXPECT_EQ(m_zeros(1,2), 0.0);
+
+    ezc3d::Matrix m_ones(2, 3);
+    m_ones.setOnes();
+    EXPECT_EQ(m_ones(0,0), 1.0);
+    EXPECT_EQ(m_ones(0,1), 1.0);
+    EXPECT_EQ(m_ones(0,2), 1.0);
+    EXPECT_EQ(m_ones(1,0), 1.0);
+    EXPECT_EQ(m_ones(1,1), 1.0);
+    EXPECT_EQ(m_ones(1,2), 1.0);
+
+    ezc3d::Matrix m_identity(2, 3);
+    m_identity.setIdentity();
+    EXPECT_EQ(m_identity(0,0), 1.0);
+    EXPECT_EQ(m_identity(0,1), 0.0);
+    EXPECT_EQ(m_identity(0,2), 0.0);
+    EXPECT_EQ(m_identity(1,0), 0.0);
+    EXPECT_EQ(m_identity(1,1), 1.0);
+    EXPECT_EQ(m_identity(1,2), 0.0);
+
 }
 
 TEST(Matrix, unittest){

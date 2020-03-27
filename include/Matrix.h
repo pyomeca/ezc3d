@@ -73,6 +73,21 @@ public:
     virtual std::vector<double>& data();
 
     ///
+    /// \brief Set all values to zero
+    ///
+    void setZeros();
+
+    ///
+    /// \brief Set all values to one
+    ///
+    void setOnes();
+
+    ///
+    /// \brief Set the matrix to an identity matrix
+    ///
+    void setIdentity();
+
+    ///
     /// \brief Return the number of rows
     /// \return The number of rows
     ///

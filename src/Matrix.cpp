@@ -64,6 +64,38 @@ std::vector<double>& ezc3d::Matrix::data()
     return _data;
 }
 
+void ezc3d::Matrix::setZeros()
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            (*this)(i, j) = 0.0;
+        }
+    }
+}
+
+void ezc3d::Matrix::setOnes()
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            (*this)(i, j) = 1.0;
+        }
+    }
+}
+
+void ezc3d::Matrix::setIdentity()
+{
+    for (size_t i=0; i<nbRows(); ++i){
+        for (size_t j=0; j<nbCols(); ++j){
+            if (i == j){
+                (*this)(i, j) = 1.0;
+            }
+            else {
+                (*this)(i, j) = 0.0;
+            }
+        }
+    }
+}
+
 size_t ezc3d::Matrix::nbRows() const
 {
     return _nbRows;
@@ -96,7 +128,16 @@ double& ezc3d::Matrix::operator()(
         size_t col)
 {
     // The data are arrange column majors
-    return _data.at(col*_nbRows + row);
+    size_t idx(col*_nbRows + row);
+    if (nbRows() <= row || nbCols() <= col){
+        throw std::runtime_error("Element ouside of the matrix bounds.\n"
+                                 "Elements ask = "
+                                 + std::to_string(row) + "x" + std::to_string(col)
+                                 + "\nMatrix dimension = "
+                                 + std::to_string(nbRows()) + "x"
+                                 + std::to_string(nbCols()));
+    }
+    return _data[col*_nbRows + row];
 }
 
 ezc3d::Matrix ezc3d::Matrix::T()
