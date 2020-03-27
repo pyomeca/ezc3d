@@ -25,10 +25,13 @@ ezc3d::Vector3d::Vector3d(
 }
 
 ezc3d::Vector3d::Vector3d(
-        const ezc3d::Vector3d &p) :
+        const ezc3d::Matrix &p) :
     ezc3d::Matrix(p)
 {
-
+    if (nbRows() != 3 || nbCols() != 1){
+        throw std::runtime_error("Size of the matrix must be 3x1 to be casted"
+                                 "as a vector3d");
+    }
 }
 
 void ezc3d::Vector3d::print() const
@@ -38,19 +41,6 @@ void ezc3d::Vector3d::print() const
               << y() << ", "
               << z() << "];"
               << std::endl;
-}
-
-
-bool ezc3d::Vector3d::isValid() const
-{
-    if (std::isnan(_data[0])
-            || std::isnan(_data[1])
-            || std::isnan(_data[2])) {
-        return false;
-    }
-    else {
-        return true;
-    }
 }
 
 void ezc3d::Vector3d::set(
@@ -96,23 +86,16 @@ void ezc3d::Vector3d::z(
     _data[2] = z;
 }
 
-ezc3d::Vector3d ezc3d::Vector3d::cross(
-        const ezc3d::Vector3d &other)
+bool ezc3d::Vector3d::isValid() const
 {
-    return ezc3d::Vector3d(
-                y()*other.z() - z()*other.y(),
-                z()*other.x() - x()*other.z(),
-                x()*other.y() - y()*other.x());
-}
-
-double ezc3d::Vector3d::norm()
-{
-    return sqrt(x()*x() + y()*y() + z()*z());
-}
-
-void ezc3d::Vector3d::normalize()
-{
-    *this /= norm();
+    if (std::isnan(_data[0])
+            || std::isnan(_data[1])
+            || std::isnan(_data[2])) {
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 double ezc3d::Vector3d::operator()(
@@ -125,4 +108,29 @@ double& ezc3d::Vector3d::operator()(
         size_t idx)
 {
     return this->ezc3d::Matrix::operator ()(idx, 0);
+}
+
+double ezc3d::Vector3d::dot(
+        const ezc3d::Vector3d &other)
+{
+    return x()*other.x() + y()*other.y() + z()*other.z();
+}
+
+ezc3d::Vector3d ezc3d::Vector3d::cross(
+        const ezc3d::Vector3d &other)
+{
+    return ezc3d::Vector3d(
+                y()*other.z() - z()*other.y(),
+                z()*other.x() - x()*other.z(),
+                x()*other.y() - y()*other.x());
+}
+
+double ezc3d::Vector3d::norm()
+{
+    return sqrt(dot(*this));
+}
+
+void ezc3d::Vector3d::normalize()
+{
+    *this /= norm();
 }

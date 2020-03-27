@@ -9,6 +9,14 @@
 
 #include "Matrix.h"
 
+ezc3d::Matrix::Matrix():
+    _nbRows(0),
+    _nbCols(0),
+    _data(std::vector<double>(_nbRows * _nbCols))
+{
+
+}
+
 ezc3d::Matrix::Matrix(
         size_t nbRows,
         size_t nbCols) :
@@ -66,6 +74,31 @@ size_t ezc3d::Matrix::nbCols() const
     return _nbCols;
 }
 
+void ezc3d::Matrix::resize(
+        size_t nbRows,
+        size_t nbCols)
+{
+    _nbRows = nbRows;
+    _nbCols = nbCols;
+    _data.resize(nbRows * nbCols);
+}
+
+double ezc3d::Matrix::operator()(
+        size_t row,
+        size_t col) const
+{
+    // The data are arrange column majors
+    return _data.at(col*_nbRows + row);
+}
+
+double& ezc3d::Matrix::operator()(
+        size_t row,
+        size_t col)
+{
+    // The data are arrange column majors
+    return _data.at(col*_nbRows + row);
+}
+
 ezc3d::Matrix ezc3d::Matrix::T()
 {
     ezc3d::Matrix result(nbCols(), nbRows());
@@ -105,6 +138,14 @@ ezc3d::Matrix ezc3d::Matrix::operator+(
 ezc3d::Matrix& ezc3d::Matrix::operator+=(
         const ezc3d::Matrix &other)
 {
+    if (nbRows() != other.nbRows() || nbCols() != other.nbCols()){
+        throw std::runtime_error(
+            "Dimensions of matrices don't agree: \nFirst matrix dimensions = "
+            + std::to_string(nbRows()) + "x" + std::to_string(nbRows()) + "\n"
+            "Second matrix dimensions = "
+            + std::to_string(other.nbRows()) + "x" + std::to_string(other.nbRows()));
+    }
+
     for (size_t i=0; i<nbRows(); ++i){
         for (size_t j=0; j<nbCols(); ++j){
             (*this)(i, j) += other(i, j);
@@ -141,6 +182,14 @@ ezc3d::Matrix ezc3d::Matrix::operator-(
 ezc3d::Matrix& ezc3d::Matrix::operator-=(
         const ezc3d::Matrix &other)
 {
+    if (nbRows() != other.nbRows() || nbCols() != other.nbCols()){
+        throw std::runtime_error(
+            "Dimensions of matrices don't agree: \nFirst matrix dimensions = "
+            + std::to_string(nbRows()) + "x" + std::to_string(nbRows()) + "\n"
+            "Second matrix dimensions = "
+            + std::to_string(other.nbRows()) + "x" + std::to_string(other.nbRows()));
+    }
+
     for (size_t i=0; i<nbRows(); ++i){
         for (size_t j=0; j<nbCols(); ++j){
             (*this)(i, j) -= other(i, j);
@@ -170,6 +219,14 @@ ezc3d::Matrix& ezc3d::Matrix::operator*=(
 ezc3d::Matrix ezc3d::Matrix::operator*(
         const ezc3d::Matrix &other)
 {
+    if (nbCols() != other.nbRows()){
+        throw std::runtime_error(
+            "Dimensions of matrices don't agree: \nFirst matrix dimensions = "
+            + std::to_string(nbRows()) + "x" + std::to_string(nbRows()) + "\n"
+            "Second matrix dimensions = "
+            + std::to_string(other.nbRows()) + "x" + std::to_string(other.nbRows()));
+    }
+
     ezc3d::Matrix result(nbRows(), other.nbCols());
     for (size_t i=0; i<nbRows(); ++i){
         for (size_t j=0; j<other.nbCols(); ++j){
@@ -192,22 +249,6 @@ ezc3d::Matrix& ezc3d::Matrix::operator/=(
 {
     *this *= 1./scalar;
     return *this;
-}
-
-double ezc3d::Matrix::operator()(
-        size_t row,
-        size_t col) const
-{
-    // The data are arrange column majors
-    return _data[col*_nbRows + row];
-}
-
-double &ezc3d::Matrix::operator()(
-        size_t row,
-        size_t col)
-{
-    // The data are arrange column majors
-    return _data[col*_nbRows + row];
 }
 
 ezc3d::Matrix operator+(

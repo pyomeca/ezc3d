@@ -25,6 +25,8 @@ TEST(Matrix, create){
     EXPECT_EQ(m1(1,2), 7.2);
 
     ezc3d::Matrix m1_copy(m1);
+    EXPECT_EQ(m1_copy.nbRows(), 2);
+    EXPECT_EQ(m1_copy.nbCols(), 3);
     EXPECT_EQ(m1_copy(0,0), 1.2);
     EXPECT_EQ(m1_copy(0,1), 2.4);
     EXPECT_EQ(m1_copy(0,2), 3.6);
@@ -33,12 +35,31 @@ TEST(Matrix, create){
     EXPECT_EQ(m1_copy(1,2), 7.2);
 
     ezc3d::Matrix m1_equal = m1;
+    EXPECT_EQ(m1_equal.nbRows(), 2);
+    EXPECT_EQ(m1_equal.nbCols(), 3);
     EXPECT_EQ(m1_copy(0,0), 1.2);
     EXPECT_EQ(m1_copy(0,1), 2.4);
     EXPECT_EQ(m1_copy(0,2), 3.6);
     EXPECT_EQ(m1_copy(1,0), 4.8);
     EXPECT_EQ(m1_copy(1,1), 6.0);
     EXPECT_EQ(m1_copy(1,2), 7.2);
+
+    ezc3d::Matrix m_toResize;
+    EXPECT_EQ(m_toResize.nbRows(), 0);
+    EXPECT_EQ(m_toResize.nbCols(), 0);
+    m_toResize.resize(2, 3);
+    EXPECT_EQ(m_toResize.nbRows(), 2);
+    EXPECT_EQ(m_toResize.nbCols(), 3);
+    m_toResize(0,0) = 1.2;
+    m_toResize(0,1) = 2.4;
+    m_toResize(0,2) = 3.6;
+    m_toResize(1,0) = 4.8;
+    m_toResize(1,1) = 6.0;
+    m_toResize(1,2) = 7.2;
+
+    m_toResize.resize(3, 4);
+    EXPECT_EQ(m_toResize.nbRows(), 3);
+    EXPECT_EQ(m_toResize.nbCols(), 4);
 }
 
 TEST(Matrix, unittest){
@@ -98,6 +119,8 @@ TEST(Matrix, unittest){
     EXPECT_NEAR(m_add2(1, 1), 16.6, requiredPrecision);
     EXPECT_NEAR(m_add2(1, 2), 18.8, requiredPrecision);
 
+    EXPECT_THROW(m1 + m3, std::runtime_error);
+
     // Subtraction
     ezc3d::Matrix m_sub1(m1 - 2.5);
     EXPECT_EQ(m_sub1.nbRows(), 2);
@@ -129,6 +152,8 @@ TEST(Matrix, unittest){
     EXPECT_NEAR(m_sub3(1, 1), -5.6, requiredPrecision);
     EXPECT_NEAR(m_sub3(1, 2), -5.6, requiredPrecision);
 
+    EXPECT_THROW(m1 - m3, std::runtime_error);
+
     // Multiplication
     ezc3d::Matrix m_mult1(2 * m1);
     EXPECT_EQ(m_mult1.nbRows(), 2);
@@ -139,6 +164,8 @@ TEST(Matrix, unittest){
     EXPECT_NEAR(m_mult1(1, 0), 8.8, requiredPrecision);
     EXPECT_NEAR(m_mult1(1, 1), 11.0, requiredPrecision);
     EXPECT_NEAR(m_mult1(1, 2), 13.2, requiredPrecision);
+
+    EXPECT_THROW(m1 * m2, std::runtime_error);
 
     ezc3d::Matrix m_mult2(m1 * m3);
     EXPECT_EQ(m_mult2.nbRows(), 2);
@@ -199,4 +226,21 @@ TEST(Vector3d, unittest){
     EXPECT_NEAR(random_cross(0), -1.21, requiredPrecision);
     EXPECT_NEAR(random_cross(1), 2.42, requiredPrecision);
     EXPECT_NEAR(random_cross(2), -1.21, requiredPrecision);
+
+    ezc3d::Vector3d random_add1(random + random2);
+    EXPECT_NEAR(random_add1(0), 3.3, requiredPrecision);
+    EXPECT_NEAR(random_add1(1), 5.5, requiredPrecision);
+    EXPECT_NEAR(random_add1(2), 7.7, requiredPrecision);
+
+    ezc3d::Vector3d random_add2 = random + random2;
+    EXPECT_NEAR(random_add2(0), 3.3, requiredPrecision);
+    EXPECT_NEAR(random_add2(1), 5.5, requiredPrecision);
+    EXPECT_NEAR(random_add2(2), 7.7, requiredPrecision);
+
+    ezc3d::Vector3d random_add3(random);
+    random_add3 += random2;
+    EXPECT_NEAR(random_add3(0), 3.3, requiredPrecision);
+    EXPECT_NEAR(random_add3(1), 5.5, requiredPrecision);
+    EXPECT_NEAR(random_add3(2), 7.7, requiredPrecision);
+
 }

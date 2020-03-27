@@ -37,7 +37,7 @@ public:
     /// \param vector The vector to copy
     ///
     Vector3d(
-            const ezc3d::Vector3d& vector);
+            const ezc3d::Matrix& vector);
 
 
     //---- STREAM ----//
@@ -104,24 +104,6 @@ public:
             double z);
 
     ///
-    /// \brief Returns the cross-product of two vectors
-    /// \param other The vector to cross-product with
-    /// \return The cross product
-    ///
-    ezc3d::Vector3d cross(const ezc3d::Vector3d& other);
-
-    ///
-    /// \brief Returns the euclidian norm of the vector (i.e. sqrt(vx^2 + vy^2 + vz^2) )
-    /// \return The norm of the vector
-    ///
-    double norm();
-
-    ///
-    /// \brief Normalize the current vector (i.e. v = v/norm(v) )
-    ///
-    void normalize();
-
-    ///
     /// \brief If any component is a NAN then the 3D Vector is invalid.
     /// \return If the 3D Vector is invalid
     ///
@@ -140,6 +122,34 @@ public:
     ///
     double& operator()(
             size_t idx);
+
+    //---- OPERATIONS ----//
+public:
+    ///
+    /// \brief Returns the dot-product of two vectors
+    /// \param other The vector to dot-product with
+    /// \return The dot-product
+    ///
+    double dot(const ezc3d::Vector3d& other);
+
+    ///
+    /// \brief Returns the cross-product of two vectors
+    /// \param other The vector to cross-product with
+    /// \return The cross-product
+    ///
+    ezc3d::Vector3d cross(const ezc3d::Vector3d& other);
+
+    ///
+    /// \brief Returns the euclidian norm of the vector (i.e. sqrt(vx^2 + vy^2 + vz^2) )
+    /// \return The norm of the vector
+    ///
+    double norm();
+
+    ///
+    /// \brief Normalize the current vector (i.e. v = v/norm(v) )
+    ///
+    void normalize();
+
 };
 
 #endif

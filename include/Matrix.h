@@ -21,6 +21,13 @@ public:
     /// \param nbRows The number of rows
     /// \param nbCols The number of columns
     ///
+    Matrix();
+
+    ///
+    /// \brief Create an empty Matrix with the memory allocated
+    /// \param nbRows The number of rows
+    /// \param nbCols The number of columns
+    ///
     Matrix(
             size_t nbRows,
             size_t nbCols);
@@ -78,114 +85,17 @@ public:
     size_t nbCols() const;
 
     ///
-    /// \brief Defining matrix transpose
-    /// \return The matrix transposed
+    /// \brief Change the size of the matrix
+    /// \param nbRows The new number of rows
+    /// \param nbCols The new number of columns
     ///
-    ezc3d::Matrix T();
-
+    /// Changes the size of the matrix.
+    /// Warning, there is no garanty for the position of the data in the
+    /// matrix after the resize
     ///
-    /// \brief Defining the addition with a scalar
-    /// \param scalar The scalar to add with
-    /// \return The matrix added
-    ///
-    ezc3d::Matrix operator+(
-            double scalar);
-
-    ///
-    /// \brief Defining the addition with a scalar
-    /// \param scalar The scalar to add with
-    /// \return The matrix added
-    ///
-    ezc3d::Matrix& operator+=(
-            double scalar);
-
-    ///
-    /// \brief Defining matrix addition
-    /// \param other The matrix to add with
-    /// \return The matrix added
-    ///
-    ezc3d::Matrix operator+(
-            const ezc3d::Matrix& other);
-
-    ///
-    /// \brief Defining matrix addition
-    /// \param other The matrix to add with
-    /// \return The matrix added
-    ///
-    ezc3d::Matrix& operator+=(
-            const ezc3d::Matrix& other);
-
-    ///
-    /// \brief Defining the subtraction with a scalar
-    /// \param scalar The scalar to subtract with
-    /// \return The matrix subtracted
-    ///
-    ezc3d::Matrix operator-(
-            double scalar);
-
-    ///
-    /// \brief Defining the subtraction with a scalar
-    /// \param scalar The scalar to subtract with
-    /// \return The matrix subtracted
-    ///
-    ezc3d::Matrix& operator-=(
-            double scalar);
-
-    ///
-    /// \brief Defining matrix subtraction
-    /// \param other The matrix to subtract with
-    /// \return The matrix subtracted
-    ///
-    ezc3d::Matrix operator-(
-            const ezc3d::Matrix& other);
-
-    ///
-    /// \brief Defining matrix subtraction
-    /// \param other The matrix to subtract with
-    /// \return The matrix subtracted
-    ///
-    ezc3d::Matrix& operator-=(
-            const ezc3d::Matrix& other);
-
-    ///
-    /// \brief Defining matrix multiplication with a scalar
-    /// \param scalar The scalar to multiply with
-    /// \return The matrix multiplied
-    ///
-    ezc3d::Matrix operator*(
-            double scalar);
-
-    ///
-    /// \brief Defining matrix multiplication with a scalar
-    /// \param scalar The scalar to multiply with
-    /// \return The matrix multiplied
-    ///
-    ezc3d::Matrix& operator*=(
-            double scalar);
-
-    ///
-    /// \brief Defining matrix multiplication
-    /// \param other The matrix to multiply with
-    /// \return The matrix multiplied
-    ///
-    ezc3d::Matrix operator*(
-            const ezc3d::Matrix& other);
-
-    ///
-    /// \brief Defining matrix division with a scalar
-    /// \param scalar The scalar to divide by
-    /// \return The matrix divided
-    ///
-    ezc3d::Matrix operator/(
-            double scalar);
-
-    ///
-    /// \brief Defining matrix division with a scalar
-    /// \param scalar The scalar to divide by
-    /// \return The matrix divided
-    ///
-    ezc3d::Matrix& operator/=(
-            double scalar);
+    void resize(
+            size_t nbRows,
+            size_t nbCols);
 
     ///
     /// \brief Get a specific value of the matrix
@@ -204,6 +114,118 @@ public:
     double& operator()(
             size_t row,
             size_t col);
+
+    //---- OPERATIONS ----//
+public:
+    ///
+    /// \brief Defining matrix transpose
+    /// \return The matrix transposed
+    ///
+    ezc3d::Matrix T();
+
+    ///
+    /// \brief Defining the addition with a scalar
+    /// \param scalar The scalar to add with
+    /// \return The matrix added
+    ///
+    virtual ezc3d::Matrix operator+(
+            double scalar);
+
+    ///
+    /// \brief Defining the addition with a scalar
+    /// \param scalar The scalar to add with
+    /// \return The matrix added
+    ///
+    virtual ezc3d::Matrix& operator+=(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix addition
+    /// \param other The matrix to add with
+    /// \return The matrix added
+    ///
+    virtual ezc3d::Matrix operator+(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix addition
+    /// \param other The matrix to add with
+    /// \return The matrix added
+    ///
+    virtual ezc3d::Matrix& operator+=(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining the subtraction with a scalar
+    /// \param scalar The scalar to subtract with
+    /// \return The matrix subtracted
+    ///
+    virtual ezc3d::Matrix operator-(
+            double scalar);
+
+    ///
+    /// \brief Defining the subtraction with a scalar
+    /// \param scalar The scalar to subtract with
+    /// \return The matrix subtracted
+    ///
+    virtual ezc3d::Matrix& operator-=(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix subtraction
+    /// \param other The matrix to subtract with
+    /// \return The matrix subtracted
+    ///
+    virtual ezc3d::Matrix operator-(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix subtraction
+    /// \param other The matrix to subtract with
+    /// \return The matrix subtracted
+    ///
+    virtual ezc3d::Matrix& operator-=(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix multiplication with a scalar
+    /// \param scalar The scalar to multiply with
+    /// \return The matrix multiplied
+    ///
+    virtual ezc3d::Matrix operator*(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix multiplication with a scalar
+    /// \param scalar The scalar to multiply with
+    /// \return The matrix multiplied
+    ///
+    virtual ezc3d::Matrix& operator*=(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix multiplication
+    /// \param other The matrix to multiply with
+    /// \return The matrix multiplied
+    ///
+    virtual ezc3d::Matrix operator*(
+            const ezc3d::Matrix& other);
+
+    ///
+    /// \brief Defining matrix division with a scalar
+    /// \param scalar The scalar to divide by
+    /// \return The matrix divided
+    ///
+    virtual ezc3d::Matrix operator/(
+            double scalar);
+
+    ///
+    /// \brief Defining matrix division with a scalar
+    /// \param scalar The scalar to divide by
+    /// \return The matrix divided
+    ///
+    virtual ezc3d::Matrix& operator/=(
+            double scalar);
 
 };
 
