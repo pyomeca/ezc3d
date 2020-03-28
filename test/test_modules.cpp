@@ -34,4 +34,16 @@ TEST(ForcePlatForm, AMTI){
     EXPECT_NEAR(Tz[0](0), 0.0, requiredPrecision);
     EXPECT_NEAR(Tz[0](1), 0.0, requiredPrecision);
     EXPECT_NEAR(Tz[0](2), -44.140528790099872, requiredPrecision);
+
+    for (size_t i=0; i<2; ++i){
+        const auto& calMatrix(pf.forcePlatform(i).calMatrix());
+        EXPECT_EQ(calMatrix.nbRows(), 6);
+        EXPECT_EQ(calMatrix.nbCols(), 6);
+        for (size_t j=0; j<6; ++j){
+            for (size_t k=0; k<6; ++k){
+                EXPECT_EQ(calMatrix(j, k), 0.0);
+            }
+        }
+    }
+    EXPECT_THROW(pf.forcePlatform(2), std::out_of_range);
 }

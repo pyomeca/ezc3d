@@ -29,6 +29,7 @@ public:
     //---- DATA ----//
 protected:
     size_t _type;  ///< The type of force platform (see C3D documentation)
+    ezc3d::Matrix _calMatrix; ///< The calibration matrix
     std::vector<ezc3d::Vector3d> _corners;  ///< Position of the 4 corners of the force platform
     ezc3d::Vector3d _meanCorners;  ///< Mean position of the corners of the force platform
     ezc3d::Vector3d _origin;  ///< Position of the origin of the force platform
@@ -39,6 +40,12 @@ protected:
     std::vector<ezc3d::Vector3d> _Tz;  ///< Moment [0, 0, Tz] vectors for all instants (including subframes) expressed at the CoP
 
 public:
+    ///
+    /// \brief Returns the calibration matrix
+    /// \return The calibration matrix
+    ///
+    const ezc3d::Matrix& calMatrix() const;
+
     ///
     /// \brief Returns the force vectors at each frame in the global reference frame
     /// \return The force vectors at each frame in the global reference frame
@@ -88,6 +95,15 @@ private:
     /// \param c3d A reference to the c3d
     ///
     void extractOrigin(
+            size_t idx,
+            const ezc3d::c3d &c3d);
+
+    ///
+    /// \brief Extract the calibration matrix from the parameters
+    /// \param idx Index of the platform
+    /// \param c3d A reference to the c3d
+    ///
+    void extractCalMatrix(
             size_t idx,
             const ezc3d::c3d &c3d);
 

@@ -19,8 +19,14 @@ ezc3d::Modules::ForcePlatform::ForcePlatform(
     extractType(idx, c3d);
     extractCorners(idx, c3d);
     extractOrigin(idx, c3d);
+    extractCalMatrix(idx, c3d);
     computePfReferenceFrame();
     extractData(idx, c3d);
+}
+
+const ezc3d::Matrix &ezc3d::Modules::ForcePlatform::calMatrix() const
+{
+    return _calMatrix;
 }
 
 const std::vector<ezc3d::Vector3d>&
@@ -152,6 +158,42 @@ void ezc3d::Modules::ForcePlatform::extractOrigin(
 
     if (_type == 2 && _origin(2) > 0.0){
         _origin = -1*_origin;
+    }
+}
+
+void ezc3d::Modules::ForcePlatform::extractCalMatrix(
+        size_t idx,
+        const ezc3d::c3d &c3d)
+{
+    const ezc3d::ParametersNS::GroupNS::Group &groupPF(
+                c3d.parameters().group("FORCE_PLATFORM"));
+
+    size_t nChannels;
+    if (_type == 2){
+        nChannels = 6;
+    }
+    _calMatrix = ezc3d::Matrix(nChannels, nChannels);
+
+    if (_type == 2 && !groupPF.isParameter("CAL_MATRIX")){
+        // CAL_MATRIX is ignore for type 2
+        // If none is found, returns all zeros
+        return;
+    }
+
+    // Check dimensions
+    const auto& calMatrixParam(groupPF.parameter("CAL_MATRIX"));
+    if (calMatrixParam.dimension().size() < 3
+            || calMatrixParam.dimension()[2] <= idx){
+        throw std::runtime_error("FORCE_PLATFORM:CAL_MATRIX is not fill properly "
+                                 "to extract Force platform informations");
+    }
+
+    const auto& val(calMatrixParam.valuesAsDouble());
+    size_t skip(calMatrixParam.dimension()[0] * calMatrixParam.dimension()[1]);
+    for (size_t i=0; i<nChannels; ++i){
+        for (size_t j=0; j<nChannels; ++j){
+            _calMatrix(i, j) = val[skip*idx + j*nChannels + i];
+        }
     }
 }
 
