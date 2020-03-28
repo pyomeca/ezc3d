@@ -109,12 +109,14 @@ public:
     ///
     bool isValid() const;
 
+#ifndef SWIG
     ///
     /// \brief Get a specific value of the vector
     /// \param idx The index
     ///
     double operator()(
             size_t idx) const;
+#endif
 
     ///
     /// \brief Get a reference to a specific value of the vector

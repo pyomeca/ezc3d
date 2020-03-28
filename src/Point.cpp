@@ -96,55 +96,6 @@ void ezc3d::DataNS::Points3dNS::Point::set(
     }
 }
 
-double ezc3d::DataNS::Points3dNS::Point::x() const
-{
-    return ezc3d::Vector3d::x();
-}
-
-void ezc3d::DataNS::Points3dNS::Point::x(
-        double x) {
-    ezc3d::Vector3d::x(x);
-    if (isValid()) {
-        residual(0);
-    }
-    else {
-        residual(-1);
-    }
-}
-
-double ezc3d::DataNS::Points3dNS::Point::y() const
-{
-    return ezc3d::Vector3d::y();
-}
-
-void ezc3d::DataNS::Points3dNS::Point::y(
-        double y) {
-    ezc3d::Vector3d::y(y);
-    if (isValid()) {
-        residual(0);
-    }
-    else {
-        residual(-1);
-    }
-}
-
-double ezc3d::DataNS::Points3dNS::Point::z() const
-{
-    return ezc3d::Vector3d::z();
-}
-
-void ezc3d::DataNS::Points3dNS::Point::z(
-        double z) {
-    ezc3d::Vector3d::z(z);
-    if (isValid()) {
-        residual(0);
-    }
-    else {
-        residual(-1);
-    }
-}
-
-
 double ezc3d::DataNS::Points3dNS::Point::residual() const {
     return _residual;
 }

@@ -112,6 +112,7 @@ public:
             size_t nbRows,
             size_t nbCols);
 
+#ifndef SWIG
     ///
     /// \brief Get a specific value of the matrix
     /// \param row The row index
@@ -120,6 +121,7 @@ public:
     double operator()(
             size_t row,
             size_t col) const;
+#endif
 
     ///
     /// \brief Get a reference to a specific value of the matrix
@@ -244,6 +246,7 @@ public:
 
 };
 
+#ifndef SWIG
 ///
 /// \brief Defining matrix addition with a scalar
 /// \param scalar The scalar to add with
@@ -270,5 +273,6 @@ ezc3d::Matrix operator-(
 ezc3d::Matrix operator*(
         double scalar,
         ezc3d::Matrix mat);
+#endif
 
 #endif
