@@ -83,6 +83,45 @@ public:
             double z) override;
 
     ///
+    /// \brief Get the X component of the Point
+    /// \return The X component of the Point
+    ///
+    virtual double x() const override;
+
+    ///
+    /// \brief Set the X component of the 3D Point
+    /// \param x The X component of the 3d Point
+    ///
+    virtual void x(
+            double x) override;
+
+    ///
+    /// \brief Get the Y component of the Point
+    /// \return The Y component of the Point
+    ///
+    virtual double y() const override;
+
+    ///
+    /// \brief Set the Y component of the 3D Point
+    /// \param y The Y component of the 3d Point
+    ///
+    virtual void y(
+            double y) override;
+
+    ///
+    /// \brief Get the Z component of the Point
+    /// \return The Z component of the Point
+    ///
+    virtual double z() const override;
+
+    ///
+    /// \brief Set the Z component of the 3D Point
+    /// \param y The Z component of the 3d Point
+    ///
+    virtual void z(
+            double z) override;
+
+    ///
     /// \brief Get the residual component of the 3D point
     /// \return The residual component of the 3d point
     ///
