@@ -252,7 +252,7 @@ public:
 /// \param scalar The scalar to add with
 /// \return The matrix added
 ///
-ezc3d::Matrix operator+(
+EZC3D_API ezc3d::Matrix operator+(
         double scalar,
         ezc3d::Matrix mat);
 
@@ -261,7 +261,7 @@ ezc3d::Matrix operator+(
 /// \param scalar The scalar to add with
 /// \return The matrix added
 ///
-ezc3d::Matrix operator-(
+EZC3D_API ezc3d::Matrix operator-(
         double scalar,
         ezc3d::Matrix mat);
 
@@ -270,7 +270,7 @@ ezc3d::Matrix operator-(
 /// \param scalar The scalar to multiply with
 /// \return The matrix multiplied
 ///
-ezc3d::Matrix operator*(
+EZC3D_API ezc3d::Matrix operator*(
         double scalar,
         ezc3d::Matrix mat);
 #endif
