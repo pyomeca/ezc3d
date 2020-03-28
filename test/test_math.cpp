@@ -16,6 +16,7 @@ TEST(Matrix, create){
     m1(1,0) = 4.8;
     m1(1,1) = 6.0;
     m1(1,2) = 7.2;
+    m1.print();
 
     EXPECT_EQ(m1(0,0), 1.2);
     EXPECT_EQ(m1(0,1), 2.4);
@@ -25,6 +26,16 @@ TEST(Matrix, create){
     EXPECT_EQ(m1(1,2), 7.2);
     EXPECT_THROW(m1(2, 0), std::runtime_error);
     EXPECT_THROW(m1(0, 3), std::runtime_error);
+
+    ezc3d::Matrix m1_insider(m1);
+    std::vector<double>& data = m1_insider.data();
+    data[0] = 2.0;
+    EXPECT_EQ(m1_insider(0,0), 2.0);
+    EXPECT_EQ(m1_insider(0,1), 2.4);
+    EXPECT_EQ(m1_insider(0,2), 3.6);
+    EXPECT_EQ(m1_insider(1,0), 4.8);
+    EXPECT_EQ(m1_insider(1,1), 6.0);
+    EXPECT_EQ(m1_insider(1,2), 7.2);
 
     ezc3d::Matrix m1_copy(m1);
     EXPECT_EQ(m1_copy.nbRows(), 2);
@@ -238,6 +249,8 @@ TEST(Vector3d, create){
     EXPECT_NEAR(random_equal(1), 2.2, requiredPrecision);
     EXPECT_NEAR(random_equal(2), 3.3, requiredPrecision);
 
+    EXPECT_NO_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 1)));
+    EXPECT_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 2)), std::runtime_error);
 }
 
 TEST(Vector3d, unittest){

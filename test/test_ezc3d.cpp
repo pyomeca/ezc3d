@@ -6,6 +6,8 @@
 #include "Data.h"
 #include "Parameters.h"
 
+static double requiredPrecision(1e-10);
+
 enum HEADER_TYPE{
     ALL,
     POINT_ONLY,
@@ -300,6 +302,9 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     }
 }
 
+TEST(String, unittest){
+    EXPECT_STREQ(ezc3d::toUpper("toUpper").c_str(), "TOUPPER");
+}
 
 TEST(initialize, newC3D){
     // Create an empty c3d and load a new one
@@ -402,6 +407,9 @@ TEST(c3dModifier, specificParameters){
 
     // Get an erroneous group
     EXPECT_THROW(new_c3d.c3d.parameters().group("ThisIsNotARealGroup"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.parameters().group(3), std::out_of_range);
+    const auto& allGroups(new_c3d.c3d.parameters().groups());
+    EXPECT_EQ(allGroups.size(), 3);
 
     // Lock and unlock a group
     EXPECT_THROW(new_c3d.c3d.lockGroup("ThisIsNotARealGroup"), std::invalid_argument);
@@ -433,6 +441,10 @@ TEST(c3dModifier, specificParameters){
     size_t nPointParams(new_c3d.c3d.parameters().group("POINT").nbParameters());
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(nPointParams), std::out_of_range);
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), std::invalid_argument);
+
+    // Get all the parameters
+    const auto& params(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameters());
+    EXPECT_EQ(params.size(), 1);
 
     // Reading an empty parameter is actually type irrelevant
     EXPECT_NO_THROW(p.valuesAsByte());
@@ -485,7 +497,8 @@ TEST(c3dModifier, specificParameters){
     EXPECT_THROW(p.set(std::vector<std::string>()={""}, {0}), std::range_error);
     p.dimension();
 
-    // Add twice the same group (That should not be needed for a user API since he should use new_c3d.c3d.addParameter() )
+    // Add twice the same group (That should not be needed for a user API
+    // since he should use new_c3d.c3d.addParameter() )
     {
         ezc3d::ParametersNS::Parameters params;
         ezc3d::ParametersNS::GroupNS::Group groupToBeAddedTwice;
@@ -497,6 +510,19 @@ TEST(c3dModifier, specificParameters){
     }
 }
 
+TEST(c3dModifier, groupMetaData){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").description().c_str(),
+                 "");
+    EXPECT_FALSE(new_c3d.c3d.parameters().group("POINT").isLocked());
+    new_c3d.c3d.setGroupMetadata("POINT", "My new description", true);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").description().c_str(),
+                 "My new description");
+    EXPECT_TRUE(new_c3d.c3d.parameters().group("POINT").isLocked());
+}
 
 TEST(c3dModifier, addPoints) {
     // Create an empty c3d
@@ -549,7 +575,7 @@ TEST(c3dModifier, addPoints) {
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isempty(), false);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isEmpty(), false);
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
@@ -563,7 +589,7 @@ TEST(c3dModifier, addPoints) {
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), data[2]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
         }
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isempty(), true);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isEmpty(), true);
     }
 
     // Add frame with a new point with not enough frames
@@ -602,6 +628,28 @@ TEST(c3dModifier, specificPoint){
     // Create an empty c3d
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, true, false);
+
+    // Create unused points
+    ezc3d::DataNS::Points3dNS::Point unusedPt;
+    unusedPt.set(1.1, 2.2, 3.3, 4.4);
+    EXPECT_NEAR(unusedPt.x(), 1.1, requiredPrecision);
+    EXPECT_NEAR(unusedPt.y(), 2.2, requiredPrecision);
+    EXPECT_NEAR(unusedPt.z(), 3.3, requiredPrecision);
+    EXPECT_NEAR(unusedPt.residual(), 4.4, requiredPrecision);
+    unusedPt.set(5.5, 6.6, 7.7);
+    EXPECT_NEAR(unusedPt.x(), 5.5, requiredPrecision);
+    EXPECT_NEAR(unusedPt.y(), 6.6, requiredPrecision);
+    EXPECT_NEAR(unusedPt.z(), 7.7, requiredPrecision);
+    EXPECT_NEAR(unusedPt.residual(), 0.0, requiredPrecision);
+    unusedPt.cameraMask({true, false});
+    EXPECT_EQ(unusedPt.cameraMask().size(), 2);
+    EXPECT_TRUE(unusedPt.cameraMask()[0]);
+    EXPECT_FALSE(unusedPt.cameraMask()[1]);
+    EXPECT_FALSE(unusedPt.isEmpty());
+    unusedPt.set(NAN, NAN, NAN);
+    EXPECT_TRUE(unusedPt.isEmpty());
+    unusedPt.set(0.0, 0.0, 0.0);
+    EXPECT_TRUE(unusedPt.isEmpty());
 
     // test replacing points
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
@@ -756,8 +804,8 @@ TEST(c3dModifier, addAnalogs) {
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isempty(), true);
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isempty(), false);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isEmpty(), true);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isEmpty(), false);
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
                 EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
@@ -785,6 +833,13 @@ TEST(c3dModifier, specificAnalog){
     std::vector<ezc3d::DataNS::Frame> frames;
     // Wrong number of frames
     EXPECT_THROW(new_c3d.c3d.analog("uselessChannel", frames), std::invalid_argument);
+
+    // Test if analog is empty
+    ezc3d::DataNS::AnalogsNS::Channel channelToFill;
+    channelToFill.data(0.0);
+    EXPECT_TRUE(channelToFill.isEmpty());
+    channelToFill.data(1.0);
+    EXPECT_FALSE(channelToFill.isEmpty());
 
     // Wrong number of subframes
     frames.resize(new_c3d.nFrames);
@@ -837,6 +892,9 @@ TEST(c3dModifier, specificAnalog){
         frames[f] = frame;
     }
     EXPECT_NO_THROW(new_c3d.c3d.analog(analogNames, frames));
+
+    // Get outside channel
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel(8), std::out_of_range);
 
     // Get channel names
     for (size_t c = 0; c < new_c3d.analogNames.size(); ++c){
@@ -1156,11 +1214,14 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     c3dTestStruct ref_c3d;
     fillC3D(ref_c3d, true, true);
 
+    // Change the first frame
+    ref_c3d.c3d.setFirstFrame(10);
+
     // Lock Point parameter
     ref_c3d.c3d.lockGroup("POINT");
     ezc3d::ParametersNS::GroupNS::Parameter p;
     p.name("MyNewParameter");
-    p.set("ThisIsEmpty");
+    p.set("ThisisEmpty");
     ref_c3d.c3d.parameter("MyNewGroup", p);
 
     // Write the c3d on the disk
@@ -1178,8 +1239,8 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
     // Things that should have change
     EXPECT_EQ(read_c3d.header().nb3dPoints(), ref_c3d.nPoints);
-    EXPECT_EQ(read_c3d.header().firstFrame(), 0);
-    EXPECT_EQ(read_c3d.header().lastFrame(), ref_c3d.nFrames - 1);
+    EXPECT_EQ(read_c3d.header().firstFrame(), 10);
+    EXPECT_EQ(read_c3d.header().lastFrame(), 10 + ref_c3d.nFrames - 1);
     EXPECT_EQ(read_c3d.header().nbMaxInterpGap(), 10);
     EXPECT_EQ(read_c3d.header().scaleFactor(), -1);
     EXPECT_FLOAT_EQ(read_c3d.header().frameRate(), ref_c3d.pointFrameRate);
@@ -1252,7 +1313,7 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
-    EXPECT_STREQ(read_c3d.parameters().group("MyNewGroup").parameter("MyNewParameter").valuesAsString()[0].c_str(), "ThisIsEmpty");
+    EXPECT_STREQ(read_c3d.parameters().group("MyNewGroup").parameter("MyNewParameter").valuesAsString()[0].c_str(), "ThisisEmpty");
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("VERSION").valuesAsString()[0].c_str(), EZC3D_VERSION);
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("CONTACT").valuesAsString()[0].c_str(), EZC3D_CONTACT);
 
@@ -1432,8 +1493,8 @@ TEST(c3dFileIO, readViconC3D){
             EXPECT_EQ(Vicon.data().frame(f).analogs().subframe(sf).nbChannels(), 38);
     }
     // Test some values randomly
-    EXPECT_NEAR(Vicon.data().frame(0).points().point(0).x(), 44.16278839111328, 1e-10);
-    EXPECT_NEAR(Vicon.data().frame(Vicon.data().frames().size()-1).points().point(50).z(), 99.682586669921875, 1e-10);
+    EXPECT_NEAR(Vicon.data().frame(0).points().point(0).x(), 44.16278839111328, requiredPrecision);
+    EXPECT_NEAR(Vicon.data().frame(Vicon.data().frames().size()-1).points().point(50).z(), 99.682586669921875, requiredPrecision);
 
     // Test sum of all values
     double sumValues(0);
@@ -1447,7 +1508,7 @@ TEST(c3dFileIO, readViconC3D){
             }
         }
     }
-    EXPECT_NEAR(sumValues, 42506014.918278672, 1e-10);
+    EXPECT_NEAR(sumValues, 42506014.918278672, requiredPrecision);
 }
 
 

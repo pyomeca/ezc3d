@@ -82,9 +82,9 @@ ezc3d::DataNS::AnalogsNS::Analogs::subframes() const {
     return _subframe;
 }
 
-bool ezc3d::DataNS::AnalogsNS::Analogs::isempty() const {
+bool ezc3d::DataNS::AnalogsNS::Analogs::isEmpty() const {
     for (SubFrame subframe : subframes()) {
-        if (!subframe.isempty()) {
+        if (!subframe.isEmpty()) {
             return false;
         }
     }

@@ -72,7 +72,7 @@ public:
     /// \brief Return if the channel is empty
     /// \return if the channel is empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 

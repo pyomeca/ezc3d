@@ -112,7 +112,7 @@ public:
     /// \brief Return if the subframe is empty
     /// \return if the subframe is empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 #endif

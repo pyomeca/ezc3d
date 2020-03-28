@@ -85,9 +85,9 @@ ezc3d::DataNS::AnalogsNS::SubFrame::channels() const {
     return _channels;
 }
 
-bool ezc3d::DataNS::AnalogsNS::SubFrame::isempty() const {
+bool ezc3d::DataNS::AnalogsNS::SubFrame::isEmpty() const {
     for (Channel channel : channels())
-        if (!channel.isempty())
+        if (!channel.isEmpty())
             return false;
     return true;
 }

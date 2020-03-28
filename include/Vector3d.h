@@ -107,14 +107,14 @@ public:
     /// \brief If any component is a NAN then the 3D Vector is invalid.
     /// \return If the 3D Vector is invalid
     ///
-    bool isValid() const;
+    virtual bool isValid() const;
 
 #ifndef SWIG
     ///
     /// \brief Get a specific value of the vector
     /// \param idx The index
     ///
-    double operator()(
+    virtual double operator()(
             size_t idx) const;
 #endif
 
@@ -122,7 +122,7 @@ public:
     /// \brief Get a reference to a specific value of the vector
     /// \param idx The index
     ///
-    double& operator()(
+    virtual double& operator()(
             size_t idx);
 
     //---- OPERATIONS ----//
@@ -132,25 +132,25 @@ public:
     /// \param other The vector to dot-product with
     /// \return The dot-product
     ///
-    double dot(const ezc3d::Vector3d& other);
+    virtual double dot(const ezc3d::Vector3d& other);
 
     ///
     /// \brief Returns the cross-product of two vectors
     /// \param other The vector to cross-product with
     /// \return The cross-product
     ///
-    ezc3d::Vector3d cross(const ezc3d::Vector3d& other);
+    virtual ezc3d::Vector3d cross(const ezc3d::Vector3d& other);
 
     ///
     /// \brief Returns the euclidian norm of the vector (i.e. sqrt(vx^2 + vy^2 + vz^2) )
     /// \return The norm of the vector
     ///
-    double norm();
+    virtual double norm();
 
     ///
     /// \brief Normalize the current vector (i.e. v = v/norm(v) )
     ///
-    void normalize();
+    virtual void normalize();
 
 };
 

@@ -157,7 +157,7 @@ ezc3d::DataNS::Data::Data(
     if (nFrames > 0)
         for (size_t i=0; i<nFrames-1; i--){
             // -1 so we at least keep one frame if frames are empty
-            if (_frames.back().isempty())
+            if (_frames.back().isEmpty())
                 _frames.pop_back();
             else
                 break;
@@ -197,7 +197,7 @@ const ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(
     }
 }
 
-ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(
+ezc3d::DataNS::Frame& ezc3d::DataNS::Data::frame(
         size_t idx) {
     try {
         return _frames.at(idx);

@@ -38,7 +38,7 @@ void ezc3d::DataNS::AnalogsNS::Channel::data(
     _data = v;
 }
 
-bool ezc3d::DataNS::AnalogsNS::Channel::isempty() const {
+bool ezc3d::DataNS::AnalogsNS::Channel::isEmpty() const {
     if (static_cast<double>(data()) == 0.0) {
         return true;
     }

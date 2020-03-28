@@ -158,7 +158,7 @@ public:
     /// \brief Return if the point is empty
     /// \return if the point is empty
     ///
-    virtual bool isempty() const;
+    virtual bool isEmpty() const;
 };
 
 #endif

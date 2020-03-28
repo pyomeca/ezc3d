@@ -112,7 +112,7 @@ public:
     /// \brief Return if the analogs are empty
     /// \return if the analogs are empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 #endif

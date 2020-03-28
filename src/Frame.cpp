@@ -69,6 +69,6 @@ void ezc3d::DataNS::Frame::add(
     add(analog_frame);
 }
 
-bool ezc3d::DataNS::Frame::isempty() const {
-    return points().isempty() && analogs().isempty();
+bool ezc3d::DataNS::Frame::isEmpty() const {
+    return points().isEmpty() && analogs().isEmpty();
 }

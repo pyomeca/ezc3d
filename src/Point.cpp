@@ -88,11 +88,11 @@ void ezc3d::DataNS::Points3dNS::Point::set(
         double z)
 {
     ezc3d::Vector3d::set(x, y, z);
-    if (isValid()) {
-        residual(0);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
@@ -104,11 +104,11 @@ double ezc3d::DataNS::Points3dNS::Point::x() const
 void ezc3d::DataNS::Points3dNS::Point::x(
         double x) {
     ezc3d::Vector3d::x(x);
-    if (isValid()) {
-        residual(0);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
@@ -120,11 +120,11 @@ double ezc3d::DataNS::Points3dNS::Point::y() const
 void ezc3d::DataNS::Points3dNS::Point::y(
         double y) {
     ezc3d::Vector3d::y(y);
-    if (isValid()) {
-        residual(0);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
@@ -136,11 +136,11 @@ double ezc3d::DataNS::Points3dNS::Point::z() const
 void ezc3d::DataNS::Points3dNS::Point::z(
         double z) {
     ezc3d::Vector3d::z(z);
-    if (isValid()) {
-        residual(0);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
@@ -172,11 +172,9 @@ void ezc3d::DataNS::Points3dNS::Point::cameraMask(int byte)
     }
 }
 
-bool ezc3d::DataNS::Points3dNS::Point::isempty() const {
-    if (x() == 0.0
-            && y() == 0.0
-            && z() == 0.0
-            && residual() < 0)
+bool ezc3d::DataNS::Points3dNS::Point::isEmpty() const {
+    if (!isValid() || (x() == 0.0 && y() == 0.0 && z() == 0.0
+            && residual() < 0))
         return true;
     else {
         return false;

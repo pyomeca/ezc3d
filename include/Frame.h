@@ -123,7 +123,7 @@ public:
     /// \brief Return if the frame is empty
     /// \return if the frame is empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 
 };
 
