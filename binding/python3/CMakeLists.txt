@@ -12,7 +12,6 @@ if(WIN32)
 endif()
 # For some reasons, target_include_directories later in the file sometime fails
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include
     ${EZC3D_BINARY_DIR}/include
 )
 
@@ -25,19 +24,15 @@ SWIG_ADD_LIBRARY(${PROJECT_NAME} TYPE MODULE LANGUAGE python SOURCES ${I_SOURCE_
 swig_link_libraries(${PROJECT_NAME} ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_LIBRARIES})
 
 # Add headers
-target_include_directories(_${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-    ${EZC3D_BINARY_DIR}/include
-)
 set_target_properties(_${PROJECT_NAME} PROPERTIES SWIG_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 if(APPLE)
-    SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES SUFFIX ".so" INSTALL_RPATH ${${PROJECT_NAME}_BIN_FOLDER})
+    set_target_properties(_${PROJECT_NAME} PROPERTIES SUFFIX ".so")
     set_property(TARGET _${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS "-flat_namespace -undefined suppress")
-else()
-    SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES INSTALL_RPATH ${${PROJECT_NAME}_BIN_FOLDER})
 endif()
-SET_TARGET_PROPERTIES(_${PROJECT_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+set_target_properties(_${PROJECT_NAME} PROPERTIES
+        INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${${PROJECT_NAME}_BIN_FOLDER}")
+set_target_properties(_${PROJECT_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Install to the proper directories
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.py 

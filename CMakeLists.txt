@@ -45,13 +45,20 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 # Create the configuration header file associated with the asked options
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in
+        ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h)
 
 # Add headers
-target_include_directories(${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${EZC3D_BINARY_DIR}/include
-)
+# Include directories when building the library:
+target_include_directories(${PROJECT_NAME} PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${EZC3D_BINARY_DIR}/include"
+        )
+# Include directories when other targets in this project use this library:
+target_include_directories(${PROJECT_NAME} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${EZC3D_BINARY_DIR}/include>
+        )
 
 # Install target
 if(WIN32)
@@ -59,25 +66,34 @@ if(WIN32)
     set(${PROJECT_NAME}_BIN_FOLDER bin)
     set(${PROJECT_NAME}_INCLUDE_FOLDER include/${PROJECT_NAME})
 else()
-    set(${PROJECT_NAME}_LIB_FOLDER ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME})
-    set(${PROJECT_NAME}_BIN_FOLDER ${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME})
-    set(${PROJECT_NAME}_INCLUDE_FOLDER ${CMAKE_INSTALL_PREFIX}/include/${PROJECT_NAME})
+    set(${PROJECT_NAME}_LIB_FOLDER lib/${PROJECT_NAME})
+    set(${PROJECT_NAME}_BIN_FOLDER lib/${PROJECT_NAME})
+    set(${PROJECT_NAME}_INCLUDE_FOLDER include/${PROJECT_NAME})
 endif()
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME} EXPORT ezc3dTargets
         ARCHIVE DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}
         RUNTIME DESTINATION ${${PROJECT_NAME}_BIN_FOLDER}
         LIBRARY DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}
         )
-install(DIRECTORY include/ DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
-install(FILES ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER})
+install(DIRECTORY include/ DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER}
+        # Exclude ezc3dConfig.h.in.
+        PATTERN "*.h.in" EXCLUDE)
+# Include directories when a client uses the library from an installed ezc3d:
+target_include_directories(${PROJECT_NAME} INTERFACE
+        $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}>)
+install(FILES "${EZC3D_BINARY_DIR}/include/ezc3dConfig.h"
+        DESTINATION "${${PROJECT_NAME}_INCLUDE_FOLDER}")
 
 # Prepare share
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
   share/${PROJECT_NAME}Config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-  INSTALL_DESTINATION ${PROJECT_NAME}_LIB_FOLDER/cmake
+  INSTALL_DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}/cmake
+  PATH_VARS
+        CMAKE_INSTALL_PREFIX
 )
+install(EXPORT ezc3dTargets DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}/cmake)
 install(FILES 
   ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
   DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}/cmake

@@ -15,6 +15,8 @@ foreach(SUFFIXES Read Write)
     # Add project
     add_library(${PROJECT_NAME}_${SUFFIXES} SHARED ${CPP_FILE_${SUFFIXES}} ${CMAKE_CURRENT_SOURCE_DIR}/Matlabdef.def)
 
+    target_link_libraries(${PROJECT_NAME}_${SUFFIXES} ezc3d)
+
     # Reset the name of the output
 	if(WIN32)
 		SET_TARGET_PROPERTIES(${PROJECT_NAME}_${SUFFIXES} PROPERTIES OUTPUT_NAME ${MASTER_PROJECT_NAME}${SUFFIXES})
@@ -25,8 +27,6 @@ foreach(SUFFIXES Read Write)
     # Add headers
     target_include_directories(${PROJECT_NAME}_${SUFFIXES} PUBLIC
         ${Matlab_INCLUDE_DIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CUREENT_SOURCE_DIR}/../../include
         ${EZC3D_BINARY_DIR}/include
     )
 
