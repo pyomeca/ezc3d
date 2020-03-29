@@ -94,6 +94,12 @@ ezc3d::Modules::ForcePlatform::corners() const
     return _corners;
 }
 
+const ezc3d::Vector3d&
+ezc3d::Modules::ForcePlatform::meanCorners() const
+{
+    return _meanCorners;
+}
+
 const ezc3d::Vector3d& ezc3d::Modules::ForcePlatform::origin() const
 {
     return _origin;

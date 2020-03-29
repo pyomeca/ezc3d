@@ -100,6 +100,12 @@ public:
     const std::vector<ezc3d::Vector3d>& corners() const;
 
     ///
+    /// \brief Returns the geometrical center of the force platform
+    /// \return The geometrical center of the force platform
+    ///
+    const ezc3d::Vector3d& meanCorners() const;
+
+    ///
     /// \brief Returns the origin of the force platform
     /// \return The origin of the force platform
     ///

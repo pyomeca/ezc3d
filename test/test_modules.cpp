@@ -87,6 +87,11 @@ TEST(ForcePlatForm, AMTI){
     EXPECT_FLOAT_EQ(corners[3].y(), 464.0);
     EXPECT_FLOAT_EQ(corners[3].z(), 0.0);
 
+    const auto& meanCorners(pf.forcePlatform(1).meanCorners());
+    EXPECT_FLOAT_EQ(meanCorners.x(), 763.0);
+    EXPECT_FLOAT_EQ(meanCorners.y(), 232.0);
+    EXPECT_FLOAT_EQ(meanCorners.z(), 0.0);
+
     const auto& origin(pf.forcePlatform(1).origin());
     EXPECT_FLOAT_EQ(origin.x(), 1.016);
     EXPECT_FLOAT_EQ(origin.y(), 0);
