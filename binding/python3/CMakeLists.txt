@@ -12,7 +12,6 @@ if(WIN32)
 endif()
 # For some reasons, target_include_directories later in the file sometime fails
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include
     ${EZC3D_BINARY_DIR}/include
 )
 
@@ -25,10 +24,6 @@ SWIG_ADD_LIBRARY(${PROJECT_NAME} TYPE MODULE LANGUAGE python SOURCES ${I_SOURCE_
 swig_link_libraries(${PROJECT_NAME} ${PROJECT_NAME} ${PYTHON_LIBRARIES} ${NUMPY_LIBRARIES})
 
 # Add headers
-target_include_directories(_${PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../include
-    ${EZC3D_BINARY_DIR}/include
-)
 set_target_properties(_${PROJECT_NAME} PROPERTIES SWIG_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 
 if(APPLE)

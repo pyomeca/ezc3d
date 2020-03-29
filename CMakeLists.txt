@@ -54,6 +54,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "${EZC3D_BINARY_DIR}/include"
         )
+# Include directories when other targets in this project use this library:
+target_include_directories(${PROJECT_NAME} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${EZC3D_BINARY_DIR}/include>
+        )
 
 # Install target
 if(WIN32)

@@ -50,7 +50,7 @@ namespace std {
     }
 }
 
-// Includes all neceressary files from the API
+// Includes all necessary files from the API
 %include "ezc3dConfig.h"
 %include "ezc3d.h"
 %include "Matrix.h"
