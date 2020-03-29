@@ -15,6 +15,9 @@ TEST(ForcePlatForm, AMTI){
     EXPECT_EQ(pf.forcePlatforms().size(), 2);
     EXPECT_THROW(pf.forcePlatform(2), std::out_of_range);
 
+    EXPECT_EQ(pf.forcePlatform(0).type(), 2);
+    EXPECT_EQ(pf.forcePlatform(1).type(), 2);
+
     const std::vector<ezc3d::Vector3d>& forces(pf.forcePlatform(0).forces());
     const std::vector<ezc3d::Vector3d>& moments(pf.forcePlatform(0).moments());
     const std::vector<ezc3d::Vector3d>& cop(pf.forcePlatform(0).CoP());

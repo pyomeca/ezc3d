@@ -24,6 +24,11 @@ ezc3d::Modules::ForcePlatform::ForcePlatform(
     extractData(idx, c3d);
 }
 
+size_t ezc3d::Modules::ForcePlatform::type() const
+{
+    return _type;
+}
+
 const ezc3d::Matrix& ezc3d::Modules::ForcePlatform::calMatrix() const
 {
     return _calMatrix;

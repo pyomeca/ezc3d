@@ -41,6 +41,12 @@ protected:
 
 public:
     ///
+    /// \brief Returns the type of the force platform
+    /// \return The type of the force platform
+    ///
+    size_t type() const;
+
+    ///
     /// \brief Returns the calibration matrix
     /// \return The calibration matrix
     ///
