@@ -26,6 +26,41 @@ public:
             size_t idx,
             const ezc3d::c3d& c3d);
 
+    //---- UNITS ----//
+protected:
+    std::string _unitsForce; ///< Units for the forces
+    std::string _unitsMoment; ///< Units for the moments
+    std::string _unitsPosition; ///< Units for the positions
+
+public:
+    ///
+    /// \brief Return the units for the forces
+    /// \return
+    ///
+    const std::string& forceUnit() const;
+
+    ///
+    /// \brief Return the units for the moments
+    /// \return
+    ///
+    const std::string& momentUnit() const;
+
+    ///
+    /// \brief Return the units for the center of pressure, corners, origin
+    /// \return
+    ///
+    const std::string& positionUnit() const;
+
+protected:
+    ///
+    /// \brief Extract the units for the platform
+    /// \param idx Index of the platform
+    /// \param c3d A reference to the c3d
+    ///
+    void extractUnits(
+            size_t idx,
+            const ezc3d::c3d &c3d);
+
     //---- DATA ----//
 protected:
     size_t _type;  ///< The type of force platform (see C3D documentation)
@@ -88,7 +123,7 @@ public:
     ///
     const std::vector<ezc3d::Vector3d>& Tz() const;
 
-private:
+protected:
     ///
     /// \brief Extract the force platform's type from the parameters
     /// \param idx Index of the platform

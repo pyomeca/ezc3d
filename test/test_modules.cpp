@@ -15,9 +15,19 @@ TEST(ForcePlatForm, AMTI){
     EXPECT_EQ(pf.forcePlatforms().size(), 2);
     EXPECT_THROW(pf.forcePlatform(2), std::out_of_range);
 
+    // Type
     EXPECT_EQ(pf.forcePlatform(0).type(), 2);
     EXPECT_EQ(pf.forcePlatform(1).type(), 2);
 
+    // Units
+    EXPECT_STREQ(pf.forcePlatform(0).forceUnit().c_str(), "N");
+    EXPECT_STREQ(pf.forcePlatform(0).momentUnit().c_str(), "Nmm");
+    EXPECT_STREQ(pf.forcePlatform(0).positionUnit().c_str(), "mm");
+    EXPECT_STREQ(pf.forcePlatform(1).forceUnit().c_str(), "N");
+    EXPECT_STREQ(pf.forcePlatform(1).momentUnit().c_str(), "Nmm");
+    EXPECT_STREQ(pf.forcePlatform(1).positionUnit().c_str(), "mm");
+
+    // Values
     const std::vector<ezc3d::Vector3d>& forces(pf.forcePlatform(0).forces());
     const std::vector<ezc3d::Vector3d>& moments(pf.forcePlatform(0).moments());
     const std::vector<ezc3d::Vector3d>& cop(pf.forcePlatform(0).CoP());

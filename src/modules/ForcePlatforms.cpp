@@ -16,12 +16,61 @@ ezc3d::Modules::ForcePlatform::ForcePlatform(
         const ezc3d::c3d& c3d)
 {
     // Extract the required values from the C3D
+    extractUnits(idx, c3d);
     extractType(idx, c3d);
     extractCorners(idx, c3d);
     extractOrigin(idx, c3d);
     extractCalMatrix(idx, c3d);
     computePfReferenceFrame();
     extractData(idx, c3d);
+}
+
+const std::string& ezc3d::Modules::ForcePlatform::forceUnit() const
+{
+    return _unitsForce;
+}
+
+const std::string& ezc3d::Modules::ForcePlatform::momentUnit() const
+{
+    return _unitsMoment;
+}
+
+const std::string& ezc3d::Modules::ForcePlatform::positionUnit() const
+{
+    return _unitsPosition;
+}
+
+void ezc3d::Modules::ForcePlatform::extractUnits(
+        size_t idx,
+        const ezc3d::c3d &c3d)
+{
+    const ezc3d::ParametersNS::GroupNS::Group &groupPoint(
+                c3d.parameters().group("POINT"));
+    const ezc3d::ParametersNS::GroupNS::Group &groupPF(
+                c3d.parameters().group("FORCE_PLATFORM"));
+
+    // Position units
+    if (groupPoint.isParameter("UNITS")
+            && groupPoint.parameter("UNITS").dimension()[0] > 0){
+        _unitsPosition = groupPoint.parameter("UNITS").valuesAsString()[0];
+    }
+    else {
+        // Assume meter if not provided
+        _unitsPosition = "m";
+    }
+
+    // Force units
+    if (groupPF.isParameter("UNITS")
+            && groupPF.parameter("UNITS").dimension()[0] > 0){
+        _unitsForce = groupPF.parameter("UNITS").valuesAsString()[0];
+    }
+    else {
+        // Assume Newton if not provided
+        _unitsForce = "N";
+    }
+
+    // Moments units
+    _unitsMoment = _unitsForce + _unitsPosition;
 }
 
 size_t ezc3d::Modules::ForcePlatform::type() const
