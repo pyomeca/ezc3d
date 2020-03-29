@@ -73,6 +73,11 @@ void ezc3d::Modules::ForcePlatform::extractUnits(
     _unitsMoment = _unitsForce + _unitsPosition;
 }
 
+size_t ezc3d::Modules::ForcePlatform::nbFrames() const
+{
+    return _F.size();
+}
+
 size_t ezc3d::Modules::ForcePlatform::type() const
 {
     return _type;

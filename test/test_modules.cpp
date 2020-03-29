@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "modules/ForcePlatforms.h"
+#include "Header.h"
 
 TEST(ForcePlatForm, NoPlatForm){
     ezc3d::c3d c3d("c3dTestFiles/Vicon.c3d");
@@ -14,6 +15,12 @@ TEST(ForcePlatForm, AMTI){
     ezc3d::Modules::ForcePlatforms pf(c3d);
     EXPECT_EQ(pf.forcePlatforms().size(), 2);
     EXPECT_THROW(pf.forcePlatform(2), std::out_of_range);
+
+    // Frames
+    EXPECT_EQ(pf.forcePlatform(0).nbFrames(),
+              c3d.header().nbFrames() * c3d.header().nbAnalogByFrame());
+    EXPECT_EQ(pf.forcePlatform(1).nbFrames(),
+              c3d.header().nbFrames() * c3d.header().nbAnalogByFrame());
 
     // Type
     EXPECT_EQ(pf.forcePlatform(0).type(), 2);

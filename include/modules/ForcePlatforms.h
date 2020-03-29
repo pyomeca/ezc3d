@@ -76,6 +76,12 @@ protected:
 
 public:
     ///
+    /// \brief Returns the number of frame recorded
+    /// \return The number of frame recorded
+    ///
+    size_t nbFrames() const;
+
+    ///
     /// \brief Returns the type of the force platform
     /// \return The type of the force platform
     ///
