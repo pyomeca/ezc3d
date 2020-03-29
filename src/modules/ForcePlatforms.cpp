@@ -30,6 +30,12 @@ const ezc3d::Matrix &ezc3d::Modules::ForcePlatform::calMatrix() const
 }
 
 const std::vector<ezc3d::Vector3d>&
+ezc3d::Modules::ForcePlatform::corners() const
+{
+    return _corners;
+}
+
+const std::vector<ezc3d::Vector3d>&
 ezc3d::Modules::ForcePlatform::forces() const
 {
     return _F;

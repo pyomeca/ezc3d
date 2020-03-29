@@ -45,5 +45,23 @@ TEST(ForcePlatForm, AMTI){
             }
         }
     }
-    EXPECT_THROW(pf.forcePlatform(2), std::out_of_range);
+
+    // CORNERS
+    const auto& corners(pf.forcePlatform(1).corners());
+    EXPECT_EQ(corners.size(), 4);
+    EXPECT_FLOAT_EQ(corners[0].x(), 1017.0);
+    EXPECT_FLOAT_EQ(corners[0].y(), 464.0);
+    EXPECT_FLOAT_EQ(corners[0].z(), 0.0);
+
+    EXPECT_FLOAT_EQ(corners[1].x(), 1017.0);
+    EXPECT_FLOAT_EQ(corners[1].y(), 0.0);
+    EXPECT_FLOAT_EQ(corners[1].z(), 0.0);
+
+    EXPECT_FLOAT_EQ(corners[2].x(), 509.0);
+    EXPECT_FLOAT_EQ(corners[2].y(), 0.0);
+    EXPECT_FLOAT_EQ(corners[2].z(), 0.0);
+
+    EXPECT_FLOAT_EQ(corners[3].x(), 509.0);
+    EXPECT_FLOAT_EQ(corners[3].y(), 464.0);
+    EXPECT_FLOAT_EQ(corners[3].z(), 0.0);
 }

@@ -47,6 +47,12 @@ public:
     const ezc3d::Matrix& calMatrix() const;
 
     ///
+    /// \brief Returns the corners of the force platform
+    /// \return The corners of the force platform
+    ///
+    const std::vector<ezc3d::Vector3d>& corners() const;
+
+    ///
     /// \brief Returns the force vectors at each frame in the global reference frame
     /// \return The force vectors at each frame in the global reference frame
     ///
