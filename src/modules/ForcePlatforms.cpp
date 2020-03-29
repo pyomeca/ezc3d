@@ -190,18 +190,33 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
     }
     _calMatrix = ezc3d::Matrix(nChannels, nChannels);
 
-    if (_type == 2 && !groupPF.isParameter("CAL_MATRIX")){
-        // CAL_MATRIX is ignore for type 2
-        // If none is found, returns all zeros
-        return;
+    if (!groupPF.isParameter("CAL_MATRIX")){
+        if (_type == 2){
+            // CAL_MATRIX is ignore for type 2
+            // If none is found, returns all zeros
+            return;
+        }
+        else {
+            throw std::runtime_error(
+                        "FORCE_PLATFORM:CAL_MATRIX was not found, but is "
+                        "required for the type of force platform");
+        }
     }
 
     // Check dimensions
     const auto& calMatrixParam(groupPF.parameter("CAL_MATRIX"));
     if (calMatrixParam.dimension().size() < 3
             || calMatrixParam.dimension()[2] <= idx){
-        throw std::runtime_error("FORCE_PLATFORM:CAL_MATRIX is not fill properly "
-                                 "to extract Force platform informations");
+        if (_type == 2){
+            // CAL_MATRIX is ignore for type 2
+            // If none is found, returns all zeros
+            return;
+        }
+        else {
+            throw std::runtime_error(
+                        "FORCE_PLATFORM:CAL_MATRIX is not fill properly "
+                        "to extract Force platform informations");
+        }
     }
 
     const auto& val(calMatrixParam.valuesAsDouble());
