@@ -53,6 +53,12 @@ public:
     const std::vector<ezc3d::Vector3d>& corners() const;
 
     ///
+    /// \brief Returns the origin of the force platform
+    /// \return The origin of the force platform
+    ///
+    const ezc3d::Vector3d& origin() const;
+
+    ///
     /// \brief Returns the force vectors at each frame in the global reference frame
     /// \return The force vectors at each frame in the global reference frame
     ///

@@ -24,7 +24,7 @@ ezc3d::Modules::ForcePlatform::ForcePlatform(
     extractData(idx, c3d);
 }
 
-const ezc3d::Matrix &ezc3d::Modules::ForcePlatform::calMatrix() const
+const ezc3d::Matrix& ezc3d::Modules::ForcePlatform::calMatrix() const
 {
     return _calMatrix;
 }
@@ -33,6 +33,11 @@ const std::vector<ezc3d::Vector3d>&
 ezc3d::Modules::ForcePlatform::corners() const
 {
     return _corners;
+}
+
+const ezc3d::Vector3d& ezc3d::Modules::ForcePlatform::origin() const
+{
+    return _origin;
 }
 
 const std::vector<ezc3d::Vector3d>&
