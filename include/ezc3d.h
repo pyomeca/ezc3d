@@ -97,6 +97,8 @@ namespace ezc3d {
 
     // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
     class c3d;
+    class EZC3D_API Vector3d;
+    class EZC3D_API Matrix;
     class EZC3D_API Header;
 
     ///
@@ -136,6 +138,14 @@ namespace ezc3d {
             class EZC3D_API SubFrame;
             class EZC3D_API Channel;
         }
+    }
+
+    ///
+    /// \brief Namespace for all the analysis modules
+    ///
+    namespace Modules {
+        class EZC3D_API ForcePlatform;
+        class EZC3D_API ForcePlatforms;
     }
 }
 
@@ -300,12 +310,13 @@ public:
     /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(PROCESSOR_TYPE processorType,
-                   std::fstream &file,
-                   unsigned int dataLenghtInBytes,
-                   const std::vector<size_t> &dimension,
-                   std::vector<int> &param_data,
-                   size_t currentIdx = 0);
+    void readParam(
+            PROCESSOR_TYPE processorType,
+            std::fstream &file,
+            unsigned int dataLenghtInBytes,
+            const std::vector<size_t> &dimension,
+            std::vector<int> &param_data,
+            size_t currentIdx = 0);
 
     ///
     /// \brief Read a matrix of float parameters of dimensions dimension
@@ -315,11 +326,12 @@ public:
     /// \param param_data The output of the function
     /// \param currentIdx Internal tracker of where the function is in the flow of the recursive calls
     ///
-    void readParam(PROCESSOR_TYPE processorType,
-                   std::fstream &file,
-                   const std::vector<size_t> &dimension,
-                   std::vector<float> &param_data,
-                   size_t currentIdx = 0);
+    void readParam(
+            PROCESSOR_TYPE processorType,
+            std::fstream &file,
+            const std::vector<size_t> &dimension,
+            std::vector<double> &param_data,
+            size_t currentIdx = 0);
 
     ///
     /// \brief Read a matrix of string of dimensions dimension with the first dimension being the length of the strings
@@ -327,9 +339,10 @@ public:
     /// \param dimension The dimensions of the matrix up to 7-dimensions. The first dimension is the length of the strings
     /// \param param_data The output of the function
     ///
-    void readParam(std::fstream &file,
-                   const std::vector<size_t> &dimension,
-                   std::vector<std::string> &param_data);
+    void readParam(
+            std::fstream &file,
+            const std::vector<size_t> &dimension,
+            std::vector<std::string> &param_data);
 
 protected:
     ///
@@ -341,11 +354,12 @@ protected:
     /// \param currentIdx Internal counter to keep track where the function is in its recursive calls
     /// \return
     ///
-    size_t _dispatchMatrix(const std::vector<size_t> &dimension,
-                         const std::vector<std::string> &param_data_in,
-                         std::vector<std::string> &param_data_out,
-                         size_t idxInParam = 0,
-                         size_t currentIdx = 1);
+    size_t _dispatchMatrix(
+            const std::vector<size_t> &dimension,
+            const std::vector<std::string> &param_data_in,
+            std::vector<std::string> &param_data_out,
+            size_t idxInParam = 0,
+            size_t currentIdx = 1);
 
     ///
     /// \brief Internal function to read a string array to a matrix of strings
@@ -354,10 +368,11 @@ protected:
     /// \param param_data The output matrix of strings
     /// \param currentIdx Internal counter to keep track where the function is in its recursive calls
     ///
-    void _readMatrix(std::fstream &file,
-                     const std::vector<size_t> &dimension,
-                     std::vector<std::string> &param_data,
-                     size_t currentIdx = 0);
+    void _readMatrix(
+            std::fstream &file,
+            const std::vector<size_t> &dimension,
+            std::vector<std::string> &param_data,
+            size_t currentIdx = 0);
 
 
     // ---- C3D MAIN STRUCTURE ---- //
@@ -402,7 +417,8 @@ public:
     ///
     /// Throw a std::invalid_argument if pointName is not found
     ///
-    size_t pointIdx(const std::string& pointName) const;
+    size_t pointIdx(
+            const std::string& pointName) const;
 
     ///
     /// \brief Get a reference to the names of the analog channels
@@ -419,7 +435,8 @@ public:
     ///
     /// Throw a std::invalid_argument if channelName is not found
     ///
-    size_t channelIdx(const std::string& channelName) const;
+    size_t channelIdx(
+            const std::string& channelName) const;
 
 
     // ---- PUBLIC C3D MODIFICATION INTERFACE ---- //

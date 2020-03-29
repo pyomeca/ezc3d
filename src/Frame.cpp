@@ -24,7 +24,7 @@ void ezc3d::DataNS::Frame::print() const {
 void ezc3d::DataNS::Frame::write(
         std::fstream &f,
         float pointScaleFactor,
-        std::vector<float> analogScaleFactors) const {
+        std::vector<double> analogScaleFactors) const {
     points().write(f, pointScaleFactor);
     analogs().write(f, analogScaleFactors);
 }
@@ -69,6 +69,6 @@ void ezc3d::DataNS::Frame::add(
     add(analog_frame);
 }
 
-bool ezc3d::DataNS::Frame::isempty() const {
-    return points().isempty() && analogs().isempty();
+bool ezc3d::DataNS::Frame::isEmpty() const {
+    return points().isEmpty() && analogs().isEmpty();
 }

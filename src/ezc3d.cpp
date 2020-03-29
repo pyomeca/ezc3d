@@ -136,18 +136,18 @@ void ezc3d::c3d::write(
     writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
 
     // Write the data
-    float pointScaleFactor;
-    std::vector<float> pointAnalogFactors;
-    if (params.group("POINT").parameter("SCALE").valuesAsFloat().size() ){
+    double pointScaleFactor;
+    std::vector<double> pointAnalogFactors;
+    if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
         pointScaleFactor =
-                params.group("POINT").parameter("SCALE").valuesAsFloat()[0];
+                params.group("POINT").parameter("SCALE").valuesAsDouble()[0];
     }
     else {
         pointScaleFactor = header().scaleFactor();
     }
-    if (params.group("ANALOG").parameter("SCALE").valuesAsFloat().size() > 0) {
+    if (params.group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
         pointAnalogFactors =
-                params.group("ANALOG").parameter("SCALE").valuesAsFloat();
+                params.group("ANALOG").parameter("SCALE").valuesAsDouble();
     }
     else {
         pointAnalogFactors.push_back(header().scaleFactor());
@@ -346,7 +346,7 @@ void ezc3d::c3d::readParam(
         PROCESSOR_TYPE processorType,
         std::fstream &file,
         const std::vector<size_t> &dimension,
-        std::vector<float> &param_data, size_t currentIdx) {
+        std::vector<double> &param_data, size_t currentIdx) {
     for (size_t i = 0; i < dimension[currentIdx]; ++i)
         if (currentIdx == dimension.size()-1)
             param_data.push_back (readFloat(processorType, file));
@@ -531,18 +531,14 @@ void ezc3d::c3d::frame(
         }
 
     if (f.points().nbPoints() > 0
-            && static_cast<double>(parameters()
-                                   .group("POINT")
-                                   .parameter("RATE")
-                                   .valuesAsFloat()[0]) == 0.0) {
+            && parameters().group("POINT")
+            .parameter("RATE").valuesAsDouble()[0] == 0.0) {
         throw std::runtime_error(
                     "Point frame rate must be specified if you add some");
     }
     if (f.analogs().nbSubframes() > 0
-            && static_cast<double>(parameters()
-                                   .group("ANALOG")
-                                   .parameter("RATE")
-                                   .valuesAsFloat()[0]) == 0.0) {
+            && parameters().group("ANALOG")
+            .parameter("RATE").valuesAsDouble()[0] == 0.0) {
         throw std::runtime_error(
                     "Analog frame rate must be specified if you add some");
     }
@@ -688,18 +684,14 @@ void ezc3d::c3d::updateHeader() {
                                         .valuesAsInt()[0])
                 + _header->firstFrame() - 1);
     }
-    float pointRate(parameters()
-                    .group("POINT")
-                    .parameter("RATE").valuesAsFloat()[0]);
+    double pointRate(parameters().group("POINT")
+                     .parameter("RATE").valuesAsDouble()[0]);
     float buffer(10000); // For decimal truncature
     if (static_cast<int>(pointRate*buffer) != static_cast<int>(
                 header().frameRate()*buffer)){
         // If there are points but the rate don't match keep the one from header
-        if (static_cast<double>(parameters()
-                                .group("POINT").parameter("RATE")
-                                .valuesAsFloat()[0])
-                == 0.0 && parameters()
-                .group("POINT")
+        if (parameters().group("POINT").parameter("RATE").valuesAsDouble()[0]
+                == 0.0 && parameters().group("POINT")
                 .parameter("USED").valuesAsInt()[0] != 0){
             ezc3d::ParametersNS::GroupNS::Parameter rate("RATE");
             rate.set(header().frameRate());
@@ -730,13 +722,13 @@ void ezc3d::c3d::updateHeader() {
         } else {
             if (static_cast<size_t>(parameters()
                                     .group("ANALOG").parameter("RATE")
-                                    .valuesAsFloat()[0] / pointRate)
+                                    .valuesAsDouble()[0] / pointRate)
                     != static_cast<size_t>(header().nbAnalogByFrame()))
                 _header->nbAnalogByFrame(
                             static_cast<size_t>(
                                 parameters()
                                 .group("ANALOG").parameter("RATE")
-                                .valuesAsFloat()[0] / pointRate));
+                                .valuesAsDouble()[0] / pointRate));
         }
     }
 
@@ -862,11 +854,11 @@ void ezc3d::c3d::updateParameters(
             grpAnalog.parameter(idxDescriptions).set(descriptions);
 
             size_t idxScale(grpAnalog.parameterIdx("SCALE"));
-            std::vector<float> scales(grpAnalog.parameter(
-                                          idxScale).valuesAsFloat());
-            for (size_t i = grpAnalog.parameter(
-                     idxScale).valuesAsFloat().size(); i < nAnalogs; ++i)
-                scales.push_back(1);
+            std::vector<double> scales(grpAnalog.parameter(
+                                          idxScale).valuesAsDouble());
+            for (size_t i = grpAnalog.parameter(idxScale)
+                            .valuesAsDouble().size(); i < nAnalogs; ++i)
+                scales.push_back(1.);
             grpAnalog.parameter(idxScale).set(scales);
 
             size_t idxOffset(grpAnalog.parameterIdx("OFFSET"));

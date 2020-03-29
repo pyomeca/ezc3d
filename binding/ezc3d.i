@@ -1,7 +1,8 @@
 // File : ezc3d.i
 %module ezc3d
 %{
-#include "ezc3d.h"
+#include "ezc3d_all.h"
+#include "modules/ForcePlatforms.h"
 %}
 
 // Instantiate from standard library
@@ -16,6 +17,7 @@ namespace std {
     %template(VecInt) vector<int>;
     %template(VecUInt) vector<size_t>;
     %template(VecFloat) vector<float>;
+    %template(VecDouble) vector<double>;
     %template(VecString) vector<std::string>;
 
     %template(VecGroups) vector<ezc3d::ParametersNS::GroupNS::Group>;
@@ -48,16 +50,11 @@ namespace std {
     }
 }
 
-%extend ezc3d::DataNS::Points3dNS::Point{
-    void x(double value){self->x(static_cast<float>(value));}
-    void y(double value){self->y(static_cast<float>(value));}
-    void z(double value){self->z(static_cast<float>(value));}
-    void residual(double value){self->residual(static_cast<float>(value));}
-}
-
 // Includes all neceressary files from the API
 %include "ezc3dConfig.h"
 %include "ezc3d.h"
+%include "Matrix.h"
+%include "Vector3d.h"
 %include "Header.h"
 %include "Parameters.h"
 %include "Group.h"
@@ -70,3 +67,4 @@ namespace std {
 %include "Subframe.h"
 %include "Channel.h"
 
+%include "modules/ForcePlatforms.h"

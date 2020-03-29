@@ -39,8 +39,9 @@ public:
     ///
     /// Write the subframe to a file by calling sequentially the write method of all of the analog channels
     ///
-    void write(std::fstream &f,
-            std::vector<float> scaleFactors) const;
+    void write(
+            std::fstream &f,
+            std::vector<double> scaleFactors) const;
 
 
     //---- CHANNELS ----//
@@ -111,7 +112,7 @@ public:
     /// \brief Return if the subframe is empty
     /// \return if the subframe is empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 #endif

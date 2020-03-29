@@ -181,11 +181,11 @@ class c3d(C3dMapper):
             param['description'] = param_ezc3d.description()
             param['is_locked'] = param_ezc3d.isLocked()
             if param_ezc3d.type() == ezc3d.BYTE:
-                value = np.array(param_ezc3d.valuesAsByte(), dtype='int').reshape(param_ezc3d.dimension())
+                value = np.array(param_ezc3d.valuesAsByte(), dtype='int').reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.INT:
-                value = np.array(param_ezc3d.valuesAsInt(), dtype='int').reshape(param_ezc3d.dimension())
+                value = np.array(param_ezc3d.valuesAsInt(), dtype='int').reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.FLOAT:
-                value = np.array(param_ezc3d.valuesAsFloat()).reshape(param_ezc3d.dimension())
+                value = np.array(param_ezc3d.valuesAsDouble()).reshape(param_ezc3d.dimension(), order='F')
             elif param_ezc3d.type() == ezc3d.CHAR:
                 table = param_ezc3d.valuesAsString()
                 value = []
@@ -346,16 +346,16 @@ class c3d(C3dMapper):
                     # Copy data
                     if old_param["type"] == ezc3d.BYTE or old_param["type"] == ezc3d.INT:
                         if isinstance(old_param["value"], np.ndarray):
-                            new_param.set(ezc3d.VecInt([int(x) for x in old_param["value"].ravel()]),
-                                          old_param["value"].shape)
+                            new_param.set(ezc3d.VecInt(
+                                [int(x) for x in old_param["value"].T.ravel()]), old_param["value"].shape)
                         else:
                             new_param.set(ezc3d.VecInt(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.FLOAT:
                         if isinstance(old_param["value"], np.ndarray):
-                            new_param.set(ezc3d.VecFloat(old_param["value"].ravel().astype('float')),
-                                          old_param["value"].shape)
+                            new_param.set(ezc3d.VecDouble(
+                                old_param["value"].T.ravel().astype('float')), old_param["value"].shape)
                         else:
-                            new_param.set(ezc3d.VecFloat(old_param["value"]), dim)
+                            new_param.set(ezc3d.VecDouble(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.CHAR:
                         new_param.set(ezc3d.VecString(old_param["value"]), dim)
                     else:

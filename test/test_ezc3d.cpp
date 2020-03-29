@@ -64,7 +64,8 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
     c3dStruc.pointFrameRate = 100;
     if (withPoints){
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
-        pointRate.set(std::vector<float>()={c3dStruc.pointFrameRate});
+        pointRate.set(std::vector<double>()={
+                static_cast<double>(c3dStruc.pointFrameRate)});
         c3dStruc.c3d.parameter("POINT", pointRate);
     }
     if (withAnalogs){
@@ -72,7 +73,8 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
         c3dStruc.nSubframes = c3dStruc.analogFrameRate / c3dStruc.pointFrameRate;
 
         ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
-        analogRate.set(std::vector<float>()={c3dStruc.analogFrameRate});
+        analogRate.set(std::vector<double>()={
+                static_cast<double>(c3dStruc.analogFrameRate)});
         c3dStruc.c3d.parameter("ANALOG", analogRate);
     }
     for (size_t f = 0; f < c3dStruc.nFrames; ++f){
@@ -83,9 +85,9 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
             for (size_t m = 0; m < c3dStruc.nPoints; ++m){
                 ezc3d::DataNS::Points3dNS::Point pt;
                 // Generate some random data
-                pt.x(static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-                pt.y(static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-                pt.z(static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+                pt.x(static_cast<double>(2*f+3*m+1) / static_cast<double>(7.0));
+                pt.y(static_cast<double>(2*f+3*m+2) / static_cast<double>(7.0));
+                pt.z(static_cast<double>(2*f+3*m+3) / static_cast<double>(7.0));
                 pts.point(pt);
             }
         }
@@ -240,11 +242,11 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 0);
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-        EXPECT_FLOAT_EQ(new_c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+        EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+        EXPECT_FLOAT_EQ(new_c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -1);
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-        EXPECT_FLOAT_EQ(new_c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 0);
+        EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+        EXPECT_FLOAT_EQ(new_c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 0);
         // EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 0); // ignore because it changes if analog is present
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
         EXPECT_EQ(new_c3d.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
@@ -262,17 +264,17 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 0);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-        EXPECT_FLOAT_EQ(new_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 0);
+        EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+        EXPECT_FLOAT_EQ(new_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("FORMAT").type(), ezc3d::CHAR);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("FORMAT").valuesAsString().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("ANALOG").parameter("BITS").type(), ezc3d::INT);
@@ -288,16 +290,19 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 1);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 0);
+        EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsDouble().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 0);
+        EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsDouble().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 0);
         EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CAL_MATRIX").type(), ezc3d::FLOAT);
-        EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CAL_MATRIX").valuesAsFloat().size(), 0);
+        EXPECT_EQ(new_c3d.parameters().group("FORCE_PLATFORM").parameter("CAL_MATRIX").valuesAsDouble().size(), 0);
     }
 }
 
+TEST(String, unittest){
+    EXPECT_STREQ(ezc3d::toUpper("toUpper").c_str(), "TOUPPER");
+}
 
 TEST(initialize, newC3D){
     // Create an empty c3d and load a new one
@@ -400,6 +405,9 @@ TEST(c3dModifier, specificParameters){
 
     // Get an erroneous group
     EXPECT_THROW(new_c3d.c3d.parameters().group("ThisIsNotARealGroup"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.parameters().group(3), std::out_of_range);
+    const auto& allGroups(new_c3d.c3d.parameters().groups());
+    EXPECT_EQ(allGroups.size(), 3);
 
     // Lock and unlock a group
     EXPECT_THROW(new_c3d.c3d.lockGroup("ThisIsNotARealGroup"), std::invalid_argument);
@@ -432,10 +440,14 @@ TEST(c3dModifier, specificParameters){
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(nPointParams), std::out_of_range);
     EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameterIdx("ThisIsNotARealParameter"), std::invalid_argument);
 
+    // Get all the parameters
+    const auto& params(new_c3d.c3d.parameters().group("ThisIsANewRealGroup").parameters());
+    EXPECT_EQ(params.size(), 1);
+
     // Reading an empty parameter is actually type irrelevant
     EXPECT_NO_THROW(p.valuesAsByte());
     EXPECT_NO_THROW(p.valuesAsInt());
-    EXPECT_NO_THROW(p.valuesAsFloat());
+    EXPECT_NO_THROW(p.valuesAsDouble());
     EXPECT_NO_THROW(p.valuesAsString());
 
     {
@@ -447,15 +459,15 @@ TEST(c3dModifier, specificParameters){
         pNonEmptyInt.set(std::vector<int>(1));
         EXPECT_THROW(pNonEmptyInt.valuesAsByte(), std::invalid_argument);
         EXPECT_NO_THROW(pNonEmptyInt.valuesAsInt());
-        EXPECT_THROW(pNonEmptyInt.valuesAsFloat(), std::invalid_argument);
+        EXPECT_THROW(pNonEmptyInt.valuesAsDouble(), std::invalid_argument);
         EXPECT_THROW(pNonEmptyInt.valuesAsString(), std::invalid_argument);
 
         ezc3d::ParametersNS::GroupNS::Parameter pNonEmptyFloat;
         pNonEmptyFloat.name("NewFloatParam");
-        pNonEmptyFloat.set(std::vector<float>(1));
+        pNonEmptyFloat.set(std::vector<double>(1.));
         EXPECT_THROW(pNonEmptyFloat.valuesAsByte(), std::invalid_argument);
         EXPECT_THROW(pNonEmptyFloat.valuesAsInt(), std::invalid_argument);
-        EXPECT_NO_THROW(pNonEmptyFloat.valuesAsFloat());
+        EXPECT_NO_THROW(pNonEmptyFloat.valuesAsDouble());
         EXPECT_THROW(pNonEmptyFloat.valuesAsString(), std::invalid_argument);
 
         ezc3d::ParametersNS::GroupNS::Parameter pNonEmptyChar;
@@ -463,7 +475,7 @@ TEST(c3dModifier, specificParameters){
         pNonEmptyChar.set(std::vector<std::string>(1));
         EXPECT_THROW(pNonEmptyChar.valuesAsByte(), std::invalid_argument);
         EXPECT_THROW(pNonEmptyChar.valuesAsInt(), std::invalid_argument);
-        EXPECT_THROW(pNonEmptyChar.valuesAsFloat(), std::invalid_argument);
+        EXPECT_THROW(pNonEmptyChar.valuesAsDouble(), std::invalid_argument);
         EXPECT_NO_THROW(pNonEmptyChar.valuesAsString());
     }
 
@@ -477,13 +489,14 @@ TEST(c3dModifier, specificParameters){
     // Fill the parameter improperly
     EXPECT_THROW(p.set(std::vector<int>()={}, {1}), std::range_error);
     EXPECT_THROW(p.set(std::vector<int>()={1}, {0}), std::range_error);
-    EXPECT_THROW(p.set(std::vector<float>()={}, {1}), std::range_error);
-    EXPECT_THROW(p.set(std::vector<float>()={1}, {0}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<double>()={}, {1}), std::range_error);
+    EXPECT_THROW(p.set(std::vector<double>()={1.}, {0}), std::range_error);
     EXPECT_THROW(p.set(std::vector<std::string>()={}, {1}), std::range_error);
     EXPECT_THROW(p.set(std::vector<std::string>()={""}, {0}), std::range_error);
     p.dimension();
 
-    // Add twice the same group (That should not be needed for a user API since he should use new_c3d.c3d.addParameter() )
+    // Add twice the same group (That should not be needed for a user API
+    // since he should use new_c3d.c3d.addParameter() )
     {
         ezc3d::ParametersNS::Parameters params;
         ezc3d::ParametersNS::GroupNS::Group groupToBeAddedTwice;
@@ -495,6 +508,19 @@ TEST(c3dModifier, specificParameters){
     }
 }
 
+TEST(c3dModifier, groupMetaData){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").description().c_str(),
+                 "");
+    EXPECT_FALSE(new_c3d.c3d.parameters().group("POINT").isLocked());
+    new_c3d.c3d.setGroupMetadata("POINT", "My new description", true);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("POINT").description().c_str(),
+                 "My new description");
+    EXPECT_TRUE(new_c3d.c3d.parameters().group("POINT").isLocked());
+}
 
 TEST(c3dModifier, addPoints) {
     // Create an empty c3d
@@ -525,11 +551,11 @@ TEST(c3dModifier, addPoints) {
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], new_c3d.pointFrameRate);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
@@ -547,21 +573,21 @@ TEST(c3dModifier, addPoints) {
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isempty(), false);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isEmpty(), false);
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<double>(2*f+3*m+1) / static_cast<double>(7.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<double>(2*f+3*m+2) / static_cast<double>(7.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<double>(2*f+3*m+3) / static_cast<double>(7.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
 
-            std::vector<float> data(new_c3d.c3d.data().frame(f).points().point(pointIdx).data());
+            std::vector<double> data(new_c3d.c3d.data().frame(f).points().point(pointIdx).data());
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), data[0]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), data[1]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), data[2]);
             EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
         }
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isempty(), true);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isEmpty(), true);
     }
 
     // Add frame with a new point with not enough frames
@@ -601,6 +627,28 @@ TEST(c3dModifier, specificPoint){
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, true, false);
 
+    // Create unused points
+    ezc3d::DataNS::Points3dNS::Point unusedPt;
+    unusedPt.set(1.1, 2.2, 3.3, 4.4);
+    EXPECT_DOUBLE_EQ(unusedPt.x(), 1.1);
+    EXPECT_DOUBLE_EQ(unusedPt.y(), 2.2);
+    EXPECT_DOUBLE_EQ(unusedPt.z(), 3.3);
+    EXPECT_DOUBLE_EQ(unusedPt.residual(), 4.4);
+    unusedPt.set(5.5, 6.6, 7.7);
+    EXPECT_DOUBLE_EQ(unusedPt.x(), 5.5);
+    EXPECT_DOUBLE_EQ(unusedPt.y(), 6.6);
+    EXPECT_DOUBLE_EQ(unusedPt.z(), 7.7);
+    EXPECT_DOUBLE_EQ(unusedPt.residual(), 0.0);
+    unusedPt.cameraMask({true, false});
+    EXPECT_EQ(unusedPt.cameraMask().size(), 2);
+    EXPECT_TRUE(unusedPt.cameraMask()[0]);
+    EXPECT_FALSE(unusedPt.cameraMask()[1]);
+    EXPECT_FALSE(unusedPt.isEmpty());
+    unusedPt.set(NAN, NAN, NAN);
+    EXPECT_TRUE(unusedPt.isEmpty());
+    unusedPt.set(0.0, 0.0, 0.0);
+    EXPECT_TRUE(unusedPt.isEmpty());
+
     // test replacing points
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         ezc3d::DataNS::Frame frame;
@@ -609,9 +657,9 @@ TEST(c3dModifier, specificPoint){
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
             // Generate some random data
-            pt.x(static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
-            pt.y(static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
-            pt.z(static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
+            pt.x(static_cast<double>(4*f+7*m+5) / static_cast<double>(13.0));
+            pt.y(static_cast<double>(4*f+7*m+6) / static_cast<double>(13.0));
+            pt.z(static_cast<double>(4*f+7*m+7) / static_cast<double>(13.0));
             pts.point(pt, m);
         }
 
@@ -652,11 +700,11 @@ TEST(c3dModifier, specificPoint){
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], new_c3d.pointFrameRate);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
@@ -676,10 +724,10 @@ TEST(c3dModifier, specificPoint){
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(4*f+7*m+5) / static_cast<float>(13.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<float>(4*f+7*m+6) / static_cast<float>(13.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<float>(4*f+7*m+7) / static_cast<float>(13.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<double>(4*f+7*m+5) / static_cast<double>(13.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<double>(4*f+7*m+6) / static_cast<double>(13.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<double>(4*f+7*m+7) / static_cast<double>(13.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
         }
     }
 
@@ -728,17 +776,17 @@ TEST(c3dModifier, addAnalogs) {
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), new_c3d.nAnalogs);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], new_c3d.analogFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], new_c3d.analogFrameRate);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("FORMAT").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("FORMAT").valuesAsString().size(), 0);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("BITS").type(), ezc3d::INT);
@@ -747,19 +795,19 @@ TEST(c3dModifier, addAnalogs) {
     for (size_t a = 0; a < new_c3d.nAnalogs; ++a){
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString()[a].c_str(), new_c3d.analogNames[a].c_str());
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString()[a].c_str(), "");
-        EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat()[a], 1);
+        EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble()[a], 1);
         EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt()[a], 0);
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
     // DATA
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isempty(), true);
-        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isempty(), false);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).points().isEmpty(), true);
+        ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isEmpty(), false);
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
                 EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
-                                static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
+                                static_cast<double>(2*f+3*sf+4*c+1) / static_cast<double>(7.0));
     }
 }
 
@@ -784,6 +832,13 @@ TEST(c3dModifier, specificAnalog){
     // Wrong number of frames
     EXPECT_THROW(new_c3d.c3d.analog("uselessChannel", frames), std::invalid_argument);
 
+    // Test if analog is empty
+    ezc3d::DataNS::AnalogsNS::Channel channelToFill;
+    channelToFill.data(0.0);
+    EXPECT_TRUE(channelToFill.isEmpty());
+    channelToFill.data(1.0);
+    EXPECT_FALSE(channelToFill.isEmpty());
+
     // Wrong number of subframes
     frames.resize(new_c3d.nFrames);
     EXPECT_THROW(new_c3d.c3d.analog("uselessChannel", frames), std::invalid_argument);
@@ -807,7 +862,7 @@ TEST(c3dModifier, specificAnalog){
             ezc3d::DataNS::AnalogsNS::SubFrame subframes;
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
-                channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                channel.data(static_cast<double>(2*f+3*sf+4*c+1) / static_cast<double>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
             analogs.subframe(subframes);
@@ -826,7 +881,7 @@ TEST(c3dModifier, specificAnalog){
             ezc3d::DataNS::AnalogsNS::SubFrame subframes;
             for (size_t c = 0; c < analogNames.size(); ++c){
                 ezc3d::DataNS::AnalogsNS::Channel channel;
-                channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                channel.data(static_cast<double>(2*f+3*sf+4*c+1) / static_cast<double>(7.0)); // Generate random data
                 subframes.channel(channel);
             }
             analogs.subframe(subframes);
@@ -835,6 +890,9 @@ TEST(c3dModifier, specificAnalog){
         frames[f] = frame;
     }
     EXPECT_NO_THROW(new_c3d.c3d.analog(analogNames, frames));
+
+    // Get outside channel
+    EXPECT_THROW(new_c3d.c3d.data().frame(0).analogs().subframe(0).channel(8), std::out_of_range);
 
     // Get channel names
     for (size_t c = 0; c < new_c3d.analogNames.size(); ++c){
@@ -915,11 +973,11 @@ TEST(c3dModifier, addPointsAndAnalogs){
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], new_c3d.pointFrameRate);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
@@ -943,17 +1001,17 @@ TEST(c3dModifier, addPointsAndAnalogs){
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), new_c3d.nAnalogs);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), new_c3d.nAnalogs);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], new_c3d.analogFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], new_c3d.analogFrameRate);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("FORMAT").type(), ezc3d::CHAR);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("FORMAT").valuesAsString().size(), 0);
     EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("BITS").type(), ezc3d::INT);
@@ -962,7 +1020,7 @@ TEST(c3dModifier, addPointsAndAnalogs){
     for (size_t a = 0; a < new_c3d.nAnalogs; ++a){
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString()[a].c_str(), new_c3d.analogNames[a].c_str());
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString()[a].c_str(), "");
-        EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat()[a], 1);
+        EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble()[a], 1);
         EXPECT_EQ(new_c3d.c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt()[a], 0);
         EXPECT_STREQ(new_c3d.c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
@@ -972,15 +1030,15 @@ TEST(c3dModifier, addPointsAndAnalogs){
     for (size_t f = 0; f < new_c3d.nFrames; ++f){
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<double>(2*f+3*m+1) / static_cast<double>(7.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<double>(2*f+3*m+2) / static_cast<double>(7.0));
+            EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<double>(2*f+3*m+3) / static_cast<double>(7.0));
         }
 
         for (size_t sf = 0; sf < new_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < new_c3d.nAnalogs; ++c)
                 EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
-                                static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
+                                static_cast<double>(2*f+3*sf+4*c+1) / static_cast<double>(7.0));
 
     }
 }
@@ -1019,7 +1077,7 @@ TEST(c3dModifier, addFrames){
     EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error); // Wrong frame rate for analogs
 
     ezc3d::ParametersNS::GroupNS::Parameter analogRate(new_c3d.c3d.parameters().group("ANALOG").parameter("RATE"));
-    analogRate.set(std::vector<float>()={100});
+    analogRate.set(std::vector<double>()={100.});
     new_c3d.c3d.parameter("ANALOG", analogRate);
     EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error);
 
@@ -1031,7 +1089,7 @@ TEST(c3dModifier, addFrames){
 
     // Remove point frame rate and then
     ezc3d::ParametersNS::GroupNS::Parameter pointRate(new_c3d.c3d.parameters().group("POINT").parameter("RATE"));
-    pointRate.set(std::vector<float>()={0});
+    pointRate.set(std::vector<double>()={0.});
     new_c3d.c3d.parameter("POINT", pointRate);
     EXPECT_THROW(new_c3d.c3d.frame(stupidFrameAnalog), std::runtime_error);
 }
@@ -1049,9 +1107,9 @@ TEST(c3dModifier, specificFrames){
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
             // Generate some random data
-            pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
-            pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
-            pt.z(static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+            pt.x(static_cast<double>(4*f+2*m+5) / static_cast<double>(17.0));
+            pt.y(static_cast<double>(4*f+2*m+6) / static_cast<double>(17.0));
+            pt.z(static_cast<double>(4*f+2*m+7) / static_cast<double>(17.0));
             pts.point(pt);
         }
         ezc3d::DataNS::Frame frame;
@@ -1066,9 +1124,9 @@ TEST(c3dModifier, specificFrames){
         for (size_t m = 0; m < new_c3d.nPoints; ++m){
             ezc3d::DataNS::Points3dNS::Point pt;
             // Generate some random data
-            pt.x(static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
-            pt.y(static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
-            pt.z(static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+            pt.x(static_cast<double>(4*f+2*m+5) / static_cast<double>(17.0));
+            pt.y(static_cast<double>(4*f+2*m+6) / static_cast<double>(17.0));
+            pt.z(static_cast<double>(4*f+2*m+7) / static_cast<double>(17.0));
             pts.point(pt);
         }
         ezc3d::DataNS::Frame frame;
@@ -1108,11 +1166,11 @@ TEST(c3dModifier, specificFrames){
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], new_c3d.nPoints);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], new_c3d.pointFrameRate);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], new_c3d.pointFrameRate);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(new_c3d.c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], new_c3d.nFrames);
@@ -1133,9 +1191,9 @@ TEST(c3dModifier, specificFrames){
         if (f != new_c3d.nFrames - 2) { // Where no frames where added
             for (size_t m = 0; m < new_c3d.nPoints; ++m){
                 size_t pointIdx(new_c3d.c3d.pointIdx(new_c3d.pointNames[m]));
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(4*f+2*m+5) / static_cast<float>(17.0));
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<float>(4*f+2*m+6) / static_cast<float>(17.0));
-                EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<float>(4*f+2*m+7) / static_cast<float>(17.0));
+                EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), static_cast<double>(4*f+2*m+5) / static_cast<double>(17.0));
+                EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<double>(4*f+2*m+6) / static_cast<double>(17.0));
+                EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<double>(4*f+2*m+7) / static_cast<double>(17.0));
             }
         } else {
             for (size_t m = 0; m < new_c3d.nPoints; ++m){
@@ -1154,11 +1212,14 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     c3dTestStruct ref_c3d;
     fillC3D(ref_c3d, true, true);
 
+    // Change the first frame
+    ref_c3d.c3d.setFirstFrame(10);
+
     // Lock Point parameter
     ref_c3d.c3d.lockGroup("POINT");
     ezc3d::ParametersNS::GroupNS::Parameter p;
     p.name("MyNewParameter");
-    p.set("ThisIsEmpty");
+    p.set("ThisisEmpty");
     ref_c3d.c3d.parameter("MyNewGroup", p);
 
     // Write the c3d on the disk
@@ -1176,8 +1237,8 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
 
     // Things that should have change
     EXPECT_EQ(read_c3d.header().nb3dPoints(), ref_c3d.nPoints);
-    EXPECT_EQ(read_c3d.header().firstFrame(), 0);
-    EXPECT_EQ(read_c3d.header().lastFrame(), ref_c3d.nFrames - 1);
+    EXPECT_EQ(read_c3d.header().firstFrame(), 10);
+    EXPECT_EQ(read_c3d.header().lastFrame(), 10 + ref_c3d.nFrames - 1);
     EXPECT_EQ(read_c3d.header().nbMaxInterpGap(), 10);
     EXPECT_EQ(read_c3d.header().scaleFactor(), -1);
     EXPECT_FLOAT_EQ(read_c3d.header().frameRate(), ref_c3d.pointFrameRate);
@@ -1198,11 +1259,11 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("USED").valuesAsInt()[0], ref_c3d.nPoints);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], -1);
+    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(read_c3d.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -1);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(read_c3d.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], ref_c3d.pointFrameRate);
+    EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(read_c3d.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], ref_c3d.pointFrameRate);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt().size(), 1);
     EXPECT_EQ(read_c3d.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], ref_c3d.nFrames);
@@ -1226,17 +1287,17 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), ref_c3d.nAnalogs);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), ref_c3d.nAnalogs);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), ref_c3d.nAnalogs);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), ref_c3d.nAnalogs);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), ref_c3d.nAnalogs);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(read_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], ref_c3d.analogFrameRate);
+    EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(read_c3d.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], ref_c3d.analogFrameRate);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("FORMAT").type(), ezc3d::CHAR);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("FORMAT").valuesAsString().size(), 0);
     EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("BITS").type(), ezc3d::INT);
@@ -1245,12 +1306,12 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     for (size_t a = 0; a < ref_c3d.nAnalogs; ++a){
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("LABELS").valuesAsString()[a].c_str(), ref_c3d.analogNames[a].c_str());
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString()[a].c_str(), "");
-        EXPECT_FLOAT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat()[a], 1);
+        EXPECT_FLOAT_EQ(read_c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble()[a], 1);
         EXPECT_EQ(read_c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt()[a], 0);
         EXPECT_STREQ(read_c3d.parameters().group("ANALOG").parameter("UNITS").valuesAsString()[a].c_str(), "");
     }
 
-    EXPECT_STREQ(read_c3d.parameters().group("MyNewGroup").parameter("MyNewParameter").valuesAsString()[0].c_str(), "ThisIsEmpty");
+    EXPECT_STREQ(read_c3d.parameters().group("MyNewGroup").parameter("MyNewParameter").valuesAsString()[0].c_str(), "ThisisEmpty");
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("VERSION").valuesAsString()[0].c_str(), EZC3D_VERSION);
     EXPECT_STREQ(read_c3d.parameters().group("EZC3D").parameter("CONTACT").valuesAsString()[0].c_str(), EZC3D_CONTACT);
 
@@ -1258,15 +1319,15 @@ TEST(c3dFileIO, CreateWriteAndReadBack){
     for (size_t f = 0; f < ref_c3d.nFrames; ++f){
         for (size_t m = 0; m < ref_c3d.nPoints; ++m){
             size_t pointIdx(read_c3d.pointIdx(ref_c3d.pointNames[m]));
-            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(pointIdx).x(), static_cast<float>(2*f+3*m+1) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(pointIdx).y(), static_cast<float>(2*f+3*m+2) / static_cast<float>(7.0));
-            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(pointIdx).z(), static_cast<float>(2*f+3*m+3) / static_cast<float>(7.0));
+            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(pointIdx).x(), static_cast<double>(2*f+3*m+1) / static_cast<double>(7.0));
+            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(pointIdx).y(), static_cast<double>(2*f+3*m+2) / static_cast<double>(7.0));
+            EXPECT_FLOAT_EQ(read_c3d.data().frame(f).points().point(pointIdx).z(), static_cast<double>(2*f+3*m+3) / static_cast<double>(7.0));
         }
 
         for (size_t sf = 0; sf < ref_c3d.nSubframes; ++sf)
             for (size_t c = 0; c < ref_c3d.nAnalogs; ++c)
                 EXPECT_FLOAT_EQ(read_c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
-                                static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0));
+                                static_cast<double>(2*f+3*sf+4*c+1) / static_cast<double>(7.0));
 
     }
 }
@@ -1369,11 +1430,11 @@ TEST(c3dFileIO, readViconC3D){
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 51);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-0.0099999998));
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-0.0099999998));
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 100);
+    EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 100);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 580); // ignore because it changes if analog is present
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
@@ -1391,17 +1452,17 @@ TEST(c3dFileIO, readViconC3D){
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 38);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 38);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), 38);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 38);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 38);
     EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 2000);
+    EXPECT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], 2000);
 
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
@@ -1413,9 +1474,9 @@ TEST(c3dFileIO, readViconC3D){
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 1);
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsDouble().size(), 0);
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 0);
+    EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsDouble().size(), 0);
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
     EXPECT_EQ(Vicon.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 0);
 
@@ -1430,22 +1491,22 @@ TEST(c3dFileIO, readViconC3D){
             EXPECT_EQ(Vicon.data().frame(f).analogs().subframe(sf).nbChannels(), 38);
     }
     // Test some values randomly
-    EXPECT_NEAR(Vicon.data().frame(0).points().point(0).x(), 44.16278839111328, 1e-10);
-    EXPECT_NEAR(Vicon.data().frame(Vicon.data().frames().size()-1).points().point(50).z(), 99.682586669921875, 1e-10);
+    EXPECT_FLOAT_EQ(Vicon.data().frame(0).points().point(0).x(), 44.16278839111328);
+    EXPECT_FLOAT_EQ(Vicon.data().frame(Vicon.data().frames().size()-1).points().point(50).z(), 99.682586669921875);
 
     // Test sum of all values
     double sumValues(0);
     for (size_t f = 0; f < 580; ++f){
         EXPECT_EQ(Vicon.data().frame(f).points().nbPoints(), 51);
         for (auto pt : Vicon.data().frame(f).points().points()){
-            if (pt.isPointValid()){
+            if (pt.isValid()){
                 sumValues += pt.x();
                 sumValues += pt.y();
                 sumValues += pt.z();
             }
         }
     }
-    EXPECT_NEAR(sumValues, 42506014.918278672, 1e-10);
+    EXPECT_FLOAT_EQ(sumValues, 42506014.918278672);
 }
 
 
@@ -1506,11 +1567,11 @@ TEST(c3dFileIO, readQualisysC3D){
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 55);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-0.076232255));
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-0.076232255));
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 200);
+    EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 200);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 340); // ignore because it changes if analog is present
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
@@ -1528,17 +1589,17 @@ TEST(c3dFileIO, readQualisysC3D){
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 69);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 69);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), 69);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 69);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 69);
     EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 2000);
+    EXPECT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], 2000);
 
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("USED").valuesAsInt().size(), 1);
@@ -1550,9 +1611,9 @@ TEST(c3dFileIO, readQualisysC3D){
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 0);
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 24);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsDouble().size(), 24);
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 6);
+    EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsDouble().size(), 6);
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
     EXPECT_EQ(Qualisys.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 12);
 
@@ -1629,11 +1690,11 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 54);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-7.8661418));
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-7.8661418));
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 30);
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 30);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 30); // ignore because it changes if analog is present
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
@@ -1706,11 +1767,11 @@ TEST(c3dFileio,readBtsC3D){
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("USED").valuesAsInt().size(), 1);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 22);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsFloat()[0], static_cast<float>(-0.1));
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-0.1));
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsFloat()[0], 100);
+    EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 100);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 675);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
@@ -1728,17 +1789,17 @@ TEST(c3dFileio,readBtsC3D){
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 44);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat().size(), 1);
-    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsFloat()[0], 1);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble().size(), 1);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0], 1);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("SCALE").valuesAsFloat().size(), 44);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), 44);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("OFFSET").type(), ezc3d::INT);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt().size(), 44);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 44);
     EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").valuesAsFloat().size(), 1);
-    EXPECT_FLOAT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").valuesAsFloat()[0], 1000);
+    EXPECT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(BTS.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], 1000);
 
 
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("USED").type(), ezc3d::INT);
@@ -1751,9 +1812,9 @@ TEST(c3dFileio,readBtsC3D){
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[0], 0);
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ZERO").valuesAsInt()[1], 0);
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CORNERS").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsFloat().size(), 72);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CORNERS").valuesAsDouble().size(), 72);
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").type(), ezc3d::FLOAT);
-    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsFloat().size(), 18);
+    EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("ORIGIN").valuesAsDouble().size(), 18);
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").type(), ezc3d::INT);
     EXPECT_EQ(BTS.parameters().group("FORCE_PLATFORM").parameter("CHANNEL").valuesAsInt().size(), 36);
 

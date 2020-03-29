@@ -110,7 +110,7 @@ public:
     /// \brief Return if the points are empty
     /// \return if the points are empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 #endif
