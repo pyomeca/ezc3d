@@ -2,17 +2,11 @@ set(ezc3d_VERSION @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSI
 
 @PACKAGE_INIT@
 
-set_and_check(ezc3d_INCLUDE_DIR "@ezc3d_INCLUDE_FOLDER@")
-set_and_check(ezc3d_LIBRARY_DIR "@ezc3d_LIB_FOLDER@")
+set_and_check(ezc3d_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_PREFIX@/@ezc3d_INCLUDE_FOLDER@")
+set_and_check(ezc3d_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_PREFIX@/@ezc3d_LIB_FOLDER@")
 
-find_library (ezc3d_LIBRARY NAMES ezc3d ezc3d_debug PATHS ${ezc3d_LIBRARY_DIR})
+set(ezc3d_LIBRARY ezc3d)
 
-# handle the QUIETLY and REQUIRED arguments and set ezc3d_FOUND to TRUE if 
-# all listed variables are TRUE
-include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (ezc3d DEFAULT_MSG 
-  ezc3d_INCLUDE_DIR
-  ezc3d_LIBRARY
-)
+include("${CMAKE_CURRENT_LIST_DIR}/@CMAKE_PROJECT_NAME@Targets.cmake")
 
 check_required_components(ezc3d)
