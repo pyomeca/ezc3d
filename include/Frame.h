@@ -41,9 +41,10 @@ public:
     ///
     /// Write the frame to a file by calling sequentially the write method for points and analogs
     ///
-    void write(std::fstream &f,
+    void write(
+            std::fstream &f,
             float pointScaleFactor,
-            std::vector<float> analogScaleFactors) const;
+            std::vector<double> analogScaleFactors) const;
 
 
     //---- POINTS ----//
@@ -122,7 +123,7 @@ public:
     /// \brief Return if the frame is empty
     /// \return if the frame is empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 
 };
 

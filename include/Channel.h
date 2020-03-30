@@ -48,31 +48,31 @@ public:
     ///
     void write(
             std::fstream &f,
-            float scaleFactor) const;
+            double scaleFactor) const;
 
 
     //---- DATA ----//
 protected:
-    float _data; ///< Value of the analog data
+    double _data; ///< Value of the analog data
 public:
     ///
     /// \brief Get the value of the analog data
     /// \return The value of the analog data
     ///
-    float data() const;
+    double data() const;
 
     ///
     /// \brief Set the value of the analog data
     /// \param value The value of the analog data
     ///
     void data(
-            float value);
+            double value);
 
     ///
     /// \brief Return if the channel is empty
     /// \return if the channel is empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 

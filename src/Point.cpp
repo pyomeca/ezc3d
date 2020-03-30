@@ -12,25 +12,23 @@
 #include <bitset>
 
 ezc3d::DataNS::Points3dNS::Point::Point() :
+    ezc3d::Vector3d(),
     _residual(-1)
 {
-    _data.resize(3, 0);
     _cameraMasks.resize(7, false);
 }
 
 ezc3d::DataNS::Points3dNS::Point::Point(
-        const ezc3d::DataNS::Points3dNS::Point &p) {
-    _data.resize(3);
-    x(p.x());
-    y(p.y());
-    z(p.z());
+        const ezc3d::DataNS::Points3dNS::Point &p) :
+    ezc3d::Vector3d(p)
+{
     residual(p.residual());
     _cameraMasks = p._cameraMasks;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::print() const {
-    std::cout << " Position = [" << x() << ", " << y() << ", " << z()
-              << "]; Residual = " << residual() << "; Masks = [";
+    ezc3d::Vector3d::print();
+    std::cout << "Residual = " << residual() << "; Masks = [";
     for (size_t i = 0; i<_cameraMasks.size()-1; ++i){
         std::cout << _cameraMasks[i] << ", ";
     }
@@ -45,7 +43,8 @@ void ezc3d::DataNS::Points3dNS::Point::write(
         float scaleFactor) const {
     if (residual() >= 0){
         for (size_t i = 0; i<_data.size(); ++i) {
-            f.write(reinterpret_cast<const char*>(&_data[i]), ezc3d::DATA_TYPE::FLOAT);
+            float data(static_cast<float>(_data[i]));
+            f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
         }
         std::bitset<8> cameraMasksBits;
         for (size_t i = 0; i < _cameraMasks.size(); ++i){
@@ -73,104 +72,84 @@ void ezc3d::DataNS::Points3dNS::Point::write(
     }
 }
 
-bool ezc3d::DataNS::Points3dNS::Point::isPointValid() const
-{
-    if (std::isnan(_data[0]) || std::isnan(_data[1]) || std::isnan(_data[2])) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-
-const std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() const {
-    return _data;
-}
-
-std::vector<float> ezc3d::DataNS::Points3dNS::Point::data() {
-    return _data;
-}
-
 void ezc3d::DataNS::Points3dNS::Point::set(
-        float x,
-        float y,
-        float z,
-        float residual)
+        double x,
+        double y,
+        double z,
+        double residual)
 {
-    _data[0] = x;
-    _data[1] = y;
-    _data[2] = z;
+    ezc3d::Vector3d::set(x, y, z);
     _residual = residual;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::set(
-        float x,
-        float y,
-        float z)
+        double x,
+        double y,
+        double z)
 {
-    _data[0] = x;
-    _data[1] = y;
-    _data[2] = z;
-    if (isPointValid()) {
-        residual(0);
+    ezc3d::Vector3d::set(x, y, z);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
-float ezc3d::DataNS::Points3dNS::Point::x() const {
-    return _data[0];
+double ezc3d::DataNS::Points3dNS::Point::x() const
+{
+    return ezc3d::Vector3d::x();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::x(
-        float x) {
-    _data[0] = x;
-    if (isPointValid()) {
-        residual(0);
+        double x) {
+    ezc3d::Vector3d::x(x);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
-float ezc3d::DataNS::Points3dNS::Point::y() const {
-    return _data[1];
+double ezc3d::DataNS::Points3dNS::Point::y() const
+{
+    return ezc3d::Vector3d::y();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::y(
-        float y) {
-    _data[1] = y;
-    if (isPointValid()) {
-        residual(0);
+        double y) {
+    ezc3d::Vector3d::y(y);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
-float ezc3d::DataNS::Points3dNS::Point::z() const {
-    return _data[2];
+double ezc3d::DataNS::Points3dNS::Point::z() const
+{
+    return ezc3d::Vector3d::z();
 }
 
 void ezc3d::DataNS::Points3dNS::Point::z(
-        float z) {
-    _data[2] = z;
-    if (isPointValid()) {
-        residual(0);
+        double z) {
+    ezc3d::Vector3d::z(z);
+    if (!isValid() || (_data[0] == 0.0 && _data[1] == 0.0 && _data[2] == 0.0)) {
+        residual(-1);
     }
     else {
-        residual(-1);
+        residual(0);
     }
 }
 
-
-float ezc3d::DataNS::Points3dNS::Point::residual() const {
+double ezc3d::DataNS::Points3dNS::Point::residual() const {
     return _residual;
 }
 
 void ezc3d::DataNS::Points3dNS::Point::residual(
-        float residual) {
+        double residual) {
     _residual = residual;
 }
 
@@ -193,11 +172,9 @@ void ezc3d::DataNS::Points3dNS::Point::cameraMask(int byte)
     }
 }
 
-bool ezc3d::DataNS::Points3dNS::Point::isempty() const {
-    if (static_cast<double>(x()) == 0.0 &&
-            static_cast<double>(y()) == 0.0 &&
-            static_cast<double>(z()) == 0.0 &&
-            static_cast<double>(residual()) < 0)
+bool ezc3d::DataNS::Points3dNS::Point::isEmpty() const {
+    if (!isValid() || (x() == 0.0 && y() == 0.0 && z() == 0.0
+            && residual() < 0))
         return true;
     else {
         return false;

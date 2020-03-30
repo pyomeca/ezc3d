@@ -182,7 +182,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                     else if (param.type() == ezc3d::DATA_TYPE::FLOAT)
                         fillMatlabField(
                                     valueArray, idxValue,
-                                    param.valuesAsFloat(), param.dimension());
+                                    param.valuesAsDouble(), param.dimension());
                     else if (param.type() == ezc3d::DATA_TYPE::CHAR)
                         fillMatlabField(
                                     valueArray, idxValue,

@@ -22,7 +22,7 @@ void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
 
 void ezc3d::DataNS::AnalogsNS::Analogs::write(
         std::fstream &f,
-        std::vector<float> scaleFactors) const {
+        std::vector<double> scaleFactors) const {
     for (size_t i = 0; i < nbSubframes(); ++i) {
         subframe(i).write(f, scaleFactors);
     }
@@ -82,9 +82,9 @@ ezc3d::DataNS::AnalogsNS::Analogs::subframes() const {
     return _subframe;
 }
 
-bool ezc3d::DataNS::AnalogsNS::Analogs::isempty() const {
+bool ezc3d::DataNS::AnalogsNS::Analogs::isEmpty() const {
     for (SubFrame subframe : subframes()) {
-        if (!subframe.isempty()) {
+        if (!subframe.isEmpty()) {
             return false;
         }
     }

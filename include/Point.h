@@ -8,12 +8,13 @@
 /// \date October 17th, 2018
 ///
 
-#include <ezc3d.h>
+#include <Vector3d.h>
 
 ///
 /// \brief 3D point data
 ///
-class EZC3D_API ezc3d::DataNS::Points3dNS::Point{
+class EZC3D_API ezc3d::DataNS::Points3dNS::Point :
+        public ezc3d::Vector3d {
     //---- CONSTRUCTORS ----//
 public:
     ///
@@ -37,7 +38,7 @@ public:
     ///
     /// Print the values of the point to the console
     ///
-    void print() const;
+    virtual void print() const override;
 
     ///
     /// \brief Write the point to an opened file
@@ -53,32 +54,10 @@ public:
 
     //---- DATA ----//
 protected:
-    std::vector<float> _data; ///< Value of the point
-    float _residual; ///< Residual of the point
+    double _residual; ///< Residual of the point
     std::vector<bool> _cameraMasks; ///< If the cameras 1-7 are masked
 
-    ///
-    /// \brief If any point componen is a NAN then the point is invalid.
-    /// \return If the point is invalid
-    ///
-    bool isPointValid() const;
-
 public:
-    ///
-    /// \brief Get a reference to the STL vector where the 3D point is store
-    /// \return The 3d point
-    ///
-    const std::vector<float> data() const;
-
-    ///
-    /// \brief Get a reference to the STL vector where the 3D point is store in order to be modified by the caller
-    /// \return The 3d point
-    ///
-    /// Get a reference to the STL vector where the 3D point is store in the form of a non-const reference.
-    /// The user can thereafter modify these points at will, but with the caution it requires.
-    ///
-    std::vector<float> data();
-
     ///
     /// \brief set All the point at once
     /// \param x The X-component of the point
@@ -86,7 +65,11 @@ public:
     /// \param z The Z-component of the point
     /// \param residual The residual of the point
     ///
-    void set(float x, float y, float z, float residual);
+    virtual void set(
+            double x,
+            double y,
+            double z,
+            double residual);
 
     ///
     /// \brief set All the point at once. Don't change the residual value
@@ -94,85 +77,88 @@ public:
     /// \param y The Y-component of the point
     /// \param z The Z-component of the point
     ///
-    void set(float x, float y, float z);
+    virtual void set(
+            double x,
+            double y,
+            double z) override;
 
     ///
-    /// \brief Get the X component of the 3D point
-    /// \return The X component of the 3d point
+    /// \brief Get the X component of the Point
+    /// \return The X component of the Point
     ///
-    float x() const;
+    virtual double x() const override;
 
     ///
-    /// \brief Set the X component of the 3D point
-    /// \param x The X component of the 3d point
+    /// \brief Set the X component of the 3D Point
+    /// \param x The X component of the 3d Point
     ///
-    void x(
-            float x);
+    virtual void x(
+            double x) override;
 
     ///
-    /// \brief Get the Y component of the 3D point
-    /// \return The Y component of the 3d point
+    /// \brief Get the Y component of the Point
+    /// \return The Y component of the Point
     ///
-    float y() const;
+    virtual double y() const override;
 
     ///
-    /// \brief Set the Y component of the 3D point
-    /// \param y The Y component of the 3d point
+    /// \brief Set the Y component of the 3D Point
+    /// \param y The Y component of the 3d Point
     ///
-    void y(
-            float y);
+    virtual void y(
+            double y) override;
 
     ///
-    /// \brief Get the Z component of the 3D point
-    /// \return The Z component of the 3d point
+    /// \brief Get the Z component of the Point
+    /// \return The Z component of the Point
     ///
-    float z() const;
+    virtual double z() const override;
 
     ///
-    /// \brief Set the Z component of the 3D point
-    /// \param z The Z component of the 3d point
+    /// \brief Set the Z component of the 3D Point
+    /// \param y The Z component of the 3d Point
     ///
-    void z(
-            float z);
+    virtual void z(
+            double z) override;
 
     ///
     /// \brief Get the residual component of the 3D point
     /// \return The residual component of the 3d point
     ///
-    float residual() const;
+    virtual double residual() const;
 
     ///
     /// \brief Set the residualZ component of the 3D point
     /// \param residual The residual component of the 3d point
     ///
-    void residual(
-            float residual);
+    virtual void residual(
+            double residual);
 
     ///
     /// \brief Return if the cameras of index 0 to 6 are masked
     /// \return If the camera are masked
     ///
-    const std::vector<bool>& cameraMask() const;
+    virtual const std::vector<bool>& cameraMask() const;
 
     ///
     /// \brief Set the masks for the camera of index 0 to 6
     /// \param masks If the cameras are masked or not
     ///
-    void cameraMask(
+    virtual void cameraMask(
             const std::vector<bool>& masks);
 
     ///
     /// \brief Set the masks. The byte is break down into 7 camera bit by bit
     /// \param byte The cameras masks into a byte format
     ///
-    void cameraMask(
+    virtual void cameraMask(
             int byte);
 
     ///
     /// \brief Return if the point is empty
     /// \return if the point is empty
     ///
-    bool isempty() const;
+    virtual bool isEmpty() const;
 };
 
 #endif

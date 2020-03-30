@@ -191,7 +191,7 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
         }
         if (!grp.isParameter("SCALE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
-            p.set(std::vector<float>()={});
+            p.set(std::vector<double>()={});
             grp.parameter(p);
         }
         if (!grp.isParameter("OFFSET")){
@@ -244,12 +244,12 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
         }
         if (!grp.isParameter("CORNERS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("CORNERS", "");
-            p.set(std::vector<float>()={});
+            p.set(std::vector<double>()={});
             grp.parameter(p);
         }
         if (!grp.isParameter("ORIGIN")){
             ezc3d::ParametersNS::GroupNS::Parameter p("ORIGIN", "");
-            p.set(std::vector<float>()={});
+            p.set(std::vector<double>()={});
             grp.parameter(p);
         }
         if (!grp.isParameter("CHANNEL")){
@@ -259,7 +259,7 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
         }
         if (!grp.isParameter("CAL_MATRIX")){
             ezc3d::ParametersNS::GroupNS::Parameter p("CAL_MATRIX", "");
-            p.set(std::vector<float>()={});
+            p.set(std::vector<double>()={});
             grp.parameter(p);
         }
     }

@@ -11,9 +11,9 @@ CTestTestfile.cmake
 CMakeLists.txt.user
 
 # Compiling related files
-[Dd]ebug
-[Rr]elease
-[Bb]uild
+[Dd]ebug*
+[Rr]elease*
+[Bb]uild*
 __pycache__
 
 # Testing suite
@@ -25,3 +25,6 @@ example/c3dFiles/*
 
 # Documentation
 doc/*.pdf
+
+# Pycharm
+.idea

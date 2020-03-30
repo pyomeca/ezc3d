@@ -249,7 +249,7 @@ void ezc3d::ParametersNS::GroupNS::Group::parameter(
         _parameters[alreadyExistIdx] = p;
 }
 
-const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>
-&ezc3d::ParametersNS::GroupNS::Group::parameters() const {
+const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>&
+ezc3d::ParametersNS::GroupNS::Group::parameters() const {
     return _parameters;
 }

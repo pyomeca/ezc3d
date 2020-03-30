@@ -39,8 +39,9 @@ public:
     ///
     /// Write all the subframes to a file by calling sequentially the write method of each subframe
     ///
-    void write(std::fstream &f,
-            std::vector<float> scaleFactors) const;
+    void write(
+            std::fstream &f,
+            std::vector<double> scaleFactors) const;
 
 
     //---- SUBFRAME ----//
@@ -111,7 +112,7 @@ public:
     /// \brief Return if the analogs are empty
     /// \return if the analogs are empty
     ///
-    bool isempty() const;
+    bool isEmpty() const;
 };
 
 #endif

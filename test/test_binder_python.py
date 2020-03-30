@@ -121,7 +121,7 @@ def test_create_and_read_c3d():
     assert c3d_to_compare['parameters']['POINT']['LABELS']['value'] == list(point_names)
     assert c3d_to_compare['parameters']['POINT']['DESCRIPTIONS']['value'] == ["" for _ in point_names]
     assert len(c3d_to_compare['parameters']['POINT']['UNITS']['value']) == 0
-    assert np.all(c3d_to_compare['parameters'][point_new_param[0].upper()][point_new_param[1].upper()]['value']
+    assert np.all(c3d_to_compare['parameters'][point_new_param[0]][point_new_param[1]]['value']
                   == point_new_param[2])
     
     assert c3d_to_compare['parameters']['ANALOG']['USED']['value'][0] == len(analog_names)
@@ -143,7 +143,7 @@ def test_create_and_read_c3d():
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['CHANNEL']['value']) == 0
     assert len(c3d_to_compare['parameters']['FORCE_PLATFORM']['CAL_MATRIX']['value']) == 0
     
-    assert c3d_to_compare['parameters'][new_group_param[0].upper()][new_group_param[1].upper()]['value'] \
+    assert c3d_to_compare['parameters'][new_group_param[0]][new_group_param[1]]['value'] \
         == new_group_param[2]
     
     # Test the data
@@ -186,6 +186,41 @@ def test_create_and_read_c3d_with_nan():
                             3 * len(point_names) * point_frame_rate * n_second)
     np.testing.assert_equal(np.sum(np.isnan(c3d_to_compare['data']['analogs'])),
                             len(analog_names) * analog_frame_rate * n_second)
+
+
+def test_values():
+    c3d = ezc3d.c3d("test/c3dTestFiles/Vicon.c3d")
+    array = c3d["data"]["points"]
+    decimal = 6
+
+    np.testing.assert_array_equal(
+        x=array.shape, y=(4, 51, 580), err_msg="Shape does not match"
+    )
+    raveled = array.ravel()
+    np.testing.assert_array_almost_equal(
+        x=raveled[0],
+        y=44.16278839111328,
+        decimal=decimal,
+    )
+    np.testing.assert_array_almost_equal(
+        x=raveled[-1], y=1.0, decimal=decimal,
+    )
+    np.testing.assert_array_almost_equal(
+        x=np.nanmean(array),
+        y=362.2979849093196,
+        decimal=decimal
+    )
+    np.testing.assert_array_almost_equal(
+        x=np.nanmedian(array),
+        y=337.7519226074219,
+        decimal=decimal
+    )
+    np.testing.assert_allclose(
+        actual=np.nansum(array),
+        desired=42535594.91827867,
+        rtol=0.05
+    )
+    np.testing.assert_array_equal(x=np.isnan(array).sum(), y=915)
 
 
 @pytest.fixture(scope='module', params=["BTS", "Optotrak", "Qualisys", "Vicon"])

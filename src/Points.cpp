@@ -79,9 +79,9 @@ ezc3d::DataNS::Points3dNS::Points::points() const {
     return _points;
 }
 
-bool ezc3d::DataNS::Points3dNS::Points::isempty() const {
+bool ezc3d::DataNS::Points3dNS::Points::isEmpty() const {
     for (Point point : points())
-        if (!point.isempty())
+        if (!point.isEmpty())
             return false;
     return true;
 }

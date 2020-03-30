@@ -371,7 +371,9 @@ void mexFunction(
                     } else if (type == ezc3d::DATA_TYPE::FLOAT) {
                         std::vector<float> data;
                         parseParam(mxGetDoubles(valueField), dimension, data);
-                        newParam.set(data, dimension);
+                        newParam.set(
+                            std::vector<double>(data.begin(), data.end()),
+                            dimension);
                     } else if (type == ezc3d::DATA_TYPE::CHAR) {
                         std::vector<std::string> data;
                         parseParam(valueField, dimension, data);
@@ -386,7 +388,9 @@ void mexFunction(
                         if (!valueField || mxIsDouble(valueField)) {
                             std::vector<float> data;
                             parseParam(mxGetDoubles(valueField), dimension, data);
-                            newParam.set(data, dimension);
+                            newParam.set(
+                                std::vector<double>(data.begin(), data.end()),
+                                dimension);
                         } else if (mxIsCell(valueField)) {
                             std::vector<std::string> data;
                             parseParam(valueField, dimension, data);

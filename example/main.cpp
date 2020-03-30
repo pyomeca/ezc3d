@@ -243,16 +243,16 @@ int main()
         // Create an empty fresh c3d
         ezc3d::c3d c3d_empty;
         ezc3d::ParametersNS::GroupNS::Parameter t("SCALE");
-        t.set(std::vector<float>(), {0});
+        t.set(std::vector<double>(), {0});
 
 
         // Fill it with some values
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
-        pointRate.set(std::vector<float>() = {100}, {1});
+        pointRate.set(std::vector<double>() = {100}, {1});
         c3d_empty.parameter("POINT", pointRate);
 
         ezc3d::ParametersNS::GroupNS::Parameter analogRate("RATE");
-        analogRate.set(std::vector<float>() = {1000}, {1});
+        analogRate.set(std::vector<double>() = {1000}, {1});
         c3d_empty.parameter("ANALOG", analogRate);
 
         c3d_empty.point("new_point1"); // Add empty

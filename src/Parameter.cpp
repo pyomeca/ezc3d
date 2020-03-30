@@ -39,9 +39,9 @@ void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
             std::cout << "param_data[" << i << "] = "
                       << _param_data_int[i] << std::endl;
     if (_data_type == DATA_TYPE::FLOAT)
-        for (unsigned int i = 0; i < _param_data_float.size(); ++i)
+        for (unsigned int i = 0; i < _param_data_double.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_float[i] << std::endl;
+                      << _param_data_double[i] << std::endl;
 
     std::cout << "description = " << _description << std::endl;
 }
@@ -159,10 +159,11 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::writeImbricatedParameter(
             else if (_data_type == DATA_TYPE::INT)
                 f.write(reinterpret_cast<const char*>(&(_param_data_int[cmp])),
                         static_cast<int>(_data_type));
-            else if (_data_type == DATA_TYPE::FLOAT)
-                f.write(reinterpret_cast<const char*>(
-                            &(_param_data_float[cmp])),
+            else if (_data_type == DATA_TYPE::FLOAT){
+                float param(static_cast<float>(_param_data_double[cmp]));
+                f.write(reinterpret_cast<const char*>(&param),
                         static_cast<int>(_data_type));
+            }
             else if (_data_type == DATA_TYPE::CHAR){
                 std::string toWrite(_param_data_string[cmp]);
                 toWrite.resize(dim[0], ' '); // Pad with x20
@@ -248,7 +249,7 @@ int ezc3d::ParametersNS::GroupNS::Parameter::read(
                       _param_data_int);
     else if (_data_type == DATA_TYPE::FLOAT)
         c3d.readParam(params.processorType(), file, _dimension,
-                      _param_data_float);
+                      _param_data_double);
 
 
     // Byte 5+nbCharInName ==> Number of characters in group description
@@ -311,7 +312,7 @@ size_t ezc3d::ParametersNS::GroupNS::Parameter::longestElement() const{
     }
 }
 
-const std::vector<size_t>
+const std::vector<size_t>&
 ezc3d::ParametersNS::GroupNS::Parameter::dimension() const {
     return _dimension;
 }
@@ -376,15 +377,15 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::set(float data) {
-    set(std::vector<float>()={data});
+    set(std::vector<double>()={static_cast<double>(data)});
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::set(double data) {
-    set(std::vector<float>()={static_cast<float>(data)});
+    set(std::vector<double>()={data});
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::set(
-        const std::vector<float> &data,
+        const std::vector<double> &data,
         const std::vector<size_t> &dimension) {
     std::vector<size_t> dimensionCopy;
     if (dimension.size() == 0){
@@ -397,7 +398,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(
                 "Dimension of the data does not correspond to sent dimensions");
 
     _data_type = ezc3d::DATA_TYPE::FLOAT;
-    _param_data_float = data;
+    _param_data_double = data;
     _dimension = dimensionCopy;
     setEmptyFlag();
 }
@@ -447,11 +448,11 @@ ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const {
     return _param_data_int;
 }
 
-const std::vector<float>&
-ezc3d::ParametersNS::GroupNS::Parameter::valuesAsFloat() const {
+const std::vector<double>&
+ezc3d::ParametersNS::GroupNS::Parameter::valuesAsDouble() const {
     if (!_isEmpty && _data_type != DATA_TYPE::FLOAT)
         throw std::invalid_argument(_name + " parameter is not a FLOAT");
-    return _param_data_float;
+    return _param_data_double;
 }
 
 const std::vector<std::string>&
