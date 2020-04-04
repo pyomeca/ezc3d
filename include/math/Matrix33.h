@@ -39,11 +39,11 @@ public:
             double elem20, double elem21, double elem22);
 
     ///
-    /// \brief Copy a 3x3 Matrix
-    /// \param vector The 3x3 matrix to copy
+    /// \brief Copy a matrix into a Matrix33
+    /// \param other The matrix to copy
     ///
     Matrix33(
-            const ezc3d::Matrix33& matrix);
+            const ezc3d::Matrix &other);
 
     //---- DATA ----//
 public:
@@ -74,12 +74,6 @@ public:
 
     //---- OPERATIONS ----//
 public:
-    ///
-    /// \brief operator= For matrix
-    /// \param other The matrix to copy
-    ///
-    ezc3d::Matrix& operator=(
-            const ezc3d::Matrix33& other);
 
     ///
     /// \brief Defining matrix multiplication with a Vector3d

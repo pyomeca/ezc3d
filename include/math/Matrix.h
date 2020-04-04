@@ -37,11 +37,6 @@ public:
     Matrix(
             const ezc3d::Matrix& matrix);
 
-    ///
-    /// \brief Destructor
-    ///
-    virtual ~Matrix();
-
     // Declare Friendship
     friend class ezc3d::Vector3d;
     friend class ezc3d::Matrix33;
@@ -61,7 +56,7 @@ public:
 protected:
     size_t _nbRows; ///< Number of rows
     size_t _nbCols; ///< Number of columns
-    double* _data; ///< Value of the Matrix
+    std::vector<double> _data; ///< Value of the Matrix
 
 public:
     ///
@@ -112,13 +107,6 @@ public:
 
     //---- OPERATIONS ----//
 public:
-    ///
-    /// \brief operator= For matrix
-    /// \param other The matrix to copy
-    ///
-    virtual ezc3d::Matrix& operator=(
-            const ezc3d::Matrix& other);
-
 #ifndef SWIG
     ///
     /// \brief Get a specific value of the matrix

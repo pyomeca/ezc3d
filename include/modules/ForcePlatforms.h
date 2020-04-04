@@ -9,6 +9,8 @@
 ///
 
 #include "ezc3d.h"
+
+#include "math/Matrix33.h"
 #include "math/Vector3d.h"
 
 ///
@@ -67,7 +69,7 @@ protected:
     std::vector<ezc3d::Vector3d> _corners;  ///< Position of the 4 corners of the force platform
     ezc3d::Vector3d _meanCorners;  ///< Mean position of the corners of the force platform
     ezc3d::Vector3d _origin;  ///< Position of the origin of the force platform
-    ezc3d::Matrix _refFrame;  ///< The reference frame of the force plate in the global reference frame
+    ezc3d::Matrix33 _refFrame;  ///< The reference frame of the force plate in the global reference frame
     std::vector<ezc3d::Vector3d> _F;  ///< Force vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _M;  ///< Moment vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _CoP;  ///< Center of Pressure vectors for all instants (including subframes) in global reference frame

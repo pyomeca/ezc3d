@@ -11,21 +11,18 @@
 
 #include "math/Vector3d.h"
 
-ezc3d::Matrix33::Matrix33()
+ezc3d::Matrix33::Matrix33() :
+    ezc3d::Matrix(3, 3)
 {
-    _nbRows = 3;
-    _nbCols = 3;
-    _data = new double[9];
+
 }
 
 ezc3d::Matrix33::Matrix33(
         double elem00, double elem01, double elem02,
         double elem10, double elem11, double elem12,
-        double elem20, double elem21, double elem22)
+        double elem20, double elem21, double elem22) :
+    ezc3d::Matrix(3, 3)
 {
-    _nbRows = 3;
-    _nbCols = 3;
-    _data = new double[9];
     _data[0] = elem00;
     _data[1] = elem10;
     _data[2] = elem20;
@@ -38,14 +35,15 @@ ezc3d::Matrix33::Matrix33(
 }
 
 ezc3d::Matrix33::Matrix33(
-        const ezc3d::Matrix33 &matrix)
+        const ezc3d::Matrix &other) :
+    ezc3d::Matrix(other)
 {
-    _nbRows = 3;
-    _nbCols = 3;
-    _data = new double[9];
-    for (size_t i=0; i<size(); ++i){
-        _data[i] = matrix._data[i];
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    if (nbRows() != 3 || nbCols() != 3){
+        throw std::runtime_error("Size of the matrix must be 3x3 to be casted"
+                                 "as a Matrix33");
     }
+#endif
 }
 
 size_t ezc3d::Matrix33::size() const
@@ -68,17 +66,6 @@ void ezc3d::Matrix33::resize(
         size_t)
 {
     // Nothing to do
-}
-
-ezc3d::Matrix& ezc3d::Matrix33::operator=(
-        const ezc3d::Matrix33& other)
-{
-    if (this != &other){
-        for (size_t i=0; i<size(); ++i){
-            _data[i] = other._data[i];
-        }
-    }
-    return *this;
 }
 
 ezc3d::Vector3d ezc3d::Matrix33::operator*(

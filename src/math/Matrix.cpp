@@ -12,34 +12,29 @@
 
 ezc3d::Matrix::Matrix():
     _nbRows(0),
-    _nbCols(0)
+    _nbCols(0),
+    _data(std::vector<double>())
 {
-    _data = new double[size()];
+
 }
 
 ezc3d::Matrix::Matrix(
         size_t nbRows,
         size_t nbCols) :
     _nbRows(nbRows),
-    _nbCols(nbCols)
+    _nbCols(nbCols),
+    _data(std::vector<double>(nbRows * nbCols))
 {
-    _data = new double[size()];
+
 }
 
 ezc3d::Matrix::Matrix(
         const ezc3d::Matrix &matrix) :
     _nbRows(matrix._nbRows),
-    _nbCols(matrix._nbCols)
+    _nbCols(matrix._nbCols),
+    _data(matrix._data)
 {
-    _data = new double[size()];
-    for (size_t i=0; i<size(); ++i){
-        _data[i] = matrix._data[i];
-    }
-}
 
-ezc3d::Matrix::~Matrix()
-{
-    delete[] _data;
 }
 
 void ezc3d::Matrix::print() const
@@ -94,7 +89,7 @@ void ezc3d::Matrix::setIdentity()
 
 size_t ezc3d::Matrix::size() const
 {
-    return nbRows() * nbCols();
+    return _data.size();
 }
 
 size_t ezc3d::Matrix::nbRows() const
@@ -113,20 +108,7 @@ void ezc3d::Matrix::resize(
 {
     _nbRows = nbRows;
     _nbCols = nbCols;
-    delete[] _data;
-    _data = new double[size()];
-}
-
-ezc3d::Matrix& ezc3d::Matrix::operator=(
-        const ezc3d::Matrix& other)
-{
-    if (this != &other){
-        resize(other.nbRows(), other.nbCols());
-        for (size_t i=0; i<size(); ++i){
-            _data[i] = other._data[i];
-        }
-    }
-    return *this;
+    _data.resize(_nbRows * _nbCols);
 }
 
 double ezc3d::Matrix::operator()(

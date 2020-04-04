@@ -198,7 +198,6 @@ void ezc3d::Modules::ForcePlatform::extractCorners(
         throw std::runtime_error("FORCE_PLATFORM:CORNER is not fill properly "
                                  "to extract Force platform informations");
     }
-    _meanCorners.setZeros();
     for (size_t i=0; i<4; ++i){
         ezc3d::Vector3d corner;
         for (size_t j=0; j<3; ++j){
@@ -223,7 +222,6 @@ void ezc3d::Modules::ForcePlatform::extractOrigin(
         throw std::runtime_error("FORCE_PLATFORM:ORIGIN is not fill properly "
                                  "to extract Force platform informations");
     }
-    _origin.setZeros();
     for (size_t i=0; i<3; ++i){
         _origin(i) = all_origins[idx*3 + i];
     }
@@ -245,7 +243,6 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
         nChannels = 6;
     }
     _calMatrix = ezc3d::Matrix(nChannels, nChannels);
-    _calMatrix.setZeros();
 
     if (!groupPF.isParameter("CAL_MATRIX")){
         if (_type == 2){
@@ -296,7 +293,6 @@ void ezc3d::Modules::ForcePlatform::computePfReferenceFrame()
     axisY.normalize();
     axisZ.normalize();
 
-    _refFrame = ezc3d::Matrix(3, 3);
     for (size_t i=0; i<3; ++i){
         _refFrame(i, 0) = axisX(i);
         _refFrame(i, 1) = axisY(i);
@@ -374,7 +370,7 @@ void ezc3d::Modules::ForcePlatform::extractData(
                             0);
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
                 _Tz[cmp] = _refFrame
-                        * (moment_raw - force_raw.cross(-1*CoP_raw));
+                        * static_cast<Vector3d>(moment_raw - force_raw.cross(-1*CoP_raw));
                 ++cmp;
             }
 
