@@ -58,7 +58,6 @@ protected:
     /// \param c3d A reference to the c3d
     ///
     void extractUnits(
-            size_t idx,
             const ezc3d::c3d &c3d);
 
     //---- DATA ----//
