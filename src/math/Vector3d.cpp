@@ -7,7 +7,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "Vector3d.h"
+#include "math/Vector3d.h"
 
 ezc3d::Vector3d::Vector3d() :
     ezc3d::Matrix(3, 1)
@@ -28,10 +28,12 @@ ezc3d::Vector3d::Vector3d(
         const ezc3d::Matrix &p) :
     ezc3d::Matrix(p)
 {
+#ifndef USE_MATRIX_FAST_ACCESSOR
     if (nbRows() != 3 || nbCols() != 1){
         throw std::runtime_error("Size of the matrix must be 3x1 to be casted"
                                  "as a vector3d");
     }
+#endif
 }
 
 void ezc3d::Vector3d::print() const
@@ -96,6 +98,24 @@ bool ezc3d::Vector3d::isValid() const
     else {
         return true;
     }
+}
+
+ezc3d::Vector3d& ezc3d::Vector3d::operator=(
+        const ezc3d::Matrix& other)
+{
+    if (this != &other){
+#ifndef USE_MATRIX_FAST_ACCESSOR
+        if (nbRows() != 3 || nbCols() != 1){
+            throw std::runtime_error("Size of the matrix must be 3x1 to be casted"
+                                     "as a vector3d");
+        }
+#endif
+
+        _data[0] = other._data[0];
+        _data[1] = other._data[1];
+        _data[2] = other._data[2];
+    }
+    return *this;
 }
 
 double ezc3d::Vector3d::operator()(

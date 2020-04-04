@@ -1,8 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
-#include "modules/ForcePlatforms.h"
-#include "Header.h"
+#include "ezc3d_all.h"
 
 TEST(ForcePlatForm, NoPlatForm){
     ezc3d::c3d c3d("c3dTestFiles/Vicon.c3d");

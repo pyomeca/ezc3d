@@ -9,7 +9,7 @@
 ///
 
 #include "ezc3d.h"
-#include "Vector3d.h"
+#include "math/Vector3d.h"
 
 ///
 /// \brief Force Platform analyse

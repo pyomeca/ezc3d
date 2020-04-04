@@ -1,5 +1,5 @@
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
+#ifndef EZC3D_MATH_VECTOR3D_H
+#define EZC3D_MATH_VECTOR3D_H
 ///
 /// \file Vector3d.h
 /// \brief Declaration of a Vector3d class
@@ -109,6 +109,11 @@ public:
     ///
     virtual bool isValid() const;
 
+    //---- OPERATIONS ----//
+public:
+    ezc3d::Vector3d& operator=(
+            const ezc3d::Matrix& other);
+
 #ifndef SWIG
     ///
     /// \brief Get a specific value of the vector
@@ -125,8 +130,6 @@ public:
     virtual double& operator()(
             size_t idx);
 
-    //---- OPERATIONS ----//
-public:
     ///
     /// \brief Returns the dot-product of two vectors
     /// \param other The vector to dot-product with
