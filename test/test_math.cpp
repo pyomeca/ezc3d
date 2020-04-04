@@ -353,6 +353,10 @@ TEST(Vector3d, create){
 TEST(Vector3d, unittest){
     ezc3d::Vector3d random(1.1, 2.2, 3.3);
     EXPECT_DOUBLE_EQ(random.norm(), 4.1158231254513353);
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    EXPECT_THROW(random(3), std::runtime_error);
+    EXPECT_THROW(random(3) = 0, std::runtime_error);
+#endif
 
     ezc3d::Vector3d random_normalized(random);
     random_normalized.normalize();

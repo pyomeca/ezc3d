@@ -119,15 +119,25 @@ ezc3d::Vector3d& ezc3d::Vector3d::operator=(
 }
 
 double ezc3d::Vector3d::operator()(
-        size_t idx) const
+        size_t row) const
 {
-    return this->ezc3d::Matrix::operator ()(idx, 0);
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    if (row > 2){
+        throw std::runtime_error("Maximal index for a vector3d is 2");
+    }
+#endif
+    return _data[row];
 }
 
 double& ezc3d::Vector3d::operator()(
-        size_t idx)
+        size_t row)
 {
-    return this->ezc3d::Matrix::operator ()(idx, 0);
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    if (row > 2){
+        throw std::runtime_error("Maximal index for a vector3d is 2");
+    }
+#endif
+    return _data[row];
 }
 
 double ezc3d::Vector3d::dot(

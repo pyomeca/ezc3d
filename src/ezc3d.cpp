@@ -288,26 +288,26 @@ float ezc3d::c3d::readFloat(
         const std::ios_base::seekdir &pos) {
     readFile(file, m_nByteToRead_float, c_float, nByteFromPrevious, pos);
     float out;
-//    if (processorType == PROCESSOR_TYPE::INTEL) {
+    if (processorType == PROCESSOR_TYPE::INTEL) {
         out = *reinterpret_cast<float*>(c_float);
-//    } else if (processorType == PROCESSOR_TYPE::DEC){
-//        c_float_tp[0] = c_float[2];
-//        c_float_tp[1] = c_float[3];
-//        c_float_tp[2] = c_float[0];
-//        if (c_float[1] != 0)
-//            c_float_tp[3] = c_float[1]-1;
-//        else
-//            c_float_tp[3] = c_float[1];
-//        c_float_tp[4] = '\0';
-//        out = *reinterpret_cast<float*>(c_float_tp);
-//    } else if (processorType == PROCESSOR_TYPE::MIPS) {
-//        for (unsigned int i=0; i<m_nByteToRead_float; ++i)
-//            c_float_tp[i] = c_float[m_nByteToRead_float-1 - i];
-//        c_float_tp[m_nByteToRead_float] = '\0';
-//        out = *reinterpret_cast<float*>(c_float_tp);
-//    } else {
-//        throw std::runtime_error("Wrong type of processor for floating points");
-//    }
+    } else if (processorType == PROCESSOR_TYPE::DEC){
+        c_float_tp[0] = c_float[2];
+        c_float_tp[1] = c_float[3];
+        c_float_tp[2] = c_float[0];
+        if (c_float[1] != 0)
+            c_float_tp[3] = c_float[1]-1;
+        else
+            c_float_tp[3] = c_float[1];
+        c_float_tp[4] = '\0';
+        out = *reinterpret_cast<float*>(c_float_tp);
+    } else if (processorType == PROCESSOR_TYPE::MIPS) {
+        for (unsigned int i=0; i<m_nByteToRead_float; ++i)
+            c_float_tp[i] = c_float[m_nByteToRead_float-1 - i];
+        c_float_tp[m_nByteToRead_float] = '\0';
+        out = *reinterpret_cast<float*>(c_float_tp);
+    } else {
+        throw std::runtime_error("Wrong type of processor for floating points");
+    }
     return out;
 }
 

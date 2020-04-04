@@ -117,18 +117,18 @@ public:
 #ifndef SWIG
     ///
     /// \brief Get a specific value of the vector
-    /// \param idx The index
+    /// \param row The index
     ///
     virtual double operator()(
-            size_t idx) const;
+            size_t row) const;
 #endif
 
     ///
     /// \brief Get a reference to a specific value of the vector
-    /// \param idx The index
+    /// \param row The index
     ///
     virtual double& operator()(
-            size_t idx);
+            size_t row);
 
     ///
     /// \brief Returns the dot-product of two vectors
