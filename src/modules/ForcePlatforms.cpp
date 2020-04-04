@@ -16,7 +16,7 @@ ezc3d::Modules::ForcePlatform::ForcePlatform(
         const ezc3d::c3d& c3d)
 {
     // Extract the required values from the C3D
-    extractUnits(idx, c3d);
+    extractUnits(c3d);
     extractType(idx, c3d);
     extractCorners(idx, c3d);
     extractOrigin(idx, c3d);
@@ -41,7 +41,6 @@ const std::string& ezc3d::Modules::ForcePlatform::positionUnit() const
 }
 
 void ezc3d::Modules::ForcePlatform::extractUnits(
-        size_t idx,
         const ezc3d::c3d &c3d)
 {
     const ezc3d::ParametersNS::GroupNS::Group &groupPoint(
@@ -148,11 +147,7 @@ void ezc3d::Modules::ForcePlatform::extractType(
                                  "open an Issue on github for support");
     }
     else if (_type == 2 || _type == 4){
-        if (_type == 4){
-            throw std::runtime_error("Type 4 (and 7) that uses CAL_MATRIX is "
-                                     "not supported yet, please "
-                                     "open an Issue on github for support");
-        }
+
     }
     else if (_type == 3 || _type == 7){
         throw std::runtime_error("Type 3 (and 7) is not supported yet, please "
@@ -232,7 +227,7 @@ void ezc3d::Modules::ForcePlatform::extractOrigin(
         _origin(i) = all_origins[idx*3 + i];
     }
 
-    if (_type == 2 && _origin(2) > 0.0){
+    if ((_type == 2 || _type == 4) && _origin(2) > 0.0){
         _origin = -1*_origin;
     }
 }
@@ -245,7 +240,7 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
                 c3d.parameters().group("FORCE_PLATFORM"));
 
     size_t nChannels;
-    if (_type == 2){
+    if (_type == 2 || _type == 4){
         nChannels = 6;
     }
     _calMatrix = ezc3d::Matrix(nChannels, nChannels);
@@ -317,7 +312,7 @@ void ezc3d::Modules::ForcePlatform::extractData(
 
     // Get elements from the force platform's type
     size_t nChannels;
-    if (_type == 2){
+    if (_type == 2 || _type == 4){
         nChannels = 6;
     }
 
@@ -353,12 +348,20 @@ void ezc3d::Modules::ForcePlatform::extractData(
         for (size_t i=0; i<frame.analogs().nbSubframes(); ++i){
             const auto& subframe(frame.analogs().subframe(i));
 
-            if (_type == 2){
+            if (_type == 2 || _type == 4){
+                ezc3d::Matrix data_raw(6, 1);
                 ezc3d::Vector3d force_raw;
                 ezc3d::Vector3d moment_raw;
                 for (size_t j=0; j<3; ++j){
-                    force_raw(j) = subframe.channel(channel_idx[j]).data();
-                    moment_raw(j) = subframe.channel(channel_idx[j+3]).data();
+                    data_raw(j, 0) = subframe.channel(channel_idx[j]).data();
+                    data_raw(j+3, 0) = subframe.channel(channel_idx[j+3]).data();
+                }
+                if (_type == 4){
+                    data_raw = _calMatrix * data_raw;
+                }
+                for (size_t j=0; j<3; ++j){
+                    force_raw(j) = data_raw(j, 0);
+                    moment_raw(j) = data_raw(j+3, 0);
                 }
                 _F[cmp] = _refFrame * force_raw;
                 moment_raw += force_raw.cross(_origin);

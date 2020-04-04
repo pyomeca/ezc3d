@@ -97,3 +97,9 @@ TEST(ForcePlatForm, AMTI){
     EXPECT_FLOAT_EQ(origin.y(), 0);
     EXPECT_FLOAT_EQ(origin.z(),  -36.322);
 }
+
+TEST(ForcePlatForm, Cortex) {
+    ezc3d::c3d c3d("c3dTestFiles/Cortex.c3d");
+    ezc3d::Modules::ForcePlatforms pf(c3d);
+    EXPECT_EQ(pf.forcePlatforms().size(), 2);
+}
