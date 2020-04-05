@@ -482,7 +482,7 @@ TEST(Vector3d, create){
     EXPECT_NO_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 1)));
 #ifndef USE_MATRIX_FAST_ACCESSOR
     EXPECT_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 2)), std::runtime_error);
-    EXPECT_THROW(ezc3d::Vector3d = ezc3d::Matrix(3, 2), std::runtime_error);
+    EXPECT_THROW(ezc3d::Vector3d dummy = ezc3d::Matrix(3, 2), std::runtime_error);
 #endif
 }
 
