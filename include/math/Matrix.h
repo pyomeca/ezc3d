@@ -38,8 +38,10 @@ public:
             const ezc3d::Matrix& matrix);
 
     // Declare Friendship
-    friend class ezc3d::Vector3d;
     friend class ezc3d::Matrix33;
+    friend class ezc3d::Matrix66;
+    friend class ezc3d::Vector3d;
+    friend class ezc3d::Vector6d;
 
     //---- STREAM ----//
 public:

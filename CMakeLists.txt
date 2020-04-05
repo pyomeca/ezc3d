@@ -18,7 +18,9 @@ ENDIF()
 set(SRC_LIST
     src/math/Matrix.cpp
     src/math/Matrix33.cpp
+    src/math/Matrix66.cpp
     src/math/Vector3d.cpp
+    src/math/Vector6d.cpp
     src/Analogs.cpp
     src/Channel.cpp
     src/Data.cpp

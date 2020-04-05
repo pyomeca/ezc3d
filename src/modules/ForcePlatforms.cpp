@@ -82,7 +82,7 @@ size_t ezc3d::Modules::ForcePlatform::type() const
     return _type;
 }
 
-const ezc3d::Matrix& ezc3d::Modules::ForcePlatform::calMatrix() const
+const ezc3d::Matrix66& ezc3d::Modules::ForcePlatform::calMatrix() const
 {
     return _calMatrix;
 }
@@ -242,7 +242,6 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
     if (_type == 2 || _type == 4){
         nChannels = 6;
     }
-    _calMatrix = ezc3d::Matrix(nChannels, nChannels);
 
     if (!groupPF.isParameter("CAL_MATRIX")){
         if (_type == 2){
@@ -346,19 +345,19 @@ void ezc3d::Modules::ForcePlatform::extractData(
             const auto& subframe(frame.analogs().subframe(i));
 
             if (_type == 2 || _type == 4){
-                ezc3d::Matrix data_raw(6, 1);
+                ezc3d::Vector6d data_raw;
                 ezc3d::Vector3d force_raw;
                 ezc3d::Vector3d moment_raw;
                 for (size_t j=0; j<3; ++j){
-                    data_raw(j, 0) = subframe.channel(channel_idx[j]).data();
-                    data_raw(j+3, 0) = subframe.channel(channel_idx[j+3]).data();
+                    data_raw(j) = subframe.channel(channel_idx[j]).data();
+                    data_raw(j+3) = subframe.channel(channel_idx[j+3]).data();
                 }
                 if (_type == 4){
                     data_raw = _calMatrix * data_raw;
                 }
                 for (size_t j=0; j<3; ++j){
-                    force_raw(j) = data_raw(j, 0);
-                    moment_raw(j) = data_raw(j+3, 0);
+                    force_raw(j) = data_raw(j);
+                    moment_raw(j) = data_raw(j+3);
                 }
                 _F[cmp] = _refFrame * force_raw;
                 moment_raw += force_raw.cross(_origin);
@@ -369,8 +368,8 @@ void ezc3d::Modules::ForcePlatform::extractData(
                             moment_raw(0)/force_raw(2),
                             0);
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
-                _Tz[cmp] = _refFrame
-                        * static_cast<Vector3d>(moment_raw - force_raw.cross(-1*CoP_raw));
+                _Tz[cmp] = _refFrame * static_cast<Vector3d>(
+                            moment_raw - force_raw.cross(-1*CoP_raw));
                 ++cmp;
             }
 
