@@ -474,15 +474,19 @@ TEST(Vector3d, create){
     EXPECT_DOUBLE_EQ(random_copy(1), 2.2);
     EXPECT_DOUBLE_EQ(random_copy(2), 3.3);
 
-    ezc3d::Vector3d random_equal = random;
+    ezc3d::Vector3d random_equal;
+    random_equal = random;
     EXPECT_DOUBLE_EQ(random_equal(0), 1.1);
     EXPECT_DOUBLE_EQ(random_equal(1), 2.2);
     EXPECT_DOUBLE_EQ(random_equal(2), 3.3);
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    EXPECT_THROW(random_equal = ezc3d::Matrix(4, 1), std::runtime_error);
+    EXPECT_THROW(random_equal = ezc3d::Matrix(3, 2), std::runtime_error);
+#endif
 
     EXPECT_NO_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 1)));
 #ifndef USE_MATRIX_FAST_ACCESSOR
     EXPECT_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 2)), std::runtime_error);
-    EXPECT_THROW(ezc3d::Vector3d dummy = ezc3d::Matrix(3, 2), std::runtime_error);
 #endif
 }
 
@@ -490,7 +494,6 @@ TEST(Vector3d, unittest){
     ezc3d::Vector3d random(1.1, 2.2, 3.3);
     EXPECT_DOUBLE_EQ(random.norm(), 4.1158231254513353);
 #ifndef USE_MATRIX_FAST_ACCESSOR
-    EXPECT_THROW(double dummy = random(3), std::runtime_error);
     EXPECT_THROW(random(3) = 0, std::runtime_error);
 #endif
 
@@ -537,6 +540,17 @@ TEST(Vector6d, unittest){
     EXPECT_THROW(random(6) = 0, std::runtime_error);
 #endif
 
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    EXPECT_THROW(ezc3d::Vector6d dummy(ezc3d::Matrix(6, 2)), std::runtime_error);
+    EXPECT_THROW(ezc3d::Vector6d dummy(ezc3d::Matrix(5, 1)), std::runtime_error);
+    {
+    ezc3d::Vector6d dummy2;
+    EXPECT_THROW(dummy2 = ezc3d::Matrix(5, 1), std::runtime_error);
+    EXPECT_THROW(dummy2 = ezc3d::Matrix(6, 2), std::runtime_error);
+    }
+#endif
+
+
     EXPECT_DOUBLE_EQ(random(0), 1.1);
     EXPECT_DOUBLE_EQ(random(1), 2.2);
     EXPECT_DOUBLE_EQ(random(2), 3.3);
@@ -558,8 +572,10 @@ TEST(Vector6d, unittest){
     random_copy(5) =  7.7;
     EXPECT_DOUBLE_EQ(random_copy(5), 7.7);
 
+    ezc3d::Matrix random_inMat(random);
 
-    ezc3d::Vector6d random_equal = random;
+    ezc3d::Vector6d random_equal;
+    random_equal = random_inMat;
     EXPECT_EQ(random_equal.nbRows(), 6);
     EXPECT_EQ(random_equal.nbCols(), 1);
     EXPECT_EQ(random_equal.size(), 6);

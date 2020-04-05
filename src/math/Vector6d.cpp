@@ -61,7 +61,7 @@ ezc3d::Vector6d& ezc3d::Vector6d::operator=(
 {
     if (this != &other){
 #ifndef USE_MATRIX_FAST_ACCESSOR
-        if (nbRows() != 6 || nbCols() != 1){
+        if (other.nbRows() != 6 || other.nbCols() != 1){
             throw std::runtime_error("Size of the matrix must be 6x1 to be casted"
                                      "as a Vector6d");
         }

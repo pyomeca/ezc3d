@@ -112,7 +112,7 @@ ezc3d::Vector3d& ezc3d::Vector3d::operator=(
 {
     if (this != &other){
 #ifndef USE_MATRIX_FAST_ACCESSOR
-        if (nbRows() != 3 || nbCols() != 1){
+        if (other.nbRows() != 3 || other.nbCols() != 1){
             throw std::runtime_error("Size of the matrix must be 3x1 to be casted"
                                      "as a vector3d");
         }
