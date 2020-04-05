@@ -39,7 +39,7 @@ ezc3d::Matrix33::Matrix33(
     ezc3d::Matrix(other)
 {
 #ifndef USE_MATRIX_FAST_ACCESSOR
-    if (nbRows() != 3 || nbCols() != 3){
+    if (_nbRows != 3 || _nbCols != 3){
         throw std::runtime_error("Size of the matrix must be 3x3 to be casted"
                                  "as a Matrix33");
     }

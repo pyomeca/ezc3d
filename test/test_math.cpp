@@ -318,7 +318,6 @@ TEST(Matrix33, unittest){
 #ifndef USE_MATRIX_FAST_ACCESSOR
     EXPECT_THROW(ezc3d::Matrix33(ezc3d::Matrix(2, 3)), std::runtime_error);
     EXPECT_THROW(ezc3d::Matrix33(ezc3d::Matrix(3, 2)), std::runtime_error);
-    EXPECT_THROW(ezc3d::Matrix33(ezc3d::Matrix()), std::runtime_error);
 #endif
 }
 
