@@ -65,7 +65,7 @@ void ezc3d::Matrix33::resize(
         size_t,
         size_t)
 {
-    // Nothing to do
+    throw std::runtime_error("Matrix33 cannot be resized");
 }
 
 ezc3d::Vector3d ezc3d::Matrix33::operator*(

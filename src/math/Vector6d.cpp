@@ -77,6 +77,13 @@ ezc3d::Vector6d& ezc3d::Vector6d::operator=(
     return *this;
 }
 
+void ezc3d::Vector6d::resize(
+        size_t,
+        size_t)
+{
+    throw std::runtime_error("Vector6d cannot be resized");
+}
+
 double ezc3d::Vector6d::operator()(
         size_t row) const
 {

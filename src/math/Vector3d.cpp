@@ -45,6 +45,13 @@ void ezc3d::Vector3d::print() const
               << std::endl;
 }
 
+void ezc3d::Vector3d::resize(
+        size_t,
+        size_t)
+{
+    throw std::runtime_error("Vector3d cannot be resized");
+}
+
 void ezc3d::Vector3d::set(
         double x,
         double y,

@@ -163,9 +163,6 @@ TEST(ForcePlatForm, Type4) {
                     else if (j == 4 || j == 5){
                         EXPECT_EQ(calMatrix(j, k), 400000.0);
                     }
-                    else {
-                        EXPECT_EQ(calMatrix(j, k), 0.0);
-                    }
                 }
                 else {
                     EXPECT_EQ(calMatrix(j, k), 0.0);

@@ -54,6 +54,13 @@ public:
     //---- DATA ----//
 public:
     ///
+    /// \brief Do nothing, it is not possible to resize a 3x1 vector
+    ///
+    void resize(
+            size_t,
+            size_t) override;
+
+    ///
     /// \brief set All the 3dVector at once
     /// \param x The X-component of the 3D Vector
     /// \param y The Y-component of the 3D Vector

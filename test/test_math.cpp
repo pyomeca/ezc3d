@@ -252,6 +252,7 @@ TEST(Matrix33, unittest){
     EXPECT_EQ(m_toFill.nbRows(), 3);
     EXPECT_EQ(m_toFill.nbCols(), 3);
     EXPECT_EQ(m_toFill.size(), 9);
+    EXPECT_THROW(m_toFill.resize(0, 0), std::runtime_error);
     m_toFill(0, 0) = 2.;
     m_toFill(0, 1) = 3.;
     m_toFill(0, 2) = 4.;
@@ -320,12 +321,148 @@ TEST(Matrix33, unittest){
 #endif
 }
 
+TEST(Matrix66, unittest){
+    ezc3d::Matrix66 m_toFill;
+    EXPECT_EQ(m_toFill.nbRows(), 6);
+    EXPECT_EQ(m_toFill.nbCols(), 6);
+    EXPECT_EQ(m_toFill.size(), 36);
+    EXPECT_THROW(m_toFill.resize(0, 0), std::runtime_error);
+    m_toFill(0, 0) = 2.;
+    m_toFill(0, 1) = 3.;
+    m_toFill(0, 2) = 4.;
+    m_toFill(0, 3) = 2.;
+    m_toFill(0, 4) = 3.;
+    m_toFill(0, 5) = 4.;
+    m_toFill(1, 0) = 5.;
+    m_toFill(1, 1) = 6.;
+    m_toFill(1, 2) = 7.;
+    m_toFill(1, 3) = 5.;
+    m_toFill(1, 4) = 6.;
+    m_toFill(1, 5) = 7.;
+    m_toFill(2, 0) = 8.;
+    m_toFill(2, 1) = 9.;
+    m_toFill(2, 2) = 10.;
+    m_toFill(2, 3) = 8.;
+    m_toFill(2, 4) = 9.;
+    m_toFill(2, 5) = 10.;
+    m_toFill(3, 0) = 2.;
+    m_toFill(3, 1) = 3.;
+    m_toFill(3, 2) = 4.;
+    m_toFill(3, 3) = 2.;
+    m_toFill(3, 4) = 3.;
+    m_toFill(3, 5) = 4.;
+    m_toFill(4, 0) = 5.;
+    m_toFill(4, 1) = 6.;
+    m_toFill(4, 2) = 7.;
+    m_toFill(4, 3) = 5.;
+    m_toFill(4, 4) = 6.;
+    m_toFill(4, 5) = 7.;
+    m_toFill(5, 0) = 8.;
+    m_toFill(5, 1) = 9.;
+    m_toFill(5, 2) = 10.;
+    m_toFill(5, 3) = 8.;
+    m_toFill(5, 4) = 9.;
+    m_toFill(5, 5) = 10.;
+    EXPECT_DOUBLE_EQ(m_toFill(0, 0), 2.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 1), 3.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 2), 4.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 3), 2.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 4), 3.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 5), 4.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 0), 5.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 1), 6.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 2), 7.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 3), 5.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 4), 6.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 5), 7.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 0), 8.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 1), 9.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 2), 10.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 3), 8.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 4), 9.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 5), 10.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 0), 2.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 1), 3.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 2), 4.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 3), 2.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 4), 3.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 5), 4.);
+    EXPECT_DOUBLE_EQ(m_toFill(4, 0), 5.);
+    EXPECT_DOUBLE_EQ(m_toFill(4, 1), 6.);
+    EXPECT_DOUBLE_EQ(m_toFill(4, 2), 7.);
+    EXPECT_DOUBLE_EQ(m_toFill(4, 3), 5.);
+    EXPECT_DOUBLE_EQ(m_toFill(4, 4), 6.);
+    EXPECT_DOUBLE_EQ(m_toFill(4, 5), 7.);
+    EXPECT_DOUBLE_EQ(m_toFill(5, 0), 8.);
+    EXPECT_DOUBLE_EQ(m_toFill(5, 1), 9.);
+    EXPECT_DOUBLE_EQ(m_toFill(5, 2), 10.);
+    EXPECT_DOUBLE_EQ(m_toFill(5, 3), 8.);
+    EXPECT_DOUBLE_EQ(m_toFill(5, 4), 9.);
+    EXPECT_DOUBLE_EQ(m_toFill(5, 5), 10.);
+
+    ezc3d::Matrix66 m1_copy(m_toFill);
+    EXPECT_EQ(m1_copy.nbRows(), 6);
+    EXPECT_EQ(m1_copy.nbCols(), 6);
+    EXPECT_EQ(m1_copy.size(), 36);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 0), 2.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 1), 3.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 2), 4.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 3), 2.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 4), 3.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 5), 4.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 0), 5.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 1), 6.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 2), 7.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 3), 5.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 4), 6.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 5), 7.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 0), 8.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 1), 9.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 2), 10.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 3), 8.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 4), 9.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 5), 10.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 0), 2.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 1), 3.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 2), 4.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 3), 2.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 4), 3.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 5), 4.);
+    EXPECT_DOUBLE_EQ(m1_copy(4, 0), 5.);
+    EXPECT_DOUBLE_EQ(m1_copy(4, 1), 6.);
+    EXPECT_DOUBLE_EQ(m1_copy(4, 2), 7.);
+    EXPECT_DOUBLE_EQ(m1_copy(4, 3), 5.);
+    EXPECT_DOUBLE_EQ(m1_copy(4, 4), 6.);
+    EXPECT_DOUBLE_EQ(m1_copy(4, 5), 7.);
+    EXPECT_DOUBLE_EQ(m1_copy(5, 0), 8.);
+    EXPECT_DOUBLE_EQ(m1_copy(5, 1), 9.);
+    EXPECT_DOUBLE_EQ(m1_copy(5, 2), 10.);
+    EXPECT_DOUBLE_EQ(m1_copy(5, 3), 8.);
+    EXPECT_DOUBLE_EQ(m1_copy(5, 4), 9.);
+    EXPECT_DOUBLE_EQ(m1_copy(5, 5), 10.);
+
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    EXPECT_THROW(ezc3d::Matrix66(ezc3d::Matrix(5, 6)), std::runtime_error);
+    EXPECT_THROW(ezc3d::Matrix66(ezc3d::Matrix(6, 5)), std::runtime_error);
+#endif
+
+    ezc3d::Vector6d v_fromMul(m_toFill * ezc3d::Vector6d(2, 3, 4, 5, 6, 7));
+    EXPECT_DOUBLE_EQ(v_fromMul(0), 85.);
+    EXPECT_DOUBLE_EQ(v_fromMul(1), 166.);
+    EXPECT_DOUBLE_EQ(v_fromMul(2), 247.);
+    EXPECT_DOUBLE_EQ(v_fromMul(3), 85.);
+    EXPECT_DOUBLE_EQ(v_fromMul(4), 166.);
+    EXPECT_DOUBLE_EQ(v_fromMul(5), 247.);
+
+}
+
 TEST(Vector3d, create){
     ezc3d::Vector3d zeros;
     zeros.setZeros();
     EXPECT_DOUBLE_EQ(zeros(0), 0.0);
     EXPECT_DOUBLE_EQ(zeros(1), 0.0);
     EXPECT_DOUBLE_EQ(zeros(2), 0.0);
+    EXPECT_THROW(zeros.resize(0, 0), std::runtime_error);
 
     ezc3d::Vector3d random(1.1, 2.2, 3.3);
     EXPECT_DOUBLE_EQ(random(0), 1.1);
@@ -345,6 +482,7 @@ TEST(Vector3d, create){
     EXPECT_NO_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 1)));
 #ifndef USE_MATRIX_FAST_ACCESSOR
     EXPECT_THROW(ezc3d::Vector3d(ezc3d::Matrix(3, 2)), std::runtime_error);
+    EXPECT_THROW(ezc3d::Vector3d = ezc3d::Matrix(3, 2), std::runtime_error);
 #endif
 }
 
@@ -352,7 +490,7 @@ TEST(Vector3d, unittest){
     ezc3d::Vector3d random(1.1, 2.2, 3.3);
     EXPECT_DOUBLE_EQ(random.norm(), 4.1158231254513353);
 #ifndef USE_MATRIX_FAST_ACCESSOR
-    EXPECT_THROW(random(3), std::runtime_error);
+    EXPECT_THROW(double dummy = random(3), std::runtime_error);
     EXPECT_THROW(random(3) = 0, std::runtime_error);
 #endif
 
@@ -384,5 +522,51 @@ TEST(Vector3d, unittest){
     EXPECT_DOUBLE_EQ(random_add3(0), 3.3);
     EXPECT_DOUBLE_EQ(random_add3(1), 5.5);
     EXPECT_DOUBLE_EQ(random_add3(2), 7.7);
+}
 
+TEST(Vector6d, unittest){
+    ezc3d::Vector6d random(1.1, 2.2, 3.3, 4.4, 5.5, 6.6);
+    EXPECT_EQ(random.nbRows(), 6);
+    EXPECT_EQ(random.nbCols(), 1);
+    EXPECT_EQ(random.size(), 6);
+    EXPECT_THROW(random.resize(0, 0), std::runtime_error);
+
+    random.print();
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    EXPECT_THROW(random(6), std::runtime_error);
+    EXPECT_THROW(random(6) = 0, std::runtime_error);
+#endif
+
+    EXPECT_DOUBLE_EQ(random(0), 1.1);
+    EXPECT_DOUBLE_EQ(random(1), 2.2);
+    EXPECT_DOUBLE_EQ(random(2), 3.3);
+    EXPECT_DOUBLE_EQ(random(3), 4.4);
+    EXPECT_DOUBLE_EQ(random(4), 5.5);
+    EXPECT_DOUBLE_EQ(random(5), 6.6);
+
+    ezc3d::Vector6d random_copy(random);
+    EXPECT_EQ(random_copy.nbRows(), 6);
+    EXPECT_EQ(random_copy.nbCols(), 1);
+    EXPECT_EQ(random_copy.size(), 6);
+    EXPECT_DOUBLE_EQ(random_copy(0), 1.1);
+    EXPECT_DOUBLE_EQ(random_copy(1), 2.2);
+    EXPECT_DOUBLE_EQ(random_copy(2), 3.3);
+    EXPECT_DOUBLE_EQ(random_copy(3), 4.4);
+    EXPECT_DOUBLE_EQ(random_copy(4), 5.5);
+    EXPECT_DOUBLE_EQ(random_copy(5), 6.6);
+
+    random_copy(5) =  7.7;
+    EXPECT_DOUBLE_EQ(random_copy(5), 7.7);
+
+
+    ezc3d::Vector6d random_equal = random;
+    EXPECT_EQ(random_equal.nbRows(), 6);
+    EXPECT_EQ(random_equal.nbCols(), 1);
+    EXPECT_EQ(random_equal.size(), 6);
+    EXPECT_DOUBLE_EQ(random_equal(0), 1.1);
+    EXPECT_DOUBLE_EQ(random_equal(1), 2.2);
+    EXPECT_DOUBLE_EQ(random_equal(2), 3.3);
+    EXPECT_DOUBLE_EQ(random_equal(3), 4.4);
+    EXPECT_DOUBLE_EQ(random_equal(4), 5.5);
+    EXPECT_DOUBLE_EQ(random_equal(5), 6.6);
 }

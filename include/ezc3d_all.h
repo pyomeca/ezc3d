@@ -8,12 +8,8 @@
 /// \date March 27th, 2020
 ///
 
-#include "math/Matrix.h"
-#include "math/Matrix33.h"
-#include "math/Matrix66.h"
-#include "math/Vector3d.h"
-#include "math/Vector6d.h"
 
+#include "math/ezc3dMath.h"
 #include "Header.h"
 #include "Parameters.h"
 #include "Data.h"

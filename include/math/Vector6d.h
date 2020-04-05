@@ -58,6 +58,13 @@ public:
 
     //---- OPERATIONS ----//
 public:
+    ///
+    /// \brief Do nothing, it is not possible to resize a 6x1 vector
+    ///
+    void resize(
+            size_t,
+            size_t) override;
+
 #ifndef SWIG
     ezc3d::Vector6d& operator=(
             const ezc3d::Matrix& other);

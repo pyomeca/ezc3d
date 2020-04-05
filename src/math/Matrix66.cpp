@@ -48,7 +48,7 @@ void ezc3d::Matrix66::resize(
         size_t,
         size_t)
 {
-    // Nothing to do
+    throw std::runtime_error("Matrix66 cannot be resized");
 }
 
 ezc3d::Vector6d ezc3d::Matrix66::operator*(
