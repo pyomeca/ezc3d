@@ -53,8 +53,9 @@ namespace std {
 // Includes all necessary files from the API
 %include "ezc3dConfig.h"
 %include "ezc3d.h"
-%include "Matrix.h"
-%include "Vector3d.h"
+%include "math/Matrix.h"
+%include "math/Matrix33.h"
+%include "math/Vector3d.h"
 %include "Header.h"
 %include "Parameters.h"
 %include "Group.h"

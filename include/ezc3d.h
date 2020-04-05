@@ -97,8 +97,11 @@ namespace ezc3d {
 
     // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
     class c3d;
-    class EZC3D_API Vector3d;
     class EZC3D_API Matrix;
+    class EZC3D_API Matrix33;
+    class EZC3D_API Matrix66;
+    class EZC3D_API Vector3d;
+    class EZC3D_API Vector6d;
     class EZC3D_API Header;
 
     ///

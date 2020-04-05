@@ -8,10 +8,12 @@
 /// \date March 27th, 2020
 ///
 
-#include <Header.h>
-#include <Parameters.h>
-#include <Data.h>
 
-#include <modules/ForcePlatforms.h>
+#include "math/ezc3dMath.h"
+#include "Header.h"
+#include "Parameters.h"
+#include "Data.h"
+
+#include "modules/ForcePlatforms.h"
 
 #endif

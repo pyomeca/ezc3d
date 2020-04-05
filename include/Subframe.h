@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include <Channel.h>
+#include "Channel.h"
 
 ///
 /// \brief Subframe for the analogous data

@@ -16,12 +16,15 @@ ENDIF()
 
 # Prepare add library
 set(SRC_LIST
+    src/math/Matrix.cpp
+    src/math/Matrix33.cpp
+    src/math/Matrix66.cpp
+    src/math/Vector3d.cpp
+    src/math/Vector6d.cpp
     src/Analogs.cpp
     src/Channel.cpp
     src/Data.cpp
     src/ezc3d.cpp
-    src/Matrix.cpp
-    src/Vector3d.cpp
     src/Frame.cpp
     src/Group.cpp
     src/Header.cpp
@@ -43,6 +46,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
 
 # Remember the CMAKE_CURRENT_BINARY_DIR (important if ezc3d is used as submodule)
 set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+# Option to allow checking of size for matrix getter (slower but safer if activated)
+option(USE_MATRIX_FAST_ACCESSOR
+    "If fast accessor (without bound checks) shoul be use. Prevent SegFault from the user not activated, but is much slower (mostly for Debug purposes)"
+    ON)
 
 # Create the configuration header file associated with the asked options
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in
