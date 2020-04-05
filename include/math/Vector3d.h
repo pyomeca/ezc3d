@@ -111,10 +111,10 @@ public:
 
     //---- OPERATIONS ----//
 public:
+#ifndef SWIG
     ezc3d::Vector3d& operator=(
             const ezc3d::Matrix& other);
 
-#ifndef SWIG
     ///
     /// \brief Get a specific value of the vector
     /// \param row The index
