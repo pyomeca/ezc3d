@@ -1,8 +1,8 @@
 #ifndef EZC3D_MATH_MATRIX33_H
 #define EZC3D_MATH_MATRIX33_H
 ///
-/// \file Matrix.h
-/// \brief Declaration of a Matrix class
+/// \file Matrix33.h
+/// \brief Declaration of a Matrix33 class
 /// \author Pariterre
 /// \version 1.0
 /// \date March 25th, 2020

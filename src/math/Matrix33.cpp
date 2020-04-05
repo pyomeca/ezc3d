@@ -1,7 +1,7 @@
 #define EZC3D_API_EXPORTS
 ///
-/// \file Matrix.cpp
-/// \brief Implementation of Vector3d class
+/// \file Matrix33.cpp
+/// \brief Implementation of Matrix33 class
 /// \author Pariterre
 /// \version 1.0
 /// \date October 17th, 2018
