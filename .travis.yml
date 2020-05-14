@@ -13,6 +13,7 @@ matrix:
       - COMPILER=g++-7
   - os: windows
 
+    
 before_install:
     # Combine global build options with OS/compiler-dependent options
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
@@ -37,9 +38,9 @@ before_install:
 
 install:
     # Install test packages for Python3
-    - conda install python pytest numpy swig -cconda-forge
+    - conda install python pytest numpy swig pkgconfig -c conda-forge
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-        conda install lcov -c conda-forge;
+        conda install lcov cmake -c conda-forge;
       fi
       
 script:
@@ -49,7 +50,7 @@ script:
     # Download, compile and test core
     - mkdir -p build
     - cd build
-      # Perform tests on all platform, but only perform code coverage on Linux
+    # Perform tests on all platform, but only perform code coverage on Linux
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
         cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF .. ;
         make;
