@@ -51,15 +51,15 @@ script:
     - mkdir -p build
     - cd build
     # Perform tests on all platform, but only perform code coverage on Linux
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF .. ;
-        make;
-      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF .. ;
-        make;
+    - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=$ToolsDir/miniconda3/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON ..;
+        cmake --build ./ --config Release --target install;
+      elif[[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
+        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF ..;
+        make install;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=$ToolsDir/miniconda3/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF ..;
-        cmake --build ./ --config Release;
+        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF ..;
+        make install;
       fi
     # Only do the coverage on Linux, but run the test anyway to get a nice output
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -86,12 +86,9 @@ script:
         cd ../..;
       fi
     - ctest
-    - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
-        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON  -DPython3_EXECUTABLE=`which python` ..;
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+        cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX= -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF ..;
         make install;
-      else
-        cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=$ToolsDir/miniconda3/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON ..;
-        cmake --build ./ --config Release --target install;
       fi
     # Test the python binder
     - pytest -v --color=yes ../test 
