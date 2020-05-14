@@ -2,9 +2,13 @@
 find_package(PYTHON3 REQUIRED)
 mark_as_advanced(CLEAR Python3_EXECUTABLE)
 
+# Include python
+find_package(Python3 REQUIRED
+    COMPONENTS Interpreter Development NumPy
+)
 include_directories(${Python3_INCLUDE_DIRS})
 
-find_package(Numpy REQUIRED)
+include_directories(${Python3_NumPy_INCLUDE_DIRS})
 
 include_directories(${NUMPY_INCLUDES})
 if(WIN32)
