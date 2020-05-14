@@ -56,7 +56,7 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
         cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX=/c/tools/miniconda3/envs/ezc3d/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON ..;
         cmake --build ./ --config Release --target install;
-      elif[[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+      elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
         cmake ${CMAKE_OPTIONS} -DCMAKE_INSTALL_PREFIX=$HOME/miniconda/envs/ezc3d/ -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF ..;
         make install;
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
