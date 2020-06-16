@@ -386,7 +386,7 @@ class c3d(C3dMapper):
         for f in range(nb_frames):
             for i in range(nb_points):
                 if np.isnan(data_points[:, i, f]).any():
-                    pt.set(0, 0, 0, -1)
+                    pt.set(np.nan, np.nan, np.nan, -1)
                 else:
                     pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
                     pt.residual(data_meta_points['residuals'][0, i, f])
