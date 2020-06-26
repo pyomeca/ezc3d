@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0048 NEW)
-project(ezc3d VERSION 1.2.4)
+project(ezc3d VERSION 1.3.4)
 set(EZC3D_NAME ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 11)
 
