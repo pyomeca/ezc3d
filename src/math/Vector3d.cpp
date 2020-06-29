@@ -7,7 +7,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "Vector3d.h"
+#include "math/Vector3d.h"
 
 ezc3d::Vector3d::Vector3d() :
     ezc3d::Matrix(3, 1)
@@ -28,10 +28,12 @@ ezc3d::Vector3d::Vector3d(
         const ezc3d::Matrix &p) :
     ezc3d::Matrix(p)
 {
+#ifndef USE_MATRIX_FAST_ACCESSOR
     if (nbRows() != 3 || nbCols() != 1){
         throw std::runtime_error("Size of the matrix must be 3x1 to be casted"
                                  "as a vector3d");
     }
+#endif
 }
 
 void ezc3d::Vector3d::print() const
@@ -41,6 +43,13 @@ void ezc3d::Vector3d::print() const
               << y() << ", "
               << z() << "];"
               << std::endl;
+}
+
+void ezc3d::Vector3d::resize(
+        size_t,
+        size_t)
+{
+    throw std::runtime_error("Vector3d cannot be resized");
 }
 
 void ezc3d::Vector3d::set(
@@ -98,16 +107,44 @@ bool ezc3d::Vector3d::isValid() const
     }
 }
 
-double ezc3d::Vector3d::operator()(
-        size_t idx) const
+ezc3d::Vector3d& ezc3d::Vector3d::operator=(
+        const ezc3d::Matrix& other)
 {
-    return this->ezc3d::Matrix::operator ()(idx, 0);
+    if (this != &other){
+#ifndef USE_MATRIX_FAST_ACCESSOR
+        if (other.nbRows() != 3 || other.nbCols() != 1){
+            throw std::runtime_error("Size of the matrix must be 3x1 to be casted"
+                                     "as a vector3d");
+        }
+#endif
+
+        _data[0] = other._data[0];
+        _data[1] = other._data[1];
+        _data[2] = other._data[2];
+    }
+    return *this;
+}
+
+double ezc3d::Vector3d::operator()(
+        size_t row) const
+{
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    if (row > 2){
+        throw std::runtime_error("Maximal index for a vector3d is 2");
+    }
+#endif
+    return _data[row];
 }
 
 double& ezc3d::Vector3d::operator()(
-        size_t idx)
+        size_t row)
 {
-    return this->ezc3d::Matrix::operator ()(idx, 0);
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    if (row > 2){
+        throw std::runtime_error("Maximal index for a vector3d is 2");
+    }
+#endif
+    return _data[row];
 }
 
 double ezc3d::Vector3d::dot(

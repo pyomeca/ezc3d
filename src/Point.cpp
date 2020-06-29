@@ -42,7 +42,7 @@ void ezc3d::DataNS::Points3dNS::Point::write(
         std::fstream &f,
         float scaleFactor) const {
     if (residual() >= 0){
-        for (size_t i = 0; i<_data.size(); ++i) {
+        for (size_t i = 0; i<size(); ++i) {
             float data(static_cast<float>(_data[i]));
             f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
         }

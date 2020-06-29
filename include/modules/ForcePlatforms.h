@@ -9,7 +9,10 @@
 ///
 
 #include "ezc3d.h"
-#include "Vector3d.h"
+
+#include "math/Matrix33.h"
+#include "math/Matrix66.h"
+#include "math/Vector3d.h"
 
 ///
 /// \brief Force Platform analyse
@@ -58,17 +61,16 @@ protected:
     /// \param c3d A reference to the c3d
     ///
     void extractUnits(
-            size_t idx,
             const ezc3d::c3d &c3d);
 
     //---- DATA ----//
 protected:
     size_t _type;  ///< The type of force platform (see C3D documentation)
-    ezc3d::Matrix _calMatrix; ///< The calibration matrix
+    ezc3d::Matrix66 _calMatrix; ///< The calibration matrix
     std::vector<ezc3d::Vector3d> _corners;  ///< Position of the 4 corners of the force platform
     ezc3d::Vector3d _meanCorners;  ///< Mean position of the corners of the force platform
     ezc3d::Vector3d _origin;  ///< Position of the origin of the force platform
-    ezc3d::Matrix _refFrame;  ///< The reference frame of the force plate in the global reference frame
+    ezc3d::Matrix33 _refFrame;  ///< The reference frame of the force plate in the global reference frame
     std::vector<ezc3d::Vector3d> _F;  ///< Force vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _M;  ///< Moment vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _CoP;  ///< Center of Pressure vectors for all instants (including subframes) in global reference frame
@@ -91,7 +93,7 @@ public:
     /// \brief Returns the calibration matrix
     /// \return The calibration matrix
     ///
-    const ezc3d::Matrix& calMatrix() const;
+    const ezc3d::Matrix66& calMatrix() const;
 
     ///
     /// \brief Returns the corners of the force platform

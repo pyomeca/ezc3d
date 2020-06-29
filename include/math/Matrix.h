@@ -1,5 +1,5 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef EZC3D_MATH_MATRIX_H
+#define EZC3D_MATH_MATRIX_H
 ///
 /// \file Matrix.h
 /// \brief Declaration of a Matrix class
@@ -8,7 +8,7 @@
 /// \date March 25th, 2020
 ///
 
-#include <ezc3d.h>
+#include "ezc3d.h"
 
 ///
 /// \brief Matrix of unknown dimension
@@ -18,8 +18,6 @@ class EZC3D_API ezc3d::Matrix {
 public:
     ///
     /// \brief Create an empty Matrix with the memory allocated
-    /// \param nbRows The number of rows
-    /// \param nbCols The number of columns
     ///
     Matrix();
 
@@ -38,6 +36,12 @@ public:
     ///
     Matrix(
             const ezc3d::Matrix& matrix);
+
+    // Declare Friendship
+    friend class ezc3d::Matrix33;
+    friend class ezc3d::Matrix66;
+    friend class ezc3d::Vector3d;
+    friend class ezc3d::Vector6d;
 
     //---- STREAM ----//
 public:
@@ -58,46 +62,37 @@ protected:
 
 public:
     ///
-    /// \brief Get a reference to the STL vector where the matrix is store
-    /// \return The matrix
-    ///
-    virtual const std::vector<double>& data() const;
-
-    ///
-    /// \brief Get a reference to the STL vector where the matrix is store in order to be modified by the caller
-    /// \return The matrix
-    ///
-    /// Get a reference to the STL vector where the matrix is store in the form of a non-const reference.
-    /// The user can thereafter modify the coordinates at will, but with the caution it requires.
-    ///
-    virtual std::vector<double>& data();
-
-    ///
     /// \brief Set all values to zero
     ///
-    void setZeros();
+    virtual void setZeros();
 
     ///
     /// \brief Set all values to one
     ///
-    void setOnes();
+    virtual void setOnes();
 
     ///
     /// \brief Set the matrix to an identity matrix
     ///
-    void setIdentity();
+    virtual void setIdentity();
+
+    ///
+    /// \brief Return the number of element in the matrix (nbRows * nbCols)
+    /// \return The number of element in the matrix (nbRows * nbCols)
+    ///
+    virtual size_t size() const;
 
     ///
     /// \brief Return the number of rows
     /// \return The number of rows
     ///
-    size_t nbRows() const;
+    virtual size_t nbRows() const;
 
     ///
     /// \brief Return the number of columns
     /// \return The number of columns
     ///
-    size_t nbCols() const;
+    virtual size_t nbCols() const;
 
     ///
     /// \brief Change the size of the matrix
@@ -108,17 +103,19 @@ public:
     /// Warning, there is no garanty for the position of the data in the
     /// matrix after the resize
     ///
-    void resize(
+    virtual void resize(
             size_t nbRows,
             size_t nbCols);
 
+    //---- OPERATIONS ----//
+public:
 #ifndef SWIG
     ///
     /// \brief Get a specific value of the matrix
     /// \param row The row index
     /// \param col The column index
     ///
-    double operator()(
+    virtual double operator()(
             size_t row,
             size_t col) const;
 #endif
@@ -128,17 +125,15 @@ public:
     /// \param row The row index
     /// \param col The column index
     ///
-    double& operator()(
+    virtual double& operator()(
             size_t row,
             size_t col);
 
-    //---- OPERATIONS ----//
-public:
     ///
     /// \brief Defining matrix transpose
     /// \return The matrix transposed
     ///
-    ezc3d::Matrix T();
+    virtual ezc3d::Matrix T();
 
     ///
     /// \brief Defining the addition with a scalar

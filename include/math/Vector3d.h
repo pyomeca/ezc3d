@@ -1,5 +1,5 @@
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
+#ifndef EZC3D_MATH_VECTOR3D_H
+#define EZC3D_MATH_VECTOR3D_H
 ///
 /// \file Vector3d.h
 /// \brief Declaration of a Vector3d class
@@ -53,6 +53,13 @@ public:
 
     //---- DATA ----//
 public:
+    ///
+    /// \brief Do nothing, it is not possible to resize a 3x1 vector
+    ///
+    void resize(
+            size_t,
+            size_t) override;
+
     ///
     /// \brief set All the 3dVector at once
     /// \param x The X-component of the 3D Vector
@@ -109,24 +116,27 @@ public:
     ///
     virtual bool isValid() const;
 
+    //---- OPERATIONS ----//
+public:
 #ifndef SWIG
+    ezc3d::Vector3d& operator=(
+            const ezc3d::Matrix& other);
+
     ///
     /// \brief Get a specific value of the vector
-    /// \param idx The index
+    /// \param row The index
     ///
     virtual double operator()(
-            size_t idx) const;
+            size_t row) const;
 #endif
 
     ///
     /// \brief Get a reference to a specific value of the vector
-    /// \param idx The index
+    /// \param row The index
     ///
     virtual double& operator()(
-            size_t idx);
+            size_t row);
 
-    //---- OPERATIONS ----//
-public:
     ///
     /// \brief Returns the dot-product of two vectors
     /// \param other The vector to dot-product with

@@ -193,6 +193,10 @@ bool toBool(
 std::string toString(
         const mxArray * prhs){
     char *str_char = mxArrayToString(prhs);
+    if (!str_char){
+        mexWarnMsgIdAndTxt("Invalid:String", "Invalid string detected while parsing the c3d structure");
+        return "Invalid String";
+    }
     std::string str(str_char);
     mxFree(str_char);
     return str;

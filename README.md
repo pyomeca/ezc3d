@@ -400,12 +400,13 @@ Moreover, as stated before, some (all?) companies were pretty loose in their imp
 # Cite
 If you use EZC3D, we would be grateful if you could cite it as follows:
 
-```
-@misc{Michaud2018ezc3d,
-    author = {Michaud, Benjamin and Begon, Mickael},
-    title = {EZC3D: Easy to use C3D reader/writer in C++, Python and Matlab},
-    howpublished={Web page},
-    url = {https://github.com/pyomeca/ezc3d},
-    year = {2018}
+```bibtex
+@misc{ezc3d,
+  author = {Michaud, Benjamin and Begon, Mickael},
+  title = {EZC3D: Easy to use C3D reader/writer in C++, Python and Matlab},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = {https://github.com/pyomeca/ezc3d}
 }
 ```

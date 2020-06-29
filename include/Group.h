@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include <Parameter.h>
+#include "Parameter.h"
 
 ///
 /// \brief Group of parameter of a C3D file

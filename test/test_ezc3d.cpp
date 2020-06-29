@@ -1,10 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
-#include "ezc3d.h"
-#include "Header.h"
-#include "Data.h"
-#include "Parameters.h"
+#include "ezc3d_all.h"
 
 enum HEADER_TYPE{
     ALL,
@@ -580,12 +577,6 @@ TEST(c3dModifier, addPoints) {
             EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), static_cast<double>(2*f+3*m+2) / static_cast<double>(7.0));
             EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), static_cast<double>(2*f+3*m+3) / static_cast<double>(7.0));
             EXPECT_DOUBLE_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
-
-            std::vector<double> data(new_c3d.c3d.data().frame(f).points().point(pointIdx).data());
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).x(), data[0]);
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).y(), data[1]);
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).z(), data[2]);
-            EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).points().point(pointIdx).residual(), 0);
         }
         ASSERT_EQ(new_c3d.c3d.data().frame(f).analogs().isEmpty(), true);
     }
