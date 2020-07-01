@@ -123,7 +123,7 @@ add_subdirectory(binding)
 if(NOT WIN32)
 	option(BUILD_EXAMPLE "Build a C++ example" ON)
 	if (BUILD_EXAMPLE)
-		add_subdirectory(example)
+		add_subdirectory(examples)
 	endif()
 endif(NOT WIN32)
 
