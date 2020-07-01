@@ -93,7 +93,7 @@ script:
         make install;
       fi
     # Test the python binder
-    - pytest -v --color=yes ../test 
+    - pytest -v --color=yes ../test/python3
 
 after_success:
     # Uploading report to CodeCov

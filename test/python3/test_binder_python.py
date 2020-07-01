@@ -223,6 +223,63 @@ def test_values():
     np.testing.assert_array_equal(x=np.isnan(array).sum(), y=915)
 
 
+def test_force_platform_filter():
+    c3d = ezc3d.c3d("test/c3dTestFiles/Qualisys.c3d", extract_forceplat_data=True)
+    all_pf = c3d["data"]["platform"]
+    np.testing.assert_equal(len(all_pf), 2)
+
+    # Frames
+    np.testing.assert_equal(all_pf[0]["force"].shape[1], 3400)
+    np.testing.assert_equal(all_pf[0]["moment"].shape[1], 3400)
+    np.testing.assert_equal(all_pf[0]["center_of_pressure"].shape[1], 3400)
+    np.testing.assert_equal(all_pf[0]["Tz"].shape[1], 3400)
+
+    np.testing.assert_equal(all_pf[1]["force"].shape[1], 3400)
+    np.testing.assert_equal(all_pf[1]["moment"].shape[1], 3400)
+    np.testing.assert_equal(all_pf[1]["center_of_pressure"].shape[1], 3400)
+    np.testing.assert_equal(all_pf[1]["Tz"].shape[1], 3400)
+
+    # Units
+    np.testing.assert_string_equal(all_pf[0]["unit_force"], "N")
+    np.testing.assert_string_equal(all_pf[0]["unit_moment"], "Nmm")
+    np.testing.assert_string_equal(all_pf[0]["unit_position"], "mm")
+
+    np.testing.assert_string_equal(all_pf[1]["unit_force"], "N")
+    np.testing.assert_string_equal(all_pf[1]["unit_moment"], "Nmm")
+    np.testing.assert_string_equal(all_pf[1]["unit_position"], "mm")
+
+    # Position of pf
+    np.testing.assert_array_almost_equal(all_pf[0]["origin"], [1.524,  -0.762, -34.036])
+    np.testing.assert_array_almost_equal(all_pf[0]["corners"], [[508, 508, 0, 0], [464, 0, 0, 464], [0, 0, 0, 0]], decimal=3)
+
+    np.testing.assert_array_almost_equal(all_pf[1]["origin"], [1.016,  0, -36.322])
+    np.testing.assert_array_almost_equal(all_pf[1]["corners"], [[1017, 1017, 509, 509], [464, 0, 0, 464], [0, 0, 0, 0]], decimal=3)
+
+    # Calibration matrix
+    np.testing.assert_array_almost_equal(all_pf[0]["cal_matrix"], np.zeros((6, 6)))
+
+    np.testing.assert_array_almost_equal(all_pf[1]["cal_matrix"], np.zeros((6, 6)))
+
+    # Data at 3 different time
+    expected_force = [[0.140,  106.480, -0.140], [0.046, -66.407, -0.138], [-0.184, 763.647, 0.367]]
+    expected_moment = [[20.868, 54768.655, 51.780], [-4.623, -24103.676, 4.483], [-29.393, -12229.124, -29.960]]
+    expected_cop = [[228.813, 285.564, 241.787], [118.296, 303.720, 373.071], [0, 0, 0]]
+    expected_Tz = [[0, 0, 0], [0, 0, 0], [-44.141, -2496.299, -51.390]]
+    np.testing.assert_array_almost_equal(all_pf[0]["force"][:, [0, 1000, -1]], expected_force, decimal=3)
+    np.testing.assert_array_almost_equal(all_pf[0]["moment"][:, [0, 1000, -1]], expected_moment, decimal=3)
+    np.testing.assert_array_almost_equal(all_pf[0]["center_of_pressure"][:, [0, 1000, -1]], expected_cop, decimal=3)
+    np.testing.assert_array_almost_equal(all_pf[0]["Tz"][:, [0, 1000, -1]], expected_Tz, decimal=3)
+
+    expected_force = [[0.046, 0.232,  0.185], [-0.185, -0.184, -0.046], [0.723,  0.361, 0.542]]
+    expected_moment = [[49.366, 68.671, 16.708], [-96.907, -46.501, 50.403], [0.047, -19.720, 30.122]]
+    expected_cop = [[897.0422, 891.673, 670.044], [300.283, 422.019, 262.813], [0, 0, 0]]
+    expected_Tz = [[0, 0, 0], [0, 0, 0], [27.944, 48.016, 31.545]]
+    np.testing.assert_array_almost_equal(all_pf[1]["force"][:, [0, 1000, -1]], expected_force, decimal=3)
+    np.testing.assert_array_almost_equal(all_pf[1]["moment"][:, [0, 1000, -1]], expected_moment, decimal=3)
+    np.testing.assert_array_almost_equal(all_pf[1]["center_of_pressure"][:, [0, 1000, -1]], expected_cop, decimal=3)
+    np.testing.assert_array_almost_equal(all_pf[1]["Tz"][:, [0, 1000, -1]], expected_Tz, decimal=3)
+
+
 @pytest.fixture(scope='module', params=["BTS", "Optotrak", "Qualisys", "Vicon"])
 def c3d_build_rebuild(request):
     base_folder = Path("test/c3dTestFiles")
