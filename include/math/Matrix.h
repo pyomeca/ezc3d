@@ -37,6 +37,20 @@ public:
     Matrix(
             const ezc3d::Matrix& matrix);
 
+    ///
+    /// \brief Matrix Create a matrix from vector of Vector3d
+    /// \param matrix The matrix to copy
+    ///
+    Matrix(
+            const std::vector<Vector3d>& matrix);
+
+    ///
+    /// \brief Matrix Create a matrix from vector of Vector6d
+    /// \param matrix The matrix to copy
+    ///
+    Matrix(
+            const std::vector<Vector6d>& matrix);
+
     // Declare Friendship
     friend class ezc3d::Matrix33;
     friend class ezc3d::Matrix66;
@@ -133,7 +147,7 @@ public:
     /// \brief Defining matrix transpose
     /// \return The matrix transposed
     ///
-    virtual ezc3d::Matrix T();
+    virtual ezc3d::Matrix T() const;
 
     ///
     /// \brief Defining the addition with a scalar
@@ -268,6 +282,17 @@ EZC3D_API ezc3d::Matrix operator-(
 EZC3D_API ezc3d::Matrix operator*(
         double scalar,
         ezc3d::Matrix mat);
+
+///
+/// \brief Allows for printing matrices
+/// \param out The stream to print to
+/// \param m The matrix to print
+/// \return The stream to print to
+///
+std::ostream& operator<< (
+    std::ostream& out,
+    const ezc3d::Matrix& m);
+
 #endif
 
 #endif
