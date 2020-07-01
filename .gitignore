@@ -22,6 +22,7 @@ test/c3dFiles/*
 
 # Examples
 examples/c3dFiles/*
+examples/python3/*.c3d
 
 # Documentation
 doc/*.pdf
