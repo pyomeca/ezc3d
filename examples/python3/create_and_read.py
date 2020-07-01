@@ -6,13 +6,13 @@ import ezc3d
 c3d = ezc3d.c3d()
 
 # Adjust some mandatory values of the parameters and fill the data with random values
-c3d['parameters']['POINT']['RATE']['value'] = [100]
-c3d['parameters']['POINT']['LABELS']['value'] = ('point1', 'point2', 'point3', 'point4', 'point5')
-c3d['data']['points'] = np.random.rand(3, 5, 100)
+c3d["parameters"]["POINT"]["RATE"]["value"] = [100]
+c3d["parameters"]["POINT"]["LABELS"]["value"] = ("point1", "point2", "point3", "point4", "point5")
+c3d["data"]["points"] = np.random.rand(3, 5, 100)
 
-c3d['parameters']['ANALOG']['RATE']['value'] = [1000]
-c3d['parameters']['ANALOG']['LABELS']['value'] = ('analog1', 'analog2', 'analog3', 'analog4', 'analog5', 'analog6')
-c3d['data']['analogs'] = np.random.rand(1, 6, 1000)
+c3d["parameters"]["ANALOG"]["RATE"]["value"] = [1000]
+c3d["parameters"]["ANALOG"]["LABELS"]["value"] = ("analog1", "analog2", "analog3", "analog4", "analog5", "analog6")
+c3d["data"]["analogs"] = np.random.rand(1, 6, 1000)
 
 # Create a custom parameter to the POINT group
 c3d.add_parameter("POINT", "NewParam", [1, 2, 3])
