@@ -107,7 +107,7 @@ class C3dMutableMapper(C3dMapper):
 
 
 class c3d(C3dMapper):
-    def __init__(self, path=""):
+    def __init__(self, path="", extract_forceplat_data=False):
         super(c3d, self).__init__()
 
         # Interface to swig pointers
@@ -118,7 +118,7 @@ class c3d(C3dMapper):
 
         self._storage['header'] = c3d.Header(self.c3d_swig.header())
         self._storage['parameters'] = c3d.Parameter(self.c3d_swig.parameters())
-        self._storage['data'] = c3d.Data(self.c3d_swig)
+        self._storage['data'] = c3d.Data(self.c3d_swig, extract_forceplat_data)
         return
 
     class Header(C3dMapper):
@@ -199,8 +199,37 @@ class c3d(C3dMapper):
             self._storage[group_name][param_name] = param
 
 
+    class PlatForm(C3dMapper):
+        def __init__(self, swig_pf):
+            super(c3d.PlatForm, self).__init__()
+
+            self._storage["unit_force"] = swig_pf.forceUnit()
+            self._storage["unit_moment"] = swig_pf.momentUnit()
+            self._storage["unit_position"] = swig_pf.positionUnit()
+
+            self._storage["origin"] = swig_pf.origin().to_array()
+            self._storage["cal_matrix"] = swig_pf.calMatrix().to_array()
+            self._storage["corners"] = np.ndarray((3, 4))
+            for i, corner in enumerate(swig_pf.corners()):
+                self._storage["corners"][:, i] = corner.to_array()[:, 0]
+
+            n_frame = swig_pf.nbFrames()
+            forces = swig_pf.forces()
+            moments = swig_pf.moments()
+            cop = swig_pf.CoP()
+            Tz = swig_pf.Tz()
+            self._storage["force"] = np.ndarray((3, n_frame))
+            self._storage["moment"] = np.ndarray((3, n_frame))
+            self._storage["center_of_pressure"] = np.ndarray((3, n_frame))
+            self._storage["Tz"] = np.ndarray((3, n_frame))
+            for i in range(n_frame):
+                self._storage["force"][:, i] = forces[i].to_array()[:, 0]
+                self._storage["moment"][:, i] = moments[i].to_array()[:, 0]
+                self._storage["center_of_pressure"][:, i] = cop[i].to_array()[:, 0]
+                self._storage["Tz"][:, i] = Tz[i].to_array()[:, 0]
+
     class Data(C3dMutableMapper):
-        def __init__(self, swig_c3d):
+        def __init__(self, swig_c3d, extract_forceplat_data):
             super(c3d.Data, self).__init__()
 
             # Interface to swig pointers
@@ -211,6 +240,13 @@ class c3d(C3dMapper):
                                             'camera_masks': swig_c3d.get_point_camera_masks()
                                            }
             self._storage['analogs'] = swig_c3d.get_analogs()
+
+            # Add the platform filer if required
+            if extract_forceplat_data:
+                all_pf = []
+                for pf in ezc3d.ForcePlatforms(swig_c3d).forcePlatforms():
+                    all_pf.append(c3d.PlatForm(pf))
+                self._storage['platform'] = all_pf
             return
 
     def add_parameter(self, group_name, parameter_name, value, description=""):
@@ -405,4 +441,5 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+
 

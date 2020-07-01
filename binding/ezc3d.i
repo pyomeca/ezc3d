@@ -55,7 +55,9 @@ namespace std {
 %include "ezc3d.h"
 %include "math/Matrix.h"
 %include "math/Matrix33.h"
+%include "math/Matrix66.h"
 %include "math/Vector3d.h"
+%include "math/Vector6d.h"
 %include "Header.h"
 %include "Parameters.h"
 %include "Group.h"
@@ -67,5 +69,12 @@ namespace std {
 %include "Analogs.h"
 %include "Subframe.h"
 %include "Channel.h"
+
+// Add the modules
+namespace std {
+    %template(VecPlatforms) std::vector<ezc3d::Modules::ForcePlatform>;
+    %template(VecVector3d) std::vector<ezc3d::Vector3d>;
+    %template(VecVector6d) std::vector<ezc3d::Vector6d>;
+}
 
 %include "modules/ForcePlatforms.h"
