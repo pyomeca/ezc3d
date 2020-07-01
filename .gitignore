@@ -19,10 +19,12 @@ __pycache__
 # Testing suite
 Testing
 test/c3dFiles/*
+test/matlab/*.c3d
 
 # Examples
 examples/c3dFiles/*
 examples/python3/*.c3d
+examples/matlab/*.c3d
 
 # Documentation
 doc/*.pdf

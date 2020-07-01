@@ -214,11 +214,11 @@ class c3d(C3dMapper):
             self._storage["unit_moment"] = swig_pf.momentUnit()
             self._storage["unit_position"] = swig_pf.positionUnit()
 
-            self._storage["origin"] = swig_pf.origin().to_array()
             self._storage["cal_matrix"] = swig_pf.calMatrix().to_array()
-            self._storage["corners"] = np.ndarray((3, 4))
+            self._storage["corners"] = np.ndarray((3, len(swig_pf.corners())))
             for i, corner in enumerate(swig_pf.corners()):
                 self._storage["corners"][:, i] = corner.to_array()[:, 0]
+            self._storage["origin"] = swig_pf.origin().to_array()[:, 0]
 
             n_frame = swig_pf.nbFrames()
             forces = swig_pf.forces()

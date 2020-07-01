@@ -8,21 +8,21 @@ c3d = ezc3dRead();
 
 % Adjust some mandatory values of the parameters and fill 
 % the data with random values
-c3d.parameters.POINT.RATE = 100;
-c3d.parameters.POINT.LABELS = {'point1', 'point2', 'point3', ...
+c3d.parameters.POINT.RATE.DATA = 100;
+c3d.parameters.POINT.LABELS.DATA = {'point1', 'point2', 'point3', ...
                                'point4', 'point5'};
 c3d.data.points = rand(3, 5, 100);
 
-c3d.parameters.ANALOG.RATE = 1000;
-c3d.parameters.ANALOG.LABELS = {'analog1', 'analog2', 'analog3', ...
+c3d.parameters.ANALOG.RATE.DATA = 1000;
+c3d.parameters.ANALOG.LABELS.DATA = {'analog1', 'analog2', 'analog3', ...
                                 'analog4', 'analog5', 'analog6'};
 c3d.data.analogs = rand(1000, 6);
  
 % Create a custom parameter to the POINT group
-c3d.parameters.POINT.newParam = [1, 2, 3];
+c3d.parameters.POINT.NewParam = ezc3dNewParam([1, 2, 3; 4, 5, 6]);
 
 % Create a custom parameter a new group
-c3d.parameters.NewGroup.newParam = {'MyParam1', 'MyParam2'};
+c3d.parameters.NewGroup.NewParam = ezc3dNewParam({'MyParam1', 'MyParam2'});
  
 % Write a new modified C3D and read back the data
 ezc3dWrite('temporary.c3d', c3d);
@@ -44,24 +44,24 @@ fprintf('\n');
 
 % Print the parameters
 fprintf('%% ---- PARAMETERS ---- %%\n');
-fprintf('Number of points = %d\n', c3d_to_compare.parameters.POINT.USED);
+fprintf('Number of points = %d\n', c3d_to_compare.parameters.POINT.USED.DATA);
 fprintf('Name of the points =\t');
-    fprintf('%s\t', c3d_to_compare.parameters.POINT.LABELS{:}); 
+    fprintf('%s\t', c3d_to_compare.parameters.POINT.LABELS.DATA{:}); 
     fprintf('\n');
-fprintf('Point frame rate = %1.1f\n', c3d_to_compare.parameters.POINT.RATE);
-fprintf('Number of frames = %d\n', c3d_to_compare.parameters.POINT.FRAMES);
+fprintf('Point frame rate = %1.1f\n', c3d_to_compare.parameters.POINT.RATE.DATA);
+fprintf('Number of frames = %d\n', c3d_to_compare.parameters.POINT.FRAMES.DATA);
 fprintf('My point new Param =\t');
-    fprintf('%d\t', c3d_to_compare.parameters.POINT.NEWPARAM);
+    fprintf('%d\t', c3d_to_compare.parameters.POINT.NewParam.DATA);
     fprintf('\n');
 fprintf('\n');
-fprintf('Number of analogs = %d\n', c3d_to_compare.parameters.ANALOG.USED);
+fprintf('Number of analogs = %d\n', c3d_to_compare.parameters.ANALOG.USED.DATA);
 fprintf('Name of the analogs =\t');
-    fprintf('%s\t', c3d_to_compare.parameters.ANALOG.LABELS{:}); 
+    fprintf('%s\t', c3d_to_compare.parameters.ANALOG.LABELS.DATA{:}); 
     fprintf('\n');
-fprintf('Analog frame rate = %1.1\n', c3d_to_compare.parameters.ANALOG.RATE);
+fprintf('Analog frame rate = %1.1\n', c3d_to_compare.parameters.ANALOG.RATE.DATA);
 fprintf('\n');
 fprintf('My NewGroup new Param =\t')
-    fprintf('%s\t', c3d_to_compare.parameters.NEWGROUP.NEWPARAM{:});
+    fprintf('%s\t', c3d_to_compare.parameters.NewGroup.NewParam.DATA{:});
     fprintf('\n');
 fprintf('\n');
 fprintf('\n');
