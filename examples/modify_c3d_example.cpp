@@ -5,8 +5,6 @@
 #include "Data.h"
 #include "Parameters.h"
 
-// EXAMPLE TO BUILD
-#include <chrono>
 int main()
 {
     // Read an existing c3d file

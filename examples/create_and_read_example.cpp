@@ -5,7 +5,6 @@
 #include "Data.h"
 #include "Parameters.h"
 
-// EXAMPLE TO BUILD
 int main()
 {
     // Create an empty fresh c3d

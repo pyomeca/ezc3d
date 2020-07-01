@@ -2,7 +2,6 @@
 #include <vector>
 #include "ezc3d_all.h"
 
-// EXAMPLE TO BUILD
 int main()
 {
     ezc3d::c3d c3d("c3dExampleFiles/Qualisys.c3d");
