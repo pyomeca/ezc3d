@@ -11,6 +11,11 @@
 
 #include "ezc3d_all.h"
 
+ezc3d::Modules::ForcePlatform::ForcePlatform()
+{
+
+}
+
 ezc3d::Modules::ForcePlatform::ForcePlatform(
         size_t idx,
         const ezc3d::c3d& c3d)

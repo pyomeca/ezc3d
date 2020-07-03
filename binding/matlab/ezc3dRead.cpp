@@ -7,6 +7,7 @@
 #include "Header.h"
 #include "Parameters.h"
 #include "Data.h"
+#include "modules/ForcePlatforms.h"
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
@@ -17,8 +18,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     if (nrhs == 1 && mxIsChar(prhs[0]) != 1)
         mexErrMsgTxt("Input argument must be a file path string or "
                      "no input for a valid empty structure.");
-    if (nlhs > 1)
-        mexErrMsgTxt("Only one output is available");
+    if (nlhs > 2)
+        mexErrMsgTxt("Only two outputs are available");
 
     // Receive the path
     std::string path;
@@ -43,10 +44,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     ezc3d::c3d *c3d;
     try{
         // Read the c3d
-        if (path.size() == 0)
+        if (path.size() == 0){
+            if (nlhs > 1){
+                mexErrMsgTxt("Force platform filter is not available when "
+                             "creating an empty structure.");
+            }
             c3d = new ezc3d::c3d;
-        else
+        }
+        else {
             c3d = new ezc3d::c3d(path);
+        }
 
         // Fill the header
         {
@@ -278,6 +285,85 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             mxSetFieldByNumber(dataStruct, 0, 0, dataPoints);
             mxSetFieldByNumber(dataStruct, 0, 1, dataMetaPointsStruct);
             mxSetFieldByNumber(dataStruct, 0, 2, dataAnalogs);
+            }
+        }
+
+        // Fill force platform if needed
+        if (nlhs > 1){
+            const auto& all_pf = ezc3d::Modules::ForcePlatforms(*c3d);
+
+            mwSize globalPlatFormDims[2] = {all_pf.forcePlatforms().size(), 1};
+            const char *forcePlatformNames[] =
+                {"unit_force", "unit_moment", "unit_position",
+                "cal_matrix", "corners", "origin", "force", "moment", "center_of_pressure", "Tz"};
+            plhs[1] = mxCreateStructArray(
+                        2, globalPlatFormDims,
+                        sizeof(forcePlatformNames) / sizeof(*forcePlatformNames),
+                        forcePlatformNames);
+            for (size_t i=0; i<all_pf.forcePlatforms().size(); ++i){
+                auto& pf(all_pf.forcePlatform(i));
+
+                // Units
+                mxSetFieldByNumber(plhs[1], i, 0, mxCreateString(pf.forceUnit().c_str()));
+                mxSetFieldByNumber(plhs[1], i, 1, mxCreateString(pf.momentUnit().c_str()));
+                mxSetFieldByNumber(plhs[1], i, 2, mxCreateString(pf.positionUnit().c_str()));
+
+                // Force platform configuration
+                mwSize pfCalMatrixSize[2] = {pf.calMatrix().nbRows(), pf.calMatrix().nbCols()};
+                mxArray * pfCalMatrix = mxCreateNumericArray(2, pfCalMatrixSize, mxDOUBLE_CLASS, mxREAL);
+                double * valCalMatrix = mxGetPr(pfCalMatrix);
+                size_t cmp = 0;
+                for (size_t col=0; col<pf.calMatrix().nbCols(); ++col){
+                    for (size_t row=0; row<pf.calMatrix().nbRows(); ++row){
+                        valCalMatrix[cmp++] = pf.calMatrix()(row, col);
+                    }
+                }
+                mxSetFieldByNumber(plhs[1], i, 3, pfCalMatrix);
+
+                mwSize pfCornersSize[2] = {3, pf.corners().size()};
+                mxArray * pfCorners = mxCreateNumericArray(2, pfCornersSize, mxDOUBLE_CLASS, mxREAL);
+                double * valCorners = mxGetPr(pfCorners);
+                ezc3d::Matrix corners(pf.corners());
+                cmp = 0;
+                for (size_t col=0; col<pf.corners().size(); ++col){
+                    for (size_t row=0; row<3; ++row){
+                        valCorners[cmp++] = corners(row, col);
+                    }
+                }
+                mxSetFieldByNumber(plhs[1], i, 4, pfCorners);
+
+                mwSize pfOriginSize[2] = {3, 1};
+                mxArray * pfOrigin = mxCreateNumericArray(2, pfOriginSize, mxDOUBLE_CLASS, mxREAL);
+                double * valOrigin = mxGetPr(pfOrigin);
+                for (size_t row=0; row<3; ++row){
+                    valOrigin[row] = pf.origin()(row);
+                }
+                mxSetFieldByNumber(plhs[1], i, 5, pfOrigin);
+
+                // Data
+                size_t nFrames(c3d->header().nbFrames() * c3d->header().nbAnalogByFrame());
+                mwSize pfDataSize[2] = {3, nFrames};
+                mxArray * pfForceMatrix = mxCreateNumericArray(2, pfDataSize, mxDOUBLE_CLASS, mxREAL);
+                mxArray * pfMomentMatrix = mxCreateNumericArray(2, pfDataSize, mxDOUBLE_CLASS, mxREAL);
+                mxArray * pfCoPMatrix = mxCreateNumericArray(2, pfDataSize, mxDOUBLE_CLASS, mxREAL);
+                mxArray * pfTzMatrix = mxCreateNumericArray(2, pfDataSize, mxDOUBLE_CLASS, mxREAL);
+                double * valForceMatrix = mxGetPr(pfForceMatrix);
+                double * valMomentMatrix = mxGetPr(pfMomentMatrix);
+                double * valCoPMatrix = mxGetPr(pfCoPMatrix);
+                double * valTzMatrix = mxGetPr(pfTzMatrix);
+                cmp = 0;
+                for (size_t col=0; col<nFrames; ++col){
+                    for (size_t row=0; row<3; ++row){
+                        valForceMatrix[cmp] = pf.forces()[col](row);
+                        valMomentMatrix[cmp] = pf.moments()[col](row);
+                        valCoPMatrix[cmp] = pf.CoP()[col](row);
+                        valTzMatrix[cmp++] = pf.Tz()[col](row);
+                    }
+                }
+                mxSetFieldByNumber(plhs[1], i, 6, pfForceMatrix);
+                mxSetFieldByNumber(plhs[1], i, 7, pfMomentMatrix);
+                mxSetFieldByNumber(plhs[1], i, 8, pfCoPMatrix);
+                mxSetFieldByNumber(plhs[1], i, 9, pfTzMatrix);
             }
         }
     }

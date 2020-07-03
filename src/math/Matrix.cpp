@@ -9,6 +9,7 @@
 
 #include "math/Matrix.h"
 #include "math/Vector3d.h"
+#include "math/Vector6d.h"
 
 ezc3d::Matrix::Matrix():
     _nbRows(0),
@@ -35,6 +36,32 @@ ezc3d::Matrix::Matrix(
     _data(matrix._data)
 {
 
+}
+
+ezc3d::Matrix::Matrix(
+        const std::vector<Vector3d>& matrix) :
+    _nbRows(3),
+    _nbCols(matrix.size()),
+    _data(std::vector<double>(_nbRows * _nbCols))
+{
+    for (size_t i=0; i<_nbCols; ++i){
+        for (size_t j=0; j<_nbRows; ++j){
+            _data[i*_nbRows + j] = matrix[i](j);
+        }
+    }
+}
+
+ezc3d::Matrix::Matrix(
+        const std::vector<Vector6d>& matrix) :
+    _nbRows(6),
+    _nbCols(matrix.size()),
+    _data(std::vector<double>(_nbRows * _nbCols))
+{
+    for (size_t i=0; i<_nbCols; ++i){
+        for (size_t j=0; j<_nbRows; ++j){
+            _data[i*_nbRows + j] = matrix[i](j);
+        }
+    }
 }
 
 void ezc3d::Matrix::print() const
@@ -147,7 +174,7 @@ double& ezc3d::Matrix::operator()(
     return _data[col*_nbRows + row];
 }
 
-ezc3d::Matrix ezc3d::Matrix::T()
+ezc3d::Matrix ezc3d::Matrix::T() const
 {
     ezc3d::Matrix result(nbCols(), nbRows());
     for (size_t i=0; i<nbRows(); ++i){
@@ -327,3 +354,25 @@ ezc3d::Matrix operator*(
     return mat * scalar;
 }
 
+std::ostream &operator<<(
+        std::ostream &out,
+        const ezc3d::Matrix &m)
+{
+    out << "[";
+    for(size_t i = 0; i < m.nbRows(); ++i) {
+        for(size_t j = 0; j < m.nbCols(); ++j) {
+            if (i !=0 && j ==0){
+                out << " ";
+            }
+            out << m(i, j);
+            if (j < m.nbCols() - 1){
+                out << ", ";
+            }
+        }
+        if (i < m.nbRows() - 1){
+            out << std::endl;
+        }
+    }
+    out << "]";
+    return out;
+}

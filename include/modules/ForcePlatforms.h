@@ -21,6 +21,11 @@ class EZC3D_API ezc3d::Modules::ForcePlatform{
     //---- CONSTRUCTORS ----//   
 public:
     ///
+    /// \brief Default constructor
+    ///
+    ForcePlatform();
+
+    ///
     /// \brief Declare a ForcePlatForm analyse
     /// \param idx Index of the force platform
     /// \param c3d A reference to the c3d class

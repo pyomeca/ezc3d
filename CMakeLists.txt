@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0048 NEW)
-project(ezc3d VERSION 1.3.4)
+project(ezc3d VERSION 1.3.5)
 set(EZC3D_NAME ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 11)
 
@@ -120,12 +120,11 @@ endif()
 add_subdirectory(binding)
 
 # Examples
-if(NOT WIN32)
-	option(BUILD_EXAMPLE "Build a C++ example" ON)
-	if (BUILD_EXAMPLE)
-		add_subdirectory(example)
-	endif()
-endif(NOT WIN32)
+option(BUILD_EXAMPLE "Build a C++ example" ON)
+if (BUILD_EXAMPLE)
+	add_subdirectory(examples)
+endif()
+
 
 # Doc
 option(BUILD_DOC "Build documentation" OFF)

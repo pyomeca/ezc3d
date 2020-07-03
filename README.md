@@ -243,6 +243,69 @@ c3d.print();
 ```
 Please note that this method by-passes some protections and may create invalid C3D if not used properly.
 
+### Force platform filter
+The standard for force platforms in C3D is pretty lax.
+Consequently, analysing force platforms may be tricky. 
+
+To help the user, `ezc3d` include a force platform analyzer filter. 
+So if one is interested by extracting some process data related, they may use the filter like so:
+```C++
+#include <vector>
+#include "ezc3d_all.h"
+
+int main()
+{
+    ezc3d::c3d c3d("my_c3d_with_force_plate_data.c3d");
+    ezc3d::Modules::ForcePlatforms pf(c3d);
+
+    // ...
+    
+    return 0;
+}
+```
+
+From there, each platform can be separately extracted using the STL vector
+```C++
+  // ...
+
+  const auto& pf_0 = pf.forcePlatform(0); // Select the first platform
+
+  // ...
+```
+
+Metadata can be extracted and are pretty self-explanatory. 
+The following list showcase what can be extracted:
+```C++
+    // ...
+    
+    pf_0.nbFrames();      // Number of frames
+    pf_0.forceUnit();     // Units of forces
+    pf_0.momentUnit();    // Units of moments
+    pf_0.positionUnit();  // Units of center of pressure
+    pf_0.calMatrix();     // Calibration matrix
+    pf_0.corners();       // Position of the corners
+    pf_0.origin();        // Position of the origin
+    
+    // ...
+```
+
+Finally, the data can be extracted by calling the method related the desired values
+```
+    // ...
+    int desired_frame = 0;
+    
+    pf_0.forces()[desired_frame];   // Forces on the platform
+    pf_0.moments()[desired_frame];  // Moments on the platform in global reference frame
+    pf_0.CoP()[desired_frame];      // Center of pressure
+    pf_0.Tz()[desired_frame];       // Moments expressed at the center of pressure
+
+    // These STL vectors of Vector3d can easily converted to Matrix
+    ezc3d::Matrix forces(pf_0.forces());
+
+    // ...
+}
+```
+
 ## MATLAB
 MATLAB (https://www.mathworks.com/) is a prototyping language largely used in industry and fairly used by the biomechanical scientific community. Despite the existence of Octave as an open-source and very similar language or the growing popularity of Python as a free and open-source alternative, MATLAB remains an important player as a programming languages. Therefore EZC3D comes with a binder for MATLAB (that can theoretically used with Octave as well with some minor changes to the CMakeLists.txt file).
 
@@ -277,6 +340,39 @@ c3d.data.points = rand(3,1,100);
 % Write the C3D
 ezc3dWrite('path_to_c3d.c3d', c3d);
 ```
+
+### Force platform filter
+One can access the force platform if their C3D has such.
+
+```MATLAB
+[c3d, all_pf] = ezc3dRead('my_c3d_with_force_plate_data.c3d');
+
+pf_1 = all_pf(1); % Select the first platform
+```
+
+This gives you a structure containing informations on the force platform and data of which
+
+```MATLAB
+% ...
+
+pf_1.unit_force             % Units of forces
+pf_1.unit_moment            % Units of moments
+pf_1.unit_position          % Units of center of pressure
+
+pf_1.cal_matrix             % Calibration matrix
+pf_1.corners                % Position of the corners
+pf_1.origin                 % Position of the origin
+
+pf_1.force                  % Force data
+pf_1.moment                 % Moment data
+pf_1.center_of_pressure     % Center of pressure data
+pf_1.Tz                     % Moment at center of pressure data
+
+% ...
+```
+
+
+
 ## Python 3
 Python (https://www.python.org/) is a scripting language that has taken more and more importance over the past years. So much that now it is one of the preferred language of the scientific community. Its simplicity yet its large power to perform a large variety of tasks makes it a certainty that its popularity won't decrease for the next years.
 
@@ -348,6 +444,38 @@ c3d.write("path_to_c3d.c3d")
 > Please note that the shape of `point_data` is 4xNxT, where 4 represent the components XYZ1 (the 3D coordinates of the point add with a 1 so it can be used with homogeneous matrices), N is the number of points and T is the number of frames. 
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 > The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion, the default value is 0.0) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values, the default values are `False` for all the cameras). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT. If no `meta_point` are provided, the default values are used. 
+
+### Force platform filter
+One can access the force platform if their C3D has such.
+
+```python
+import ezc3d
+c3d = ezc3d.c3d('my_c3d_with_force_plate_data.c3d', extract_forceplat_data=True);
+
+pf_0 = c3d["data"]["platform"][0]  # Select the first platform
+```
+
+As seen, this adds a dictionary in the data where are all the information and data are stored.
+The data are in numpy array format.
+
+```python
+# ...
+
+pf_0['unit_force']          # Units of forces
+pf_0['unit_moment']         # Units of moments
+pf_0['unit_position']       # Units of center of pressure
+
+pf_0['cal_matrix']          # Calibration matrix
+pf_0['corners']             # Position of the corners
+pf_0['origin']              # Position of the origin
+
+pf_0['force']               # Force data
+pf_0['moment']              # Moment data
+pf_0['center_of_pressure']  # Center of pressure data
+pf_0['Tz']                  # Moment at center of pressure data
+
+# ...
+```
 
 # How to contribute
 You are very welcome to contribute to the project! There are to main ways to contribute. 
