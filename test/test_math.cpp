@@ -16,6 +16,7 @@ TEST(Matrix, create){
     m1(1,1) = 6.0;
     m1(1,2) = 7.2;
     m1.print();
+    std::cout << "Another way to print : " << std::endl << m1 << std::endl;
 
     EXPECT_EQ(m1(0,0), 1.2);
     EXPECT_EQ(m1(0,1), 2.4);
@@ -527,6 +528,25 @@ TEST(Vector3d, unittest){
     EXPECT_DOUBLE_EQ(random_add3(2), 7.7);
 }
 
+TEST(Matrix, fromVector3d){
+
+    std::vector<ezc3d::Vector3d> all_v;
+    all_v.push_back(ezc3d::Vector3d(1.1, 1.2, 1.3));
+    all_v.push_back(ezc3d::Vector3d(2.1, 2.2, 2.3));
+    all_v.push_back(ezc3d::Vector3d(3.1, 3.2, 3.3));
+    all_v.push_back(ezc3d::Vector3d(4.1, 4.2, 4.3));
+
+    ezc3d::Matrix matrix(all_v);
+    EXPECT_EQ(matrix.nbRows(), 3);
+    EXPECT_EQ(matrix.nbCols(), 4);
+    for (size_t i=0; i<4; ++i){
+        for (size_t j=0; j<3; ++j){
+            double expected = static_cast<double>(i+1) + static_cast<double>(j+1)/10;
+            EXPECT_FLOAT_EQ(matrix(j, i), expected);
+        }
+    }
+}
+
 TEST(Vector6d, unittest){
     ezc3d::Vector6d random(1.1, 2.2, 3.3, 4.4, 5.5, 6.6);
     EXPECT_EQ(random.nbRows(), 6);
@@ -585,4 +605,23 @@ TEST(Vector6d, unittest){
     EXPECT_DOUBLE_EQ(random_equal(3), 4.4);
     EXPECT_DOUBLE_EQ(random_equal(4), 5.5);
     EXPECT_DOUBLE_EQ(random_equal(5), 6.6);
+}
+
+TEST(Matrix, fromVector6d){
+
+    std::vector<ezc3d::Vector6d> all_v;
+    all_v.push_back(ezc3d::Vector6d(1.1, 1.2, 1.3, 1.4, 1.5, 1.6));
+    all_v.push_back(ezc3d::Vector6d(2.1, 2.2, 2.3, 2.4, 2.5, 2.6));
+    all_v.push_back(ezc3d::Vector6d(3.1, 3.2, 3.3, 3.4, 3.5, 3.6));
+    all_v.push_back(ezc3d::Vector6d(4.1, 4.2, 4.3, 4.4, 4.5, 4.6));
+
+    ezc3d::Matrix matrix(all_v);
+    EXPECT_EQ(matrix.nbRows(), 6);
+    EXPECT_EQ(matrix.nbCols(), 4);
+    for (size_t i=0; i<4; ++i){
+        for (size_t j=0; j<6; ++j){
+            double expected = static_cast<double>(i+1) + static_cast<double>(j+1)/10;
+            EXPECT_FLOAT_EQ(matrix(j, i), expected);
+        }
+    }
 }

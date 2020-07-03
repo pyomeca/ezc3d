@@ -246,6 +246,31 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
     }
 }
 
+
+%extend ezc3d::Matrix
+{
+    PyObject* to_array(){
+        int nRows($self->nbRows());
+        int nCols($self->nbCols());
+        int nArraySize(2);
+        npy_intp * arraySizes = new npy_intp[nArraySize];
+        arraySizes[0] = nRows;
+        arraySizes[1] = nCols;
+
+        double * mat = new double[nRows*nCols];
+        unsigned int k(0);
+        for (unsigned int i=0; i<nRows; ++i){
+            for (unsigned int j=0; j<nCols; ++j){
+                mat[k] = (*$self)(i,j);
+                ++k;
+            }
+        }
+        PyObject* output = PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, mat);
+        PyArray_ENABLEFLAGS((PyArrayObject *)output, NPY_ARRAY_OWNDATA);
+        return output;
+    };
+}
+
 %include ../ezc3d.i
 
 

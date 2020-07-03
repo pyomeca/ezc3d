@@ -120,12 +120,11 @@ endif()
 add_subdirectory(binding)
 
 # Examples
-if(NOT WIN32)
-	option(BUILD_EXAMPLE "Build a C++ example" ON)
-	if (BUILD_EXAMPLE)
-		add_subdirectory(example)
-	endif()
-endif(NOT WIN32)
+option(BUILD_EXAMPLE "Build a C++ example" ON)
+if (BUILD_EXAMPLE)
+	add_subdirectory(examples)
+endif()
+
 
 # Doc
 option(BUILD_DOC "Build documentation" OFF)
