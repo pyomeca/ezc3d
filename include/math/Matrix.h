@@ -289,7 +289,7 @@ EZC3D_API ezc3d::Matrix operator*(
 /// \param m The matrix to print
 /// \return The stream to print to
 ///
-std::ostream& operator<< (
+EZC3D_API std::ostream& operator<< (
     std::ostream& out,
     const ezc3d::Matrix& m);
 
