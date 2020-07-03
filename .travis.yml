@@ -78,9 +78,9 @@ script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
         make ezc3d_coverage;
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-        ./runUnitTests;
+        ./ezc3d_test;
       elif [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 
-        ./runUnitTests.exe;
+        ./ezc3d_test.exe;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
         cd ..;
