@@ -445,12 +445,9 @@ class c3d(C3dMapper):
         # Fill the data
         for f in range(nb_frames):
             for i in range(nb_points):
-                if np.isnan(data_points[:, i, f]).any():
-                    pt.set(np.nan, np.nan, np.nan, -1)
-                else:
-                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
-                    pt.residual(data_meta_points["residuals"][0, i, f])
-                    pt.cameraMask(data_meta_points["camera_masks"][:, i, f].tolist())
+                pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
+                pt.residual(data_meta_points["residuals"][0, i, f])
+                pt.cameraMask(data_meta_points["camera_masks"][:, i, f].tolist())
                 pts.point(pt, i)
 
             for sf in range(nb_analog_subframes):
