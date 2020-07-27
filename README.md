@@ -68,8 +68,10 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 > `BUILD_DOC` If you want (`ON`) or not (`OFF`) to build the documentation of the project. Default is `OFF`.
 > 
 > `BINDER_PYTHON3` If you want (`ON`) or not (`OFF`) to build the Python binder. Default is `OFF`.
-> 
+>
 > `Python3_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the Python executable. This python should have *SWIG* and *Numpy* installed with it. This variable should be found automatically, but Anaconda finds the base prior to the actual environment, so one should gives attention to that particular variable.
+> 
+> `PYTHON_INSTALL_PREFIX` The folder to install the Python binder. The default value is the site-package folder of the current Python (which may require administrator privileges)
 > 
 > `SWIG_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the SWIG executable. This variable will be found automatically if `Python3_EXECUTABLE` is properly set.
 > 
