@@ -443,7 +443,7 @@ ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const {
 
 const std::vector<int>&
 ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const {
-    if (!_isEmpty && _data_type != DATA_TYPE::INT)
+    if (!_isEmpty && (_data_type != DATA_TYPE::INT || _data_type != DATA_TYPE::BYTE))
         throw std::invalid_argument(_name + " parameter is not an INT");
     return _param_data_int;
 }
