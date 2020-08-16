@@ -214,7 +214,6 @@ void ezc3d::Modules::ForcePlatform::extractCorners(
         _meanCorners += corner;
     }
     _meanCorners /= 4;
-    _meanCorners = (_corners[0] + _corners[2]) / 2;
 }
 
 void ezc3d::Modules::ForcePlatform::extractOrigin(
@@ -377,10 +376,9 @@ void ezc3d::Modules::ForcePlatform::extractData(
 
                 _F[cmp] = _refFrame * force_raw;
                 _CoP[cmp] = _refFrame * cop_raw;
-                _M[cmp] = _F[cmp].cross(_CoP[cmp]);
-                _CoP[cmp] +=  _meanCorners;
                 _Tz[cmp] = _refFrame * tz_raw;
-                _M[cmp] -= _Tz[cmp];
+                _M[cmp] = _F[cmp].cross(_CoP[cmp]) - _Tz[cmp];
+                _CoP[cmp] += _meanCorners;
 
                 ++cmp;
             }
