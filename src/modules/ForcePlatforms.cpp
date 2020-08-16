@@ -375,10 +375,11 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 }
 
                 _F[cmp] = _refFrame * force_raw;
-                _CoP[cmp] = _refFrame * cop_raw + _meanCorners;
+                _CoP[cmp] = (_refFrame * cop_raw) + _meanCorners;
                 _M[cmp] = -1*_F[cmp].cross(_CoP[cmp]);
                 _Tz[cmp] = _refFrame * tz_raw;
 
+                ++cmp;
             }
             else if (_type == 2 || _type == 3 || _type == 4){
                 ezc3d::Vector3d force_raw;
