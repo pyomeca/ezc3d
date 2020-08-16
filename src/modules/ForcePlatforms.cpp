@@ -398,7 +398,7 @@ void ezc3d::Modules::ForcePlatform::extractData(
                     moment_raw(1) = _origin(0) * (ch[5] + ch[6] - ch[4] - ch[7]);
                     moment_raw(2) = _origin(1) * (ch[1] - ch[0])
                             + _origin(0) * (ch[2] - ch[3]);
-
+                    moment_raw += force_raw.cross(ezc3d::Vector3d(0, 0, _origin(2)));
                 }
                 else {
                     ezc3d::Vector6d data_raw;
