@@ -376,9 +376,11 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 }
 
                 _F[cmp] = _refFrame * force_raw;
-                _CoP[cmp] = (_refFrame * cop_raw) + _meanCorners;
+                _CoP[cmp] = _refFrame * cop_raw;
                 _M[cmp] = _F[cmp].cross(_CoP[cmp]);
+                _CoP[cmp] +=  _meanCorners;
                 _Tz[cmp] = _refFrame * tz_raw;
+                _M[cmp] -= _Tz[cmp];
 
                 ++cmp;
             }
