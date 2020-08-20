@@ -9,6 +9,65 @@ TEST(ForcePlatForm, NoPlatForm){
     EXPECT_EQ(pf.forcePlatforms().size(), 0);
 }
 
+TEST(ForcePlatForm, Type1){
+    ezc3d::c3d c3d("c3dTestFiles/FP_Type1.c3d");
+    ezc3d::Modules::ForcePlatforms pf(c3d);
+    EXPECT_EQ(pf.forcePlatforms().size(), 4);
+    EXPECT_THROW(pf.forcePlatform(4), std::out_of_range);
+
+    // Frames
+    EXPECT_EQ(pf.forcePlatform(0).nbFrames(),
+              c3d.header().nbFrames() * c3d.header().nbAnalogByFrame());
+    EXPECT_EQ(pf.forcePlatform(1).nbFrames(),
+              c3d.header().nbFrames() * c3d.header().nbAnalogByFrame());
+
+    // Type
+    EXPECT_EQ(pf.forcePlatform(0).type(), 1);
+    EXPECT_EQ(pf.forcePlatform(1).type(), 1);
+
+    // Units
+    EXPECT_STREQ(pf.forcePlatform(0).forceUnit().c_str(), "N");
+    EXPECT_STREQ(pf.forcePlatform(0).momentUnit().c_str(), "Nm");
+    EXPECT_STREQ(pf.forcePlatform(0).positionUnit().c_str(), "m");
+    EXPECT_STREQ(pf.forcePlatform(1).forceUnit().c_str(), "N");
+    EXPECT_STREQ(pf.forcePlatform(1).momentUnit().c_str(), "Nm");
+    EXPECT_STREQ(pf.forcePlatform(1).positionUnit().c_str(), "m");
+
+    // Values
+    const std::vector<ezc3d::Vector3d>& forces(pf.forcePlatform(0).forces());
+    const std::vector<ezc3d::Vector3d>& moments(pf.forcePlatform(0).moments());
+    const std::vector<ezc3d::Vector3d>& cop(pf.forcePlatform(0).CoP());
+    const std::vector<ezc3d::Vector3d>& Tz(pf.forcePlatform(0).Tz());
+
+    EXPECT_DOUBLE_EQ(forces[0](0), -0.90762400970256174);
+    EXPECT_DOUBLE_EQ(forces[0](1), -4.3543128448608615);
+    EXPECT_DOUBLE_EQ(forces[0](2), 0.23373563297172456);
+
+    EXPECT_DOUBLE_EQ(moments[0](0), 0.13688389408320167);
+    EXPECT_DOUBLE_EQ(moments[0](1), -0.13586066586711956);
+    EXPECT_DOUBLE_EQ(moments[0](2), -0.30350742377902123);
+
+    EXPECT_DOUBLE_EQ(cop[0](0), -0.38517721821998796);
+    EXPECT_DOUBLE_EQ(cop[0](1), 0.019237327207317811);
+    EXPECT_DOUBLE_EQ(cop[0](2), 0.15538882044809299);
+
+    EXPECT_DOUBLE_EQ(Tz[0](0), 0.00055678020441499718);
+    EXPECT_DOUBLE_EQ(Tz[0](1), 0.090952889790512317);
+    EXPECT_DOUBLE_EQ(Tz[0](2), 0.00060944707248988404);
+
+    // CAL_MATRIX
+    for (size_t i=0; i<2; ++i){
+        const auto& calMatrix(pf.forcePlatform(i).calMatrix());
+        EXPECT_EQ(calMatrix.nbRows(), 6);
+        EXPECT_EQ(calMatrix.nbCols(), 6);
+        for (size_t j=0; j<6; ++j){
+            for (size_t k=0; k<6; ++k){
+                EXPECT_EQ(calMatrix(j, k), 0.0);
+            }
+        }
+    }
+}
+
 TEST(ForcePlatForm, Type2){
     ezc3d::c3d c3d("c3dTestFiles/Qualisys.c3d");
     ezc3d::Modules::ForcePlatforms pf(c3d);
