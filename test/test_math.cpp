@@ -526,6 +526,11 @@ TEST(Vector3d, unittest){
     EXPECT_DOUBLE_EQ(random_add3(0), 3.3);
     EXPECT_DOUBLE_EQ(random_add3(1), 5.5);
     EXPECT_DOUBLE_EQ(random_add3(2), 7.7);
+
+    ezc3d::Vector3d summed(random + random2);
+    EXPECT_DOUBLE_EQ(summed(0), 3.3);
+    EXPECT_DOUBLE_EQ(summed(1), 5.5);
+    EXPECT_DOUBLE_EQ(summed(2), 7.7);
 }
 
 TEST(Matrix, fromVector3d){

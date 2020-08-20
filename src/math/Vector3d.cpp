@@ -171,3 +171,11 @@ void ezc3d::Vector3d::normalize()
 {
     *this /= norm();
 }
+
+ezc3d::Vector3d operator+(
+        ezc3d::Vector3d vec,
+        ezc3d::Vector3d other)
+{
+    return ezc3d::Vector3d(
+                vec.x() + other.x(), vec.y() + other.y(), vec.z() + other.z());
+}
