@@ -164,4 +164,16 @@ public:
 
 };
 
+#ifndef SWIG
+///
+/// \brief Defining Vector addition with another vector
+/// \param other The other vetor to add
+/// \return The vector added
+///
+EZC3D_API ezc3d::Vector3d operator+(
+        ezc3d::Vector3d vec,
+        ezc3d::Vector3d other);
+
+#endif
+
 #endif
