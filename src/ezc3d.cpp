@@ -128,6 +128,31 @@ void ezc3d::c3d::write(
     contact.set(EZC3D_CONTACT);
     params.group("EZC3D").parameter(contact);
 
+    // Use Intel floating with no extra scaling
+    double pointScaleFactor;
+    if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
+        pointScaleFactor =
+                -fabs(params.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
+    }
+    else {
+        pointScaleFactor = -fabs(header().scaleFactor());
+    }
+    ezc3d::ParametersNS::GroupNS::Parameter scaleFac("SCALE");
+    scaleFac.set(pointScaleFactor);
+    params.group("POINT").parameter(scaleFac);
+
+    ezc3d::ParametersNS::GroupNS::Parameter genScale("GEN_SCALE");
+    genScale.set(1.0);
+    params.group("ANALOG").parameter(genScale);
+
+    ezc3d::ParametersNS::GroupNS::Parameter offset("OFFSET");
+    std::vector<int> offsetValues;
+    for (int i=0; i<params.group("ANALOG").parameter("USED").valuesAsInt()[0]; ++i){
+        offsetValues.push_back(0);
+    }
+    offset.set(offsetValues);
+    params.group("ANALOG").parameter(offset);
+
     std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);
 
@@ -136,15 +161,7 @@ void ezc3d::c3d::write(
     writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
 
     // Write the data
-    double pointScaleFactor;
     std::vector<double> pointAnalogFactors;
-    if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
-        pointScaleFactor =
-                params.group("POINT").parameter("SCALE").valuesAsDouble()[0];
-    }
-    else {
-        pointScaleFactor = header().scaleFactor();
-    }
     if (params.group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
         pointAnalogFactors =
                 params.group("ANALOG").parameter("SCALE").valuesAsDouble();

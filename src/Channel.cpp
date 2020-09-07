@@ -25,7 +25,7 @@ void ezc3d::DataNS::AnalogsNS::Channel::print() const {
 void ezc3d::DataNS::AnalogsNS::Channel::write(
         std::fstream &f,
         double scaleFactor) const {
-    float data(static_cast<float>(_data / fabs(scaleFactor)));
+    float data(static_cast<float>(_data / scaleFactor));
     f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
 }
 
