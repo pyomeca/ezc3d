@@ -110,7 +110,7 @@ void ezc3d::c3d::write(
                 .group("POINT").parameter("FRAMES")
                 .valuesAsInt()[0]);
     if (nFrames > 0xFFFF){
-        ezc3d::ParametersNS::GroupNS::Parameter frames("FRAMES");
+        ezc3d::ParametersNS::GroupNS::Parameter frames(params.group("POINT").parameter("FRAMES"));
         frames.set(-1);
         params.group("POINT").parameter(frames);
     }
@@ -130,22 +130,23 @@ void ezc3d::c3d::write(
 
     // Use Intel floating with no extra scaling
     double pointScaleFactor;
+    ezc3d::ParametersNS::GroupNS::Parameter scaleFactorParam;
     if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
-        pointScaleFactor =
-                -fabs(params.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
+        scaleFactorParam = params.group("POINT").parameter("SCALE");
+        pointScaleFactor = -fabs(scaleFactorParam.valuesAsDouble()[0]);
     }
     else {
         pointScaleFactor = -fabs(header().scaleFactor());
+        scaleFactorParam.name("SCALE");
     }
-    ezc3d::ParametersNS::GroupNS::Parameter scaleFac("SCALE");
-    scaleFac.set(pointScaleFactor);
-    params.group("POINT").parameter(scaleFac);
+    scaleFactorParam.set(pointScaleFactor);
+    params.group("POINT").parameter(scaleFactorParam);
 
-    ezc3d::ParametersNS::GroupNS::Parameter genScale("GEN_SCALE");
+    ezc3d::ParametersNS::GroupNS::Parameter genScale(params.group("ANALOG").parameter("GEN_SCALE"));
     genScale.set(1.0);
     params.group("ANALOG").parameter(genScale);
 
-    ezc3d::ParametersNS::GroupNS::Parameter offset("OFFSET");
+    ezc3d::ParametersNS::GroupNS::Parameter offset(params.group("ANALOG").parameter("OFFSET"));
     std::vector<int> offsetValues;
     for (int i=0; i<params.group("ANALOG").parameter("USED").valuesAsInt()[0]; ++i){
         offsetValues.push_back(0);
