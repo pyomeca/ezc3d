@@ -125,7 +125,8 @@ void ezc3d::Header::write(
     // Some info
     f.write(reinterpret_cast<const char*>(&_nbMaxInterpGap),
             1*ezc3d::DATA_TYPE::WORD);
-    f.write(reinterpret_cast<const char*>(&_scaleFactor),
+    float scaleFactor = -fabsf(_scaleFactor); // Convert to Intel float
+    f.write(reinterpret_cast<const char*>(&scaleFactor),
             2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data

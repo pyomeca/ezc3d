@@ -1901,6 +1901,42 @@ TEST(c3dFileIO, parseAndBuildSameFileVicon){
     remove(savePath.c_str());        
 }
 
+TEST(c3dFileIO, convertIntelIntToIntelProcessorType){
+    ezc3d::c3d c3d_intelInt("c3dTestFiles/pc_int.c3d"); // DEC int format
+    std::string savepath("c3dTestFiles/DecToIntel.c3d");
+    c3d_intelInt.write(savepath);
+    ezc3d::c3d c3d_toIntel(savepath); // INTEL floating format
+
+    compareHeader(c3d_intelInt, c3d_toIntel);
+    compareData(c3d_intelInt, c3d_toIntel);
+
+    remove(savepath.c_str());
+}
+
+TEST(c3dFileIO, convertDecFloatToIntelProcessorType){
+    ezc3d::c3d c3d_dec("c3dTestFiles/dec_real.c3d"); // DEC floating format
+    std::string savepath("c3dTestFiles/DecToIntel.c3d");
+    c3d_dec.write(savepath);
+    ezc3d::c3d c3d_toIntel(savepath); // INTEL floating format
+
+    compareHeader(c3d_dec, c3d_toIntel);
+    compareData(c3d_dec, c3d_toIntel);
+
+    remove(savepath.c_str());
+}
+
+TEST(c3dFileIO, convertDecIntToIntelProcessorType){
+    ezc3d::c3d c3d_dec("c3dTestFiles/dec_int.c3d"); // DEC int format
+    std::string savepath("c3dTestFiles/DecToIntel.c3d");
+    c3d_dec.write(savepath);
+    ezc3d::c3d c3d_toIntel(savepath); // INTEL floating format
+
+    compareHeader(c3d_dec, c3d_toIntel);
+    compareData(c3d_dec, c3d_toIntel);
+
+    remove(savepath.c_str());
+}
+
 
 TEST(c3dShow, printIt){
     // Create an empty c3d and print it
