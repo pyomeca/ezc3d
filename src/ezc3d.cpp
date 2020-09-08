@@ -787,12 +787,12 @@ void ezc3d::c3d::updateParameters(
         size_t idxLabels(grpPoint.parameterIdx("LABELS"));
         size_t idxDescriptions(grpPoint.parameterIdx("DESCRIPTIONS"));
         size_t idxUnits(grpPoint.parameterIdx("UNITS"));
-        std::vector<std::string> labels;
-        std::vector<std::string> descriptions;
-        std::vector<std::string> units;
+        std::vector<std::string> labels = grpPoint.parameter("LABELS").valuesAsString();
+        std::vector<std::string> descriptions = grpPoint.parameter("DESCRIPTIONS").valuesAsString();
+        std::vector<std::string> units = grpPoint.parameter("UNITS").valuesAsString();
         std::vector<std::string> ptsNames(pointNames());
         ptsNames.insert( ptsNames.end(), newPoints.begin(), newPoints.end() );
-        for (size_t i = 0; i < nPoints; ++i){
+        for (size_t i = nPoints - newPoints.size(); i < nPoints; ++i){
             std::string name;
             if (data().nbFrames() == 0){
                 if (i < parameters()
@@ -843,12 +843,12 @@ void ezc3d::c3d::updateParameters(
                                  grpAnalog.parameterIdx("LABELS")));
             size_t idxDescriptions(static_cast<size_t>(
                                        grpAnalog.parameterIdx("DESCRIPTIONS")));
-            std::vector<std::string> labels;
-            std::vector<std::string> descriptions;
+            std::vector<std::string> labels = grpAnalog.parameter("LABELS").valuesAsString();
+            std::vector<std::string> descriptions = grpAnalog.parameter("DESCRIPTIONS").valuesAsString();
             std::vector<std::string> chanNames(channelNames());
             chanNames.insert(
                         chanNames.end(), newAnalogs.begin(), newAnalogs.end() );
-            for (size_t i = 0; i<nAnalogs; ++i){
+            for (size_t i = nAnalogs - newAnalogs.size(); i<nAnalogs; ++i){
                 std::string name;
                 if (data().nbFrames() == 0){
                     if (i < parameters()
