@@ -406,10 +406,10 @@ public:
     // ---- PUBLIC GETTER INTERFACE ---- //
 public:
     ///
-    /// \brief Get a reference to the names of the points
+    /// \brief Get a copy of the names of the points
     /// \return The reference to the names of the points
     ///
-    const std::vector<std::string>& pointNames() const;
+    const std::vector<std::string> pointNames() const;
 
     ///
     /// \brief Get the index of a point in the points holder
@@ -522,8 +522,8 @@ public:
             size_t idx = SIZE_MAX);
 
     ///
-    /// \brief Create a point to the data set of name name
-    /// \param name The name of the point to create
+    /// \brief Create a point to the data set of name pointName
+    /// \param pointName The name of the point to create
     ///
     /// If, for some reason, you want to add a new point to a pre-existing data set, you must
     /// declare this point before, otherwise it rejects it because parameter POINT:LABELS doesn't fit.
@@ -533,7 +533,7 @@ public:
     /// Throw the same errors as updateParameter as it calls it after the point is created
     ///
     void point(
-            const std::string &name);
+            const std::string &pointName);
 
     ///
     /// \brief Add a new point to the data set
@@ -551,6 +551,20 @@ public:
     void point(
             const std::string &pointName,
             const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Create points to the data set of name pointNames
+    /// \param pointNames The name of the points to create
+    ///
+    /// If, for some reason, you want to add a new point to a pre-existing data set, you must
+    /// declare this point before, otherwise it rejects it because parameter POINT:LABELS doesn't fit.
+    /// This function harmonize the parameter structure with the data structure in advance in order to
+    /// add the point.
+    ///
+    /// Throw the same errors as updateParameter as it calls it after the point is created
+    ///
+    void point(
+            const std::vector<std::string> &pointNames);
 
     ///
     /// \brief Add a new point to the data set

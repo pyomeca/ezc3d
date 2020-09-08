@@ -610,6 +610,30 @@ TEST(c3dModifier, addPoints) {
     }
     EXPECT_NO_THROW(new_c3d.c3d.point("goodPoint", new_frames));
 
+    // Test LABELSX (more than 255 points)
+    std::vector<std::string> newPoints;
+    for (size_t i=0; i<1000; ++i){
+        newPoints.push_back("point_" + std::to_string(i));
+    }
+    new_c3d.c3d.point(newPoints);
+
+    std::vector<std::string> moreNewPoints;
+    for (size_t i=0; i<1000; ++i){
+        moreNewPoints.push_back("more_point_" + std::to_string(i));
+    }
+    new_c3d.c3d.point(moreNewPoints);
+    std::vector<std::string> pointNames(new_c3d.c3d.pointNames());
+    for (size_t i=0; i<3; ++i){
+        EXPECT_STREQ(("point" + std::to_string(i+1)).c_str(),
+                     pointNames[i].c_str());
+    }
+    EXPECT_STREQ("goodPoint", pointNames[3].c_str());
+    for (size_t i=0; i<1000; ++i){
+        EXPECT_STREQ(("point_" + std::to_string(i)).c_str(),
+                     pointNames[i + 4].c_str());
+        EXPECT_STREQ(("more_point_" + std::to_string(i)).c_str(),
+                     pointNames[i + 1004].c_str());
+    }
 }
 
 

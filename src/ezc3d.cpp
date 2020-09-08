@@ -441,8 +441,16 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const {
     return *_data;
 }
 
-const std::vector<std::string> &ezc3d::c3d::pointNames() const {
-    return parameters().group("POINT").parameter("LABELS").valuesAsString();
+const std::vector<std::string> ezc3d::c3d::pointNames() const {
+    std::vector<std::string> labels = parameters().group("POINT").parameter("LABELS").valuesAsString();
+    int i = 2;
+    while (parameters().group("POINT").isParameter("LABELS" + std::to_string(i))){
+        const std::vector<std::string>& labels_tp
+                = parameters().group("POINT").parameter("LABELS" + std::to_string(i)).valuesAsString();
+        labels.insert(labels.end(), labels_tp.begin(), labels_tp.end());
+        ++i;
+    }
+    return labels;
 }
 
 size_t ezc3d::c3d::pointIdx(
@@ -581,7 +589,7 @@ void ezc3d::c3d::frame(
 }
 
 void ezc3d::c3d::point(
-        const std::string &name) {
+        const std::string &pointName) {
     if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
@@ -591,9 +599,9 @@ void ezc3d::c3d::point(
         frame.add(dummy_pts);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        point(name, dummy_frames);
+        point(pointName, dummy_frames);
     } else {
-        updateParameters({name});
+        updateParameters({pointName});
     }
 }
 
@@ -603,6 +611,25 @@ void ezc3d::c3d::point(
     std::vector<std::string> names;
     names.push_back(pointName);
     point(names, frames);
+}
+
+void ezc3d::c3d::point(
+        const std::vector<std::string>& ptsNames) {
+    if (data().nbFrames() > 0){
+        std::vector<ezc3d::DataNS::Frame> dummy_frames;
+        ezc3d::DataNS::Points3dNS::Points dummy_pts;
+        ezc3d::DataNS::Points3dNS::Point emptyPoint;
+        for (size_t i=0; i<ptsNames.size(); ++i){
+            dummy_pts.point(emptyPoint);
+        }
+        ezc3d::DataNS::Frame frame;
+        frame.add(dummy_pts);
+        for (size_t f=0; f<data().nbFrames(); ++f)
+            dummy_frames.push_back(frame);
+        point(ptsNames, dummy_frames);
+    } else {
+        updateParameters(ptsNames);
+    }
 }
 
 void ezc3d::c3d::point(
@@ -777,19 +804,15 @@ void ezc3d::c3d::updateParameters(
     if (data().nbFrames() > 0)
         nPoints = data().frame(0).points().nbPoints();
     else
-        nPoints = parameters()
-                .group("POINT").parameter("LABELS")
-                .valuesAsString().size() + newPoints.size();
+        nPoints = parameters().group("POINT").parameter("USED").valuesAsInt()[0]
+                + newPoints.size();
     if (nPoints != static_cast<size_t>(
                 grpPoint.parameter("USED").valuesAsInt()[0])){
         grpPoint.parameter("USED").set(nPoints);
 
-        size_t idxLabels(grpPoint.parameterIdx("LABELS"));
-        size_t idxDescriptions(grpPoint.parameterIdx("DESCRIPTIONS"));
-        size_t idxUnits(grpPoint.parameterIdx("UNITS"));
-        std::vector<std::string> labels = grpPoint.parameter("LABELS").valuesAsString();
-        std::vector<std::string> descriptions = grpPoint.parameter("DESCRIPTIONS").valuesAsString();
-        std::vector<std::string> units = grpPoint.parameter("UNITS").valuesAsString();
+        std::vector<std::string> newLabels;
+        std::vector<std::string> newDescriptions;
+        std::vector<std::string> newUnits;
         std::vector<std::string> ptsNames(pointNames());
         ptsNames.insert( ptsNames.end(), newPoints.begin(), newPoints.end() );
         for (size_t i = nPoints - newPoints.size(); i < nPoints; ++i){
@@ -809,13 +832,57 @@ void ezc3d::c3d::updateParameters(
                 name = ptsNames[i];
                 removeTrailingSpaces(name);
             }
-            labels.push_back(name);
-            descriptions.push_back("");
-            units.push_back("mm");
+            newLabels.push_back(name);
+            newDescriptions.push_back("");
+            newUnits.push_back("mm");
         }
-        grpPoint.parameter(idxLabels).set(labels);
-        grpPoint.parameter(idxDescriptions).set(descriptions);
-        grpPoint.parameter(idxUnits).set(units);
+
+        // Dispatch names in LABELS, LABELS2, etc.
+        size_t first_idx = 0;
+        size_t last_idx = 0;
+        size_t i = 0;
+        while (last_idx < newUnits.size()){
+            std::string mod("");
+            if (i != 0){
+                mod = std::to_string(i+1);
+                if (!grpPoint.isParameter("LABELS" + mod)){
+                    ezc3d::ParametersNS::GroupNS::Parameter labels("LABELS" + mod);
+                    labels.set(std::vector<std::string>()={});
+                    grpPoint.parameter(labels);
+                }
+                if (!grpPoint.isParameter("DESCRIPTIONS" + mod)){
+                    ezc3d::ParametersNS::GroupNS::Parameter descriptions("DESCRIPTIONS" + mod);
+                    descriptions.set(std::vector<std::string>()={});
+                    grpPoint.parameter(descriptions);
+                }
+                if (!grpPoint.isParameter("UNITS" + mod)){
+                    ezc3d::ParametersNS::GroupNS::Parameter units("UNITS" + mod);
+                    units.set(std::vector<std::string>()={});
+                    grpPoint.parameter(units);
+                }
+            }
+            auto labels = grpPoint.parameter("LABELS" + mod).valuesAsString();
+            auto descriptions = grpPoint.parameter("DESCRIPTIONS" + mod).valuesAsString();
+            auto units = grpPoint.parameter("UNITS" + mod).valuesAsString();
+
+            if (labels.size() != 255){
+                int offset = grpPoint.parameter("LABELS" + mod).valuesAsString().size();
+                last_idx = newLabels.size() >= first_idx + 255 - offset
+                        ? first_idx + 255 - offset
+                        : newLabels.size();
+                labels.insert(labels.end(), newLabels.begin() + first_idx, newLabels.begin() + last_idx);
+                descriptions.insert(descriptions.end(), newDescriptions.begin() + first_idx, newDescriptions.begin() + last_idx);
+                units.insert(units.end(), newUnits.begin() + first_idx, newUnits.begin() + last_idx);
+
+                grpPoint.parameter("LABELS" + mod).set(labels);
+                grpPoint.parameter("DESCRIPTIONS" + mod).set(descriptions);
+                grpPoint.parameter("UNITS" + mod).set(units);
+
+                // Prepare next for
+                first_idx = last_idx;
+            }
+            ++i;
+        }
     }
 
     // If analogous data has been added
