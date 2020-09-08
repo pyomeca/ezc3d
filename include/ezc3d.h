@@ -424,10 +424,10 @@ public:
             const std::string& pointName) const;
 
     ///
-    /// \brief Get a reference to the names of the analog channels
-    /// \return The reference to the names of the analog channels
+    /// \brief Get the names of the analog channels
+    /// \return The names of the analog channels
     ///
-    const std::vector<std::string>& channelNames() const;
+    const std::vector<std::string> channelNames() const;
 
     ///
     /// \brief Get the index of a analog channel in the subframe
@@ -584,8 +584,8 @@ public:
             const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
-    /// \brief Create a channel of analog data to the data set of name name
-    /// \param name The name of the channel to create
+    /// \brief Create a channel of analog data to the data set of name channelName
+    /// \param channelName The name of the channel to create
     ///
     /// If, for some reason, you want to add a new channel to a pre-existing data set, you must
     /// declare this channel before, otherwise it rejects it because parameter ANALOG:LABELS doesn't fit.
@@ -595,7 +595,7 @@ public:
     /// Throw the same errors as updateParameter as it calls it after the channel is created
     ///
     void analog(
-            const std::string &name);
+            const std::string &channelName);
 
     ///
     /// \brief Add a new channel to the data set
@@ -614,6 +614,20 @@ public:
     void analog(
             std::string channelName,
             const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Create channels of analog data to the data set of name channelNames
+    /// \param channelNames The name of the channel to create
+    ///
+    /// If, for some reason, you want to add a new channel to a pre-existing data set, you must
+    /// declare this channel before, otherwise it rejects it because parameter ANALOG:LABELS doesn't fit.
+    /// This function harmonize the parameter structure with the data structure in advance in order to
+    /// add the channel.
+    ///
+    /// Throw the same errors as updateParameter as it calls it after the channel is created
+    ///
+    void analog(
+            const std::vector<std::string> &channelName);
 
     ///
     /// \brief Add a new channel to the data set
