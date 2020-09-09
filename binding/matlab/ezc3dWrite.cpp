@@ -229,54 +229,82 @@ void mexFunction(
     if (!parametersPoints) {
         mexErrMsgTxt("'parameters.POINT' is not accessible in the structure.");
     }
-    mxArray *parametersPointsLabels = mxGetField(parametersPoints, 0, "LABELS");
-    if (!parametersPointsLabels) {
-        mexErrMsgTxt("'parameters.POINT.LABELS' parameters "
-                     "is not accessible in the structure.");
-    }
-    mxArray *valuePointsLabels = mxGetField(
-                parametersPointsLabels, 0, DATA_FIELD);
-    if (!valuePointsLabels) {
-        mexErrMsgTxt(("'parameters.POINT.LABELS." + std::string(DATA_FIELD)
-                     + " parameters is not accessible in the structure.")
-                     .c_str());
-    }
-    if (nPoints != mxGetM(valuePointsLabels) * mxGetN(valuePointsLabels)) {
-        mexErrMsgTxt("'parameters.POINT.LABELS' must have "
-                     "the same length as nPoints of the data.");
+
+    size_t cmpLabels(1);
+    std::string mod("");
+    std::vector<std::string> pointLabels;
+    while (true) {
+        mxArray *parametersPointsLabels = mxGetField(parametersPoints, 0, ("LABELS" + mod).c_str());
+        if (!parametersPointsLabels) {
+            if (cmpLabels == 1){
+                mexErrMsgTxt("'parameters.POINT.LABELS' parameters "
+                             "is not accessible in the structure.");
+            } else {
+                break;
+            }
+        }
+        mxArray *valuePointsLabels = mxGetField(
+                    parametersPointsLabels, 0, DATA_FIELD);
+        if (!valuePointsLabels) {
+            mexErrMsgTxt(("'parameters.POINT.LABELS" + mod + "." + std::string(DATA_FIELD)
+                         + " parameters is not accessible in the structure.")
+                         .c_str());
+        }
+
+        for (size_t i=0; i<mxGetM(valuePointsLabels) * mxGetN(valuePointsLabels); ++i) {
+            mxArray *pointLabelsPtr = mxGetCell(valuePointsLabels, i);
+            pointLabels.push_back(toString(pointLabelsPtr));
+        }
+
+        cmpLabels++;
+        mod = std::to_string(cmpLabels);
     }
 
-    std::vector<std::string> pointLabels;
-    for (size_t i=0; i<nPoints; ++i) {
-        mxArray *pointLabelsPtr = mxGetCell(valuePointsLabels, i);
-        pointLabels.push_back(toString(pointLabelsPtr));
+    if (nPoints != pointLabels.size()) {
+        mexErrMsgTxt("'parameters.POINT.LABELS' must have "
+                     "the same length as nPoints of the data.");
     }
     // Add them to the c3d
     for (size_t i=0; i<pointLabels.size(); ++i)
         c3d.point(pointLabels[i]);
 
+
     // Get the names of the analogs
     mxArray *groupAnalogs = mxGetField(parameters, 0, "ANALOG");
     if (!groupAnalogs)
         mexErrMsgTxt("'parameters.ANALOG' is not accessible in the structure.");
-    mxArray *groupAnalogsLabels = mxGetField(groupAnalogs, 0, "LABELS");
-    if (!groupAnalogsLabels)
-        mexErrMsgTxt("'parameters.ANALOG.LABELS' parameters "
-                     "is not accessible in the structure.");
-    mxArray *valueAnalogsLabels = mxGetField(groupAnalogsLabels, 0, DATA_FIELD);
-    if (!valueAnalogsLabels) {
-        mexErrMsgTxt(("'parameters.ANALOG.LABELS." + std::string(DATA_FIELD)
-                     + " parameters is not accessible in the structure.")
-                     .c_str());
+
+    cmpLabels = 1;
+    mod = "";
+    std::vector<std::string> analogsLabels;
+    while (true) {
+        mxArray *groupAnalogsLabels = mxGetField(groupAnalogs, 0, ("LABELS" + mod).c_str());
+        if (!groupAnalogsLabels){
+            if (cmpLabels == 1){
+                mexErrMsgTxt("'parameters.ANALOG.LABELS' parameters "
+                             "is not accessible in the structure.");
+            } else {
+                break;
+            }
+        }
+        mxArray *valueAnalogsLabels = mxGetField(groupAnalogsLabels, 0, DATA_FIELD);
+        if (!valueAnalogsLabels) {
+            mexErrMsgTxt(("'parameters.ANALOG.LABELS" + mod + "." + std::string(DATA_FIELD)
+                         + " parameters is not accessible in the structure.")
+                         .c_str());
+        }
+
+        for (size_t i=0; i<mxGetM(valueAnalogsLabels) * mxGetN(valueAnalogsLabels); ++i){
+            mxArray *analogsLabelsPtr = mxGetCell(valueAnalogsLabels, i);
+            analogsLabels.push_back(toString(analogsLabelsPtr));
+        }
+
+        cmpLabels++;
+        mod = std::to_string(cmpLabels);
     }
-    if (nAnalogs != mxGetM(valueAnalogsLabels) * mxGetN(valueAnalogsLabels))
+    if (nAnalogs != analogsLabels.size())
         mexErrMsgTxt("'parameters.ANALOG.LABELS' must have "
                      "the same length as nAnalogs of the data.");
-    std::vector<std::string> analogsLabels;
-    for (size_t i=0; i<nAnalogs; ++i){
-        mxArray *analogsLabelsPtr = mxGetCell(valueAnalogsLabels, i);
-        analogsLabels.push_back(toString(analogsLabelsPtr));
-    }
     // Add them to the c3d
     for (size_t i=0; i<analogsLabels.size(); ++i) {
         c3d.analog(analogsLabels[i]);
