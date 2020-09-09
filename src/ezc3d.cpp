@@ -144,13 +144,19 @@ void ezc3d::c3d::write(
     genScale.set(1.0);
     params.group("ANALOG").parameter(genScale);
 
-    ezc3d::ParametersNS::GroupNS::Parameter offset(params.group("ANALOG").parameter("OFFSET"));
-    std::vector<int> offsetValues;
-    for (int i=0; i<params.group("ANALOG").parameter("USED").valuesAsInt()[0]; ++i){
-        offsetValues.push_back(0);
-    }
-    offset.set(offsetValues);
-    params.group("ANALOG").parameter(offset);
+    size_t cmp = 1;
+    std::string mod = "";
+    do {
+        auto offset(params.group("ANALOG").parameter("OFFSET" + mod));
+        std::vector<int> offsetValues(offset.valuesAsInt().size());
+        for (size_t i=0; i<offsetValues.size(); ++i){
+            offsetValues[i] = 0;
+        }
+        offset.set(offsetValues);
+        params.group("ANALOG").parameter(offset);
+        ++cmp;
+        mod = std::to_string(cmp);
+    } while (params.group("ANALOG").isParameter("OFFSET" + mod));
 
     std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);
