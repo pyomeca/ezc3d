@@ -394,7 +394,6 @@ void mexFunction(
                         } else if (mxIsCell(valueField)) {
                             std::vector<std::string> data;
                             parseParam(valueField, dimension, data);
-                            dimension.pop_back();
                             newParam.set(data, dimension);
                         } else if (mxIsChar(valueField)) {
                             std::vector<std::string> data;
