@@ -340,8 +340,8 @@ def test_force_platform_filter():
     np.testing.assert_array_almost_equal(all_pf[1]["Tz"][:, [0, 1000, -1]], expected_Tz, decimal=3)
 
 
-@pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon"])
-def c3d_build_rebuild(request):
+@pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon", "Label2"])
+def c3d_build_rebuild_all(request):
     base_folder = Path("test/c3dTestFiles")
     orig_file = Path(base_folder / (request.param + ".c3d"))
     rebuild_file = Path(base_folder / (request.param + "_after.c3d"))
@@ -355,23 +355,39 @@ def c3d_build_rebuild(request):
     Path.unlink(rebuild_file)
 
 
-def test_parse_and_rebuild(c3d_build_rebuild):
-    for i in c3d_build_rebuild:
+@pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon"])
+def c3d_build_rebuild_reduced(request):
+    base_folder = Path("test/c3dTestFiles")
+    orig_file = Path(base_folder / (request.param + ".c3d"))
+    rebuild_file = Path(base_folder / (request.param + "_after.c3d"))
+
+    original = ezc3d.c3d(orig_file.as_posix())
+    original.write(rebuild_file.as_posix())
+    rebuilt = ezc3d.c3d(rebuild_file.as_posix())
+
+    yield (original, rebuilt)
+
+    Path.unlink(rebuild_file)
+
+
+def test_parse_and_rebuild(c3d_build_rebuild_all):
+    for i in c3d_build_rebuild_all:
         assert isinstance(i, ezc3d.c3d)
-    orig, rebuilt = c3d_build_rebuild
+    orig, rebuilt = c3d_build_rebuild_all
     assert orig == rebuilt
 
 
-def test_parse_and_rebuild_header(c3d_build_rebuild):
-    orig, rebuilt = c3d_build_rebuild
+def test_parse_and_rebuild_header(c3d_build_rebuild_all):
+    orig, rebuilt = c3d_build_rebuild_all
     assert orig["header"] == rebuilt["header"]
 
 
-def test_parse_and_rebuild_parameters(c3d_build_rebuild):
-    orig, rebuilt = c3d_build_rebuild
+def test_parse_and_rebuild_parameters(c3d_build_rebuild_reduced):
+    # UNITS2 is not in the original file (Label2), but is required. Therefore, the parameters won't match
+    orig, rebuilt = c3d_build_rebuild_reduced
     assert orig["parameters"] == rebuilt["parameters"]
 
 
-def test_parse_and_rebuild_data(c3d_build_rebuild):
-    orig, rebuilt = c3d_build_rebuild
+def test_parse_and_rebuild_data(c3d_build_rebuild_all):
+    orig, rebuilt = c3d_build_rebuild_all
     assert orig["data"] == rebuilt["data"]

@@ -406,10 +406,10 @@ public:
     // ---- PUBLIC GETTER INTERFACE ---- //
 public:
     ///
-    /// \brief Get a reference to the names of the points
+    /// \brief Get a copy of the names of the points
     /// \return The reference to the names of the points
     ///
-    const std::vector<std::string>& pointNames() const;
+    const std::vector<std::string> pointNames() const;
 
     ///
     /// \brief Get the index of a point in the points holder
@@ -424,10 +424,10 @@ public:
             const std::string& pointName) const;
 
     ///
-    /// \brief Get a reference to the names of the analog channels
-    /// \return The reference to the names of the analog channels
+    /// \brief Get the names of the analog channels
+    /// \return The names of the analog channels
     ///
-    const std::vector<std::string>& channelNames() const;
+    const std::vector<std::string> channelNames() const;
 
     ///
     /// \brief Get the index of a analog channel in the subframe
@@ -522,8 +522,8 @@ public:
             size_t idx = SIZE_MAX);
 
     ///
-    /// \brief Create a point to the data set of name name
-    /// \param name The name of the point to create
+    /// \brief Create a point to the data set of name pointName
+    /// \param pointName The name of the point to create
     ///
     /// If, for some reason, you want to add a new point to a pre-existing data set, you must
     /// declare this point before, otherwise it rejects it because parameter POINT:LABELS doesn't fit.
@@ -533,7 +533,7 @@ public:
     /// Throw the same errors as updateParameter as it calls it after the point is created
     ///
     void point(
-            const std::string &name);
+            const std::string &pointName);
 
     ///
     /// \brief Add a new point to the data set
@@ -553,6 +553,20 @@ public:
             const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
+    /// \brief Create points to the data set of name pointNames
+    /// \param pointNames The name of the points to create
+    ///
+    /// If, for some reason, you want to add a new point to a pre-existing data set, you must
+    /// declare this point before, otherwise it rejects it because parameter POINT:LABELS doesn't fit.
+    /// This function harmonize the parameter structure with the data structure in advance in order to
+    /// add the point.
+    ///
+    /// Throw the same errors as updateParameter as it calls it after the point is created
+    ///
+    void point(
+            const std::vector<std::string> &pointNames);
+
+    ///
     /// \brief Add a new point to the data set
     /// \param pointNames The name vector of the new points
     /// \param frames The array of frames to add
@@ -570,8 +584,8 @@ public:
             const std::vector<ezc3d::DataNS::Frame> &frames);
 
     ///
-    /// \brief Create a channel of analog data to the data set of name name
-    /// \param name The name of the channel to create
+    /// \brief Create a channel of analog data to the data set of name channelName
+    /// \param channelName The name of the channel to create
     ///
     /// If, for some reason, you want to add a new channel to a pre-existing data set, you must
     /// declare this channel before, otherwise it rejects it because parameter ANALOG:LABELS doesn't fit.
@@ -581,7 +595,7 @@ public:
     /// Throw the same errors as updateParameter as it calls it after the channel is created
     ///
     void analog(
-            const std::string &name);
+            const std::string &channelName);
 
     ///
     /// \brief Add a new channel to the data set
@@ -600,6 +614,20 @@ public:
     void analog(
             std::string channelName,
             const std::vector<ezc3d::DataNS::Frame> &frames);
+
+    ///
+    /// \brief Create channels of analog data to the data set of name channelNames
+    /// \param channelNames The name of the channel to create
+    ///
+    /// If, for some reason, you want to add a new channel to a pre-existing data set, you must
+    /// declare this channel before, otherwise it rejects it because parameter ANALOG:LABELS doesn't fit.
+    /// This function harmonize the parameter structure with the data structure in advance in order to
+    /// add the channel.
+    ///
+    /// Throw the same errors as updateParameter as it calls it after the channel is created
+    ///
+    void analog(
+            const std::vector<std::string> &channelName);
 
     ///
     /// \brief Add a new channel to the data set

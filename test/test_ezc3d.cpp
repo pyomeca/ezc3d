@@ -610,6 +610,57 @@ TEST(c3dModifier, addPoints) {
     }
     EXPECT_NO_THROW(new_c3d.c3d.point("goodPoint", new_frames));
 
+    // Test LABELSX (more than 255 points)
+    std::vector<std::string> newPoints;
+    for (size_t i=0; i<1000; ++i){
+        newPoints.push_back("point_" + std::to_string(i));
+    }
+    new_c3d.c3d.point(newPoints);
+
+    std::vector<std::string> moreNewPoints;
+    for (size_t i=0; i<1000; ++i){
+        moreNewPoints.push_back("more_point_" + std::to_string(i));
+    }
+    new_c3d.c3d.point(moreNewPoints);
+
+    for (size_t i=0; i<1000; ++i){
+        new_c3d.c3d.point("even_more_point_" + std::to_string(i));
+    }
+
+    std::vector<std::string> pointNames(new_c3d.c3d.pointNames());
+    for (size_t i=0; i<3; ++i){
+        EXPECT_STREQ(("point" + std::to_string(i+1)).c_str(),
+                     pointNames[i].c_str());
+    }
+    EXPECT_STREQ("goodPoint", pointNames[3].c_str());
+    for (size_t i=0; i<1000; ++i){
+        EXPECT_STREQ(("point_" + std::to_string(i)).c_str(),
+                     pointNames[i + 4].c_str());
+        EXPECT_STREQ(("more_point_" + std::to_string(i)).c_str(),
+                     pointNames[i + 1004].c_str());
+        EXPECT_STREQ(("even_more_point_" + std::to_string(i)).c_str(),
+                     pointNames[i + 2004].c_str());
+    }
+
+    std::string savepath("temporary.c3d");
+    new_c3d.c3d.write(savepath);
+    ezc3d::c3d c3dBis(savepath);
+
+    std::vector<std::string> pointNamesBis(c3dBis.pointNames());
+    for (size_t i=0; i<3; ++i){
+        EXPECT_STREQ(("point" + std::to_string(i+1)).c_str(),
+                     pointNamesBis[i].c_str());
+    }
+    EXPECT_STREQ("goodPoint", pointNamesBis[3].c_str());
+    for (size_t i=0; i<1000; ++i){
+        EXPECT_STREQ(("point_" + std::to_string(i)).c_str(),
+                     pointNamesBis[i + 4].c_str());
+        EXPECT_STREQ(("more_point_" + std::to_string(i)).c_str(),
+                     pointNamesBis[i + 1004].c_str());
+        EXPECT_STREQ(("even_more_point_" + std::to_string(i)).c_str(),
+                     pointNamesBis[i + 2004].c_str());
+    }
+    remove(savepath.c_str());
 }
 
 
@@ -800,6 +851,56 @@ TEST(c3dModifier, addAnalogs) {
                 EXPECT_FLOAT_EQ(new_c3d.c3d.data().frame(f).analogs().subframe(sf).channel(c).data(),
                                 static_cast<double>(2*f+3*sf+4*c+1) / static_cast<double>(7.0));
     }
+
+    // Test LABELSX (more than 255 points)
+    std::vector<std::string> newAnalog;
+    for (size_t i=0; i<1000; ++i){
+        newAnalog.push_back("analog_" + std::to_string(i));
+    }
+    new_c3d.c3d.analog(newAnalog);
+
+    std::vector<std::string> moreNewAnalog;
+    for (size_t i=0; i<1000; ++i){
+        moreNewAnalog.push_back("more_analog_" + std::to_string(i));
+    }
+    new_c3d.c3d.analog(moreNewAnalog);
+
+    for (size_t i=0; i<1000; ++i){
+        new_c3d.c3d.analog("even_more_analog_" + std::to_string(i));
+    }
+
+    std::vector<std::string> channelNames(new_c3d.c3d.channelNames());
+    for (size_t i=0; i<3; ++i){
+        EXPECT_STREQ(("analog" + std::to_string(i+1)).c_str(),
+                     channelNames[i].c_str());
+    }
+    for (size_t i=0; i<1000; ++i){
+        EXPECT_STREQ(("analog_" + std::to_string(i)).c_str(),
+                     channelNames[i + 3].c_str());
+        EXPECT_STREQ(("more_analog_" + std::to_string(i)).c_str(),
+                     channelNames[i + 1003].c_str());
+        EXPECT_STREQ(("even_more_analog_" + std::to_string(i)).c_str(),
+                     channelNames[i + 2003].c_str());
+    }
+
+    std::string savepath("temporary.c3d");
+    new_c3d.c3d.write(savepath);
+    ezc3d::c3d c3dBis(savepath);
+
+    std::vector<std::string> channelNamesBis(c3dBis.channelNames());
+    for (size_t i=0; i<3; ++i){
+        EXPECT_STREQ(("analog" + std::to_string(i+1)).c_str(),
+                     channelNamesBis[i].c_str());
+    }
+    for (size_t i=0; i<1000; ++i){
+        EXPECT_STREQ(("analog_" + std::to_string(i)).c_str(),
+                     channelNamesBis[i + 3].c_str());
+        EXPECT_STREQ(("more_analog_" + std::to_string(i)).c_str(),
+                     channelNamesBis[i + 1003].c_str());
+        EXPECT_STREQ(("even_more_analog_" + std::to_string(i)).c_str(),
+                     channelNamesBis[i + 2003].c_str());
+    }
+    remove(savepath.c_str());
 }
 
 TEST(c3dModifier, removeAnalog){
@@ -1899,6 +2000,42 @@ TEST(c3dFileIO, parseAndBuildSameFileVicon){
     compareData(original, rebuilt);
 
     remove(savePath.c_str());        
+}
+
+TEST(c3dFileIO, convertIntelIntToIntelProcessorType){
+    ezc3d::c3d c3d_intelInt("c3dTestFiles/pc_int.c3d"); // DEC int format
+    std::string savepath("c3dTestFiles/DecToIntel.c3d");
+    c3d_intelInt.write(savepath);
+    ezc3d::c3d c3d_toIntel(savepath); // INTEL floating format
+
+    compareHeader(c3d_intelInt, c3d_toIntel);
+    compareData(c3d_intelInt, c3d_toIntel);
+
+    remove(savepath.c_str());
+}
+
+TEST(c3dFileIO, convertDecFloatToIntelProcessorType){
+    ezc3d::c3d c3d_dec("c3dTestFiles/dec_real.c3d"); // DEC floating format
+    std::string savepath("c3dTestFiles/DecToIntel.c3d");
+    c3d_dec.write(savepath);
+    ezc3d::c3d c3d_toIntel(savepath); // INTEL floating format
+
+    compareHeader(c3d_dec, c3d_toIntel);
+    compareData(c3d_dec, c3d_toIntel);
+
+    remove(savepath.c_str());
+}
+
+TEST(c3dFileIO, convertDecIntToIntelProcessorType){
+    ezc3d::c3d c3d_dec("c3dTestFiles/dec_int.c3d"); // DEC int format
+    std::string savepath("c3dTestFiles/DecToIntel.c3d");
+    c3d_dec.write(savepath);
+    ezc3d::c3d c3d_toIntel(savepath); // INTEL floating format
+
+    compareHeader(c3d_dec, c3d_toIntel);
+    compareData(c3d_dec, c3d_toIntel);
+
+    remove(savepath.c_str());
 }
 
 
