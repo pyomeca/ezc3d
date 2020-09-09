@@ -61,6 +61,8 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 >
 > `CMAKE_BUILD_TYPE` Which type of build you want. Options are `Debug`, `RelWithDebInfo`, `MinSizeRel` or `Release`. This is relevant only for the build done using the `make` command. Please note that you may experience a slow EZC3D library if you compile it without any optimization (i.e. `Debug`) especially on Windows. 
 >
+> `USE_MATRIX_FAST_ACCESSOR` If fast accessor should be used (`ON`) or not (`OFF`). Fast accessor is, as its name suggests faster, but do not check for sanity of the elements and can lead to segmentation faults for ill-c3d. Default is `ON`.
+>
 > `BUILD_EXAMPLE` If you want (`TRUE`) or not (`FALSE`) to build the C++ example. Default is `TRUE`.
 > 
 > `BUILD_TESTS` If you want `ON` or not `OFF` to build the tests of the project. Please note that this will automatically download gtest (https://github.com/google/googletest). Default is `OFF`.

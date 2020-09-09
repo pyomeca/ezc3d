@@ -47,7 +47,7 @@ set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 # Option to allow checking of size for matrix getter (slower but safer if activated)
 option(USE_MATRIX_FAST_ACCESSOR
-    "If fast accessor (without bound checks) shoul be use. Prevent SegFault from the user not activated, but is much slower (mostly for Debug purposes)"
+    "If fast accessor (without bound checks) should be use. Prevent SegFault from the user not activated, but is much slower (mostly for Debug purposes)"
     ON
 )
 
