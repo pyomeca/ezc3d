@@ -106,9 +106,7 @@ void ezc3d::c3d::write(
     ezc3d::ParametersNS::Parameters params(parameters());
 
     // Reevalute the number of frames
-    int nFrames(this->parameters()
-                .group("POINT").parameter("FRAMES")
-                .valuesAsInt()[0]);
+    int nFrames(this->parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
     if (nFrames > 0xFFFF){
         ezc3d::ParametersNS::GroupNS::Parameter frames(params.group("POINT").parameter("FRAMES"));
         frames.set(-1);
@@ -146,13 +144,19 @@ void ezc3d::c3d::write(
     genScale.set(1.0);
     params.group("ANALOG").parameter(genScale);
 
-    ezc3d::ParametersNS::GroupNS::Parameter offset(params.group("ANALOG").parameter("OFFSET"));
-    std::vector<int> offsetValues;
-    for (int i=0; i<params.group("ANALOG").parameter("USED").valuesAsInt()[0]; ++i){
-        offsetValues.push_back(0);
-    }
-    offset.set(offsetValues);
-    params.group("ANALOG").parameter(offset);
+    size_t cmp = 1;
+    std::string mod = "";
+    do {
+        auto offset(params.group("ANALOG").parameter("OFFSET" + mod));
+        std::vector<int> offsetValues(offset.valuesAsInt().size());
+        for (size_t i=0; i<offsetValues.size(); ++i){
+            offsetValues[i] = 0;
+        }
+        offset.set(offsetValues);
+        params.group("ANALOG").parameter(offset);
+        ++cmp;
+        mod = std::to_string(cmp);
+    } while (params.group("ANALOG").isParameter("OFFSET" + mod));
 
     std::streampos dataStartParameters(-2); // -1 means not POINT group
     params.write(f, dataStartParameters);
@@ -441,8 +445,18 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const {
     return *_data;
 }
 
-const std::vector<std::string> &ezc3d::c3d::pointNames() const {
-    return parameters().group("POINT").parameter("LABELS").valuesAsString();
+const std::vector<std::string> ezc3d::c3d::pointNames() const {
+    std::vector<std::string> labels =
+            parameters().group("POINT").parameter("LABELS").valuesAsString();
+    int i = 2;
+    while (parameters().group("POINT").isParameter("LABELS" + std::to_string(i))){
+        const std::vector<std::string>& labels_tp
+                = parameters().group("POINT").parameter(
+                    "LABELS" + std::to_string(i)).valuesAsString();
+        labels.insert(labels.end(), labels_tp.begin(), labels_tp.end());
+        ++i;
+    }
+    return labels;
 }
 
 size_t ezc3d::c3d::pointIdx(
@@ -455,8 +469,19 @@ size_t ezc3d::c3d::pointIdx(
                                 + pointName + " in the points data set.");
 }
 
-const std::vector<std::string> &ezc3d::c3d::channelNames() const {
-    return parameters().group("ANALOG").parameter("LABELS").valuesAsString();
+const std::vector<std::string> ezc3d::c3d::channelNames() const {
+
+    std::vector<std::string> labels =
+            parameters().group("ANALOG").parameter("LABELS").valuesAsString();
+    int i = 2;
+    while (parameters().group("ANALOG").isParameter("LABELS" + std::to_string(i))){
+        const std::vector<std::string>& labels_tp
+                = parameters().group("ANALOG").parameter(
+                    "LABELS" + std::to_string(i)).valuesAsString();
+        labels.insert(labels.end(), labels_tp.begin(), labels_tp.end());
+        ++i;
+    }
+    return labels;
 }
 
 size_t ezc3d::c3d::channelIdx(
@@ -581,7 +606,7 @@ void ezc3d::c3d::frame(
 }
 
 void ezc3d::c3d::point(
-        const std::string &name) {
+        const std::string &pointName) {
     if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::Points3dNS::Points dummy_pts;
@@ -591,9 +616,9 @@ void ezc3d::c3d::point(
         frame.add(dummy_pts);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        point(name, dummy_frames);
+        point(pointName, dummy_frames);
     } else {
-        updateParameters({name});
+        updateParameters({pointName});
     }
 }
 
@@ -603,6 +628,25 @@ void ezc3d::c3d::point(
     std::vector<std::string> names;
     names.push_back(pointName);
     point(names, frames);
+}
+
+void ezc3d::c3d::point(
+        const std::vector<std::string>& ptsNames) {
+    if (data().nbFrames() > 0){
+        std::vector<ezc3d::DataNS::Frame> dummy_frames;
+        ezc3d::DataNS::Points3dNS::Points dummy_pts;
+        ezc3d::DataNS::Points3dNS::Point emptyPoint;
+        for (size_t i=0; i<ptsNames.size(); ++i){
+            dummy_pts.point(emptyPoint);
+        }
+        ezc3d::DataNS::Frame frame;
+        frame.add(dummy_pts);
+        for (size_t f=0; f<data().nbFrames(); ++f)
+            dummy_frames.push_back(frame);
+        point(ptsNames, dummy_frames);
+    } else {
+        updateParameters(ptsNames);
+    }
 }
 
 void ezc3d::c3d::point(
@@ -630,8 +674,7 @@ void ezc3d::c3d::point(
     updateParameters(ptsNames);
 }
 
-void ezc3d::c3d::analog(
-        const std::string &name) {
+void ezc3d::c3d::analog(const std::string &channelName) {
     if (data().nbFrames() > 0){
         std::vector<ezc3d::DataNS::Frame> dummy_frames;
         ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
@@ -643,9 +686,9 @@ void ezc3d::c3d::analog(
             frame.analogs().subframe(dummy_subframes);
         for (size_t f=0; f<data().nbFrames(); ++f)
             dummy_frames.push_back(frame);
-        analog(name, dummy_frames);
+        analog(channelName, dummy_frames);
     } else {
-        updateParameters({}, {name});
+        updateParameters({}, {channelName});
     }
 }
 
@@ -655,6 +698,27 @@ void ezc3d::c3d::analog(
     std::vector<std::string> names;
     names.push_back(channelName);
     analog(names, frames);
+}
+
+void ezc3d::c3d::analog(
+        const std::vector<std::string>& channelNames) {
+    if (data().nbFrames() > 0){
+        std::vector<ezc3d::DataNS::Frame> dummy_frames;
+        ezc3d::DataNS::AnalogsNS::SubFrame dummy_subframes;
+        ezc3d::DataNS::AnalogsNS::Channel emptyChannel;
+        emptyChannel.data(0);
+        ezc3d::DataNS::Frame frame;
+        for (size_t i=0; i<channelNames.size(); ++i){
+            dummy_subframes.channel(emptyChannel);
+        }
+        for (size_t sf = 0; sf < header().nbAnalogByFrame(); ++sf)
+            frame.analogs().subframe(dummy_subframes);
+        for (size_t f=0; f<data().nbFrames(); ++f)
+            dummy_frames.push_back(frame);
+        analog(channelNames, dummy_frames);
+    } else {
+        updateParameters({}, channelNames);
+    }
 }
 
 void ezc3d::c3d::analog(
@@ -777,45 +841,80 @@ void ezc3d::c3d::updateParameters(
     if (data().nbFrames() > 0)
         nPoints = data().frame(0).points().nbPoints();
     else
-        nPoints = parameters()
-                .group("POINT").parameter("LABELS")
-                .valuesAsString().size() + newPoints.size();
-    if (nPoints != static_cast<size_t>(
-                grpPoint.parameter("USED").valuesAsInt()[0])){
+        nPoints = parameters().group("POINT").parameter("USED").valuesAsInt()[0]
+                + newPoints.size();
+    int oldPointUsed(grpPoint.parameter("USED").valuesAsInt()[0]);
+    if (nPoints != static_cast<size_t>(oldPointUsed)){
         grpPoint.parameter("USED").set(nPoints);
 
-        size_t idxLabels(grpPoint.parameterIdx("LABELS"));
-        size_t idxDescriptions(grpPoint.parameterIdx("DESCRIPTIONS"));
-        size_t idxUnits(grpPoint.parameterIdx("UNITS"));
-        std::vector<std::string> labels;
-        std::vector<std::string> descriptions;
-        std::vector<std::string> units;
+        std::vector<std::string> newLabels;
+        std::vector<std::string> newDescriptions;
+        std::vector<std::string> newUnits;
         std::vector<std::string> ptsNames(pointNames());
         ptsNames.insert( ptsNames.end(), newPoints.begin(), newPoints.end() );
-        for (size_t i = 0; i < nPoints; ++i){
+        for (size_t i = nPoints - newPoints.size(); i < nPoints; ++i){
             std::string name;
             if (data().nbFrames() == 0){
-                if (i < parameters()
-                        .group("POINT").parameter("LABELS")
-                        .valuesAsString().size())
-                    name = parameters()
-                            .group("POINT").parameter("LABELS")
+                if (i < static_cast<size_t>(oldPointUsed))
+                    name = parameters().group("POINT").parameter("LABELS")
                             .valuesAsString()[i];
                 else
-                    name = newPoints[i - parameters()
-                            .group("POINT").parameter("LABELS")
-                            .valuesAsString().size()];
+                    name = newPoints[i - oldPointUsed];
             } else {
                 name = ptsNames[i];
                 removeTrailingSpaces(name);
             }
-            labels.push_back(name);
-            descriptions.push_back("");
-            units.push_back("mm");
+            newLabels.push_back(name);
+            newDescriptions.push_back("");
+            newUnits.push_back("mm");
         }
-        grpPoint.parameter(idxLabels).set(labels);
-        grpPoint.parameter(idxDescriptions).set(descriptions);
-        grpPoint.parameter(idxUnits).set(units);
+
+        // Dispatch names in LABELS, LABELS2, etc.
+        size_t first_idx = 0;
+        size_t last_idx = 0;
+        size_t i = 0;
+        while (last_idx < newLabels.size()){
+            std::string mod("");
+            if (i != 0){
+                mod = std::to_string(i+1);
+                if (!grpPoint.isParameter("LABELS" + mod)){
+                    ezc3d::ParametersNS::GroupNS::Parameter labels("LABELS" + mod);
+                    labels.set(std::vector<std::string>()={});
+                    grpPoint.parameter(labels);
+                }
+                if (!grpPoint.isParameter("DESCRIPTIONS" + mod)){
+                    ezc3d::ParametersNS::GroupNS::Parameter descriptions("DESCRIPTIONS" + mod);
+                    descriptions.set(std::vector<std::string>()={});
+                    grpPoint.parameter(descriptions);
+                }
+                if (!grpPoint.isParameter("UNITS" + mod)){
+                    ezc3d::ParametersNS::GroupNS::Parameter units("UNITS" + mod);
+                    units.set(std::vector<std::string>()={});
+                    grpPoint.parameter(units);
+                }
+            }
+            auto labels = grpPoint.parameter("LABELS" + mod).valuesAsString();
+            auto descriptions = grpPoint.parameter("DESCRIPTIONS" + mod).valuesAsString();
+            auto units = grpPoint.parameter("UNITS" + mod).valuesAsString();
+
+            if (labels.size() != 255){
+                int off = grpPoint.parameter("LABELS" + mod).valuesAsString().size();
+                last_idx = newLabels.size() >= first_idx + 255 - off
+                        ? first_idx + 255 - off
+                        : newLabels.size();
+                labels.insert(labels.end(), newLabels.begin() + first_idx, newLabels.begin() + last_idx);
+                descriptions.insert(descriptions.end(), newDescriptions.begin() + first_idx, newDescriptions.begin() + last_idx);
+                units.insert(units.end(), newUnits.begin() + first_idx, newUnits.begin() + last_idx);
+
+                grpPoint.parameter("LABELS" + mod).set(labels);
+                grpPoint.parameter("DESCRIPTIONS" + mod).set(descriptions);
+                grpPoint.parameter("UNITS" + mod).set(units);
+
+                // Prepare next for
+                first_idx = last_idx;
+            }
+            ++i;
+        }
     }
 
     // If analogous data has been added
@@ -828,72 +927,107 @@ void ezc3d::c3d::updateParameters(
         else
             nAnalogs = 0;
     } else
-        nAnalogs = parameters()
-                .group("ANALOG").parameter("LABELS")
-                .valuesAsString().size() + newAnalogs.size();
+        nAnalogs = parameters().group("ANALOG").parameter("USED").valuesAsInt()[0]
+                + newAnalogs.size();
 
     // Should always be greater than 0..., but we have to take in
     // account Optotrak lazyness
     if (parameters().group("ANALOG").nbParameters()){
-        if (nAnalogs != static_cast<size_t>(
-                    grpAnalog.parameter("USED").valuesAsInt()[0])){
+        int oldAnalogUsed(grpAnalog.parameter("USED").valuesAsInt()[0]);
+        if (nAnalogs != static_cast<size_t>(oldAnalogUsed)){
             grpAnalog.parameter("USED").set(nAnalogs);
 
-            size_t idxLabels(static_cast<size_t>(
-                                 grpAnalog.parameterIdx("LABELS")));
-            size_t idxDescriptions(static_cast<size_t>(
-                                       grpAnalog.parameterIdx("DESCRIPTIONS")));
-            std::vector<std::string> labels;
-            std::vector<std::string> descriptions;
+            std::vector<std::string> newLabels;
+            std::vector<std::string> newDescriptions;
+            std::vector<double> newScale;
+            std::vector<int> newOffset;
+            std::vector<std::string> newUnits;
             std::vector<std::string> chanNames(channelNames());
             chanNames.insert(
                         chanNames.end(), newAnalogs.begin(), newAnalogs.end() );
-            for (size_t i = 0; i<nAnalogs; ++i){
+            for (size_t i = nAnalogs - newAnalogs.size(); i < nAnalogs; ++i){
                 std::string name;
                 if (data().nbFrames() == 0){
-                    if (i < parameters()
-                            .group("ANALOG").parameter("LABELS")
-                            .valuesAsString().size())
+                    if (i < static_cast<size_t>(oldAnalogUsed))
                         name = parameters()
                                 .group("ANALOG").parameter("LABELS")
                                 .valuesAsString()[i];
                     else
-                        name = newAnalogs[i-parameters()
-                                .group("ANALOG").parameter("LABELS")
-                                .valuesAsString().size()];
+                        name = newAnalogs[i-oldAnalogUsed];
                 } else {
                     name = chanNames[i];
                     removeTrailingSpaces(name);
                 }
-                labels.push_back(name);
-                descriptions.push_back("");
+                newLabels.push_back(name);
+                newDescriptions.push_back("");
+                newScale.push_back(1.0);
+                newOffset.push_back(0);
+                newUnits.push_back("");
             }
-            grpAnalog.parameter(idxLabels).set(labels);
-            grpAnalog.parameter(idxDescriptions).set(descriptions);
 
-            size_t idxScale(grpAnalog.parameterIdx("SCALE"));
-            std::vector<double> scales(grpAnalog.parameter(
-                                          idxScale).valuesAsDouble());
-            for (size_t i = grpAnalog.parameter(idxScale)
-                            .valuesAsDouble().size(); i < nAnalogs; ++i)
-                scales.push_back(1.);
-            grpAnalog.parameter(idxScale).set(scales);
+            // Dispatch names in LABELS, LABELS2, etc.
+            size_t first_idx = 0;
+            size_t last_idx = 0;
+            size_t i = 0;
+            while (last_idx < newLabels.size()){
+                std::string mod("");
+                if (i != 0){
+                    mod = std::to_string(i+1);
+                    if (!grpAnalog.isParameter("LABELS" + mod)){
+                        ezc3d::ParametersNS::GroupNS::Parameter labels("LABELS" + mod);
+                        labels.set(std::vector<std::string>()={});
+                        grpAnalog.parameter(labels);
+                    }
+                    if (!grpAnalog.isParameter("DESCRIPTIONS" + mod)){
+                        ezc3d::ParametersNS::GroupNS::Parameter descriptions("DESCRIPTIONS" + mod);
+                        descriptions.set(std::vector<std::string>()={});
+                        grpAnalog.parameter(descriptions);
+                    }
+                    if (!grpAnalog.isParameter("SCALE" + mod)){
+                        ezc3d::ParametersNS::GroupNS::Parameter scale("SCALE" + mod);
+                        scale.set(std::vector<double>()={});
+                        grpAnalog.parameter(scale);
+                    }
+                    if (!grpAnalog.isParameter("OFFSET" + mod)){
+                        ezc3d::ParametersNS::GroupNS::Parameter offset("OFFSET" + mod);
+                        offset.set(std::vector<int>()={});
+                        grpAnalog.parameter(offset);
+                    }
+                    if (!grpAnalog.isParameter("UNITS" + mod)){
+                        ezc3d::ParametersNS::GroupNS::Parameter units("UNITS" + mod);
+                        units.set(std::vector<std::string>()={});
+                        grpAnalog.parameter(units);
+                    }
+                }
 
-            size_t idxOffset(grpAnalog.parameterIdx("OFFSET"));
-            std::vector<int> offset(
-                        grpAnalog.parameter(idxOffset).valuesAsInt());
-            for (size_t i = grpAnalog.parameter(idxOffset).valuesAsInt().size()
-                 ; i < nAnalogs; ++i)
-                offset.push_back(0);
-            grpAnalog.parameter(idxOffset).set(offset);
+                auto labels = grpAnalog.parameter("LABELS" + mod).valuesAsString();
+                auto descriptions = grpAnalog.parameter("DESCRIPTIONS" + mod).valuesAsString();
+                auto scale = grpAnalog.parameter("SCALE" + mod).valuesAsDouble();
+                auto offset = grpAnalog.parameter("OFFSET" + mod).valuesAsInt();
+                auto units = grpAnalog.parameter("UNITS" + mod).valuesAsString();
 
-            size_t idxUnits(grpAnalog.parameterIdx("UNITS"));
-            std::vector<std::string> units(grpAnalog.parameter(
-                                               idxUnits).valuesAsString());
-            for (size_t i = grpAnalog.parameter(idxUnits)
-                 .valuesAsString().size(); i < nAnalogs; ++i)
-                units.push_back("");
-            grpAnalog.parameter(idxUnits).set(units);
+                if (labels.size() != 255){
+                    int off = grpAnalog.parameter("LABELS" + mod).valuesAsString().size();
+                    last_idx = newLabels.size() >= first_idx + 255 - off
+                            ? first_idx + 255 - off
+                            : newLabels.size();
+                    labels.insert(labels.end(), newLabels.begin() + first_idx, newLabels.begin() + last_idx);
+                    descriptions.insert(descriptions.end(), newDescriptions.begin() + first_idx, newDescriptions.begin() + last_idx);
+                    scale.insert(scale.end(), newScale.begin() + first_idx, newScale.begin() + last_idx);
+                    offset.insert(offset.end(), newOffset.begin() + first_idx, newOffset.begin() + last_idx);
+                    units.insert(units.end(), newUnits.begin() + first_idx, newUnits.begin() + last_idx);
+
+                    grpAnalog.parameter("LABELS" + mod).set(labels);
+                    grpAnalog.parameter("DESCRIPTIONS" + mod).set(descriptions);
+                    grpAnalog.parameter("SCALE" + mod).set(scale);
+                    grpAnalog.parameter("OFFSET" + mod).set(offset);
+                    grpAnalog.parameter("UNITS" + mod).set(units);
+
+                    // Prepare next for
+                    first_idx = last_idx;
+                }
+                ++i;
+            }
         }
     }
     updateHeader();
