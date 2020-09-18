@@ -3,6 +3,7 @@ cmake_policy(SET CMP0048 NEW)
 project(ezc3d VERSION 1.3.5)
 set(EZC3D_NAME ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Set a default build type to 'Release' if none was specified
 IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
