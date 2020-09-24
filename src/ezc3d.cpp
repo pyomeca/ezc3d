@@ -757,7 +757,7 @@ void ezc3d::c3d::updateHeader() {
     // Parameter is always consider as the right value.
     if (static_cast<size_t>(parameters()
                             .group("POINT").parameter("FRAMES")
-                            .valuesAsInt()[0]) != header().nbFrames()){
+                            .valuesConvertedAsInt()[0]) != header().nbFrames()){
         // If there is a discrepancy between them, change the header,
         // while keeping the firstFrame value
         _header->lastFrame(
@@ -831,7 +831,7 @@ void ezc3d::c3d::updateParameters(
                 _parameters->group(parameters().groupIdx("POINT")));
     size_t nFrames(data().nbFrames());
     if (nFrames != static_cast<size_t>(
-                grpPoint.parameter("FRAMES").valuesAsInt()[0])){
+                grpPoint.parameter("FRAMES").valuesConvertedAsInt()[0])){
         size_t idx(grpPoint.parameterIdx("FRAMES"));
         grpPoint.parameter(idx).set(nFrames);
     }
