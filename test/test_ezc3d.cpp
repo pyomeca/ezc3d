@@ -394,6 +394,85 @@ TEST(wrongC3D, wrongNextparamParameter){
     remove(savePath.c_str());
 }
 
+TEST(parameters, getParametersAsInt){
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+
+    {
+        p.set(std::vector<int>({1, 2, 3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_EQ(p.valuesAsInt()[i], i+1);
+    }
+    {
+        p.set(std::vector<int>({1, 2, 3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_EQ(p.valuesConvertedAsInt()[i], i+1);
+    }
+
+    {
+        p.set(std::vector<double>({1.1, 2.2, 3.3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_THROW(p.valuesAsInt()[i], std::invalid_argument);
+    }
+
+    {
+        p.set(std::vector<double>({1.1, 2.2, 3.3}));
+        for (size_t i=0; i<3; ++i)
+            // Data are truncated
+            EXPECT_EQ(p.valuesConvertedAsInt()[i], static_cast<int>(i+1));
+    }
+
+    {
+        p.set(std::vector<std::string>({"invalid_int1", "invalid_int2", "invalid_int3"}));
+        for (size_t i=0; i<3; ++i)
+            // Data are truncated
+            EXPECT_THROW(p.valuesAsInt()[i], std::invalid_argument);
+    }
+    {
+        p.set(std::vector<std::string>({"invalid_int1", "invalid_int2", "invalid_int3"}));
+        for (size_t i=0; i<3; ++i)
+            // Data are truncated
+            EXPECT_THROW(p.valuesConvertedAsInt()[i], std::invalid_argument);
+    }
+}
+
+TEST(parameters, getParametersAsDouble){
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+
+    {
+        p.set(std::vector<int>({1, 2, 3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_THROW(p.valuesAsDouble()[i], std::invalid_argument);
+    }
+    {
+        p.set(std::vector<int>({1, 2, 3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_FLOAT_EQ(p.valuesConvertedAsDouble()[i], static_cast<double>(i+1));
+    }
+
+    {
+        p.set(std::vector<double>({1.1, 2.2, 3.3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_FLOAT_EQ(p.valuesAsDouble()[i], static_cast<double>(i+1) * 1.1);
+    }
+    {
+        p.set(std::vector<double>({1.1, 2.2, 3.3}));
+        for (size_t i=0; i<3; ++i)
+            EXPECT_FLOAT_EQ(p.valuesConvertedAsDouble()[i], static_cast<double>(i+1) * 1.1);
+    }
+
+    {
+        p.set(std::vector<std::string>({"invalid_int1", "invalid_int2", "invalid_int3"}));
+        for (size_t i=0; i<3; ++i)
+            // Data are truncated
+            EXPECT_THROW(p.valuesAsDouble()[i], std::invalid_argument);
+    }
+    {
+        p.set(std::vector<std::string>({"invalid_int1", "invalid_int2", "invalid_int3"}));
+        for (size_t i=0; i<3; ++i)
+            // Data are truncated
+            EXPECT_THROW(p.valuesConvertedAsDouble()[i], std::invalid_argument);
+    }
+}
 
 TEST(c3dModifier, specificParameters){
     // Create an empty c3d

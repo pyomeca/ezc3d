@@ -203,6 +203,18 @@ public:
     const std::vector<int>& valuesAsInt() const;
 
     ///
+    /// \brief Return a copy of the vector of values of the parameter
+    /// \return A copy of the vector of values of the parameter
+    ///
+    /// Return a copy of the vector of values that was previously stored into the parameter.
+    ///
+    /// Unlike valuesAsInt(), it doesn't throw an error if asked and stored types do not match.
+    /// However, it returns a copy (instead of a const reference) of the values.
+    /// WARNING: This function trunkate data
+    ///
+    const std::vector<int> valuesConvertedAsInt() const;
+
+    ///
     /// \brief Return the vector of values of the parameter
     /// \return The vector of values of the parameter
     ///
@@ -212,6 +224,17 @@ public:
     /// Internally, float are converted to double and converted back to float when written to the file
     ///
     const std::vector<double>& valuesAsDouble() const;
+
+    ///
+    /// \brief Return a copy of the vector of values of the parameter
+    /// \return A copy of the vector of values of the parameter
+    ///
+    /// Return a copy of the vector of values that was previously stored into the parameter.
+    ///
+    /// Unlike valuesAsDouble(), it doesn't throw an error if asked and stored types do not match.
+    /// However, it returns a copy (instead of a const reference) of the values.
+    ///
+    const std::vector<double> valuesConvertedAsDouble() const;
 
     ///
     /// \brief Return the vector of values of the parameter
