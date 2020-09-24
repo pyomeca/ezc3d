@@ -61,6 +61,8 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 >
 > `CMAKE_BUILD_TYPE` Which type of build you want. Options are `Debug`, `RelWithDebInfo`, `MinSizeRel` or `Release`. This is relevant only for the build done using the `make` command. Please note that you may experience a slow EZC3D library if you compile it without any optimization (i.e. `Debug`) especially on Windows. 
 >
+> `USE_MATRIX_FAST_ACCESSOR` If fast accessor should be used (`ON`) or not (`OFF`). Fast accessor is, as its name suggests faster, but do not check for sanity of the elements and can lead to segmentation faults for ill-c3d. Default is `ON`.
+>
 > `BUILD_EXAMPLE` If you want (`TRUE`) or not (`FALSE`) to build the C++ example. Default is `TRUE`.
 > 
 > `BUILD_TESTS` If you want `ON` or not `OFF` to build the tests of the project. Please note that this will automatically download gtest (https://github.com/google/googletest). Default is `OFF`.
@@ -68,8 +70,10 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 > `BUILD_DOC` If you want (`ON`) or not (`OFF`) to build the documentation of the project. Default is `OFF`.
 > 
 > `BINDER_PYTHON3` If you want (`ON`) or not (`OFF`) to build the Python binder. Default is `OFF`.
-> 
+>
 > `Python3_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the Python executable. This python should have *SWIG* and *Numpy* installed with it. This variable should be found automatically, but Anaconda finds the base prior to the actual environment, so one should gives attention to that particular variable.
+> 
+> `PYTHON_INSTALL_PREFIX` The folder to install the Python binder. The default value is the site-package folder of the current Python (which may require administrator privileges)
 > 
 > `SWIG_EXECUTABLE`  If `BINDER_PYTHON3` is set to `ON` then this variable should point to the SWIG executable. This variable will be found automatically if `Python3_EXECUTABLE` is properly set.
 > 

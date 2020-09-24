@@ -443,8 +443,23 @@ ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const {
 
 const std::vector<int>&
 ezc3d::ParametersNS::GroupNS::Parameter::valuesAsInt() const {
-    if (!_isEmpty && _data_type != DATA_TYPE::INT)
+    if (!_isEmpty && _data_type != DATA_TYPE::INT && _data_type != DATA_TYPE::BYTE)
         throw std::invalid_argument(_name + " parameter is not an INT");
+    return _param_data_int;
+}
+
+const std::vector<int> ezc3d::ParametersNS::GroupNS::Parameter::valuesConvertedAsInt() const
+{
+    if (_data_type == DATA_TYPE::CHAR){
+        throw std::invalid_argument("CHAR type cannot be converted to INT");
+    } else if (_data_type == DATA_TYPE::FLOAT) {
+        std::vector<int> out;
+        for (auto val : _param_data_double){
+            // Warning, this truncate data
+            out.push_back(static_cast<int>(val));
+        }
+        return out;
+    }
     return _param_data_int;
 }
 
@@ -452,6 +467,22 @@ const std::vector<double>&
 ezc3d::ParametersNS::GroupNS::Parameter::valuesAsDouble() const {
     if (!_isEmpty && _data_type != DATA_TYPE::FLOAT)
         throw std::invalid_argument(_name + " parameter is not a FLOAT");
+    return _param_data_double;
+}
+
+const std::vector<double> ezc3d::ParametersNS::GroupNS::Parameter::valuesConvertedAsDouble() const
+{
+    if (_data_type == DATA_TYPE::BYTE || _data_type == DATA_TYPE::INT || _data_type == DATA_TYPE::WORD){
+        std::vector<double> out;
+        for (auto val : _param_data_int){
+            out.push_back(static_cast<double>(val));
+        }
+        return out;
+    } else if (_data_type == DATA_TYPE::CHAR){
+        throw std::invalid_argument("CHAR type cannot be converted to FLOAT");
+    } else if (_data_type == DATA_TYPE::WORD) {
+        throw std::invalid_argument("WORD type cannot be converted to FLOAT");
+    }
     return _param_data_double;
 }
 

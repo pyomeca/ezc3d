@@ -56,13 +56,18 @@ set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
     INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
+# Define the python install folder
+set(PYTHON_INSTALL_PREFIX "${Python3_SITELIB}/${EZC3D_NAME}" CACHE PATH
+    "Path where to install the python binder, default is $Python_LIB/site-package/ezc3d"
+)
+
 # Install to the proper directories
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${EZC3D_NAME}.py"
-    DESTINATION "${Python3_SITELIB}/${EZC3D_NAME}"
+    DESTINATION "${PYTHON_INSTALL_PREFIX}"
 )
 
 INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
-    DESTINATION "${Python3_SITELIB}/${EZC3D_NAME}"
+    DESTINATION "${PYTHON_INSTALL_PREFIX}"
 )
 
 # Create the version file
@@ -70,19 +75,22 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in"
     "${CMAKE_CURRENT_BINARY_DIR}/_version.py"
 )
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/_version.py"
-    DESTINATION "${Python3_SITELIB}/${EZC3D_NAME}"
+    DESTINATION "${PYTHON_INSTALL_PREFIX}"
 )
 
 # Check if swig has its version 3 or 4, to choose the right place to put the library
 if(${SWIG_VERSION} MATCHES "^3(\.[0-9]*)*$")
-    set(PYTHON_INSTALL_DESTINATION "${Python3_SITELIB}")
+    if ("${PYTHON_INSTALL_PREFIX}" STREQUAL "${Python3_SITELIB}/${EZC3D_NAME}")
+        set(PYTHON_PROJECT_INSTALL_DESTINATION "${Python3_SITELIB}")
+    else()
+        set(PYTHON_PROJECT_INSTALL_DESTINATION "${PYTHON_INSTALL_PREFIX}")
+    endif()
 elseif(${SWIG_VERSION} MATCHES "^4(\.[0-9]*)*$")
-    set(PYTHON_INSTALL_DESTINATION "${Python3_SITELIB}/${EZC3D_NAME}")
+    set(PYTHON_PROJECT_INSTALL_DESTINATION "${PYTHON_INSTALL_PREFIX}")
 else()
     message( FATAL_ERROR "Swig must be version 3 or 4" )
 endif()
-
 # Install the library
 INSTALL(TARGETS ${PYTHON_PROJECT_NAME}
-    DESTINATION "${PYTHON_INSTALL_DESTINATION}"
+    DESTINATION "${PYTHON_PROJECT_INSTALL_DESTINATION}"
 )

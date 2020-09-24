@@ -278,7 +278,12 @@ class c3d(C3dMapper):
         nb_point_frames = data_points.shape[2]
         if nb_point_components < 3 or nb_point_components > 4:
             raise TypeError("Points should be a numpy with first dimension exactly equals to 3 or 4 elements")
-        if nb_points != len(self._storage["parameters"]["POINT"]["LABELS"]["value"]):
+        nb_labels = len(self._storage["parameters"]["POINT"]["LABELS"]["value"])
+        i = 2
+        while f"LABELS{i}" in self._storage["parameters"]["POINT"]:
+            nb_labels += len(self._storage["parameters"]["POINT"][f"LABELS{i}"]["value"])
+            i += 1
+        if nb_points != nb_labels:
             raise ValueError("'c3d['parameters']['POINT']['LABELS']' must have the same length as nPoints of the data.")
 
         data_meta_points = self._storage["data"]["meta_points"]
@@ -346,7 +351,12 @@ class c3d(C3dMapper):
             nb_frames = nb_analog_frames
             nb_analog_subframes = 1
 
-        if nb_analogs != len(self._storage["parameters"]["ANALOG"]["LABELS"]["value"]):
+        nb_labels = len(self._storage["parameters"]["ANALOG"]["LABELS"]["value"])
+        i = 2
+        while f"LABELS{i}" in self._storage["parameters"]["ANALOG"]:
+            nb_labels += len(self._storage["parameters"]["ANALOG"][f"LABELS{i}"]["value"])
+            i += 1
+        if nb_analogs != nb_labels:
             raise ValueError(
                 "'c3d['parameters']['ANALOG']['LABELS']' must have the same length as " "nAnalogs of the data."
             )
@@ -362,10 +372,18 @@ class c3d(C3dMapper):
 
         # Update some important stuff (names of points and analogs)
         point_labels = groups["POINT"]["LABELS"]["value"]
+        i = 2
+        while f"LABELS{i}" in groups["POINT"]:
+            point_labels.extend(groups["POINT"][f"LABELS{i}"]["value"])
+            i += 1
         for point_label in point_labels:
             new_c3d.point(point_label)
 
         analog_labels = groups["ANALOG"]["LABELS"]["value"]
+        i = 2
+        while f"LABELS{i}" in groups["ANALOG"]:
+            analog_labels.extend(groups["ANALOG"][f"LABELS{i}"]["value"])
+            i += 1
         for analog_label in analog_labels:
             new_c3d.analog(analog_label)
 
@@ -445,12 +463,9 @@ class c3d(C3dMapper):
         # Fill the data
         for f in range(nb_frames):
             for i in range(nb_points):
-                if np.isnan(data_points[:, i, f]).any():
-                    pt.set(np.nan, np.nan, np.nan, -1)
-                else:
-                    pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
-                    pt.residual(data_meta_points["residuals"][0, i, f])
-                    pt.cameraMask(data_meta_points["camera_masks"][:, i, f].tolist())
+                pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
+                pt.residual(data_meta_points["residuals"][0, i, f])
+                pt.cameraMask(data_meta_points["camera_masks"][:, i, f].tolist())
                 pts.point(pt, i)
 
             for sf in range(nb_analog_subframes):
