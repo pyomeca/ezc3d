@@ -23,7 +23,7 @@ bibliography: paper.bib
 The *c3d* format [@crampC3dOrg2019] is an open-source standard extensively used in the field of biomechanics.
 The main data collection and data analysis software can read and export them. 
 It was initially designed to store three-dimensional point data and analog data (e.g., force platform or EMG).
-Nowadays, by stretching the standard, companies have managed to include all sorts of theoretically non-c3d- compliant biomechanical data, including for instance IMU data.
+Nowadays, by stretching the standard, companies have managed to include all sorts of theoretically non-standard biomechanical data, including for instance IMU data.
 To match the needs of the community, Motion Lab Systems---who created and maintains the *c3d* format---updates the standard to match the biomechanical needs and more exotic usage of the format.
 
 Despite being extensively used by the biomechanics community, there are surprisingly few alternatives when it comes to manipulate *c3d* files outside analyses software. 
@@ -36,7 +36,7 @@ Unfortunately, due to the numerous and tightly interconnected biomechanics modul
 
 Introducing the open-source `ezc3d` library which provides a light and comprehensive API to easily read and write *c3d* files. 
 For the lay users, `ezc3d` is an up-to-date solution to manage *c3d* files that complies with the latest recommendation of the standard.
-It also supports in-house implementations of the main biomechanics software that is currently: Vicon, Qualisys, Optotrak, BTS and XSens. 
+It also supports in-house implementations of the main biomechanics software, that is currently: Vicon, Qualisys, Optotrak, BTS and XSens. 
 Fast file I/O is achieved thanks to the C++ core .
 MATLAB and Python3 interfaces are also conveniently provided so one can implement `ezc3d` in their current workflow without difficulties.
 In addition, since the *c3d* standard allows for multiple ways to store force platform data, a force platform analysis module is provided.
