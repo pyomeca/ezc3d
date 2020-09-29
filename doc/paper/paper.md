@@ -20,7 +20,7 @@ bibliography: paper.bib
 ---
 
 # Summary
-The *c3d* format [@crampC3dOrg] is an open-source standard extensively used in the field of biomechanics.
+The *c3d* format [@crampC3dOrg2019] is an open-source standard extensively used in the field of biomechanics.
 The main data collection and data analyses software can read and export them. 
 It was initially designed to store three-dimensional point data and analog data (e.g. forceplate or EMG).
 Nowadays, by stretching the standard, companies have managed to include all sorts of theoretically non-c3d-
