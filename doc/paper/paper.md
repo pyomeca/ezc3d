@@ -15,8 +15,8 @@ Unfortunately, due to the numerous and tightly interconnected biomechanics modul
 
 Introducing the open-source `ezc3d` library which provides a light and comprehensive API to easily read and write *c3d* files. 
 For the lay users, `ezc3d` is an up-to-date solution to manage *c3d* files that complies with the latest recommendation of the standard.
-It also supports in-house implementations of the main biomechanics software that is currently: Vicon, Qualisys, Optotrak, BTS and XSens. 
-Fast file I/O is achieved thanks to the C++ core .
+It also supports in-house implementations of the main biomechanics software, that is currently Vicon, Qualisys, Optotrak, BTS and XSens. 
+Fast file I/O is achieved thanks to the C++ core.
 MATLAB and Python3 interfaces are also conveniently provided so one can implement `ezc3d` in their current workflow without difficulties.
 In addition, since the *c3d* standard allows for multiple ways to store force platform data, a force platform analysis module is provided.
 The main feature of this module is to reorient forces, moments and centre of pressure in more common reference frames so they can be directly interpreted by the user. 
