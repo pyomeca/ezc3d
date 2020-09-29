@@ -20,34 +20,45 @@ bibliography: paper.bib
 ---
 
 # Summary
-The *c3d* format [@C3DORGBiomechanics] is an opensource standard extensively used in the field of biomechanics.
-Indeed, main data collection and data analyses software can export/read them natively. 
-It was initially designed to hold three-dimensional point and analog (such as forceplate and EMG) data.
+The *c3d* format [@C3DORGBiomechanics] is an open-source standard extensively used in the field of biomechanics.
+The main data collection and data analyses software can read and export them. 
+It was initially designed to store three-dimensional point data and analog data (e.g. forceplate or EMG).
 Nowadays, by stretching the standard, companies have managed to include all sorts of theoretically non-c3d-
 compliant biomechanical data, including for instance IMU data.
-To match the needs of the community, Motion Lab Systems---who created and maintains the *c3d* format---updates the standard when needed.
+To match the needs of the community, Motion Lab Systems---who created and maintains the *c3d* format---updates the standard to match the biomechanical needs and more exotic usage of the format.
 
 Despite being extensively used by the biomechanics community, there are surprisingly few alternatives when it comes to manipulate *c3d* files outside analyses software. 
+This forces scientists to develop *ad hoc* solutions for each project, which usually involves redevelopping file I/O algorithms for each software in-house CSV file they use. 
+While it would make sense to develop a portable solution once for all, as offered by the cross-platform *c3d* format, the binary nature of this formating discourages them to dig into the trouble of developing such a solution.
 To our knowledge, *BTK* [@barreBiomechanicalToolKitBTKCore2020] is the most mature (if not, the only) biomechanics library that provides an API to read and write these files.
-Unfortunately, despite its open-source nature, the project has been mostly abandoned since~2016.
-Hence, *BTK* has not been following the changes in the standard of the format nor that it will follow those to come.
-Unfortunately, due to the numerous modules that have been developed over the years which are tightly connected, updating *BTK* without breaking it is a hard task.
+Unfortunately, despite its open-sourced nature, the project has been mostly abandoned since~2016.
+It is becoming more and more out-of-date as it has not been following the changes in the standard of the format nor that it will follow those to come.
+Unfortunately, due to the numerous and tightly interconnected biomechanics modules, updating *BTK* without breaking it is a hard task.
 
-Introducing the open-source *ezc3d* library which provides a comprehensive API to easily read and write *c3d* files. 
-For the lay users, *ezc3d* is therefore an up-to-date solution to read and write *c3d* files that complies to latest standard. 
-Moreover, *ezc3d* can read in-house implementations of main biomechanics software, that is currently: Vicon, Qualisys, Optotrak, BTS and XSens. 
-The core of *ezc3d* is written in C++ allowing for fast file I/O.
-MATLAB and Python3 interfaces are provided so the biomechanics community can implement *ezc3d* in their current workflow without difficulties.
-In addition, since the *c3d* standard allows for multiple storage of force platform data, a force platform analysis module is provided.
+Introducing the open-source *ezc3d* library which provides a light and comprehensive API to easily read and write *c3d* files. 
+For the lay users, *ezc3d* is an up-to-date solution to manage *c3d* files that complies with the latest recommendation of the standard.
+It also supports in-house implementations of the main biomechanics software, that is currently: Vicon, Qualisys, Optotrak, BTS and XSens. 
+Fast file I/O is acheived thanks to the core written in C++.
+MATLAB and Python3 interfaces are also conveniently provided so one can implement *ezc3d* in their current workflow without difficulties.
+In addition, since the *c3d* standard allows for multiple ways to store force platform data, a force platform analysis module is provided.
 The main feature of this module is to reorient forces, moment and centre of pressure in more common reference frames so they can be directly interpreted by the user. 
 
 # The dependencies
 The *ezc3d* library was originally designed to be a dependencies-free library.
-This allows to easily link *ezc3d* with the user projects. 
+This allows for an user to easily link *ezc3d* with their projects. 
+This also eases things to maintain the library cross-platformed, that is for Windows, Linux and Mac. 
 Thus, by default, no dependendies is needed to compile and to use the API.
-That said, if one requires a faster file reading solution, a fast accessor option is avaible that relies on *eigen* linear algebra library [@eigenweb].
+
+By nature biomechanics data are matrix based data. 
+In-house linear algebra solutions were therefore developed to store and manipulate such data.
+However, in-house solutions will never be as effective as dedicated linear algebra libraries. 
+Hence, a fast accessor option was added for those who require an even faster file reading solution.
+This fast accessor option relies on the highly effective *eigen* linear algebra library [@eigenweb].
 
 # Current usage of `ezc3d`
-OpenSim---one of the most important software in biomechanics---has recently decided to add the capability to read *c3d* files and decided to go with the *ezc3d* library for their default backend.
+The library got the attention from the two most important software in biomechanics, Anybody [@rasmussenChapterAnyBodyModeling2019] and OpenSim [@sethOpenSimSimulatingMusculoskeletal2018].
+One of the main programmer of the former posted and still maintains the conda-forge recipe so *ezc3d* can be easily installed using conda as well as automatically being kept up-to-date.
+For the latter, since the 4.0 version, Opensim decided to embrace the *c3d* format file by adding the capability to read them.
+After trying the different existing solutions, *ezc3d* was chosen as the default *c3d* reader backend.
 
 # References
