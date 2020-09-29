@@ -1,3 +1,24 @@
+---
+title: 'ezc3d: An easy C3D I/O solution in C++, Python and MATLAB'
+tags:
+  - C3D
+  - C++
+  - Python
+  - Matlab
+authors:
+  - name: Benjamin Michaud
+    orcid: 0000-0002-5031-1048
+    affiliation: 1
+  - name: Mickaël Begon
+    orcid: 0000-0002-4107-9160
+    affiliation: 1
+affiliations:
+ - name: École de Kinésiologie et de Sciences de l'Activité Physique, Université de Montréal
+   index: 1
+date: October 1st, 2020
+bibliography: paper.bib
+---
+
 # Summary
 The *c3d* format [@crampC3dOrg2019] is an open-source standard extensively used in the field of biomechanics.
 The main data collection and data analysis software can read and export them. 
@@ -15,8 +36,8 @@ Unfortunately, due to the numerous and tightly interconnected biomechanics modul
 
 Introducing the open-source `ezc3d` library which provides a light and comprehensive API to easily read and write *c3d* files. 
 For the lay users, `ezc3d` is an up-to-date solution to manage *c3d* files that complies with the latest recommendation of the standard.
-It also supports in-house implementations of the main biomechanics software, that is currently Vicon, Qualisys, Optotrak, BTS and XSens. 
-Fast file I/O is achieved thanks to the C++ core.
+It also supports in-house implementations of the main biomechanics software that is currently: Vicon, Qualisys, Optotrak, BTS and XSens. 
+Fast file I/O is achieved thanks to the C++ core .
 MATLAB and Python3 interfaces are also conveniently provided so one can implement `ezc3d` in their current workflow without difficulties.
 In addition, since the *c3d* standard allows for multiple ways to store force platform data, a force platform analysis module is provided.
 The main feature of this module is to reorient forces, moments and centre of pressure in more common reference frames so they can be directly interpreted by the user. 
@@ -40,3 +61,4 @@ For the latter, since the 4.0 version, Opensim decided to embrace the *c3d* form
 After trying different existing solutions, `ezc3d` was chosen as the default *c3d* reader back end.
 
 # References
+
