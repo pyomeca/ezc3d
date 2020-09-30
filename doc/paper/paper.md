@@ -1,5 +1,5 @@
 ---
-title: 'ezc3d: An easy C3D file I/O cross-platform solution for C++, Python and MATLAB'
+title: '`ezc3d`: An easy C3D file I/O cross-platform solution for C++, Python and MATLAB'
 tags:
   - C3D
   - C++
