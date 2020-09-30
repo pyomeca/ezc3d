@@ -59,4 +59,7 @@ One of the main programmers of the former prepared and maintains the conda-forge
 For their version 4.0, Opensim decided to embrace the *c3d* format file by adding the capability to read *c3d* files.
 The `ezc3d` library was chosen as the default *c3d* reader back end.
 
+# Acknowlegment
+Many thanks to Sahel Locher who designed the lovely `ezc3d` logo!
+
 # References
