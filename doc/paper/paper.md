@@ -28,8 +28,7 @@ To match the needs of the community, Motion Lab Systems---which created and main
 
 Despite being extensively used by the biomechanics community, there are surprisingly few alternatives when it comes to manipulate *c3d* files outside analyses software. 
 This has forced scientists to develop *ad hoc* solutions for each project.
-Usually, it requires to write file I/O codes for each software in-house format files. 
-($\leftarrow$ je ne comprends pas cette phrase, trop d'adjectifs ?)
+Usually, it requires to write file I/O codes for each software format files. 
 While it would make sense to develop a portable solution once and for all, as offered by the standardized *c3d* format ($\leftarrow$ la solution portable c'est pour lire le *c3d*, pourquoi cette portion de phrase alors ?), the binary nature of the *c3d* format discourages biomechanists from digging into the trouble of developing such a solution.
 To our knowledge, `BTK` [@barreBiomechanicalToolKitBTKCore2020] is the most mature (if not, the only) biomechanics library that provides an API to read and write these files.
 Unfortunately, despite its open-sourced nature, the project has been mostly abandoned since~2016.
@@ -50,7 +49,7 @@ Thus, by default, no dependency is needed to compile nor to use the API.
 Moreover, thanks to the absence of external library requirements that could change at any time, `ezc3d` will remain available on all major OS, namely Windows, Linux and Mac. 
 
 By nature biomechanics data are matrix-based data. 
-An in-house ($\leftarrow$ ca revient trop a mon gout) linear algebra solution was therefore developed to store and manipulate such data.
+An in-house linear algebra solution was therefore developed to store and manipulate such data.
 Our solution will, however, never be as effective as those from dedicated linear algebra libraries.
 Hence, thanks to the highly effective `Eigen` linear algebra library [@eigenweb], a fast accessor module is also available.
 
