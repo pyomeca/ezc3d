@@ -29,7 +29,7 @@ To match the needs of the community, Motion Lab Systems---which created and main
 Despite being extensively used by the biomechanics community, there are surprisingly few alternatives when it comes to manipulate *c3d* files outside analyses software. 
 This has forced scientists to develop *ad hoc* solutions for each project.
 Usually, it requires to write file I/O codes for each software format files. 
-While it would make sense to develop a portable solution once and for all, as offered by the standardized *c3d* format ($\leftarrow$ la solution portable c'est pour lire le *c3d*, pourquoi cette portion de phrase alors ?), the binary nature of the *c3d* format discourages biomechanists from digging into the trouble of developing such a solution.
+While it would make sense to develop a portable solution once and for all, the binary nature of the *c3d* format discourages biomechanists from digging into the trouble of developing such a solution.
 To our knowledge, `BTK` [@barreBiomechanicalToolKitBTKCore2020] is the most mature (if not, the only) biomechanics library that provides an API to read and write these files.
 Unfortunately, despite its open-sourced nature, the project has been mostly abandoned since~2016.
 It gets more and more out-of-date as it does not follow the changes in the standard of the format.
