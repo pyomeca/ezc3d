@@ -17,6 +17,12 @@
 ///
 /// \brief Force Platform analyse
 ///
+/// Warning: Something important to remember is that there is no easy way to
+/// detect what is the upward vector. Consequently, `ezc3d` has to assume one.
+/// The most common being Z-axis pointing upward, this is what is assume.
+/// If one has a C3D with the Y-axis pointing upward, they must transform
+/// their data accordingly in order to use the force platform filter.
+///
 class EZC3D_API ezc3d::Modules::ForcePlatform{
     //---- CONSTRUCTORS ----//   
 public:
