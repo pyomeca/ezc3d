@@ -13,12 +13,11 @@ authors:
     orcid: 0000-0002-4107-9160
     affiliation: 1
 affiliations:
-- name: École de Kinésiologie et de Sciences de l'Activité Physique, Université de Montréal
+  - name: École de Kinésiologie et de Sciences de l'Activité Physique, Université de Montréal
    index: 1
 date: October 1st, 2020
 bibliography: paper.bib
 ---
- 
 # Summary
 The *c3d* binary format [@crampC3dOrg2019] is an open-source standard extensively used in the field of biomechanics.
 Most of the software for biomechanical data collection and data analysis can read and export *c3d* files. 
