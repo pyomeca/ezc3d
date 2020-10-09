@@ -13,7 +13,7 @@ authors:
     orcid: 0000-0002-4107-9160
     affiliation: 1
 affiliations:
-  - name: École de Kinésiologie et de Sciences de l'Activité Physique, Université de Montréal
+ - name: École de Kinésiologie et de Sciences de l'Activité Physique, Université de Montréal
    index: 1
 date: October 1st, 2020
 bibliography: paper.bib
