@@ -40,6 +40,7 @@ set(SRC_LIST
 
 set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
 if (BUILD_SHARED_LIBS)
+    set(EZC3D_SHARED TRUE)
     add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
 else()
     add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
