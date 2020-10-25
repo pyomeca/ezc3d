@@ -12,9 +12,6 @@
             #define EZC3D_API __declspec(dllimport)
         #endif
     #else
-        #ifdef SWIG
-            #define __attribute__(x)
-        #endif
         #define EZC3D_API __attribute__ ((visibility ("default")))
     #endif
 #else
