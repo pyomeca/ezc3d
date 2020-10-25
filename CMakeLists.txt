@@ -45,7 +45,11 @@ if (BUILD_SHARED_LIBS)
 else()
     add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    DEBUG_POSTFIX "_debug"
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+)
 
 # Remember the CMAKE_CURRENT_BINARY_DIR (important if ezc3d is used as submodule)
 set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})

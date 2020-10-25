@@ -12,7 +12,7 @@
             #define EZC3D_API __declspec(dllimport)
         #endif
     #else
-        #define EZC3D_API
+        #define EZC3D_API __attribute__ ((visibility ("default")))
     #endif
 #else
     #define EZC3D_API
