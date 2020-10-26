@@ -99,6 +99,7 @@ install(DIRECTORY include/ DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER}
 # Include directories when a client uses the library from an installed ezc3d:
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}>
+    $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}/..>  # allow for <ezc3d/*.h>
 )
 install(FILES "${EZC3D_BINARY_DIR}/include/ezc3dConfig.h"
     DESTINATION "${${PROJECT_NAME}_INCLUDE_FOLDER}"
