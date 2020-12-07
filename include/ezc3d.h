@@ -81,6 +81,14 @@ namespace ezc3d {
     };
 
     ///
+    /// \brief The order of the parameters in the new c3d file
+    ///
+    enum WRITE_FORMAT{
+        DEFAULT=0,
+        NEXUS
+    };
+
+    ///
     /// \brief Remove the spaces at the end of a string
     /// \param str The string to remove the trailing spaces from.
     ///
