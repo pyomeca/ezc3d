@@ -284,7 +284,7 @@ ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
         std::streampos &dataStartPosition,
         const ezc3d::Header& header,
         const ezc3d::WRITE_FORMAT& format) const {
-    ezc3d::ParametersNS::Parameters p(prepareCopyForWriting(header));
+    ezc3d::ParametersNS::Parameters p(prepareCopyForWriting(header, format));
 
     // Write the header of parameters
     f.write(reinterpret_cast<const char*>(&p._parametersStart), ezc3d::BYTE);
@@ -324,7 +324,8 @@ ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
 
 ezc3d::ParametersNS::Parameters
 ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
-        const ezc3d::Header& header) const
+        const ezc3d::Header& header,
+        const ezc3d::WRITE_FORMAT& format) const
 {
     // A copy must be done since modifications are made to some parameters
     ezc3d::ParametersNS::Parameters params(*this);
@@ -332,27 +333,15 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
     // Reevalute the number of frames
     int nFrames(this->group("POINT").parameter("FRAMES").valuesAsInt()[0]);
     if (nFrames > 0xFFFF){
-        ezc3d::ParametersNS::GroupNS::Parameter frames(params.group("POINT").parameter("FRAMES"));
+        ezc3d::ParametersNS::GroupNS::Parameter frames(
+                    params.group("POINT").parameter("FRAMES"));
         frames.set(-1);
         params.group("POINT").parameter(frames);
     }
 
-    // Add the parameter EZC3D:VERSION and EZC3D:CONTACT
-    if (!params.isGroup("EZC3D")){
-        params.group(ezc3d::ParametersNS::GroupNS::Group("EZC3D"));
-    }
-    // Add/replace the version in the EZC3D group
-    ezc3d::ParametersNS::GroupNS::Parameter version("VERSION");
-    version.set(EZC3D_VERSION);
-    params.group("EZC3D").parameter(version);
-    // Add/replace the CONTACT in the EZC3D group
-    ezc3d::ParametersNS::GroupNS::Parameter contact("CONTACT");
-    contact.set(EZC3D_CONTACT);
-    params.group("EZC3D").parameter(contact);
-
-    // Use Intel floating with no extra scaling
-    double pointScaleFactor;
+    // Ensure that the right point scale is in the file
     ezc3d::ParametersNS::GroupNS::Parameter scaleFactorParam;
+    double pointScaleFactor;
     if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
         scaleFactorParam = params.group("POINT").parameter("SCALE");
         pointScaleFactor = -fabs(scaleFactorParam.valuesAsDouble()[0]);
@@ -364,7 +353,23 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
     scaleFactorParam.set(pointScaleFactor);
     params.group("POINT").parameter(scaleFactorParam);
 
-    ezc3d::ParametersNS::GroupNS::Parameter genScale(params.group("ANALOG").parameter("GEN_SCALE"));
+    // Ensure that the right analog scale is in the file
+    ezc3d::ParametersNS::GroupNS::Parameter analogScaleFactorParam;
+    std::vector<double> analogScaleFactor;
+    if (params.group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
+        analogScaleFactorParam = params.group("ANALOG").parameter("SCALE");
+        analogScaleFactor = params.group("ANALOG").parameter("SCALE").valuesAsDouble();
+    }
+    else {
+        analogScaleFactor.push_back(header.scaleFactor());
+        analogScaleFactorParam.name("SCALE");
+    }
+    analogScaleFactorParam.set(analogScaleFactor);
+    params.group("ANALOG").parameter(analogScaleFactorParam);
+
+    // Use Intel floating with no extra scaling
+    ezc3d::ParametersNS::GroupNS::Parameter genScale(
+                params.group("ANALOG").parameter("GEN_SCALE"));
     genScale.set(1.0);
     params.group("ANALOG").parameter(genScale);
 
@@ -381,6 +386,19 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
         ++cmp;
         mod = std::to_string(cmp);
     } while (params.group("ANALOG").isParameter("OFFSET" + mod));
+
+    // Add the parameter EZC3D:VERSION and EZC3D:CONTACT
+    if (!params.isGroup("EZC3D")){
+        params.group(ezc3d::ParametersNS::GroupNS::Group("EZC3D"));
+    }
+    // Add/replace the version in the EZC3D group
+    ezc3d::ParametersNS::GroupNS::Parameter version("VERSION");
+    version.set(EZC3D_VERSION);
+    params.group("EZC3D").parameter(version);
+    // Add/replace the CONTACT in the EZC3D group
+    ezc3d::ParametersNS::GroupNS::Parameter contact("CONTACT");
+    contact.set(EZC3D_CONTACT);
+    params.group("EZC3D").parameter(contact);
 
     return params;
 }

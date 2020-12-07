@@ -104,7 +104,8 @@ void ezc3d::c3d::write(
 
     // Write the parameters
     std::streampos dataStartParameters(-2); // -1 means not POINT group
-    ezc3d::ParametersNS::Parameters p(parameters().write(f, dataStartParameters, header()));
+    ezc3d::ParametersNS::Parameters p(
+                parameters().write(f, dataStartParameters, header(), format));
 
     // Write the data start parameter in header and parameter sections
     writeDataStart(f, dataStartHeader, DATA_TYPE::WORD);
@@ -112,15 +113,7 @@ void ezc3d::c3d::write(
 
     // Write the data
     float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
-
-    std::vector<double> pointAnalogFactors;
-    if (parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
-        pointAnalogFactors =
-                parameters().group("ANALOG").parameter("SCALE").valuesAsDouble();
-    }
-    else {
-        pointAnalogFactors.push_back(header().scaleFactor());
-    }
+    std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
     data().write(f, pointScaleFactor, pointAnalogFactors);
 
     f.close();

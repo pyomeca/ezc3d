@@ -62,10 +62,13 @@ protected:
     ///
     /// \brief Prepare a copy of all parameters that will be used to write
     /// \param header A reference to the header section
+    /// \param format What order should the file has
     /// \return
     ///
     Parameters prepareCopyForWriting(
-            const ezc3d::Header& header) const;
+            const ezc3d::Header& header,
+            const ezc3d::WRITE_FORMAT& format = ezc3d::WRITE_FORMAT::DEFAULT
+            ) const;
 
     // Read the Parameters Header
     size_t _parametersStart;    ///< Byte 1 of the parameter's section of the C3D file.
