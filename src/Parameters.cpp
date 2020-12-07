@@ -279,11 +279,15 @@ void ezc3d::ParametersNS::Parameters::print() const {
     std::cout << std::endl;
 }
 
-void ezc3d::ParametersNS::Parameters::write(
+ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
         std::fstream &f,
-        std::streampos &dataStartPosition) const {
+        std::streampos &dataStartPosition,
+        const ezc3d::Header& header,
+        const ezc3d::WRITE_FORMAT& format) const {
+    ezc3d::ParametersNS::Parameters p(prepareCopyForWriting(header));
+
     // Write the header of parameters
-    f.write(reinterpret_cast<const char*>(&_parametersStart), ezc3d::BYTE);
+    f.write(reinterpret_cast<const char*>(&p._parametersStart), ezc3d::BYTE);
     int checksum(0x50);
     f.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
     // Leave a blank space which will be later fill
@@ -295,8 +299,8 @@ void ezc3d::ParametersNS::Parameters::write(
     f.write(reinterpret_cast<const char*>(&processorType), ezc3d::BYTE);
 
     // Write each groups
-    for (size_t i=0; i < nbGroups(); ++i){
-        const ezc3d::ParametersNS::GroupNS::Group& currentGroup(group(i));
+    for (size_t i=0; i < p.nbGroups(); ++i){
+        const ezc3d::ParametersNS::GroupNS::Group& currentGroup(p.group(i));
         if (!currentGroup.isEmpty())
             currentGroup.write(f, -static_cast<int>(i+1), dataStartPosition);
     }
@@ -314,6 +318,71 @@ void ezc3d::ParametersNS::Parameters::write(
         ++nBlocksToNext;
     f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
     f.seekg(currentPos);
+
+    return p;
+}
+
+ezc3d::ParametersNS::Parameters
+ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
+        const ezc3d::Header& header) const
+{
+    // A copy must be done since modifications are made to some parameters
+    ezc3d::ParametersNS::Parameters params(*this);
+
+    // Reevalute the number of frames
+    int nFrames(this->group("POINT").parameter("FRAMES").valuesAsInt()[0]);
+    if (nFrames > 0xFFFF){
+        ezc3d::ParametersNS::GroupNS::Parameter frames(params.group("POINT").parameter("FRAMES"));
+        frames.set(-1);
+        params.group("POINT").parameter(frames);
+    }
+
+    // Add the parameter EZC3D:VERSION and EZC3D:CONTACT
+    if (!params.isGroup("EZC3D")){
+        params.group(ezc3d::ParametersNS::GroupNS::Group("EZC3D"));
+    }
+    // Add/replace the version in the EZC3D group
+    ezc3d::ParametersNS::GroupNS::Parameter version("VERSION");
+    version.set(EZC3D_VERSION);
+    params.group("EZC3D").parameter(version);
+    // Add/replace the CONTACT in the EZC3D group
+    ezc3d::ParametersNS::GroupNS::Parameter contact("CONTACT");
+    contact.set(EZC3D_CONTACT);
+    params.group("EZC3D").parameter(contact);
+
+    // Use Intel floating with no extra scaling
+    double pointScaleFactor;
+    ezc3d::ParametersNS::GroupNS::Parameter scaleFactorParam;
+    if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
+        scaleFactorParam = params.group("POINT").parameter("SCALE");
+        pointScaleFactor = -fabs(scaleFactorParam.valuesAsDouble()[0]);
+    }
+    else {
+        pointScaleFactor = -fabs(header.scaleFactor());
+        scaleFactorParam.name("SCALE");
+    }
+    scaleFactorParam.set(pointScaleFactor);
+    params.group("POINT").parameter(scaleFactorParam);
+
+    ezc3d::ParametersNS::GroupNS::Parameter genScale(params.group("ANALOG").parameter("GEN_SCALE"));
+    genScale.set(1.0);
+    params.group("ANALOG").parameter(genScale);
+
+    size_t cmp = 1;
+    std::string mod = "";
+    do {
+        auto offset(params.group("ANALOG").parameter("OFFSET" + mod));
+        std::vector<int> offsetValues(offset.valuesAsInt().size());
+        for (size_t i=0; i<offsetValues.size(); ++i){
+            offsetValues[i] = 0;
+        }
+        offset.set(offsetValues);
+        params.group("ANALOG").parameter(offset);
+        ++cmp;
+        mod = std::to_string(cmp);
+    } while (params.group("ANALOG").isParameter("OFFSET" + mod));
+
+    return params;
 }
 
 size_t ezc3d::ParametersNS::Parameters::parametersStart() const {

@@ -47,14 +47,26 @@ public:
     /// \brief Write the groups to an opened file by calling the write method of all the groups
     /// \param f Already opened fstream file with write access
     /// \param dataStartPosition Returns the byte where to put the data start parameter
+    /// \param header A reference to the header section
+    /// \param format What order should the file has
     ///
-    void write(
+    ezc3d::ParametersNS::Parameters write(
             std::fstream &f,
-            std::streampos &dataStartPosition) const;
-
+            std::streampos &dataStartPosition,
+            const ezc3d::Header& header,
+            const ezc3d::WRITE_FORMAT& format = ezc3d::WRITE_FORMAT::DEFAULT
+            ) const;
 
     //---- PARAMETER METADATA ----//
 protected:
+    ///
+    /// \brief Prepare a copy of all parameters that will be used to write
+    /// \param header A reference to the header section
+    /// \return
+    ///
+    Parameters prepareCopyForWriting(
+            const ezc3d::Header& header) const;
+
     // Read the Parameters Header
     size_t _parametersStart;    ///< Byte 1 of the parameter's section of the C3D file.
                                 ///<

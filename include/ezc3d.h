@@ -196,8 +196,11 @@ public:
     ///
     /// \brief Write the C3D to an opened file by calling write method of header, parameter and data
     /// \param filePath Already opened fstream file with write access
+    /// \param format What order should the file has
     ///
-    void write(const std::string &filePath) const;
+    void write(
+            const std::string& filePath,
+            const WRITE_FORMAT& format = WRITE_FORMAT::DEFAULT) const;
 
 protected:
     // Internal reading and writting function
