@@ -284,40 +284,56 @@ class c3d(C3dMapper):
             nb_labels += len(self._storage["parameters"]["POINT"][f"LABELS{i}"]["value"])
             i += 1
         if nb_points != nb_labels:
-            raise ValueError("'c3d['parameters']['POINT']['LABELS']' must have the same length as nPoints of the data.")
+            raise ValueError(
+                "'c3d['parameters']['POINT']['LABELSX']' must have the same length as " "nPoints of the data."
+            )
 
+        if "meta_points" not in self._storage["data"]:
+            self._storage["data"]["meta_points"] = {}
         data_meta_points = self._storage["data"]["meta_points"]
-        if data_meta_points["residuals"].size == 0:
+        if "residuals" not in data_meta_points or data_meta_points["residuals"].size == 0:
             data_meta_points["residuals"] = np.zeros((1, nb_points, nb_point_frames))
         else:
             if data_meta_points["residuals"].shape[0] != 1:
                 raise ValueError(
-                    "'c3d['data']['meta_points']['residuals']' must have its first dimension's shape equals to 1."
+                    "'c3d['data']['meta_points']['residuals']' must have its first dimension's shape equals to 1.\n"
+                    "If you are modifying a pre-existing c3d, it is probably easier to delete "
+                    "'c3d['data']['meta_points']' and let ezc3d create a new one by itself"
                 )
             if data_meta_points["residuals"].shape[1] != nb_points:
                 raise ValueError(
-                    "'c3d['data']['meta_points']['residuals']' must have its second dimension's shape equals to the number of points."
+                    "'c3d['data']['meta_points']['residuals']' must have its second dimension's shape equals to the "
+                    "number of points.\nIf you are modifying a pre-existing c3d, it is probably easier to delete "
+                    "'c3d['data']['meta_points']' and let ezc3d create a new one by itself"
                 )
             if data_meta_points["residuals"].shape[2] != nb_point_frames:
                 raise ValueError(
-                    "'c3d['data']['meta_points']['residuals']' must have its third dimension's shape equals to the number of frames."
+                    "'c3d['data']['meta_points']['residuals']' must have its third dimension's shape equals to the "
+                    "number of frames.\nIf you are modifying a pre-existing c3d, it is probably easier to delete "
+                    "'c3d['data']['meta_points']' and let ezc3d create a new one by itself"
                 )
-        if data_meta_points["camera_masks"].size == 0:
+        if "camera_masks" not in data_meta_points or data_meta_points["camera_masks"].size == 0:
             data_meta_points["camera_masks"] = np.zeros((7, nb_points, nb_point_frames), dtype=bool)
         else:
             if data_meta_points["camera_masks"].dtype != np.dtype("bool"):
                 raise ValueError("'c3d['data']['meta_points']['camera_masks']' must be of dtype 'bool'.")
             if data_meta_points["camera_masks"].shape[0] != 7:
                 raise ValueError(
-                    "'c3d['data']['meta_points']['camera_masks']' must have its first dimension's shape equals to 7."
+                    "'c3d['data']['meta_points']['camera_masks']' must have its first dimension's shape equals to 7.\n"
+                    "If you are modifying a pre-existing c3d, it is probably easier to delete "
+                    "'c3d['data']['meta_points']' and let ezc3d create a new one by itself"
                 )
             if data_meta_points["camera_masks"].shape[1] != nb_points:
                 raise ValueError(
-                    "'c3d['data']['meta_points']['camera_masks']' must have its second dimension's shape equals to the number of points."
+                    "'c3d['data']['meta_points']['camera_masks']' must have its second dimension's shape equals to the "
+                    "number of points.\nIf you are modifying a pre-existing c3d, it is probably easier to delete "
+                    "'c3d['data']['meta_points']' and let ezc3d create a new one by itself"
                 )
             if data_meta_points["camera_masks"].shape[2] != nb_point_frames:
                 raise ValueError(
-                    "'c3d['data']['meta_points']['camera_masks']' must have its third dimension's shape equals to the number of frames."
+                    "'c3d['data']['meta_points']['camera_masks']' must have its third dimension's shape equals to the "
+                    "number of frames.\nIf you are modifying a pre-existing c3d, it is probably easier to delete "
+                    "'c3d['data']['meta_points']' and let ezc3d create a new one by itself"
                 )
 
         data_analogs = self._storage["data"]["analogs"]
@@ -358,7 +374,7 @@ class c3d(C3dMapper):
             i += 1
         if nb_analogs != nb_labels:
             raise ValueError(
-                "'c3d['parameters']['ANALOG']['LABELS']' must have the same length as " "nAnalogs of the data."
+                "'c3d['parameters']['ANALOG']['LABELSX']' must have the same length as nAnalogs of the data. "
             )
 
         # Start from a fresh c3d
@@ -435,7 +451,10 @@ class c3d(C3dMapper):
                         else:
                             new_param.set(ezc3d.VecDouble(old_param["value"]), dim)
                     elif old_param["type"] == ezc3d.CHAR:
-                        new_param.set(ezc3d.VecString(old_param["value"]), dim)
+                        try:
+                            new_param.set(ezc3d.VecString(old_param["value"]), dim)
+                        except:
+                            raise ValueError(f"Value in parameters {group}:{param} could not be converted to string")
                     else:
                         raise NotImplementedError("Parameter type not implemented yet")
                     new_c3d.parameter(group, new_param)
