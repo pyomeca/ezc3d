@@ -122,10 +122,25 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
             p.lock();
             grp.parameter(p);
         }
+        if (!grp.isParameter("LABELS")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
+            p.set(std::vector<std::string>()={});
+            grp.parameter(p);
+        }
+        if (!grp.isParameter("DESCRIPTIONS")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
+            p.set(std::vector<std::string>()={});
+            grp.parameter(p);
+        }
         if (!grp.isParameter("SCALE")){
             ezc3d::ParametersNS::GroupNS::Parameter p("SCALE", "");
             p.set(-1.0);
             p.lock();
+            grp.parameter(p);
+        }
+        if (!grp.isParameter("UNITS")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
+            p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
         if (!grp.isParameter("RATE")){
@@ -144,21 +159,6 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
             ezc3d::ParametersNS::GroupNS::Parameter p("FRAMES", "");
             p.set(0);
             p.lock();
-            grp.parameter(p);
-        }
-        if (!grp.isParameter("LABELS")){
-            ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
-            p.set(std::vector<std::string>()={});
-            grp.parameter(p);
-        }
-        if (!grp.isParameter("DESCRIPTIONS")){
-            ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
-            p.set(std::vector<std::string>()={});
-            grp.parameter(p);
-        }
-        if (!grp.isParameter("UNITS")){
-            ezc3d::ParametersNS::GroupNS::Parameter p("UNITS", "");
-            p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
     }
