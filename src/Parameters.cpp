@@ -453,6 +453,9 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
     contact.set(EZC3D_CONTACT);
     params.group("EZC3D").parameter(contact);
 
+    if (format == WRITE_FORMAT::NEXUS){
+        // Do some stuff related to Nexus
+    }
     return params;
 }
 
