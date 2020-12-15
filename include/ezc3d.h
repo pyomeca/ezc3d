@@ -81,6 +81,14 @@ namespace ezc3d {
     };
 
     ///
+    /// \brief The order of the parameters in the new c3d file
+    ///
+    enum WRITE_FORMAT{
+        DEFAULT=0,
+        NEXUS
+    };
+
+    ///
     /// \brief Remove the spaces at the end of a string
     /// \param str The string to remove the trailing spaces from.
     ///
@@ -188,8 +196,11 @@ public:
     ///
     /// \brief Write the C3D to an opened file by calling write method of header, parameter and data
     /// \param filePath Already opened fstream file with write access
+    /// \param format What order should the file has
     ///
-    void write(const std::string &filePath) const;
+    void write(
+            const std::string& filePath,
+            const WRITE_FORMAT& format = WRITE_FORMAT::DEFAULT) const;
 
 protected:
     // Internal reading and writting function
@@ -477,6 +488,22 @@ public:
     void parameter(
             const std::string &groupName,
             const ezc3d::ParametersNS::GroupNS::Parameter &parameter);
+
+    ///
+    /// \brief Remove a parameter from a group
+    /// \param groupName The name of the group to remove the parameter from
+    /// \param parameterName The name of the parameter in the group
+    ///
+    void remove(
+            const std::string& groupName,
+            const std::string& parameterName);
+
+    ///
+    /// \brief Remove a group
+    /// \param groupName The name of the group to remove
+    ///
+    void remove(
+            const std::string& groupName);
 
     ///
     /// \brief Lock a particular group named groupName

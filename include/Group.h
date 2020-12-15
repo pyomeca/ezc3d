@@ -207,6 +207,20 @@ public:
             const ezc3d::ParametersNS::GroupNS::Parameter& parameter);
 
     ///
+    /// \brief Remove a parameter from a group
+    /// \param name The name of the parameter to remove
+    ///
+    void remove(
+            const std::string& name);
+
+    ///
+    /// \brief Remove a parameter from a group
+    /// \param idx The index of the parameter to remove
+    ///
+    void remove(
+            size_t idx);
+
+    ///
     /// \brief Get all the parameter from the group
     /// \return The parameters
     ///

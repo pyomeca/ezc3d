@@ -1,12 +1,18 @@
 #ifndef EZC3D_CONFIG_H
 #define EZC3D_CONFIG_H
 
+#cmakedefine EZC3D_SHARED
+
 // dllexport/import declaration
-#ifdef _WIN32
-    #ifdef EZC3D_API_EXPORTS
-        #define EZC3D_API __declspec(dllexport)
+#ifdef EZC3D_SHARED
+    #ifdef _WIN32
+        #ifdef EZC3D_API_EXPORTS
+            #define EZC3D_API __declspec(dllexport)
+        #else
+            #define EZC3D_API __declspec(dllimport)
+        #endif
     #else
-        #define EZC3D_API __declspec(dllimport)
+        #define EZC3D_API __attribute__ ((visibility ("default")))
     #endif
 #else
     #define EZC3D_API

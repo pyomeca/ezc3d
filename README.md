@@ -310,6 +310,11 @@ Finally, the data can be extracted by calling the method related the desired val
 }
 ```
 
+Warning: Something important to remember is that there is no easy way to detect what is the upward vector.
+Consequently, `ezc3d` has to assume one. 
+The most common being Z-axis pointing upward, this is what is assume.
+If one has a C3D with the Y-axis pointing upward, they must transform their data accordingly in order to use the force platform filter.
+
 ## MATLAB
 MATLAB (https://www.mathworks.com/) is a prototyping language largely used in industry and fairly used by the biomechanical scientific community. Despite the existence of Octave as an open-source and very similar language or the growing popularity of Python as a free and open-source alternative, MATLAB remains an important player as a programming languages. Therefore EZC3D comes with a binder for MATLAB (that can theoretically used with Octave as well with some minor changes to the CMakeLists.txt file).
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0048 NEW)
-project(ezc3d VERSION 1.3.7)
+project(ezc3d VERSION 1.3.8)
 set(EZC3D_NAME ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -40,11 +40,16 @@ set(SRC_LIST
 
 set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
 if (BUILD_SHARED_LIBS)
+    set(EZC3D_SHARED TRUE)
     add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
 else()
     add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 endif()
-set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_debug")
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    DEBUG_POSTFIX "_debug"
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+)
 
 # Remember the CMAKE_CURRENT_BINARY_DIR (important if ezc3d is used as submodule)
 set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -94,6 +99,7 @@ install(DIRECTORY include/ DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER}
 # Include directories when a client uses the library from an installed ezc3d:
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}>
+    $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}/..>  # allow for <ezc3d/*.h>
 )
 install(FILES "${EZC3D_BINARY_DIR}/include/ezc3dConfig.h"
     DESTINATION "${${PROJECT_NAME}_INCLUDE_FOLDER}"

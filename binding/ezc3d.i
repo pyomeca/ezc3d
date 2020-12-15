@@ -51,6 +51,7 @@ namespace std {
 }
 
 // Includes all necessary files from the API
+#define __attribute__(x)
 %include "ezc3dConfig.h"
 %include "ezc3d.h"
 %include "math/Matrix.h"

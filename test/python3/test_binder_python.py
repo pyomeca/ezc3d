@@ -268,10 +268,14 @@ def test_values():
     np.testing.assert_array_equal(x=array.shape, y=(4, 51, 580), err_msg="Shape does not match")
     raveled = array.ravel()
     np.testing.assert_array_almost_equal(
-        x=raveled[0], y=44.16278839111328, decimal=decimal,
+        x=raveled[0],
+        y=44.16278839111328,
+        decimal=decimal,
     )
     np.testing.assert_array_almost_equal(
-        x=raveled[-1], y=1.0, decimal=decimal,
+        x=raveled[-1],
+        y=1.0,
+        decimal=decimal,
     )
     np.testing.assert_array_almost_equal(x=np.nanmean(array), y=362.2979849093196, decimal=decimal)
     np.testing.assert_array_almost_equal(x=np.nanmedian(array), y=337.7519226074219, decimal=decimal)
