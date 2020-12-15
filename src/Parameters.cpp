@@ -108,6 +108,59 @@ ezc3d::ParametersNS::Parameters::Parameters(
     setMandatoryParameters();
 }
 
+bool ezc3d::ParametersNS::Parameters::isMandatory(
+        const std::string &groupName)
+{
+    if (!groupName.compare("POINT")
+            || !groupName.compare("ANALOG")
+            || !groupName.compare("FORCE_PLATFORM")){
+        return true;
+    }
+    return false;
+}
+
+bool ezc3d::ParametersNS::Parameters::isMandatory(
+        const std::string &groupName,
+        const std::string &parameterName)
+{
+    if (!groupName.compare("POINT")){
+        if (!parameterName.compare("USED")
+                || !parameterName.compare("LABELS")
+                || !parameterName.compare("DESCRIPTIONS")
+                || !parameterName.compare("SCALE")
+                || !parameterName.compare("UNITS")
+                || !parameterName.compare("RATE")
+                || !parameterName.compare("DATA_START")
+                || !parameterName.compare("FRAMES")){
+            return true;
+        }
+    } else if (!groupName.compare("ANALOG")){
+        if (!parameterName.compare("USED")
+                || !parameterName.compare("LABELS")
+                || !parameterName.compare("DESCRIPTIONS")
+                || !parameterName.compare("GEN_SCALE")
+                || !parameterName.compare("SCALE")
+                || !parameterName.compare("OFFSET")
+                || !parameterName.compare("UNITS")
+                || !parameterName.compare("RATE")
+                || !parameterName.compare("FORMAT")
+                || !parameterName.compare("BITS")){
+            return true;
+        }
+    } else if (!groupName.compare("FORCE_PLATFORM")){
+        if (!parameterName.compare("USED")
+                || !parameterName.compare("TYPE")
+                || !parameterName.compare("CHANNEL")
+                || !parameterName.compare("ZERO")
+                || !parameterName.compare("ORIGIN")
+                || !parameterName.compare("CORNERS")
+                || !parameterName.compare("CAL_MATRIX")){
+            return true;
+        }
+    }
+    return false;
+}
+
 void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
     // Mandatory groups
     {
@@ -496,6 +549,25 @@ void ezc3d::ParametersNS::Parameters::group(
         for (size_t i=0; i < g.nbParameters(); ++i)
             _groups[alreadyExtIdx].parameter(g.parameter(i));
     }
+}
+
+void ezc3d::ParametersNS::Parameters::remove(
+        const std::string &name)
+{
+    remove(groupIdx(name));
+}
+
+void ezc3d::ParametersNS::Parameters::remove(
+        size_t idx)
+{
+    if (idx >= nbGroups()){
+        throw std::out_of_range(
+                    "Parameters::group method is trying to access the group "
+                    + std::to_string(idx) +
+                    " while the maximum number of groups is "
+                    + std::to_string(nbGroups()) + ".");
+    }
+    _groups.erase(_groups.begin() + idx);
 }
 
 const std::vector<ezc3d::ParametersNS::GroupNS::Group>&

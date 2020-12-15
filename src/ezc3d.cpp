@@ -481,6 +481,27 @@ void ezc3d::c3d::parameter(
     updateHeader();
 }
 
+void ezc3d::c3d::remove(
+        const std::string &groupName,
+        const std::string &parameterName)
+{
+    if (_parameters->isMandatory(groupName, parameterName)){
+        throw std::invalid_argument("You can't remove a mandatory parameter");
+    }
+
+    _parameters->group(groupName).remove(parameterName);
+}
+
+void ezc3d::c3d::remove(
+        const std::string &groupName)
+{
+    if (_parameters->isMandatory(groupName)){
+        throw std::invalid_argument("You can't remove a mandatory parameter");
+    }
+
+    _parameters->remove(groupName);
+}
+
 void ezc3d::c3d::lockGroup(
         const std::string &groupName) {
     _parameters->group(groupName).lock();

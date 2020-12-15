@@ -584,6 +584,135 @@ TEST(c3dModifier, specificParameters){
     }
 }
 
+TEST(c3dModifier, removeGroup){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    // Create dummy groups
+    ezc3d::ParametersNS::GroupNS::Parameter new_param1("non_existing_param");
+    new_param1.set(std::vector<std::string>({"some stuff"}));
+    new_c3d.c3d.parameter("existing_group", new_param1);
+    new_c3d.c3d.parameter("removed_by_name_group", new_param1);
+    new_c3d.c3d.parameter("ignored_group", new_param1);
+
+    // Remove a group
+    EXPECT_EQ(new_c3d.c3d.parameters().nbGroups(), 6);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(0).name().c_str(), "POINT");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(3).name().c_str(), "existing_group");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(4).name().c_str(), "removed_by_name_group");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(5).name().c_str(), "ignored_group");
+    new_c3d.c3d.remove("removed_by_name_group");
+    EXPECT_EQ(new_c3d.c3d.parameters().nbGroups(), 5);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(0).name().c_str(), "POINT");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(3).name().c_str(), "existing_group");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(4).name().c_str(), "ignored_group");
+
+    // Remove a non-existant group
+    EXPECT_THROW(new_c3d.c3d.remove("non_existing_group"), std::invalid_argument);
+    EXPECT_EQ(new_c3d.c3d.parameters().nbGroups(), 5);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(0).name().c_str(), "POINT");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(3).name().c_str(), "existing_group");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group(4).name().c_str(), "ignored_group");
+
+    // Read and write the new groups
+    std::string savepath("temporary.c3d");
+    new_c3d.c3d.write(savepath);
+    ezc3d::c3d c3dBis(savepath);
+    EXPECT_EQ(c3dBis.parameters().nbGroups(), 6);
+    EXPECT_STREQ(c3dBis.parameters().group(0).name().c_str(), "POINT");
+    EXPECT_STREQ(c3dBis.parameters().group(3).name().c_str(), "existing_group");
+    EXPECT_STREQ(c3dBis.parameters().group(4).name().c_str(), "ignored_group");
+    EXPECT_STREQ(c3dBis.parameters().group(5).name().c_str(), "EZC3D");
+
+    remove(savepath.c_str());
+
+    // Remove mandatory groups
+    EXPECT_THROW(new_c3d.c3d.remove("POINT"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM"), std::invalid_argument);
+}
+
+TEST(c3dModifier, removeParameter){
+    // Create an empty c3d
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, true);
+
+    // Create a dummy group with dummy params
+    ezc3d::ParametersNS::GroupNS::Parameter new_param1("existing_param");
+    new_param1.set(std::vector<std::string>({"much more important stuff"}));
+    new_c3d.c3d.parameter("new_group", new_param1);
+
+    ezc3d::ParametersNS::GroupNS::Parameter new_param2("removed_by_name");
+    new_param2.set(std::vector<std::string>({"not important stuff again"}));
+    new_c3d.c3d.parameter("new_group", new_param2);
+
+    ezc3d::ParametersNS::GroupNS::Parameter new_param3("ignored_param");
+    new_param3.set(std::vector<std::string>({"Is there stuff?"}));
+    new_c3d.c3d.parameter("new_group", new_param3);
+
+
+    // Remove a parameter
+    EXPECT_EQ(new_c3d.c3d.parameters().group("new_group").nbParameters(), 3);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(0).name().c_str(), "existing_param");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(1).name().c_str(), "removed_by_name");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(2).name().c_str(), "ignored_param");
+    new_c3d.c3d.remove("new_group", "removed_by_name");
+    EXPECT_EQ(new_c3d.c3d.parameters().group("new_group").nbParameters(), 2);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(0).name().c_str(), "existing_param");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(1).name().c_str(), "ignored_param");
+
+    // Remove a non-existant parameter
+    EXPECT_THROW(new_c3d.c3d.remove("non_existing_group", "non_existing_parameter"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("new_group", "non_existing_parameter"), std::invalid_argument);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("new_group").nbParameters(), 2);
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(0).name().c_str(), "existing_param");
+    EXPECT_STREQ(new_c3d.c3d.parameters().group("new_group").parameter(1).name().c_str(), "ignored_param");
+
+    // Write and read the new group
+    std::string savepath("temporary.c3d");
+    new_c3d.c3d.write(savepath);
+    ezc3d::c3d c3dBis(savepath);
+    EXPECT_EQ(new_c3d.c3d.parameters().group("new_group").nbParameters(), 2);
+    EXPECT_STREQ(c3dBis.parameters().group("new_group").parameter(0).name().c_str(), "existing_param");
+    EXPECT_STREQ(c3dBis.parameters().group("new_group").parameter(1).name().c_str(), "ignored_param");
+
+    remove(savepath.c_str());
+
+    // Remove mandatory parameters and facultative in mandatory groups
+    new_c3d.c3d.parameter("POINT", new_param3);
+    new_c3d.c3d.parameter("ANALOG", new_param3);
+    new_c3d.c3d.parameter("FORCE_PLATFORM", new_param3);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "USED"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "LABELS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "DESCRIPTIONS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "SCALE"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "UNITS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "RATE"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "DATA_START"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("POINT", "FRAMES"), std::invalid_argument);
+    new_c3d.c3d.remove("POINT", "ignored_param");
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "USED"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "LABELS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "DESCRIPTIONS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "GEN_SCALE"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "SCALE"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "OFFSET"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "UNITS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "RATE"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "FORMAT"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("ANALOG", "BITS"), std::invalid_argument);
+    new_c3d.c3d.remove("ANALOG", "ignored_param");
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "USED"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "TYPE"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "CHANNEL"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "ZERO"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "ORIGIN"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "CORNERS"), std::invalid_argument);
+    EXPECT_THROW(new_c3d.c3d.remove("FORCE_PLATFORM", "CAL_MATRIX"), std::invalid_argument);
+    new_c3d.c3d.remove("FORCE_PLATFORM", "ignored_param");
+}
+
 TEST(c3dModifier, groupMetaData){
     // Create an empty c3d
     c3dTestStruct new_c3d;

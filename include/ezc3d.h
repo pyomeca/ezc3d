@@ -490,6 +490,22 @@ public:
             const ezc3d::ParametersNS::GroupNS::Parameter &parameter);
 
     ///
+    /// \brief Remove a parameter from a group
+    /// \param groupName The name of the group to remove the parameter from
+    /// \param parameterName The name of the parameter in the group
+    ///
+    void remove(
+            const std::string& groupName,
+            const std::string& parameterName);
+
+    ///
+    /// \brief Remove a group
+    /// \param groupName The name of the group to remove
+    ///
+    void remove(
+            const std::string& groupName);
+
+    ///
     /// \brief Lock a particular group named groupName
     /// \param groupName The name of the group to lock
     ///

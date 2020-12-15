@@ -249,6 +249,27 @@ void ezc3d::ParametersNS::GroupNS::Group::parameter(
         _parameters[alreadyExistIdx] = p;
 }
 
+void ezc3d::ParametersNS::GroupNS::Group::remove(
+        const std::string &name)
+{
+    remove(this->parameterIdx(name));
+}
+
+void ezc3d::ParametersNS::GroupNS::Group::remove(
+        size_t idx)
+{
+    if (idx >= nbParameters()){
+        throw std::out_of_range(
+                    "Groups::parameter method is trying "
+                    "to access the parameter "
+                    + std::to_string(idx) +
+                    " while the maximum number of parameters is "
+                    + std::to_string(nbParameters())
+                    + " in the group " + name() + ".");
+    }
+    _parameters.erase(_parameters.begin() + idx);
+}
+
 const std::vector<ezc3d::ParametersNS::GroupNS::Parameter>&
 ezc3d::ParametersNS::GroupNS::Group::parameters() const {
     return _parameters;

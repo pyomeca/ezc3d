@@ -30,6 +30,25 @@ public:
             c3d &c3d,
             std::fstream &file);
 
+public:
+    ///
+    /// \brief Test if a given group is mandatory or not
+    /// \param groupName The name of the group to test
+    /// \return If a given group is mandatory or not
+    ///
+    static bool isMandatory(
+            const std::string& groupName);
+
+    ///
+    /// \brief Test if a given parameter is mandatory or not
+    /// \param groupName The name of the group that contains the parameter
+    /// \param parameterName The name of the parameter to test
+    /// \return If a given parameter is mandatory or not
+    ///
+    static bool isMandatory(
+            const std::string& groupName,
+            const std::string& parameterName);
+
 protected:
     ///
     /// \brief Add all required parameter for a c3d to be valid
@@ -199,6 +218,20 @@ public:
     ///
     void group(
             const ezc3d::ParametersNS::GroupNS::Group& group);
+
+    ///
+    /// \brief Remove a group
+    /// \param name The name of the group to remove
+    ///
+    void remove(
+            const std::string& name);
+
+    ///
+    /// \brief Remove a group
+    /// \param idx The index of the group to remove
+    ///
+    void remove(
+            size_t idx);
 
     ///
     /// \brief Get all groups the group holder with read-only access
