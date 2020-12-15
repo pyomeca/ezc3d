@@ -155,8 +155,8 @@ void ezc3d::Modules::ForcePlatform::extractType(
     }
     else if (_type == 3 || _type == 7){
         if (_type == 7){
-            throw std::runtime_error("Type 3 (and 7) is not supported yet, "
-                                     "please open an Issue on git`hub for "
+            throw std::runtime_error("Type 7 is not supported yet, "
+                                     "please open an Issue on github for "
                                      "support");
         }
     }

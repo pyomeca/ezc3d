@@ -94,7 +94,8 @@ void ezc3d::c3d::print() const {
 }
 
 void ezc3d::c3d::write(
-        const std::string& filePath) const {
+        const std::string& filePath,
+        const WRITE_FORMAT& format) const {
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
     // Write the header
@@ -102,78 +103,17 @@ void ezc3d::c3d::write(
     header().write(f, dataStartHeader);
 
     // Write the parameters
-    // A copy must be done since modifications are made to some parameters
-    ezc3d::ParametersNS::Parameters params(parameters());
-
-    // Reevalute the number of frames
-    int nFrames(this->parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0]);
-    if (nFrames > 0xFFFF){
-        ezc3d::ParametersNS::GroupNS::Parameter frames(params.group("POINT").parameter("FRAMES"));
-        frames.set(-1);
-        params.group("POINT").parameter(frames);
-    }
-
-    // Add the parameter EZC3D:VERSION and EZC3D:CONTACT
-    if (!params.isGroup("EZC3D")){
-        params.group(ezc3d::ParametersNS::GroupNS::Group("EZC3D"));
-    }
-    // Add/replace the version in the EZC3D group
-    ezc3d::ParametersNS::GroupNS::Parameter version("VERSION");
-    version.set(EZC3D_VERSION);
-    params.group("EZC3D").parameter(version);
-    // Add/replace the CONTACT in the EZC3D group
-    ezc3d::ParametersNS::GroupNS::Parameter contact("CONTACT");
-    contact.set(EZC3D_CONTACT);
-    params.group("EZC3D").parameter(contact);
-
-    // Use Intel floating with no extra scaling
-    double pointScaleFactor;
-    ezc3d::ParametersNS::GroupNS::Parameter scaleFactorParam;
-    if (params.group("POINT").parameter("SCALE").valuesAsDouble().size() ){
-        scaleFactorParam = params.group("POINT").parameter("SCALE");
-        pointScaleFactor = -fabs(scaleFactorParam.valuesAsDouble()[0]);
-    }
-    else {
-        pointScaleFactor = -fabs(header().scaleFactor());
-        scaleFactorParam.name("SCALE");
-    }
-    scaleFactorParam.set(pointScaleFactor);
-    params.group("POINT").parameter(scaleFactorParam);
-
-    ezc3d::ParametersNS::GroupNS::Parameter genScale(params.group("ANALOG").parameter("GEN_SCALE"));
-    genScale.set(1.0);
-    params.group("ANALOG").parameter(genScale);
-
-    size_t cmp = 1;
-    std::string mod = "";
-    do {
-        auto offset(params.group("ANALOG").parameter("OFFSET" + mod));
-        std::vector<int> offsetValues(offset.valuesAsInt().size());
-        for (size_t i=0; i<offsetValues.size(); ++i){
-            offsetValues[i] = 0;
-        }
-        offset.set(offsetValues);
-        params.group("ANALOG").parameter(offset);
-        ++cmp;
-        mod = std::to_string(cmp);
-    } while (params.group("ANALOG").isParameter("OFFSET" + mod));
-
     std::streampos dataStartParameters(-2); // -1 means not POINT group
-    params.write(f, dataStartParameters);
+    ezc3d::ParametersNS::Parameters p(
+                parameters().write(f, dataStartParameters, header(), format));
 
     // Write the data start parameter in header and parameter sections
     writeDataStart(f, dataStartHeader, DATA_TYPE::WORD);
     writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
 
     // Write the data
-    std::vector<double> pointAnalogFactors;
-    if (params.group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
-        pointAnalogFactors =
-                params.group("ANALOG").parameter("SCALE").valuesAsDouble();
-    }
-    else {
-        pointAnalogFactors.push_back(header().scaleFactor());
-    }
+    float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
+    std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
     data().write(f, pointScaleFactor, pointAnalogFactors);
 
     f.close();
@@ -539,6 +479,27 @@ void ezc3d::c3d::parameter(
     // Do a sanity check on the header if important stuff like number
     // of frames or number of elements is changed
     updateHeader();
+}
+
+void ezc3d::c3d::remove(
+        const std::string &groupName,
+        const std::string &parameterName)
+{
+    if (_parameters->isMandatory(groupName, parameterName)){
+        throw std::invalid_argument("You can't remove a mandatory parameter");
+    }
+
+    _parameters->group(groupName).remove(parameterName);
+}
+
+void ezc3d::c3d::remove(
+        const std::string &groupName)
+{
+    if (_parameters->isMandatory(groupName)){
+        throw std::invalid_argument("You can't remove a mandatory parameter");
+    }
+
+    _parameters->remove(groupName);
 }
 
 void ezc3d::c3d::lockGroup(
