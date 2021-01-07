@@ -46,10 +46,10 @@ ezc3d::DataNS::Data::Data(
     double analogGeneralFactor(c3d.parameters()
                               .group("ANALOG").parameter("GEN_SCALE")
                               .valuesAsDouble()[0]);
-    std::vector<int> analogZeroOffset(
-                c3d.parameters()
-                .group("ANALOG").parameter("OFFSET")
-                .valuesAsInt());
+    std::vector<int> analogZeroOffset(c3d.parameters().group("ANALOG").parameter("OFFSET").valuesAsInt());
+    for (int& offset : analogZeroOffset){
+        offset = abs(offset);
+    }
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
             break;
