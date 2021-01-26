@@ -51,8 +51,8 @@ Our solution will, however, never be as effective as those from dedicated linear
 Hence, thanks to the highly effective `Eigen` linear algebra library [@eigenweb], a fast accessor module is also available.
  
 # Current usage of `ezc3d`
-The library got the attention of two major software in biomechanics, namely Anybody [@rasmussenChapterAnyBodyModeling2019] and Opensim [@sethOpenSimSimulatingMusculoskeletal2018].
-One of the main programmers of the former prepared and maintains the `conda-forge` recipe for `ezc3d`, so it can be easily installed and updated using `Conda`.
+The library got the attention of two major modeling frameworks in biomechanics, namely the Anybody Modeling System [@rasmussenChapterAnyBodyModeling2019] and Opensim [@sethOpenSimSimulatingMusculoskeletal2018].
+One of the employees of the former prepared and maintains the `conda-forge` recipe for `ezc3d`, so it can be easily installed and updated using `Conda`.
 Since version 4.0, Opensim embraced the *c3d* format file by providing the capability to read *c3d* files.
 The `ezc3d` library was chosen as the default *c3d* reader back end.
  
