@@ -38,6 +38,12 @@ The building status for the current EZC3D branches is as follow
 | Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
 | dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 
+## VCPKG (For Windows, Linux and Mac)
+
+Install vcpkg by making a local clone from its GitHub repo [https://github.com/Microsoft/vcpkg](https://github.com/Microsoft/vcpkg). Then run the vcpkg-bootstrapper script to set it up. For detailed installation instructions, see [Install vcpkg](https://docs.microsoft.com/en-us/cpp/build/install-vcpkg). To integrate vcpkg with your Visual Studio or Visual Studio Code development environment, see [Integrate vcpkg](https://docs.microsoft.com/en-us/cpp/build/integrate-vcpkg). Then, to use vcpkg to install or update a library, see [Manage libraries with vcpkg](https://docs.microsoft.com/en-us/cpp/build/manage-libraries-with-vcpkg). For more information about vcpkg commands, see [vcpkg command-line reference](https://docs.microsoft.com/en-us/cpp/build/vcpkg-command-line-reference).
+
+👀 EZC3D is available in VCPKG since [2020-11 release](https://github.com/microsoft/vcpkg/releases/tag/2020.11)
+
 ### Dependencies
 EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
 
