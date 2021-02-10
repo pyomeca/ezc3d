@@ -10,6 +10,11 @@ EZC3D addresses these issues. It offers a comprehensive and light API to read an
 
 So, without further ado, let's begin C3Ding!
 
+##### Table of Contents  
+[How to install](#how-to-install)  
+[How to use](#hot-to-use)  
+## Headers
+
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
@@ -36,10 +41,11 @@ The building status for the current EZC3D branches is as follow
 | Name | Status |
 | --- | --- |
 | Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
-| dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+| 
+| [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 
 ### Dependencies
-EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
+EZC3D doesn't require any external dependency to compile. However, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
 
 ### CMake
 EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples via Internet. The main variables to set are:
