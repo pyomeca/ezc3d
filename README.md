@@ -344,14 +344,14 @@ MATLAB stands for MATrix LABoratory. As the name suggest, it is mainly used to p
 To create a new valid yet empty C3D, just call the `ezc3dRead` without any argument. 
 ```MATLAB
 c3d = ezc3dRead();
-disp(c3d.parameter.POINT.USED); % Print the number of points used
+disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
 
 ### Read a C3D
 To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as the first argument.
 ```MATLAB
 c3d = ezc3dRead('path_to_c3d.c3d');
-disp(c3d.parameter.POINT.USED); % Print the number of points used
+disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
 
 ### Write a C3D
@@ -361,9 +361,9 @@ To write a C3D to a file, you must call the `ezc3dWrite` function. This function
 c3d = ezc3dRead();
 
 % Add a point to the structure. 
-c3d.parameter.POINT.RATE = 100;
-c3d.parameter.POINT.USED = c3d.parameter.POINT.USED + 1;
-c3d.parameter.POINT.LABELS = [c3d.parameter.POINT.LABELS, 'NewMarkerName'];
+c3d.parameters.POINT.RATE.DATA = 100;
+c3d.parameters.POINT.USED.DATA = c3d.parameters.POINT.USED.DATA + 1;
+c3d.parameters.POINT.LABELS.DATA = [c3d.parameters.POINT.LABELS.DATA, 'NewMarkerName'];
 c3d.data.points = rand(3,1,100);
 
 % Write the C3D
