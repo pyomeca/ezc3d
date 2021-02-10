@@ -97,6 +97,15 @@ set(Matlab_${EZC3D_NAME}_INSTALL_DIR "${Matlab_ROOT_DIR}/toolbox" CACHE PATH
     require administrator access"
 )
 
+if(WIN32)
+    # install ezc3d library
+    install(TARGETS ${EZC3D_NAME}
+        ARCHIVE DESTINATION ${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+        RUNTIME DESTINATION ${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+        LIBRARY DESTINATION ${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+    )
+endif()
+
 # install utils
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ezc3dNewParam.m"
     DESTINATION "${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")
