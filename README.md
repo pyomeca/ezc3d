@@ -57,18 +57,18 @@ The building status for the current EZC3D branches is as follow
 | Dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 
 ### Dependencies
-EZC3D doesn't require any external dependency to compile. However, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
+EZC3D does not rely on any external dependency. However, it comes in the form of a CMake (https://cmake.org/) project. Consequently, CMake must be installed on your computer to compile EZC3D. It can be installed from the official website or by Anaconda using the following command:
+```bash
+conda install -c conda-forge cmake
+```
 
-### CMake
-EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples via Internet. The main variables to set are:
+Moreover, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake project should download and compile the test suite for you!
 
-That said, the Python3 interface requires *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/) to compile EZC3D. One could easily install these dependencies from Anaconda using the following command:
+When compiling the binders, some additional dependendies are required. For the Python binder, Python3 is indeed required but also *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/). They can be installed from their respective official websites or by Anaconda using the following command:
 ```bash
 conda install -c conda-forge numpy swig
 ```
-or directly from their respective websites. 
-
-Finally, the MATLAB interface requires MATLAB to be installed.
+For the MATLAB binder, the only additional dependecy is MATLAB itself.
 
 ### CMake
 EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. The main variables to set are:
