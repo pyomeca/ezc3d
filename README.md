@@ -71,7 +71,9 @@ conda install -c conda-forge numpy swig
 For the MATLAB binder, the only additional dependecy is MATLAB itself.
 
 ### CMake
-EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. The main variables to set are:
+EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. A simple video was made to show how to compile for the MATLAB binder [here](https://youtu.be/gWno_NXrITA). Please note that the video is made from a french computer. This should not impair the workflow, but may be a bit confusing for some english folks!
+
+The cmake variables to set are:
 
 > `CMAKE_INSTALL_PREFIX` Which is the `path/to/install` EZC3D in. If you compile the Python3 binder, a valid installation of Python with Numpy should be installed relatived to this path.
 >
