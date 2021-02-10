@@ -12,6 +12,9 @@ So, without further ado, let's begin C3Ding!
 
 # Table of Contents  
 [How to install](#how-to-install)  
+- [Anaconda](#anaconda-for-windows-linux-and-Mac)
+- [Compiling](#compiling-for-windows-linux-and-mac)
+
 [How to use](#how-to-use)  
 - [The C++ API](#the-c-api)
 - [MATLAB](#matlab)
@@ -20,7 +23,7 @@ So, without further ado, let's begin C3Ding!
 [How to contribute](#how-to-contribute)  
 [Supported generated C3D](#supported-generated-c3d)  
 [Documentation](#documentation)  
-[Troubleshoots](#troubleshoots)  
+[Troubleshooting](#troubleshooting)  
 [Cite](#cite)  
 
 ## Headers
@@ -51,8 +54,7 @@ The building status for the current EZC3D branches is as follow
 | Name | Status |
 | --- | --- |
 | Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
-| 
-| [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+| Dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 
 ### Dependencies
 EZC3D doesn't require any external dependency to compile. However, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
@@ -535,7 +537,7 @@ The C3D format is maintained by http://c3d.org. They provide recommendation on h
 ## EZC3D
 The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d`. 
 
-# Troubleshoots
+# Troubleshooting
 Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. I will fill this section with the issue over time.
 
 ## Slow C3D opening
