@@ -23,7 +23,7 @@ So, without further ado, let's begin C3Ding!
 [How to contribute](#how-to-contribute)  
 [Supported generated C3D](#supported-generated-c3d)  
 [Documentation](#documentation)  
-[Troubleshooting](#troubleshooting)  
+[Support](#support)  
 [Cite](#cite)  
 
 ## Headers
@@ -539,24 +539,30 @@ I also implemented some useful function such as `compareHeader(myFirstC3d, mySec
 The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from four different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/), Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/) and BTS Bioengineering (https://www.btsbioengineering.com/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
 # Documentation
-## C3D format
-The C3D format is maintained by http://c3d.org. They provide recommendation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
-
 ## EZC3D
 The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d` or by direcly accessing it (https://pyomeca.github.io/Documentation/ezc3d/index.html). 
 
-# Troubleshooting
-Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. I will fill this section with the issue over time.
+## C3D format
+The C3D format is maintained by http://c3d.org. They provide recommendation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
 
-## Slow C3D opening
+# Support
+Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. 
+
+## Report issues
+In the event you are experiencing problems with EZC3D, please have a look in the [known issues](#seek-support-and-known-issues). If it doesn't help, you are probably experiencing a new bug, you are therefore very welcomed to report it. The prefered way is to open an issue in the GitHub repository (https://github.com/pyomeca/ezc3d/issues). Please report the OS you are working on, the version of EZC3D you are using (if you have compiled yourself EZC3D, you will find the version number in the CMakeList.txt file, otherwise it is the version number of the binary you downloaded), and a precise description of what the problem is. Usually, the best description is to provide a non-working c3d file with the piece of code that fails and a copy of the error message. It may happen, for privacy reasons, that the c3d cannot be distributed. If it is the case, just state it as such, and I will reach out to you so we can find a solution. 
+
+## Known issues
+This section reports some issues that are likely to occur. I will fill it over time. Please have a look here before reporting, as it may help you fix your problem much faster.
+
+### Slow C3D opening
 If you experience a slow C3D opening (more than 10 seconds), even for a huge C3D file. You may be in one of two cases. 
 
-First, mak sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
+First, make sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
 
 If you actually are using a released level of optimization, you may actually experiencing a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
 
-## Non-working C3D
-The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. Since it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
+### Non-working C3D
+The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. While it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
 
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
