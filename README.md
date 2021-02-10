@@ -12,7 +12,12 @@ So, without further ado, let's begin C3Ding!
 
 ##### Table of Contents  
 [How to install](#how-to-install)  
-[How to use](#hot-to-use)  
+[How to use](#how-to-use)
+[How to contribute](#how-to-contribute)
+[Supported generated C3D](#supported-generated-c3d)
+[Documentation](#documentation)
+[Troubleshoots](#troubleshoots)
+[Cite](#cite)
 ## Headers
 
 # How to install
