@@ -10,6 +10,24 @@ EZC3D addresses these issues. It offers a comprehensive and light API to read an
 
 So, without further ado, let's begin C3Ding!
 
+# Table of Contents  
+[How to install](#how-to-install)  
+- [Anaconda](#anaconda-for-windows-linux-and-Mac)
+- [Compiling](#compiling-for-windows-linux-and-mac)
+
+[How to use](#how-to-use)  
+- [The C++ API](#the-c-api)
+- [MATLAB](#matlab)
+- [Python 3](#python-3)  
+
+[How to contribute](#how-to-contribute)  
+[Supported generated C3D](#supported-generated-c3d)  
+[Documentation](#documentation)  
+[Troubleshooting](#troubleshooting)  
+[Cite](#cite)  
+
+## Headers
+
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
@@ -36,7 +54,7 @@ The building status for the current EZC3D branches is as follow
 | Name | Status |
 | --- | --- |
 | Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
-| dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+| Dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 
 ## VCPKG (For Windows, Linux and Mac)
 
@@ -45,21 +63,23 @@ Install vcpkg by making a local clone from its GitHub repo [https://github.com/M
 👀 EZC3D is available in VCPKG since [2020-11 release](https://github.com/microsoft/vcpkg/releases/tag/2020.11)
 
 ### Dependencies
-EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
+EZC3D does not rely on any external dependency. However, it comes in the form of a CMake (https://cmake.org/) project. Consequently, CMake must be installed on your computer to compile EZC3D. It can be installed from the official website or by Anaconda using the following command:
+```bash
+conda install -c conda-forge cmake
+```
 
-### CMake
-EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples via Internet. The main variables to set are:
+Moreover, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake project should download and compile the test suite for you!
 
-That said, the Python3 interface requires *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/) to compile EZC3D. One could easily install these dependencies from Anaconda using the following command:
+When compiling the binders, some additional dependendies are required. For the Python binder, Python3 is indeed required but also *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/). They can be installed from their respective official websites or by Anaconda using the following command:
 ```bash
 conda install -c conda-forge numpy swig
 ```
-or directly from their respective websites. 
-
-Finally, the MATLAB interface requires MATLAB to be installed.
+For the MATLAB binder, the only additional dependecy is MATLAB itself.
 
 ### CMake
-EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. The main variables to set are:
+EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. For the Windows user, a quick video was made to show how to compile for the MATLAB binder [here](https://youtu.be/gWno_NXrITA). Please note that the video is made from a french computer. This should not impair the workflow, but may be a bit confusing for some english folks!
+
+The cmake variables to set are:
 
 > `CMAKE_INSTALL_PREFIX` Which is the `path/to/install` EZC3D in. If you compile the Python3 binder, a valid installation of Python with Numpy should be installed relatived to this path.
 >
@@ -330,14 +350,14 @@ MATLAB stands for MATrix LABoratory. As the name suggest, it is mainly used to p
 To create a new valid yet empty C3D, just call the `ezc3dRead` without any argument. 
 ```MATLAB
 c3d = ezc3dRead();
-disp(c3d.parameter.POINT.USED); % Print the number of points used
+disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
 
 ### Read a C3D
 To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as the first argument.
 ```MATLAB
 c3d = ezc3dRead('path_to_c3d.c3d');
-disp(c3d.parameter.POINT.USED); % Print the number of points used
+disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
 
 ### Write a C3D
@@ -347,9 +367,9 @@ To write a C3D to a file, you must call the `ezc3dWrite` function. This function
 c3d = ezc3dRead();
 
 % Add a point to the structure. 
-c3d.parameter.POINT.RATE = 100;
-c3d.parameter.POINT.USED = c3d.parameter.POINT.USED + 1;
-c3d.parameter.POINT.LABELS = [c3d.parameter.POINT.LABELS, 'NewMarkerName'];
+c3d.parameters.POINT.RATE.DATA = 100;
+c3d.parameters.POINT.USED.DATA = c3d.parameters.POINT.USED.DATA + 1;
+c3d.parameters.POINT.LABELS.DATA = [c3d.parameters.POINT.LABELS.DATA, 'NewMarkerName'];
 c3d.data.points = rand(3,1,100);
 
 % Write the C3D
@@ -523,9 +543,9 @@ The software companies have loosely implemented the C3D standard proposed by htt
 The C3D format is maintained by http://c3d.org. They provide recommendation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
 
 ## EZC3D
-The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d`. 
+The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d` or by direcly accessing it (https://pyomeca.github.io/Documentation/ezc3d/index.html). 
 
-# Troubleshoots
+# Troubleshooting
 Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. I will fill this section with the issue over time.
 
 ## Slow C3D opening
