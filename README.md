@@ -107,7 +107,7 @@ The cmake variables to set are:
 > 
 > `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory. Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
 > 
-> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, this is `{MY DOCUMENTS}/MATLAB`. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/MATLAB`, which is not the default location. The default value is the toolbox folder of MATLAB, i.e., `{MATLAB_ROOT}/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 
 # How to use
 The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
