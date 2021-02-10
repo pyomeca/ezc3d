@@ -10,14 +10,18 @@ EZC3D addresses these issues. It offers a comprehensive and light API to read an
 
 So, without further ado, let's begin C3Ding!
 
-##### Table of Contents  
+# Table of Contents  
 [How to install](#how-to-install)  
-[How to use](#how-to-use)
-[How to contribute](#how-to-contribute)
-[Supported generated C3D](#supported-generated-c3d)
-[Documentation](#documentation)
-[Troubleshoots](#troubleshoots)
-[Cite](#cite)
+[How to use](#how-to-use)  
+- [The C++ API](#the-c++-api)
+- [MATLAB](#matlab)
+- [Python 3](#python-3)
+[How to contribute](#how-to-contribute)  
+[Supported generated C3D](#supported-generated-c3d)  
+[Documentation](#documentation)  
+[Troubleshoots](#troubleshoots)  
+[Cite](#cite)  
+
 ## Headers
 
 # How to install
