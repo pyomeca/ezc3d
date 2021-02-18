@@ -56,6 +56,7 @@ The building status for the current EZC3D branches is as follow
 | Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
 | Dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
 | Test coverage | [![codecov](https://codecov.io/gh/pyomeca/ezc3d/branch/dev/graph/badge.svg?token=fc2ZGOexD1)](https://codecov.io/gh/pyomeca/ezc3d) |
+| DOI | [![DOI](https://zenodo.org/badge/131555942.svg)](https://zenodo.org/badge/latestdoi/131555942) |
 
 ### Dependencies
 EZC3D does not rely on any external dependency. However, it comes in the form of a CMake (https://cmake.org/) project. Consequently, CMake must be installed on your computer to compile EZC3D. It can be installed from the official website or by Anaconda using the following command:
