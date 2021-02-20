@@ -19,6 +19,13 @@ date: February 18th, 2021
 bibliography: paper.bib
 ---
 # Summary
+This work introduces the open source `ezc3d` library which provides a light and comprehensive API to easily read and write *c3d* files. 
+The C++ core provides a fast file I/O library, and convenient MATLAB and Python3 interfaces are also provided so researchers can smoothly implement `ezc3d` in their current workflow.
+It supports *c3d* files from the main biomechanics software, namely: Vicon, Qualisys, Optotrak, BTS and XSens. 
+In addition, since the *c3d* standard allows for multiple ways to store force platform data, a force platform analysis module is provided.
+The main feature of this module is to express forces and moments in more common reference frames---that is, expressed in the global reference frame calculated at either the origin or at the centre of pressure---so they can be directly interpreted by the user. 
+
+# Statement of need
 The *c3d* binary format [@crampC3dOrg2019] is an open source standard extensively used in the field of biomechanics.
 Most of the software for biomechanical data collection and data analysis can read and export *c3d* files. 
 Initially, this format was designed to store three-dimensional point and analog data (e.g., force platform or EMG).
@@ -32,13 +39,7 @@ To our knowledge, `BTK` [@barreBiomechanicalToolKitBTKCore2020] is the most matu
 Unfortunately, despite its open sourced nature, the project has been mostly abandoned since~2016.
 It gets more and more out-of-date as it does not implement the changes in the standard of the format.
 Unfortunately, due to the intricate connections of its modules, it proved difficult to update `BTK`.
- 
-This work introduces the open source `ezc3d` library which provides a light and comprehensive API to easily read and write *c3d* files. 
-For lay users, `ezc3d` is an up-to-date solution to manage *c3d* files that comply with the latest recommendation of the standard.
-It also supports *c3d* files from the main biomechanics software, namely: Vicon, Qualisys, Optotrak, BTS and XSens. 
-The C++ core provides a fast file I/O library, and convenient MATLAB and Python3 interfaces are also provided so researchers can smoothly implement `ezc3d` in their current workflow.
-In addition, since the *c3d* standard allows for multiple ways to store force platform data, a force platform analysis module is provided.
-The main feature of this module is to express forces and moments in more common reference frames---that is, expressed in the global reference frame calculated at either the origin or at the centre of pressure---so they can be directly interpreted by the user. 
+The `ezc3d` toolbox is an up-to-date solution that will fill all your *c3d* management needs. 
  
 # The dependencies
 The `ezc3d` library was designed to be a dependency-free library such that the lay users could easily link `ezc3d` with their project.
