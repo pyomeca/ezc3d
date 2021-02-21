@@ -8,6 +8,8 @@ C3D (http://c3d.org) is a format specifically designed to store biomechanics dat
 
 EZC3D addresses these issues. It offers a comprehensive and light API to read and write C3D files. The source code is written in C++ allowing to be compiled and used by higher level langages thanks to SWIG (http://www.swig.org/). Still, proper interface are written on top of the SWIG binder in order to facilitate the experience of the coders in their respective langages. 
 
+You can get the online version of the paper for EZC3D here: [![DOI](https://joss.theoj.org/papers/10.21105/joss.02911/status.svg)](https://doi.org/10.21105/joss.02911)
+
 So, without further ado, let's begin C3Ding!
 
 # Table of Contents  
@@ -572,12 +574,20 @@ Moreover, as stated before, some (all?) companies were pretty loose in their imp
 If you use EZC3D, we would be grateful if you could cite it as follows:
 
 ```bibtex
-@misc{ezc3d,
-  author = {Michaud, Benjamin and Begon, Mickael},
-  title = {EZC3D: Easy to use C3D reader/writer in C++, Python and Matlab},
-  year = {2020},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = {https://github.com/pyomeca/ezc3d}
+@article{michaudBiorbd2021,
+  title = {ezc3d: An easy C3D file I/O cross-platform solution for {{C}}++, {{Python}} and {{MATLAB}}},
+  shorttitle = {ezc3d},
+  author = {Michaud, Benjamin and Begon, Mickaël},
+  date = {2021-02-21},
+  journaltitle = {Journal of Open Source Software},
+  volume = {6},
+  pages = {2911},
+  issn = {2475-9066},
+  doi = {10.21105/joss.02911},
+  url = {https://joss.theoj.org/papers/10.21105/joss.02911},
+  urldate = {2021-02-21},
+  abstract = {Michaud et al., (2021). ezc3d: An easy C3D file I/O cross-platform solution for C++, Python and MATLAB. Journal of Open Source Software, 6(58), 2911, https://joss.theoj.org/papers/10.21105/joss.02911},
+  langid = {english},
+  number = {58}
 }
 ```
