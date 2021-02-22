@@ -1,6 +1,6 @@
 # EZC3D
 
-<img src="logo/logo.svg" width="40%" height="40%">
+<img src="logo/logo.png" width="40%" height="40%">
 
 EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB scripting langages. 
 
