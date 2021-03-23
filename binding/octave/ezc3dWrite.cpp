@@ -7,6 +7,7 @@
 #include "Header.h"
 #include "Parameters.h"
 #include "Data.h"
+#include "Frame.h"
 
 size_t parseParam(
         mxDouble* data,

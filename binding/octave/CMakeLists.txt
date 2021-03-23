@@ -50,6 +50,7 @@ foreach(SUFFIXES Read Write)
     # Linker and instalation
     target_link_libraries(${PROJECT_NAME}_${SUFFIXES}
         "${EZC3D_NAME}"
+		${OCTAVE_LIBRARIES}
     )
 
     # install target
@@ -58,7 +59,7 @@ foreach(SUFFIXES Read Write)
 endforeach(SUFFIXES)
 
 # Installation path
-set(Octave_${EZC3D_NAME}_INSTALL_DIR "${Octave_ROOT_DIR}/toolbox" CACHE PATH
+set(Octave_${EZC3D_NAME}_INSTALL_DIR "${OCTAVE_ROOT_DIR}/toolbox" CACHE PATH
     "Toolbox path to install, please note that the default directory may
     require administrator access"
 )

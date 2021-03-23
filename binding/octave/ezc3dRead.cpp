@@ -5,7 +5,12 @@
 #include "utils.h"
 #include "Header.h"
 #include "Parameters.h"
+#ifdef _WIN32
+#include "../../ezc3d/include/Data.h"  // This clash with data.h from Octave.. It will fail if directories are moved
+#else
 #include "Data.h"
+#endif
+#include "Frame.h"
 #include "modules/ForcePlatforms.h"
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
