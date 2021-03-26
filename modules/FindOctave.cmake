@@ -1,11 +1,16 @@
-# If Octave was installed from conda, the configuration process targets the wrong folder
-if (WIN32)
-	option(OCTAVE_FROM_CONDA "If Octave was installed from Conda" OFF)
+# If Octave was installed from conda on Linux, the configuration process targets the wrong folder
+if (LINUX)
+    option(OCTAVE_FROM_CONDA "If Octave was installed from Conda (only relevant for Linux)" OFF)
 else()
-	option(OCTAVE_FROM_CONDA "If Octave was installed from Conda" ON)
+    option(OCTAVE_FROM_CONDA "If Octave was installed from Conda (only relevant for Linux)" ON)
+endif()
+if (NOT LINUX)
+    MARK_AS_ADVANCED (
+        OCTAVE_FROM_CONDA
+    )
 endif()
 
-if(OCTAVE_FROM_CONDA)
+if(LINUX AND OCTAVE_FROM_CONDA)
 # Searches for OCTAVE includes and library files
 #
 # Sets the variables
@@ -55,7 +60,7 @@ if ( OCTAVE_CONFIG_EXECUTABLE )
 
 endif()
 
-else(OCTAVE_FROM_CONDA)
+else(LINUX AND OCTAVE_FROM_CONDA)
 # - Find Octave
 # GNU Octave is a high-level interpreted language, primarily intended for numerical computations.
 # available at http://www.gnu.org/software/octave/
@@ -109,10 +114,6 @@ if(WIN32)
 	if(NOT OCTAVE_VBS_FILE)
 		message(FATAL_ERROR "OCTAVE_ROOT_DIR should point to root folder of Octave where the file 'octave.vbs' can be found.")
 	endif()
-else()
-    # This is not tested
-    # SET(OCTAVE_ROOT_DIR "/usr/lib/" CACHE PATH "Root directory of Octave where the file 'octave.vbs' can be found.")
-	message(FATAL_ERROR "Octave should be installed from conda on UNIX systems")
 endif()
 
 find_program(OCTAVE_CONFIG_EXECUTABLE
@@ -152,6 +153,11 @@ if (WIN32)
         NAMES liboctinterp.dll.a
         HINTS ${OCTAVE_LIBRARIES_PATHS}
     )
+elif (APPLE)
+    find_file(OCTAVE_LIBRARIES
+        NAMES liboctinterp.dylib
+        HINTS ${OCTAVE_LIBRARIES_PATHS}
+    )
 else()
     set(OCTAVE_LIBRARIES "")
 endif()
@@ -166,4 +172,4 @@ mark_as_advanced(
     OCTAVE_PATCH_VERSION
 	OCTAVE_CONFIG_EXECUTABLE
 )
-endif(OCTAVE_FROM_CONDA)
+endif(LINUX AND OCTAVE_FROM_CONDA)
