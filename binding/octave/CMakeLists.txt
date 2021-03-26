@@ -50,9 +50,10 @@ foreach(SUFFIXES Read Write)
     # Linker and instalation
     target_link_libraries(${PROJECT_NAME}_${SUFFIXES}
         "${EZC3D_NAME}"
-		${OCTAVE_LIBRARIES}
+        ${OCTAVE_LIBRARIES}
     )
-
+message(coucou)
+message(${OCTAVE_LIBRARIES})
     # install target
     install(TARGETS ${PROJECT_NAME}_${SUFFIXES}
         DESTINATION "${Octave_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")

@@ -161,7 +161,8 @@ elif (APPLE)
 else()
     set(OCTAVE_LIBRARIES "")
 endif()
-
+message(coucou1)
+message(${OCTAVE_LIBRARIES_PATHS})
 mark_as_advanced(
     OCTAVE_ROOT_DIR
     OCTAVE_INCLUDE_DIRS
