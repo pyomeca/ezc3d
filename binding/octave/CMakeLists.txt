@@ -52,8 +52,7 @@ foreach(SUFFIXES Read Write)
         "${EZC3D_NAME}"
         ${OCTAVE_LIBRARIES}
     )
-message(coucou)
-message(${OCTAVE_LIBRARIES})
+
     # install target
     install(TARGETS ${PROJECT_NAME}_${SUFFIXES}
         DESTINATION "${Octave_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")

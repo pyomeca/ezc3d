@@ -140,7 +140,7 @@ if( OCTAVE_CONFIG_EXECUTABLE )
         string( REGEX REPLACE "[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" OCTAVE_PATCH_VERSION ${OCTAVE_VERSION_STRING} )
     endif()
 else( OCTAVE_CONFIG_EXECUTABLE )
-	message(FATAL_ERROR "Octave-config could not be found. Please set the OCTAVE_CONFIG_EXECUTABLE variable to the 'octave-config' executable file")
+    message(FATAL_ERROR "Octave-config could not be found. Please set the OCTAVE_CONFIG_EXECUTABLE variable to the 'octave-config' executable file")
 endif()
 
 find_path(OCTAVE_INCLUDE_DIRS
@@ -153,7 +153,7 @@ if (WIN32)
         NAMES liboctinterp.dll.a
         HINTS ${OCTAVE_LIBRARIES_PATHS}
     )
-elif (APPLE)
+elseif (APPLE)
     find_file(OCTAVE_LIBRARIES
         NAMES liboctinterp.dylib
         HINTS ${OCTAVE_LIBRARIES_PATHS}
@@ -161,8 +161,7 @@ elif (APPLE)
 else()
     set(OCTAVE_LIBRARIES "")
 endif()
-message(coucou1)
-message(${OCTAVE_LIBRARIES_PATHS})
+
 mark_as_advanced(
     OCTAVE_ROOT_DIR
     OCTAVE_INCLUDE_DIRS
