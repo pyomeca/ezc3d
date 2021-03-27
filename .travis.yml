@@ -102,11 +102,11 @@ script:
     - pytest -v --color=yes ../test/python3
     # Test the octave binder
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
-        cd ../test/matlab
-        cp $HOME/ezc3d_octave/* .
-        octave test_binder_matlab.m
-        octave test_binder_matlab_force_platform.m
-        cd ../build
+        cd ../test/matlab;
+        cp $HOME/ezc3d_octave/* .;
+        octave test_binder_matlab.m;
+        octave test_binder_matlab_force_platform.m;
+        cd ../build;
       fi
 
 after_success:
