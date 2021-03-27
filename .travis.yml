@@ -106,7 +106,8 @@ script:
         cp $HOME/ezc3d_octave/* .;
         octave test_binder_matlab.m;
         octave test_binder_matlab_force_platform.m;
-        cd ../build;
+        octave test_tata.m;
+        cd ../../build;
       fi
 
 after_success:
