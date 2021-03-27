@@ -62,4 +62,4 @@ assert(sum(sum(abs(all_pf(2).Tz(:, frames) - expected_Tz))) < 1e3)
 
 fprintf('Done\n');
 
-fprintf('\nMatlab tests successfully completed..\n')
+fprintf('\nMatlab tests successfully completed!\n')

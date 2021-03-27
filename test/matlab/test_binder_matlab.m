@@ -178,4 +178,5 @@ assert(sum(size(c3d_to_compare.data.analogs) == [analogFrameRate * nbSeconds, le
 assert(sum(sum(abs(c3d_to_compare.data.analogs - analogData) < 1e-6)) == analogFrameRate * nbSeconds * length(analogNames))
 fprintf('Done\n');
 
-fprintf('\nMatlab tests successfully completed..\n')
+fprintf('\nMatlab tests successfully completed!\n')
+
