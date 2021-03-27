@@ -106,10 +106,10 @@ script:
         cp $HOME/ezc3d_octave/* .;
       fi        
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
-        octave --eval "test_binder_matlab";
+        octave test_binder_matlab.m;
       fi        
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
-        octave --eval "test_binder_matlab_force_platform";
+        octave test_binder_matlab_force_platform.m;
       fi
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
         cd ../../build;

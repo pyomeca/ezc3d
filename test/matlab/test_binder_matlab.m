@@ -179,4 +179,4 @@ assert(sum(sum(abs(c3d_to_compare.data.analogs - analogData) < 1e-6)) == analogF
 fprintf('Done\n');
 
 fprintf('\nMatlab tests successfully completed!\n')
-exit(3)
+
