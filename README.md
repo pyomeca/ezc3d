@@ -2,7 +2,7 @@
 
 <img src="logo/logo.png" width="40%" height="40%">
 
-EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB scripting langages. 
+EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB/Octave scripting langages. 
 
 C3D (http://c3d.org) is a format specifically designed to store biomechanics data. Hence many biomechanics softwares can produce C3D files in order to share data. However, there is a lack in the biomechanics community of an easy to use, free and open source library to read, modify and write them as needed when it gets to the data analysis. There was at some point the BTK project (https://github.com/Biomechanical-ToolKit/BTKCore) that was targeting this goal, but the project is now obsolete. 
 
@@ -13,20 +13,21 @@ You can get the online version of the paper for EZC3D here: [![DOI](https://joss
 So, without further ado, let's begin C3Ding!
 
 # Table of Contents  
-[How to install](#how-to-install)  
+[How to install](#how-to-install)
 - [Anaconda](#anaconda-for-windows-linux-and-Mac)
 - [Compiling](#compiling-for-windows-linux-and-mac)
 
-[How to use](#how-to-use)  
+[How to use](#how-to-use)
 - [The C++ API](#the-c-api)
 - [MATLAB](#matlab)
-- [Python 3](#python-3)  
+- [Octave](#octave)
+- [Python 3](#python-3)
 
-[How to contribute](#how-to-contribute)  
-[Supported generated C3D](#supported-generated-c3d)  
-[Documentation](#documentation)  
-[Support](#support)  
-[Cite](#cite)  
+[How to contribute](#how-to-contribute)
+[Supported generated C3D](#supported-generated-c3d)
+[Documentation](#documentation)
+[Support](#support)
+[Cite](#cite)
 
 ## Headers
 
@@ -34,13 +35,20 @@ So, without further ado, let's begin C3Ding!
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
 ## Anaconda (For Windows, Linux and Mac)
-The easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories (binaries are not available though for MATLAB). The project is hosted on the conda-forge channel (https://anaconda.org/conda-forge/ezc3d).
+The easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories (while binaries are available for Python3 and Octave, there are not any for MATLAB, apart from using the mex file produced for Octave). The project is hosted on the conda-forge channel (https://anaconda.org/conda-forge/ezc3d).
 
-After having installed properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command:
+After having installed properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command for installing the Python3 binaries:
 ```bash
 conda install -c conda-forge ezc3d
 ```
-The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 binder will also be installed in the environment.
+or this command for installing the Octave binary:
+```bash
+conda install -c conda-forge ezc3d=*=*octave*
+```
+The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 or Octave binder will also be installed in the environment.
+
+Please note that it is possible to use the Octave binaries in MATLAB. The `.mex` extension must however be changed according to your operating system, namely `mexw32` or `.mexw64` for Windows (32 or 64-bits), `.mexmaci64` for MacOSX and `.mexa64` for Linux. 
+
 
 The current building status for Anaconda release is as follow.
 
@@ -72,7 +80,15 @@ When compiling the binders, some additional dependendies are required. For the P
 ```bash
 conda install -c conda-forge numpy swig
 ```
-For the MATLAB binder, the only additional dependecy is MATLAB itself.
+For the MATLAB binder, the only additional dependecy is MATLAB (https://www.mathworks.com/) itself.
+
+For the Octave binder, the only additional dependecy is Octave (https://www.gnu.org/software/octave/index) itself.
+On Linux and Mac, it can be easily installed using conda:
+```bash
+conda install -c conda-forge octave
+```
+On Windows, one is required to manually install it from the website
+
 
 ### CMake
 EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. For the Windows user, a quick video was made to show how to compile for the MATLAB binder [here](https://youtu.be/gWno_NXrITA). Please note that the video is made from a french computer. This should not impair the workflow, but may be a bit confusing for some english folks!
@@ -106,6 +122,12 @@ The cmake variables to set are:
 > `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory. Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
 > 
 > `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/MATLAB`, which is not the default location. The default value is the toolbox folder of MATLAB, i.e., `{MATLAB_ROOT}/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+> 
+> `BINDER_OCTAVE` If you want (`ON`) or not (`OFF`) to build the Octave binder. Default is `OFF`.
+> 
+> `OCTAVE_ROOT_DIR` If `BINDER_OCTAVE` is set to `ON` then this variable should point to the root path of Octave directory. When Octave is installed using conda, you probably don't have to set this variable. On Windows, the folder that this variable points is the folder containing `octave.vbs`. 
+> 
+> `Octave_ezc3d_INSTALL_DIR` If `BINDER_OCTAVE` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/Octave`, which is not the default location. The default value is the toolbox folder on root, i.e., `/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 
 ### VCPKG (For Windows, Linux and Mac)
 
@@ -117,6 +139,7 @@ An automated script for compilation is offered on vcpkg. Install vcpkg by making
 The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
 
 There are example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
+Octave example are not specifically provided, but it is used in the exact same way as the MATLAB binder.
 
 ## The C++ API
 The core code is written in C++, meaning that you can fully create from scratch, read and write C3D from C++. 
@@ -410,6 +433,8 @@ pf_1.Tz                     % Moment at center of pressure data
 % ...
 ```
 
+## Octave
+The Octave binder is almost line for line based on the MATLAB binder. Therefore, eveything which is presented in the MATLAB section applies the same to the Octave binder.
 
 
 ## Python 3
