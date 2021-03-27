@@ -104,9 +104,9 @@ script:
     - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then 
         cd ../test/matlab;
         cp $HOME/ezc3d_octave/* .;
-        octave test_binder_matlab.m;
-        octave test_binder_matlab_force_platform.m;
-        octave test_tata.m;
+        octave --eval "test_binder_matlab";
+        octave --eval "test_binder_matlab_force_platform";
+        octave --eval "test_tata";
         cd ../../build;
       fi
 
