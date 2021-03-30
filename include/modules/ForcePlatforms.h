@@ -77,7 +77,7 @@ protected:
     //---- DATA ----//
 protected:
     size_t _type;  ///< The type of force platform (see C3D documentation)
-    ezc3d::Matrix66 _calMatrix; ///< The calibration matrix
+    ezc3d::Matrix _calMatrix; ///< The calibration matrix
     std::vector<ezc3d::Vector3d> _corners;  ///< Position of the 4 corners of the force platform
     ezc3d::Vector3d _meanCorners;  ///< Mean position of the corners of the force platform
     ezc3d::Vector3d _origin;  ///< Position of the origin of the force platform
@@ -104,7 +104,7 @@ public:
     /// \brief Returns the calibration matrix
     /// \return The calibration matrix
     ///
-    const ezc3d::Matrix66& calMatrix() const;
+    const ezc3d::Matrix& calMatrix() const;
 
     ///
     /// \brief Returns the corners of the force platform

@@ -87,7 +87,7 @@ size_t ezc3d::Modules::ForcePlatform::type() const
     return _type;
 }
 
-const ezc3d::Matrix66& ezc3d::Modules::ForcePlatform::calMatrix() const
+const ezc3d::Matrix& ezc3d::Modules::ForcePlatform::calMatrix() const
 {
     return _calMatrix;
 }
@@ -165,8 +165,14 @@ void ezc3d::Modules::ForcePlatform::extractType(
                                  "open an Issue on github for support");
     }
     else if (_type == 6){
-        throw std::runtime_error("Type 6 is not supported yet, please "
-                                 "open an Issue on github for support");
+#ifndef ALLOW_NON_STANDARD_FORCE_PLATFORM
+        throw std::runtime_error(
+                    "Type 6 is not longer part of the C3D standard. If you want "
+                    "to use a c3d that contains one (as this one), please compile ezc3d with "
+                    "the flag ALLOW_NON_STANDARD_FORCE_PLATFORM set to ON. Be "
+                    "aware that it is not based on c3d's official documentation and "
+                    "may therefore be wrong.");
+#endif
     }
     else if (_type == 11 || _type == 12){
         throw std::runtime_error("Kistler Split Belt Treadmill is not "
@@ -252,7 +258,10 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
     size_t nChannels(-1);
     if (_type >= 1 && _type <= 4){
         nChannels = 6;
+    } else if (_type == 6) {
+        nChannels = 12;
     }
+    _calMatrix = ezc3d::Matrix(nChannels, nChannels);
 
     if (!groupPF.isParameter("CAL_MATRIX")){
         if (_type == 2){
@@ -325,6 +334,8 @@ void ezc3d::Modules::ForcePlatform::extractData(
         nChannels = 6;
     } else if (_type == 3) {
         nChannels = 8;
+    } else if (_type == 6) {
+        nChannels = 12;
     }
 
     // Check the dimensions of FORCE_PLATFORM:CHANNEL are consistent
@@ -427,6 +438,43 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 _Tz[cmp] = _refFrame * static_cast<Vector3d>(
                             moment_raw - force_raw.cross(-1*CoP_raw));
                 ++cmp;
+            }
+            else if (_type == 6){
+                // https://c-motion.com/v3dwiki/index.php/FP_Type_6
+                ezc3d::Vector3d f1;
+                ezc3d::Vector3d f2;
+                ezc3d::Vector3d f3;
+                ezc3d::Vector3d f4;
+
+                ezc3d::Vector3d force_raw;
+                for (size_t j=0; j<3; ++j){
+                    f1(j) = subframe.channel(channel_idx[j+0]).data();
+                    f2(j) = subframe.channel(channel_idx[j+3]).data();
+                    f3(j) = subframe.channel(channel_idx[j+6]).data();
+                    f4(j) = subframe.channel(channel_idx[j+9]).data();
+                    force_raw(j) = f1(j) + f2(j) + f3(j) + f4(j);
+                }
+                ezc3d::Vector3d moment_raw;
+                double a = _origin(0);
+                double b = _origin(1);
+                double az0 = _origin(2);
+                moment_raw(0) = b * ( f1(2) + f2(2) - f3(2) - f4(2)) + az0 * (f1(1) + f2(1) + f3(1) + f4(1));
+                moment_raw(1) = a * (-f1(2) + f2(2) + f3(2) - f4(2)) - az0 * (f1(0) + f2(0) + f3(0) + f4(0));
+                moment_raw(2) = b * (-f1(0) - f2(0) + f3(0) + f4(0)) + a   * (f1(1) - f2(1) - f3(1) + f4(1));
+                _F[cmp] = _refFrame * force_raw;
+                _M[cmp] = _refFrame * moment_raw;
+
+                ezc3d::Vector3d CoP_raw;
+                CoP_raw(0) = (az0 * force_raw(0) - moment_raw(1) / force_raw(2)) + a;
+                CoP_raw(1) = (az0 * force_raw(1) - moment_raw(0) / force_raw(2)) + b;
+                CoP_raw(2) = az0;
+                _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
+
+                ezc3d::Vector3d Tz = _refFrame * static_cast<Vector3d>(
+                            moment_raw - force_raw.cross(-1*CoP_raw));
+                _Tz[cmp](2) = moment_raw(2)
+                        + force_raw(1) * (moment_raw(1) - az0 * force_raw(0)) / force_raw(2)
+                        + force_raw(0) * (moment_raw(0) + az0 * force_raw(1)) / force_raw(2);
             }
 
         }
