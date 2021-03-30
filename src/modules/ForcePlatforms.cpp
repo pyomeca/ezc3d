@@ -391,7 +391,6 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 _M[cmp] = _F[cmp].cross(_CoP[cmp]) - _Tz[cmp];
                 _CoP[cmp] += _meanCorners;
 
-                ++cmp;
             }
             else if (_type == 2 || _type == 3 || _type == 4){
                 ezc3d::Vector3d force_raw;
@@ -437,30 +436,31 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
                 _Tz[cmp] = _refFrame * static_cast<Vector3d>(
                             moment_raw - force_raw.cross(-1*CoP_raw));
-                ++cmp;
+
             }
             else if (_type == 6){
                 // https://c-motion.com/v3dwiki/index.php/FP_Type_6
-                ezc3d::Vector3d f1;
-                ezc3d::Vector3d f2;
-                ezc3d::Vector3d f3;
-                ezc3d::Vector3d f4;
+                ezc3d::Matrix f(12, 1);
 
                 ezc3d::Vector3d force_raw;
+                for (size_t j=0; j<12; ++j){
+                    f(j, 0) = subframe.channel(channel_idx[j]).data();
+                }
+                f = _calMatrix * f;
+
                 for (size_t j=0; j<3; ++j){
-                    f1(j) = subframe.channel(channel_idx[j+0]).data();
-                    f2(j) = subframe.channel(channel_idx[j+3]).data();
-                    f3(j) = subframe.channel(channel_idx[j+6]).data();
-                    f4(j) = subframe.channel(channel_idx[j+9]).data();
-                    force_raw(j) = f1(j) + f2(j) + f3(j) + f4(j);
+                    force_raw(j) = f(j, 0) + f(j+3, 0) + f(j+6, 0) + f(j+9, 0);
                 }
                 ezc3d::Vector3d moment_raw;
                 double a = _origin(0);
                 double b = _origin(1);
                 double az0 = _origin(2);
-                moment_raw(0) = b * ( f1(2) + f2(2) - f3(2) - f4(2)) + az0 * (f1(1) + f2(1) + f3(1) + f4(1));
-                moment_raw(1) = a * (-f1(2) + f2(2) + f3(2) - f4(2)) - az0 * (f1(0) + f2(0) + f3(0) + f4(0));
-                moment_raw(2) = b * (-f1(0) - f2(0) + f3(0) + f4(0)) + a   * (f1(1) - f2(1) - f3(1) + f4(1));
+                moment_raw(0) = b * ( f(2+0,0) + f(2+3,0) - f(2+6,0) - f(2+9,0))
+                        + az0 * (f(1+0,0) + f(1+3,0) + f(1+6,0) + f(1+9,0));
+                moment_raw(1) = a * (-f(2+0,0) + f(2+3,0) + f(2+6,0) - f(2+9,0))
+                        - az0 * (f(0+0,0) + f(0+3,0) + f(0+6,0) + f(0+9,0));
+                moment_raw(2) = b * (-f(0+0,0) - f(0+3,0) + f(0+6,0) + f(0+9,0))
+                        + a * (f(1+0,0) - f(1+3,0) - f(1+6,0) + f(1+9,0));
                 _F[cmp] = _refFrame * force_raw;
                 _M[cmp] = _refFrame * moment_raw;
 
@@ -477,6 +477,7 @@ void ezc3d::Modules::ForcePlatform::extractData(
                         + force_raw(0) * (moment_raw(0) + az0 * force_raw(1)) / force_raw(2);
             }
 
+            ++cmp;
         }
     }
     delete[] ch;
