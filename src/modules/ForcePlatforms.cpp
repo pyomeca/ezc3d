@@ -470,8 +470,6 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 CoP_raw(2) = az0;
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
 
-                ezc3d::Vector3d Tz = _refFrame * static_cast<Vector3d>(
-                            moment_raw - force_raw.cross(-1*CoP_raw));
                 _Tz[cmp](2) = moment_raw(2)
                         + force_raw(1) * (moment_raw(1) - az0 * force_raw(0)) / force_raw(2)
                         + force_raw(0) * (moment_raw(0) + az0 * force_raw(1)) / force_raw(2);
