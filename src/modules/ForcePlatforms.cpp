@@ -165,11 +165,11 @@ void ezc3d::Modules::ForcePlatform::extractType(
                                  "open an Issue on github for support");
     }
     else if (_type == 6){
-#ifndef ALLOW_NON_STANDARD_FORCE_PLATFORM
+#ifndef ALLOW_EXOTIC_FORCE_PLATFORM
         throw std::runtime_error(
                     "Type 6 is not longer part of the C3D standard. If you want "
                     "to use a c3d that contains one (as this one), please compile ezc3d with "
-                    "the flag ALLOW_NON_STANDARD_FORCE_PLATFORM set to ON. Be "
+                    "the flag ALLOW_EXOTIC_FORCE_PLATFORM set to ON. Be "
                     "aware that it is not based on c3d's official documentation and "
                     "may therefore be wrong.");
 #endif

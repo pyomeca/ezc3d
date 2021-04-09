@@ -63,7 +63,7 @@ option(USE_MATRIX_FAST_ACCESSOR
 )
 
 # Option to allow non c3d standard force platform
-option(ALLOW_NON_STANDARD_FORCE_PLATFORM
+option(ALLOW_EXOTIC_FORCE_PLATFORM
     "Some force platform were removed from the standard, but can still be relevant (so far type 6).
     If one wants to have these force platform available, this should be set to ON"
     OFF

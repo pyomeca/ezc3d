@@ -22,7 +22,7 @@
 #cmakedefine USE_MATRIX_FAST_ACCESSOR
 
 // If non standard force platform should be allowed
-#cmakedefine ALLOW_NON_STANDARD_FORCE_PLATFORM
+#cmakedefine ALLOW_EXOTIC_FORCE_PLATFORM
 
 // Write down the version of the ezc3d
 #define EZC3D_VERSION "@EZC3D_VERSION_MAJOR@.@EZC3D_VERSION_MINOR@.@EZC3D_VERSION_PATCH@"
