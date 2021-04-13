@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.8)
 
 find_package(Octave REQUIRED)
 
+# Installation path
+set(Octave_${EZC3D_NAME}_INSTALL_DIR "${OCTAVE_ROOT_DIR}/toolbox" CACHE PATH
+    "Toolbox path to install, please note that the default directory may
+    require administrator access"
+)
 
 # Get the file to compile
 set(CPP_FILE_Read ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
@@ -57,12 +62,6 @@ foreach(SUFFIXES Read Write)
     install(TARGETS ${PROJECT_NAME}_${SUFFIXES}
         DESTINATION "${Octave_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")
 endforeach(SUFFIXES)
-
-# Installation path
-set(Octave_${EZC3D_NAME}_INSTALL_DIR "${OCTAVE_ROOT_DIR}/toolbox" CACHE PATH
-    "Toolbox path to install, please note that the default directory may
-    require administrator access"
-)
 
 if(WIN32)
     # install ezc3d library
