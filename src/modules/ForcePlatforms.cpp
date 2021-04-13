@@ -283,11 +283,13 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
         }
     }
 
-    const auto& val(calMatrixParam.valuesAsDouble());
-    size_t skip(calMatrixParam.dimension()[0] * calMatrixParam.dimension()[1]);
-    for (size_t i=0; i<nChannels; ++i){
-        for (size_t j=0; j<nChannels; ++j){
-            _calMatrix(i, j) = val[skip*idx + j*nChannels + i];
+    const std::vector<double>& val(calMatrixParam.valuesAsDouble());
+    if (val.size() != 0){ // This is for Motion Analysis not providing a calibration matrix
+        size_t skip(calMatrixParam.dimension()[0] * calMatrixParam.dimension()[1]);
+        for (size_t i=0; i<nChannels; ++i){
+            for (size_t j=0; j<nChannels; ++j){
+                _calMatrix(i, j) = val[skip*idx + j*nChannels + i];
+            }
         }
     }
 }
