@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.8)
 
 find_package(Matlab REQUIRED COMPONENTS MX_LIBRARY)
 
+# Installation path
+set(Matlab_${EZC3D_NAME}_INSTALL_DIR "${Matlab_ROOT_DIR}/toolbox" CACHE PATH
+    "Toolbox path to install, please note that the default directory may
+    require administrator access"
+)
 
 # Get the file to compile
 set(CPP_FILE_Read ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
@@ -91,11 +96,14 @@ foreach(SUFFIXES Read Write)
         DESTINATION "${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")
 endforeach(SUFFIXES)
 
-# Installation path
-set(Matlab_${EZC3D_NAME}_INSTALL_DIR "${Matlab_ROOT_DIR}/toolbox" CACHE PATH
-    "Toolbox path to install, please note that the default directory may
-    require administrator access"
-)
+if(WIN32)
+    # install ezc3d library
+    install(TARGETS ${EZC3D_NAME}
+        ARCHIVE DESTINATION ${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+        RUNTIME DESTINATION ${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+        LIBRARY DESTINATION ${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}
+    )
+endif()
 
 # install utils
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ezc3dNewParam.m"

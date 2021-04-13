@@ -1,26 +1,58 @@
 # EZC3D
 
-<img src="logo/logo.svg" width="40%" height="40%">
+<img src="logo/logo.png" width="40%" height="40%">
 
-EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB scripting langages. 
+EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB/Octave scripting langages. 
 
 C3D (http://c3d.org) is a format specifically designed to store biomechanics data. Hence many biomechanics softwares can produce C3D files in order to share data. However, there is a lack in the biomechanics community of an easy to use, free and open source library to read, modify and write them as needed when it gets to the data analysis. There was at some point the BTK project (https://github.com/Biomechanical-ToolKit/BTKCore) that was targeting this goal, but the project is now obsolete. 
 
 EZC3D addresses these issues. It offers a comprehensive and light API to read and write C3D files. The source code is written in C++ allowing to be compiled and used by higher level langages thanks to SWIG (http://www.swig.org/). Still, proper interface are written on top of the SWIG binder in order to facilitate the experience of the coders in their respective langages. 
 
+You can get the online version of the paper for EZC3D here: [![DOI](https://joss.theoj.org/papers/10.21105/joss.02911/status.svg)](https://doi.org/10.21105/joss.02911)
+
 So, without further ado, let's begin C3Ding!
+
+# Table of Contents  
+[How to install](#how-to-install)
+- [Anaconda](#anaconda-for-windows-linux-and-Mac)
+- [Compiling](#compiling-for-windows-linux-and-mac)
+
+[How to use](#how-to-use)
+- [The C++ API](#the-c-api)
+- [MATLAB](#matlab)
+- [Octave](#octave)
+- [Python 3](#python-3)
+
+[How to contribute](#how-to-contribute)
+
+[Supported generated C3D](#supported-generated-c3d)
+
+[Documentation](#documentation)
+
+[Support](#support)
+
+[Cite](#cite)
+
+## Headers
 
 # How to install
 There are two main ways to install EZC3D on your computer: installing the binaries from Anaconda (easiest) or compiling the source code yourself (more versatile and up to date).
 
 ## Anaconda (For Windows, Linux and Mac)
-The easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories (binaries are not available though for MATLAB). The project is hosted on the conda-forge channel (https://anaconda.org/conda-forge/ezc3d).
+The easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories (while binaries are available for Python3 and Octave, there are not any for MATLAB, apart from using the mex file produced for Octave). The project is hosted on the conda-forge channel (https://anaconda.org/conda-forge/ezc3d).
 
-After having installed properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command:
+After having installed properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command for installing the Python3 binaries:
 ```bash
 conda install -c conda-forge ezc3d
 ```
-The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 binder will also be installed in the environment.
+or this command for installing the Octave binary:
+```bash
+conda install -c conda-forge ezc3d=*=*octave*
+```
+The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 or Octave binder will also be installed in the environment.
+
+Please note that it is possible to use the Octave binaries in MATLAB. The `.mex` extension must however be changed according to your operating system, namely `mexw32` or `.mexw64` for Windows (32 or 64-bits), `.mexmaci64` for MacOSX and `.mexa64` for Linux. 
+
 
 The current building status for Anaconda release is as follow.
 
@@ -36,24 +68,36 @@ The building status for the current EZC3D branches is as follow
 | Name | Status |
 | --- | --- |
 | Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
-| dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+| Dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+| Test coverage | [![codecov](https://codecov.io/gh/pyomeca/ezc3d/branch/dev/graph/badge.svg?token=fc2ZGOexD1)](https://codecov.io/gh/pyomeca/ezc3d) |
+| DOI | [![DOI](https://zenodo.org/badge/131555942.svg)](https://zenodo.org/badge/latestdoi/131555942) |
 
 ### Dependencies
-EZC3D doesn't require any external dependency to compile. However, if ones is interested in developping EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake should download and compile the test suite for you!
+EZC3D does not rely on any external dependency. However, it comes in the form of a CMake (https://cmake.org/) project. Consequently, CMake must be installed on your computer to compile EZC3D. It can be installed from the official website or by Anaconda using the following command:
+```bash
+conda install -c conda-forge cmake
+```
 
-### CMake
-EZC3D comes with a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples via Internet. The main variables to set are:
+Moreover, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake project should download and compile the test suite for you!
 
-That said, the Python3 interface requires *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/) to compile EZC3D. One could easily install these dependencies from Anaconda using the following command:
+When compiling the binders, some additional dependendies are required. For the Python binder, Python3 is indeed required but also *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/). They can be installed from their respective official websites or by Anaconda using the following command:
 ```bash
 conda install -c conda-forge numpy swig
 ```
-or directly from their respective websites. 
+For the MATLAB binder, the only additional dependecy is MATLAB (https://www.mathworks.com/) itself.
 
-Finally, the MATLAB interface requires MATLAB to be installed.
+For the Octave binder, the only additional dependecy is Octave (https://www.gnu.org/software/octave/index) itself.
+On Linux and Mac, it can be easily installed using conda:
+```bash
+conda install -c conda-forge octave
+```
+On Windows, one is required to manually install it from the website
+
 
 ### CMake
-EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. The main variables to set are:
+EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. For the Windows user, a quick video was made to show how to compile for the MATLAB binder [here](https://youtu.be/gWno_NXrITA). Please note that the video is made from a french computer. This should not impair the workflow, but may be a bit confusing for some english folks!
+
+The cmake variables to set are:
 
 > `CMAKE_INSTALL_PREFIX` Which is the `path/to/install` EZC3D in. If you compile the Python3 binder, a valid installation of Python with Numpy should be installed relatived to this path.
 >
@@ -81,12 +125,25 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 > 
 > `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory. Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
 > 
-> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, this is `{MY DOCUMENTS}/MATLAB`. The default value is the toolbox folder of MATLAB. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+> `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/MATLAB`, which is not the default location. The default value is the toolbox folder of MATLAB, i.e., `{MATLAB_ROOT}/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+> 
+> `BINDER_OCTAVE` If you want (`ON`) or not (`OFF`) to build the Octave binder. Default is `OFF`.
+> 
+> `OCTAVE_ROOT_DIR` If `BINDER_OCTAVE` is set to `ON` then this variable should point to the root path of Octave directory. When Octave is installed using conda, you probably don't have to set this variable. On Windows, the folder that this variable points is the folder containing `octave.vbs`. 
+> 
+> `Octave_ezc3d_INSTALL_DIR` If `BINDER_OCTAVE` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/Octave`, which is not the default location. The default value is the toolbox folder on root, i.e., `/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
+
+### VCPKG (For Windows, Linux and Mac)
+
+An automated script for compilation is offered on vcpkg. Install vcpkg by making a local clone from its GitHub repo [https://github.com/Microsoft/vcpkg](https://github.com/Microsoft/vcpkg). Then run the vcpkg-bootstrapper script to set it up. For detailed installation instructions, see [Install vcpkg](https://docs.microsoft.com/en-us/cpp/build/install-vcpkg). To integrate vcpkg with your Visual Studio or Visual Studio Code development environment, see [Integrate vcpkg](https://docs.microsoft.com/en-us/cpp/build/integrate-vcpkg). Then, to use vcpkg to install or update a library, see [Manage libraries with vcpkg](https://docs.microsoft.com/en-us/cpp/build/manage-libraries-with-vcpkg). For more information about vcpkg commands, see [vcpkg command-line reference](https://docs.microsoft.com/en-us/cpp/build/vcpkg-command-line-reference).
+
+👀 EZC3D is available in VCPKG since [2020-11 release](https://github.com/microsoft/vcpkg/releases/tag/2020.11)
 
 # How to use
 The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
 
 There are example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
+Octave example are not specifically provided, but it is used in the exact same way as the MATLAB binder.
 
 ## The C++ API
 The core code is written in C++, meaning that you can fully create from scratch, read and write C3D from C++. 
@@ -324,14 +381,14 @@ MATLAB stands for MATrix LABoratory. As the name suggest, it is mainly used to p
 To create a new valid yet empty C3D, just call the `ezc3dRead` without any argument. 
 ```MATLAB
 c3d = ezc3dRead();
-disp(c3d.parameter.POINT.USED); % Print the number of points used
+disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
 
 ### Read a C3D
 To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as the first argument.
 ```MATLAB
 c3d = ezc3dRead('path_to_c3d.c3d');
-disp(c3d.parameter.POINT.USED); % Print the number of points used
+disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
 
 ### Write a C3D
@@ -341,9 +398,9 @@ To write a C3D to a file, you must call the `ezc3dWrite` function. This function
 c3d = ezc3dRead();
 
 % Add a point to the structure. 
-c3d.parameter.POINT.RATE = 100;
-c3d.parameter.POINT.USED = c3d.parameter.POINT.USED + 1;
-c3d.parameter.POINT.LABELS = [c3d.parameter.POINT.LABELS, 'NewMarkerName'];
+c3d.parameters.POINT.RATE.DATA = 100;
+c3d.parameters.POINT.USED.DATA = c3d.parameters.POINT.USED.DATA + 1;
+c3d.parameters.POINT.LABELS.DATA = [c3d.parameters.POINT.LABELS.DATA, 'NewMarkerName'];
 c3d.data.points = rand(3,1,100);
 
 % Write the C3D
@@ -380,6 +437,8 @@ pf_1.Tz                     % Moment at center of pressure data
 % ...
 ```
 
+## Octave
+The Octave binder is almost line for line based on the MATLAB binder. Therefore, eveything which is presented in the MATLAB section applies the same to the Octave binder.
 
 
 ## Python 3
@@ -513,24 +572,30 @@ I also implemented some useful function such as `compareHeader(myFirstC3d, mySec
 The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from four different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/), Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/) and BTS Bioengineering (https://www.btsbioengineering.com/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
 # Documentation
+## EZC3D
+The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d` or by direcly accessing it (https://pyomeca.github.io/Documentation/ezc3d/index.html). 
+
 ## C3D format
 The C3D format is maintained by http://c3d.org. They provide recommendation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
 
-## EZC3D
-The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d`. 
+# Support
+Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. 
 
-# Troubleshoots
-Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. I will fill this section with the issue over time.
+## Report issues
+In the event you are experiencing problems with EZC3D, please have a look in the [known issues](#seek-support-and-known-issues). If it doesn't help, you are probably experiencing a new bug, you are therefore very welcomed to report it. The prefered way is to open an issue in the GitHub repository (https://github.com/pyomeca/ezc3d/issues). Please report the OS you are working on, the version of EZC3D you are using (if you have compiled yourself EZC3D, you will find the version number in the CMakeList.txt file, otherwise it is the version number of the binary you downloaded), and a precise description of what the problem is. Usually, the best description is to provide a non-working c3d file with the piece of code that fails and a copy of the error message. It may happen, for privacy reasons, that the c3d cannot be distributed. If it is the case, just state it as such, and I will reach out to you so we can find a solution. 
 
-## Slow C3D opening
+## Known issues
+This section reports some issues that are likely to occur. I will fill it over time. Please have a look here before reporting, as it may help you fix your problem much faster.
+
+### Slow C3D opening
 If you experience a slow C3D opening (more than 10 seconds), even for a huge C3D file. You may be in one of two cases. 
 
-First, mak sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
+First, make sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
 
 If you actually are using a released level of optimization, you may actually experiencing a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
 
-## Non-working C3D
-The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. Since it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
+### Non-working C3D
+The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. While it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
 
 Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
@@ -538,12 +603,20 @@ Moreover, as stated before, some (all?) companies were pretty loose in their imp
 If you use EZC3D, we would be grateful if you could cite it as follows:
 
 ```bibtex
-@misc{ezc3d,
-  author = {Michaud, Benjamin and Begon, Mickael},
-  title = {EZC3D: Easy to use C3D reader/writer in C++, Python and Matlab},
-  year = {2020},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = {https://github.com/pyomeca/ezc3d}
+@article{michaudBiorbd2021,
+  title = {ezc3d: An easy C3D file I/O cross-platform solution for {{C}}++, {{Python}} and {{MATLAB}}},
+  shorttitle = {ezc3d},
+  author = {Michaud, Benjamin and Begon, Mickaël},
+  date = {2021-02-21},
+  journaltitle = {Journal of Open Source Software},
+  volume = {6},
+  pages = {2911},
+  issn = {2475-9066},
+  doi = {10.21105/joss.02911},
+  url = {https://joss.theoj.org/papers/10.21105/joss.02911},
+  urldate = {2021-02-21},
+  abstract = {Michaud et al., (2021). ezc3d: An easy C3D file I/O cross-platform solution for C++, Python and MATLAB. Journal of Open Source Software, 6(58), 2911, https://joss.theoj.org/papers/10.21105/joss.02911},
+  langid = {english},
+  number = {58}
 }
 ```
