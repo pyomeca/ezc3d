@@ -316,7 +316,16 @@ void ezc3d::Modules::ForcePlatform::computePfReferenceFrame()
         _refFrame(i, 0) = axisX(i);
         _refFrame(i, 1) = axisY(i);
         _refFrame(i, 2) = axisZ(i);
+
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
+        _refFrameCoPType6(i, 0) = -axisX(i);
+        _refFrameCoPType6(i, 1) = -axisY(i);
+        _refFrameCoPType6(i, 2) = axisZ(i);
+#endif
     }
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
+    _negativeRefFrame = -1 * _refFrame;
+#endif
 }
 
 void ezc3d::Modules::ForcePlatform::extractData(
@@ -438,7 +447,10 @@ void ezc3d::Modules::ForcePlatform::extractData(
                             moment_raw - force_raw.cross(-1*CoP_raw));
 
             }
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
             else if (_type == 6){
+                // This is loosely based on the official c-motion documentation
+                // since the documentation is wrong...
                 // https://c-motion.com/v3dwiki/index.php/FP_Type_6
                 ezc3d::Matrix f(12, 1);
 
@@ -452,8 +464,8 @@ void ezc3d::Modules::ForcePlatform::extractData(
                     force_raw(j) = f(j, 0) + f(j+3, 0) + f(j+6, 0) + f(j+9, 0);
                 }
                 ezc3d::Vector3d moment_raw;
-                double a = _origin(0);
-                double b = _origin(1);
+                double a = -_origin(0);
+                double b = -_origin(1);
                 double az0 = _origin(2);
                 moment_raw(0) = b * ( f(2+0,0) + f(2+3,0) - f(2+6,0) - f(2+9,0))
                         + az0 * (f(1+0,0) + f(1+3,0) + f(1+6,0) + f(1+9,0));
@@ -463,19 +475,19 @@ void ezc3d::Modules::ForcePlatform::extractData(
                         + a * (f(1+0,0) - f(1+3,0) - f(1+6,0) + f(1+9,0));
 
                 ezc3d::Vector3d CoP_raw;
-                CoP_raw(0) = (az0 * force_raw(0) - moment_raw(1) / force_raw(2)) + a;
-                CoP_raw(1) = (az0 * force_raw(1) + moment_raw(0) / force_raw(2)) + b;
+                CoP_raw(0) = (-az0 * force_raw(0) - moment_raw(1)) / force_raw(2);
+                CoP_raw(1) = (-az0 * force_raw(1) + moment_raw(0)) / force_raw(2);
                 CoP_raw(2) = az0;
 
-                _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
+                _CoP[cmp] = _refFrameCoPType6 * CoP_raw + _meanCorners;
                 _F[cmp] = _refFrame * force_raw;
-                _M[cmp] = _refFrame * moment_raw;
+                _M[cmp] = _negativeRefFrame * moment_raw;
 
                 _Tz[cmp](2) = moment_raw(2)
                         + force_raw(1) * (moment_raw(1) - az0 * force_raw(0)) / force_raw(2)
                         + force_raw(0) * (moment_raw(0) + az0 * force_raw(1)) / force_raw(2);
             }
-
+#endif
             ++cmp;
         }
     }

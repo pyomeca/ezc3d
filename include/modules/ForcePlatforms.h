@@ -82,6 +82,10 @@ protected:
     ezc3d::Vector3d _meanCorners;  ///< Mean position of the corners of the force platform
     ezc3d::Vector3d _origin;  ///< Position of the origin of the force platform
     ezc3d::Matrix33 _refFrame;  ///< The reference frame of the force plate in the global reference frame
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
+    ezc3d::Matrix33 _refFrameCoPType6;  ///< The reference frame of the force plate in the global reference frame for the CoP of type 6
+    ezc3d::Matrix33 _negativeRefFrame;  ///< The reference frame of the force plate in the global reference frame for the CoP of type 6
+#endif
     std::vector<ezc3d::Vector3d> _F;  ///< Force vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _M;  ///< Moment vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _CoP;  ///< Center of Pressure vectors for all instants (including subframes) in global reference frame
