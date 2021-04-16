@@ -87,7 +87,7 @@ size_t ezc3d::Modules::ForcePlatform::type() const
     return _type;
 }
 
-const ezc3d::Matrix66& ezc3d::Modules::ForcePlatform::calMatrix() const
+const ezc3d::Matrix& ezc3d::Modules::ForcePlatform::calMatrix() const
 {
     return _calMatrix;
 }
@@ -165,8 +165,14 @@ void ezc3d::Modules::ForcePlatform::extractType(
                                  "open an Issue on github for support");
     }
     else if (_type == 6){
-        throw std::runtime_error("Type 6 is not supported yet, please "
-                                 "open an Issue on github for support");
+#ifndef ALLOW_EXOTIC_FORCE_PLATFORM
+        throw std::runtime_error(
+                    "Type 6 is not longer part of the C3D standard. If you want "
+                    "to use a c3d that contains one (as this one), please compile ezc3d with "
+                    "the flag ALLOW_EXOTIC_FORCE_PLATFORM set to ON. Be "
+                    "aware that it is not based on c3d's official documentation and "
+                    "may therefore be wrong.");
+#endif
     }
     else if (_type == 11 || _type == 12){
         throw std::runtime_error("Kistler Split Belt Treadmill is not "
@@ -252,7 +258,10 @@ void ezc3d::Modules::ForcePlatform::extractCalMatrix(
     size_t nChannels(-1);
     if (_type >= 1 && _type <= 4){
         nChannels = 6;
+    } else if (_type == 6) {
+        nChannels = 12;
     }
+    _calMatrix = ezc3d::Matrix(nChannels, nChannels);
 
     if (!groupPF.isParameter("CAL_MATRIX")){
         if (_type == 2){
@@ -312,7 +321,16 @@ void ezc3d::Modules::ForcePlatform::computePfReferenceFrame()
         _refFrame(i, 0) = axisX(i);
         _refFrame(i, 1) = axisY(i);
         _refFrame(i, 2) = axisZ(i);
+
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
+        _refFrameCoPType6(i, 0) = -axisX(i);
+        _refFrameCoPType6(i, 1) = -axisY(i);
+        _refFrameCoPType6(i, 2) = axisZ(i);
+#endif
     }
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
+    _negativeRefFrame = -1 * _refFrame;
+#endif
 }
 
 void ezc3d::Modules::ForcePlatform::extractData(
@@ -330,6 +348,8 @@ void ezc3d::Modules::ForcePlatform::extractData(
         nChannels = 6;
     } else if (_type == 3) {
         nChannels = 8;
+    } else if (_type == 6) {
+        nChannels = 12;
     }
 
     // Check the dimensions of FORCE_PLATFORM:CHANNEL are consistent
@@ -385,7 +405,6 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 _M[cmp] = _F[cmp].cross(_CoP[cmp]) - _Tz[cmp];
                 _CoP[cmp] += _meanCorners;
 
-                ++cmp;
             }
             else if (_type == 2 || _type == 3 || _type == 4){
                 ezc3d::Vector3d force_raw;
@@ -431,9 +450,50 @@ void ezc3d::Modules::ForcePlatform::extractData(
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
                 _Tz[cmp] = _refFrame * static_cast<Vector3d>(
                             moment_raw - force_raw.cross(-1*CoP_raw));
-                ++cmp;
-            }
 
+            }
+#ifdef ALLOW_EXOTIC_FORCE_PLATFORM
+            else if (_type == 6){
+                // This is loosely based on the official c-motion documentation
+                // since the documentation is wrong...
+                // https://c-motion.com/v3dwiki/index.php/FP_Type_6
+                ezc3d::Matrix f(12, 1);
+
+                ezc3d::Vector3d force_raw;
+                for (size_t j=0; j<12; ++j){
+                    f(j, 0) = subframe.channel(channel_idx[j]).data();
+                }
+                f = _calMatrix * f;
+
+                for (size_t j=0; j<3; ++j){
+                    force_raw(j) = f(j, 0) + f(j+3, 0) + f(j+6, 0) + f(j+9, 0);
+                }
+                ezc3d::Vector3d moment_raw;
+                double a = -_origin(0);
+                double b = -_origin(1);
+                double az0 = _origin(2);
+                moment_raw(0) = b * ( f(2+0,0) + f(2+3,0) - f(2+6,0) - f(2+9,0))
+                        + az0 * (f(1+0,0) + f(1+3,0) + f(1+6,0) + f(1+9,0));
+                moment_raw(1) = a * (-f(2+0,0) + f(2+3,0) + f(2+6,0) - f(2+9,0))
+                        - az0 * (f(0+0,0) + f(0+3,0) + f(0+6,0) + f(0+9,0));
+                moment_raw(2) = b * (-f(0+0,0) - f(0+3,0) + f(0+6,0) + f(0+9,0))
+                        + a * (f(1+0,0) - f(1+3,0) - f(1+6,0) + f(1+9,0));
+
+                ezc3d::Vector3d CoP_raw;
+                CoP_raw(0) = (-az0 * force_raw(0) - moment_raw(1)) / force_raw(2);
+                CoP_raw(1) = (-az0 * force_raw(1) + moment_raw(0)) / force_raw(2);
+                CoP_raw(2) = az0;
+
+                _CoP[cmp] = _refFrameCoPType6 * CoP_raw + _meanCorners;
+                _F[cmp] = _refFrame * force_raw;
+                _M[cmp] = _negativeRefFrame * moment_raw;
+
+                _Tz[cmp](2) = moment_raw(2)
+                        + force_raw(1) * (moment_raw(1) - az0 * force_raw(0)) / force_raw(2)
+                        + force_raw(0) * (moment_raw(0) + az0 * force_raw(1)) / force_raw(2);
+            }
+#endif
+            ++cmp;
         }
     }
     delete[] ch;

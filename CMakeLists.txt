@@ -62,6 +62,13 @@ option(USE_MATRIX_FAST_ACCESSOR
     ON
 )
 
+# Option to allow non c3d standard force platform
+option(ALLOW_EXOTIC_FORCE_PLATFORM
+    "Some force platform were removed from the standard, but can still be relevant (so far type 6).
+    If one wants to have these force platform available, this should be set to ON"
+    OFF
+)
+
 # Create the configuration header file associated with the asked options
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in
     ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h
