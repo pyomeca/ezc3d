@@ -24,9 +24,13 @@ So, without further ado, let's begin C3Ding!
 - [Python 3](#python-3)
 
 [How to contribute](#how-to-contribute)
+
 [Supported generated C3D](#supported-generated-c3d)
+
 [Documentation](#documentation)
+
 [Support](#support)
+
 [Cite](#cite)
 
 ## Headers
