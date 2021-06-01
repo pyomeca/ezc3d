@@ -1,4 +1,3 @@
-
 #include <vector>
 #include "ezc3d.h"
 #include "Header.h"

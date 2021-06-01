@@ -34,10 +34,10 @@ ezc3d::c3d::c3d():
     _filePath(""),
     m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
     m_nByteToReadMax_int(100) {
-    c_float = new char[m_nByteToRead_float + 1];
-    c_float_tp = new char[m_nByteToRead_float + 1];
-    c_int = new char[m_nByteToReadMax_int + 1];
-    c_int_tp = new char[m_nByteToReadMax_int + 1];
+    c_float = std::vector<char>(m_nByteToRead_float + 1);
+    c_float_tp = std::vector<char>(m_nByteToRead_float + 1);
+    c_int = std::vector<char>(m_nByteToReadMax_int + 1);
+    c_int_tp = std::vector<char>(m_nByteToReadMax_int + 1);
 
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
@@ -51,10 +51,10 @@ ezc3d::c3d::c3d(
     m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
     m_nByteToReadMax_int(100) {
     std::fstream stream(_filePath, std::ios::in | std::ios::binary);
-    c_float = new char[m_nByteToRead_float + 1];
-    c_float_tp = new char[m_nByteToRead_float + 1];
-    c_int = new char[m_nByteToReadMax_int + 1];
-    c_int_tp = new char[m_nByteToReadMax_int + 1];
+    c_float = std::vector<char>(m_nByteToRead_float + 1);
+    c_float_tp = std::vector<char>(m_nByteToRead_float + 1);
+    c_int = std::vector<char>(m_nByteToReadMax_int + 1);
+    c_int_tp = std::vector<char>(m_nByteToReadMax_int + 1);
 
     if (!stream.is_open())
         throw std::ios_base::failure("Could not open the c3d file");
@@ -78,13 +78,6 @@ ezc3d::c3d::c3d(
 
     // Close the file
     stream.close();
-}
-
-ezc3d::c3d::~c3d() {
-    delete c_float;
-    delete c_float_tp;
-    delete c_int;
-    delete c_int_tp;
 }
 
 void ezc3d::c3d::print() const {
@@ -121,27 +114,25 @@ void ezc3d::c3d::write(
 
 void ezc3d::c3d::resizeCharHolder(
         unsigned int nByteToRead) {
-    delete[] c_int;
-    delete[] c_int_tp;
     m_nByteToReadMax_int = nByteToRead;
-    c_int = new char[m_nByteToReadMax_int + 1];
-    c_int_tp = new char[m_nByteToReadMax_int + 1];
+    c_int = std::vector<char>(m_nByteToReadMax_int + 1);
+    c_int_tp = std::vector<char>(m_nByteToReadMax_int + 1);
 }
 
 void ezc3d::c3d::readFile(
         std::fstream &file,
         unsigned int nByteToRead,
-        char * c,
+        std::vector<char>& c,
         int nByteFromPrevious,
         const  std::ios_base::seekdir &pos) {
     if (pos != 1)
         file.seekg (nByteFromPrevious, pos); // Move to number analogs
-    file.read (c, nByteToRead);
+    file.read (&c[0], nByteToRead);
     c[nByteToRead] = '\0'; // Make sure last char is NULL
 }
 
 unsigned int ezc3d::c3d::hex2uint(
-        const char * val,
+        const std::vector<char>& val,
         unsigned int len) {
     int ret(0);
     for (unsigned int i = 0; i < len; i++)
@@ -151,7 +142,7 @@ unsigned int ezc3d::c3d::hex2uint(
 }
 
 int ezc3d::c3d::hex2int(
-        const char * val,
+        const std::vector<char>& val,
         unsigned int len) {
     unsigned int tp(hex2uint(val, len));
 
@@ -251,7 +242,7 @@ float ezc3d::c3d::readFloat(
     readFile(file, m_nByteToRead_float, c_float, nByteFromPrevious, pos);
     float out;
     if (processorType == PROCESSOR_TYPE::INTEL) {
-        out = *reinterpret_cast<float*>(c_float);
+        out = *reinterpret_cast<float*>(&c_float[0]);
     } else if (processorType == PROCESSOR_TYPE::DEC){
         c_float_tp[0] = c_float[2];
         c_float_tp[1] = c_float[3];
@@ -261,12 +252,12 @@ float ezc3d::c3d::readFloat(
         else
             c_float_tp[3] = c_float[1];
         c_float_tp[4] = '\0';
-        out = *reinterpret_cast<float*>(c_float_tp);
+        out = *reinterpret_cast<float*>(&c_float_tp[0]);
     } else if (processorType == PROCESSOR_TYPE::MIPS) {
         for (unsigned int i=0; i<m_nByteToRead_float; ++i)
             c_float_tp[i] = c_float[m_nByteToRead_float-1 - i];
         c_float_tp[m_nByteToRead_float] = '\0';
-        out = *reinterpret_cast<float*>(c_float_tp);
+        out = *reinterpret_cast<float*>(&c_float_tp[0]);
     } else {
         throw std::runtime_error("Wrong type of processor for floating points");
     }
@@ -281,10 +272,9 @@ std::string ezc3d::c3d::readString(
     if (nByteToRead > m_nByteToReadMax_int)
         resizeCharHolder(nByteToRead);
 
-    char* c = new char[nByteToRead + 1];
+    std::vector<char> c = std::vector<char>(nByteToRead + 1);
     readFile(file, nByteToRead, c, nByteFromPrevious, pos);
-    std::string out(c);
-    delete[] c;
+    std::string out(&c[0]);
     return out;
 }
 
