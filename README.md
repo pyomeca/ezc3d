@@ -172,6 +172,9 @@ c3d.write("path_to_c3d.c3d")
 ### Navigating through the C3D class
 The C3D class mimics the C3D structures as defined by the standard, that is separated into a `header`, a `parameters` and a `data` class. You can get a const-reference to these classes by simply calling their names (see below for more specific examples)
 
+### Copying the C3D class
+Please not that a copy of a c3d class will results in a shallow copy
+
 #### Get a value from the header 
 To retrieve some information from the header, just call the `header` class and then the specific information you are interested in. If for example, you want to get the frame rate of the cameras, you should do as follow:
 ```C++

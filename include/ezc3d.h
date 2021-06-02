@@ -163,6 +163,9 @@ namespace ezc3d {
 ///
 /// \brief Main class for C3D holder
 ///
+/// Please note that a copy of a C3D class is a shallow copy, thanks to the
+/// use of shared_ptr
+///
 class EZC3D_API ezc3d::c3d {
 protected:
     std::string _filePath; ///< The file path if the C3D was opened from a file
