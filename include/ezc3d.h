@@ -201,10 +201,10 @@ public:
 
 protected:
     // Internal reading and writting function
-    std::vector<char>(c_float); ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
-    std::vector<char>(c_float_tp); ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls (allow for copy of c_float)
-    std::vector<char>(c_int); ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls
-    std::vector<char>(c_int_tp); ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls  (allow for copy of c_int)
+    std::vector<char> c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
+    std::vector<char> c_float_tp; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls (allow for copy of c_float)
+    std::vector<char> c_int; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls
+    std::vector<char> c_int_tp; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls  (allow for copy of c_int)
     unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
     unsigned int m_nByteToReadMax_int; ///< Declaration of the max size of a int
 
