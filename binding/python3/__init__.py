@@ -278,8 +278,8 @@ class c3d(C3dMapper):
         param_ezc3d = ezc3d.Parameter(parameter_name, description)
         if isinstance(value, (list, tuple)):
             value = np.array(value)
-            if value.dtype == "int64":
-                value = value.astype(np.float)
+            if np.issubdtype(value.dtype, np.integer):
+                value = value.astype(np.float64)
 
         if isinstance(value, np.ndarray):
             param_ezc3d.set(value.reshape(-1, order="F"), value.shape)
