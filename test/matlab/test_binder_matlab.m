@@ -178,5 +178,64 @@ assert(sum(size(c3d_to_compare.data.analogs) == [analogFrameRate * nbSeconds, le
 assert(sum(sum(abs(c3d_to_compare.data.analogs - analogData) < 1e-6)) == analogFrameRate * nbSeconds * length(analogNames))
 fprintf('Done\n');
 
+% Test the event adder from a file which does not have event yet
+c3d = ezc3dRead('../c3dFiles/ezc3d-testFiles-master/ezc3d-testFiles-master/Optotrak.c3d');
+c3d = ezc3dAddEvent(c3d, [0, 0.1], 'Left', 'MyNewEvent', 'Hey! This is new!', 'Me', 2, 1);
+% Only one event
+ezc3dWrite('temporary.c3d', c3d);
+c3dToCompare = ezc3dRead('temporary.c3d');
+assert(c3dToCompare.parameters.EVENT.USED.DATA == 1)
+assert(sum(sum(abs(c3dToCompare.parameters.EVENT.TIMES.DATA - [0; 0.1]))) < 1e-5);
+assert(strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{1}, 'Left'));
+assert(strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{1}, 'MyNewEvent'));
+assert(strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{1}, 'Hey! This is new!'));
+assert(strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{1}, 'Me'));
+assert(sum(c3dToCompare.parameters.EVENT.ICON_IDS.DATA - 2) == 0);
+assert(sum(c3dToCompare.parameters.EVENT.GENERIC_FLAGS.DATA - 1) == 0);
+
+% More than one
+c3d = ezc3dAddEvent(c3d, [0, 0.2]);
+ezc3dWrite('temporary.c3d', c3d);
+c3dToCompare = ezc3dRead('temporary.c3d');
+assert(c3dToCompare.parameters.EVENT.USED.DATA == 2)
+assert(sum(sum(abs(c3dToCompare.parameters.EVENT.TIMES.DATA - [0 0; 0.1 0.2]))) < 1e-5);
+assert(strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{1}, 'Left'));
+assert(strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{2}, ''));
+assert(strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{1}, 'MyNewEvent'));
+assert(strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{2}, ''));
+assert(strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{1}, 'Hey! This is new!'));
+assert(strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{2}, ''));
+assert(strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{1}, 'Me'));
+assert(strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{2}, ''));
+assert(sum(c3dToCompare.parameters.EVENT.ICON_IDS.DATA - [2, 0]) == 0);
+assert(sum(c3dToCompare.parameters.EVENT.GENERIC_FLAGS.DATA - [1, 0]) == 0);
+
+% Add from a previously loaded file
+c3d = c3dToCompare;
+c3d = ezc3dAddEvent(c3d, [0, 0.3], 'Right', 'MySecondNewEvent', 'Hey! This is new again!', 'You', 3, 2);
+c3d = ezc3dAddEvent(c3d, [0, 0.4]);
+ezc3dWrite('temporary.c3d', c3d);
+c3dToCompare = ezc3dRead('temporary.c3d');
+assert(c3dToCompare.parameters.EVENT.USED.DATA == 4)
+assert(sum(sum(abs(c3dToCompare.parameters.EVENT.TIMES.DATA - [0 0 0 0; 0.1 0.2 0.3 0.4]))) < 1e-5);
+strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{1}, 'Left');
+strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{2}, '');
+strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{3}, 'Right');
+strcmp(c3dToCompare.parameters.EVENT.CONTEXTS.DATA{4}, '');
+strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{1}, 'MyNewEvent');
+strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{2}, '');
+strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{3}, 'MySecondNewEvent');
+strcmp(c3dToCompare.parameters.EVENT.LABELS.DATA{4}, '');
+strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{1}, 'Hey! This is new!');
+strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{2}, '');
+strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{3}, 'Hey! This is new again!');
+strcmp(c3dToCompare.parameters.EVENT.DESCRIPTIONS.DATA{4}, '');
+strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{1}, 'Me');
+strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{2}, '');
+strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{3}, 'Me');
+strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{4}, '');
+assert(sum(c3dToCompare.parameters.EVENT.ICON_IDS.DATA - [2, 0, 3, 0]) == 0);
+assert(sum(c3dToCompare.parameters.EVENT.GENERIC_FLAGS.DATA - [1, 0, 2, 0]) == 0);
+
 fprintf('\nMatlab tests successfully completed!\n')
 
