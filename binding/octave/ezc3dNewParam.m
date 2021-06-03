@@ -19,6 +19,8 @@ function out = ezc3dNewParam(data, description, is_locked)
             error('Parameters from a cell must a vector')
         end
         out.DATA = data;
+    elseif ischar(data)
+        out.DATA = {data};
     else
         out.DATA = data;
     end

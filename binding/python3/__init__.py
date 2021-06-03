@@ -1,4 +1,6 @@
+from typing import Union
 from collections.abc import Mapping, MutableMapping
+
 import numpy as np
 
 from . import ezc3d
@@ -257,11 +259,97 @@ class c3d(C3dMapper):
                 self._storage["platform"] = all_pf
             return
 
-    def add_parameter(self, group_name, parameter_name, value, description=""):
-        # Create the parameter properly using the ezc3d API
+    def add_parameter(
+        self,
+        group_name: str,
+        parameter_name: str,
+        value: Union[list, tuple, np.ndarray, int, float, str],
+        description: str = "",
+    ):
+        """
+        Create the parameter properly using the ezc3d API
+
+        :param group_name: The name of the group
+        :param parameter_name: The name of the parameter
+        :param value: The value the parameter takes
+        :param description: The description of the parameter
+        """
+
         param_ezc3d = ezc3d.Parameter(parameter_name, description)
-        param_ezc3d.set(value)
+        if isinstance(value, (list, tuple)):
+            value = np.array(value)
+            if np.issubdtype(value.dtype, np.integer):
+                value = value.astype(np.float64)
+
+        if isinstance(value, np.ndarray):
+            param_ezc3d.set(value.reshape(-1, order="F"), value.shape)
+        else:
+            param_ezc3d.set(value)
         self._storage["parameters"].add_parameter(group_name, param_ezc3d)
+
+    def add_event(
+        self,
+        time: (list, tuple),
+        context: str = "",
+        label: str = "",
+        description: str = "",
+        subject: str = "",
+        icon_id: int = 0,
+        generic_flag: int = 0,
+    ):
+        """
+        This function adds an event, warning two events can have the same name (it wont't override it)
+
+        :param time: A list for the time, first element is the time in minute (integer), second is the second (float)
+        :param context: The context (usually "Right", "Left" or "General")
+        :param label: The name of the event
+        :param description: The description of the event
+        :param subject: The subject the event is applied to. An empty string is generic or the only subject in the scene
+        :param icon_id: The ID of the icon of the event
+        :param generic_flag: A generic flag
+        """
+
+        if "EVENT" in self["parameters"]:
+            event_param = self["parameters"]["EVENT"]
+            used = event_param["USED"]["value"].tolist()[0]
+            times = event_param["TIMES"]["value"].tolist()
+            contexts = event_param["CONTEXTS"]["value"]
+            labels = event_param["LABELS"]["value"]
+            descriptions = event_param["DESCRIPTIONS"]["value"]
+            subjects = event_param["SUBJECTS"]["value"]
+            icon_ids = event_param["ICON_IDS"]["value"].tolist()
+            generic_flags = event_param["GENERIC_FLAGS"]["value"].tolist()
+        else:
+            used = 0
+            times = [[], []]
+            contexts = []
+            labels = []
+            descriptions = []
+            subjects = []
+            icon_ids = []
+            generic_flags = []
+
+        # Adjust the EVENT group
+        used += 1
+        times[0] += [time[0]]
+        times[1] += [time[1]]
+        times = np.array(times)
+        contexts += [context]
+        labels += [label]
+        descriptions += [description]
+        subjects += [subject]
+        icon_ids += [icon_id]
+        generic_flags += [generic_flag]
+
+        # Override the EVENT group
+        self.add_parameter("EVENT", "USED", used)
+        self.add_parameter("EVENT", "TIMES", times)
+        self.add_parameter("EVENT", "CONTEXTS", contexts)
+        self.add_parameter("EVENT", "LABELS", labels)
+        self.add_parameter("EVENT", "DESCRIPTIONS", descriptions)
+        self.add_parameter("EVENT", "SUBJECTS", subjects)
+        self.add_parameter("EVENT", "ICON_IDS", icon_ids)
+        self.add_parameter("EVENT", "GENERIC_FLAGS", generic_flags)
 
     def write(self, path):
         # Make sure path is a valid path

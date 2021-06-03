@@ -108,6 +108,8 @@ endif()
 # install utils
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ezc3dNewParam.m"
     DESTINATION "${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/ezc3dAddEvent.m"
+    DESTINATION "${Matlab_${EZC3D_NAME}_INSTALL_DIR}/${PROJECT_NAME}")
 
 
 
