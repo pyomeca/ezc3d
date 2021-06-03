@@ -13,11 +13,11 @@ from tkinter import messagebox
 
 class C3DData:
     """
-	Parameters:
-		FullPath:       String of the file path 
-	Return: 
-		GetC3DData:     c3d Object
-	"""
+    Parameters:
+            FullPath:       String of the file path
+    Return:
+            GetC3DData:     c3d Object
+    """
 
     def __init__(self, parent, fullPath):
 
