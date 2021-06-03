@@ -260,6 +260,38 @@ def test_create_and_read_c3d_with_nan():
     )
 
 
+def test_add_events():
+    # Add an event to a file that does not have any before
+    c3d = ezc3d.c3d("test/c3dTestFiles/Optotrak.c3d")
+    c3d.add_event([0, 0.1], label="MyNewEvent", context="Left", icon_id=2, subject="Me", description="Hey! This is new!", generic_flag=1)
+    c3d.add_event([0, 0.2])
+    c3d.write("temporary.c3d")
+    c3d_to_compare = ezc3d.c3d("temporary.c3d")
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["USED"]["value"][0], 2)
+    np.testing.assert_almost_equal(c3d_to_compare["parameters"]["EVENT"]["TIMES"]["value"], [[0., 0.], [0.1, 0.2]], decimal=6)
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["CONTEXTS"]["value"], ['Left', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["LABELS"]["value"], ['MyNewEvent', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["DESCRIPTIONS"]["value"], ['Hey! This is new!', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["SUBJECTS"]["value"], ['Me', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["ICON_IDS"]["value"], [2, 0])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["GENERIC_FLAGS"]["value"], [1, 0])
+
+    # Add an event to a file did have events before
+    c3d = c3d_to_compare
+    c3d.add_event([0, 0.3], label="MySecondNewEvent", context="Right", icon_id=3, subject="You", description="Hey! This is new again!", generic_flag=2)
+    c3d.add_event([0, 0.4])
+    c3d.write("temporary.c3d")
+    c3d_to_compare = ezc3d.c3d("temporary.c3d")
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["USED"]["value"][0], 4)
+    np.testing.assert_almost_equal(c3d_to_compare["parameters"]["EVENT"]["TIMES"]["value"], [[0., 0., 0., 0.], [0.1, 0.2, 0.3, 0.4]], decimal=6)
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["CONTEXTS"]["value"], ['Left', '', 'Right', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["LABELS"]["value"], ['MyNewEvent', '', 'MySecondNewEvent', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["DESCRIPTIONS"]["value"], ['Hey! This is new!', '', 'Hey! This is new again!', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["SUBJECTS"]["value"], ['Me', '', 'You', ''])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["ICON_IDS"]["value"], [2, 0, 3, 0])
+    np.testing.assert_equal(c3d_to_compare["parameters"]["EVENT"]["GENERIC_FLAGS"]["value"], [1, 0, 2, 0])
+
+
 def test_values():
     c3d = ezc3d.c3d("test/c3dTestFiles/Vicon.c3d")
     array = c3d["data"]["points"]
