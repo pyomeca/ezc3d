@@ -67,8 +67,7 @@ The building status for the current EZC3D branches is as follow
 
 | Name | Status |
 | --- | --- |
-| Stable | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=Stable)](https://travis-ci.org/pyomeca/ezc3d) |
-| Dev | [![Build Status](https://travis-ci.org/pyomeca/ezc3d.svg?branch=dev)](https://travis-ci.org/pyomeca/ezc3d) |
+| Dev | [![Build status](https://ci.appveyor.com/api/projects/status/cyiaxoflypuk4eb4/branch/dev?svg=true)](https://ci.appveyor.com/project/pariterre/ezc3d/branch/dev) |
 | Test coverage | [![codecov](https://codecov.io/gh/pyomeca/ezc3d/branch/dev/graph/badge.svg?token=fc2ZGOexD1)](https://codecov.io/gh/pyomeca/ezc3d) |
 | DOI | [![DOI](https://zenodo.org/badge/131555942.svg)](https://zenodo.org/badge/latestdoi/131555942) |
 
