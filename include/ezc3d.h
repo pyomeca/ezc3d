@@ -163,6 +163,9 @@ namespace ezc3d {
 ///
 /// \brief Main class for C3D holder
 ///
+/// Please note that a copy of a C3D class is a shallow copy, thanks to the
+/// use of shared_ptr
+///
 class EZC3D_API ezc3d::c3d {
 protected:
     std::string _filePath; ///< The file path if the C3D was opened from a file
@@ -179,12 +182,6 @@ public:
     /// \param filePath The file path of the C3D file
     ///
     c3d(const std::string &filePath);
-
-    ///
-    /// \brief Destroy the class properly
-    ///
-    virtual ~c3d();
-
 
     //---- STREAM ----//
 public:
@@ -204,10 +201,10 @@ public:
 
 protected:
     // Internal reading and writting function
-    char * c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
-    char * c_float_tp; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls (allow for copy of c_float)
-    char * c_int; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls
-    char * c_int_tp; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls  (allow for copy of c_int)
+    std::vector<char> c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls
+    std::vector<char> c_float_tp; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls (allow for copy of c_float)
+    std::vector<char> c_int; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls
+    std::vector<char> c_int_tp; ///< Char to be used by the read function with the specific size of a int preventing to allocate it at each calls  (allow for copy of c_int)
     unsigned int m_nByteToRead_float; ///< Declaration of the size of a float
     unsigned int m_nByteToReadMax_int; ///< Declaration of the max size of a int
 
@@ -228,7 +225,7 @@ protected:
     void readFile(
         std::fstream &file,
         unsigned int nByteToRead,
-        char * c,
+        std::vector<char>& c,
         int nByteFromPrevious = 0,
         const  std::ios_base::seekdir &pos = std::ios::cur);
 
@@ -238,7 +235,7 @@ protected:
     /// \param len The number of bytes of the val parameter
     /// \return The unsigned integer value
     ///
-    unsigned int hex2uint(const char * val, unsigned int len);
+    unsigned int hex2uint(const std::vector<char>& val, unsigned int len);
 
     ///
     /// \brief Convert an hexadecimal value to a integer
@@ -246,7 +243,7 @@ protected:
     /// \param len The number of bytes of the val parameter
     /// \return The integer value
     ///
-    int hex2int(const char * val, unsigned int len);
+    int hex2int(const std::vector<char>& val, unsigned int len);
 
     ///
     /// \brief Write the data_start parameter where demanded

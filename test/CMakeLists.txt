@@ -2,22 +2,31 @@ project(${EZC3D_NAME}_test)
 
 # Download gtest if necessary
 set(RELATIVE_PATH_TO_GTEST external/gtest)
-find_path(GTEST_INCLUDE_DIR gtest.h HINTS 
+find_path(GTEST_INCLUDE_DIR "gtest.h" HINTS
     "${CMAKE_CURRENT_SOURCE_DIR}/../${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest"
 )
 
-if((NOT GTEST_INCLUDE_DIR) OR (NOT EXISTS ${GTEST_INCLUDE_DIR}))
+if((NOT GTEST_INCLUDE_DIR) OR (NOT EXISTS "${GTEST_INCLUDE_DIR}"))
+    find_package(Git QUIET)
+    if (NOT GIT_FOUND)
+        message(FATAL_ERROR "Unable to find gtest and it could not be download since Git was not found!")
+    endif()
+
     # we couldn't find the header files for gtest or they don't exist
-    message("Unable to find gtest, try to automatically download it")
+    message("Unable to find gtest, I'll try to automatically download it")
 
     # we have a submodule setup for gtest, assume it is under external/gtest
     # now we need to clone this submodule
-    execute_process(COMMAND "git submodule update --init -- external/gtest"
-                    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init -- ${EZC3D_ROOT_FOLDER}/${RELATIVE_PATH_TO_GTEST}
+                    WORKING_DIRECTORY ${EZC3D_ROOT_FOLDER}
+                    RESULT_VARIABLE GIT_SUBMOD_RESULT)
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+        message(FATAL_ERROR "${GIT_EXECUTABLE} submodule update --init -- ${EZC3D_ROOT_FOLDER}/external/gtest failed, please checkout submodules manually")
+    endif()
 
-    find_path(GTEST_INCLUDE_DIR "gtest.h" HINTS 
-	    "${CMAKE_CURRENT_SOURCE_DIR}/../${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest"
-	)
+    find_path(GTEST_INCLUDE_DIR "gtest.h" HINTS
+        "${CMAKE_CURRENT_SOURCE_DIR}/../${RELATIVE_PATH_TO_GTEST}/googletest/include/gtest"
+    )
 endif()
 
 # Prevent overriding the parent project's compiler/linker
@@ -54,12 +63,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # Standard linking to gtest stuff.
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
     "gtest_main"
 )
 
 # Extra linking for the project.
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
     "${EZC3D_NAME}"
 )
 
@@ -71,8 +80,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
     set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../.travis/cmake)
 
     include(CodeCoverage)
-    setup_target_for_coverage(${EZC3D_NAME}_coverage 
-	    "${PROJECT_NAME}" "coverage")
+    setup_target_for_coverage(${EZC3D_NAME}_coverage
+            "${PROJECT_NAME}" "coverage")
 
     SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
     SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")

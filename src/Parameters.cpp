@@ -409,7 +409,10 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
     // Ensure that the right analog scale is in the file
     ezc3d::ParametersNS::GroupNS::Parameter analogScaleFactorParam;
     std::vector<double> analogScaleFactor;
-    if (params.group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
+    if (params.group("ANALOG").parameter("USED").valuesAsInt()[0] == 0){
+        analogScaleFactorParam.name("SCALE");
+    }
+    else if (params.group("ANALOG").parameter("SCALE").valuesAsDouble().size() > 0) {
         analogScaleFactorParam = params.group("ANALOG").parameter("SCALE");
         analogScaleFactor = params.group("ANALOG").parameter("SCALE").valuesAsDouble();
     }
