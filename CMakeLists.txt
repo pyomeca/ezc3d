@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 cmake_policy(SET CMP0048 NEW)
-project(ezc3d VERSION 1.4.3)
+project(ezc3d VERSION 1.4.4)
 set(EZC3D_NAME ${PROJECT_NAME})
+set(EZC3D_ROOT_FOLDER ${PROJECT_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(EZC3D_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -108,18 +109,23 @@ install(FILES "${EZC3D_BINARY_DIR}/include/ezc3dConfig.h"
 )
 
 # Prepare share
+if(WIN32 AND NOT CYGWIN)
+  set(CMAKE_SHARE_DIR CMake)
+else()
+  set(CMAKE_SHARE_DIR lib/cmake/${EZC3D_NAME})
+endif()
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     share/${PROJECT_NAME}Config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}/cmake
+    INSTALL_DESTINATION "${CMAKE_SHARE_DIR}"
     PATH_VARS
         CMAKE_INSTALL_PREFIX
 )
-install(EXPORT ezc3dTargets DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}/cmake)
-install(FILES 
+install(EXPORT ezc3dTargets DESTINATION "${CMAKE_SHARE_DIR}")
+install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    DESTINATION ${${PROJECT_NAME}_LIB_FOLDER}/cmake
+    DESTINATION "${CMAKE_SHARE_DIR}"
 )
 
 # uninstall target
@@ -139,7 +145,7 @@ add_subdirectory(binding)
 # Examples
 option(BUILD_EXAMPLE "Build a C++ example" ON)
 if (BUILD_EXAMPLE)
-	add_subdirectory(examples)
+    add_subdirectory(examples)
 endif()
 
 

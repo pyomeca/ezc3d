@@ -1,0 +1,105 @@
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Build worker image (VM template)
+image:
+  - Ubuntu2004
+  - Visual Studio 2019
+  - macos
+
+# set clone depth
+clone_depth: 5                      # clone entire repository history if not defined
+
+# There is no building process
+build: off
+
+# scripts that run after cloning repository
+install:
+  - sh: if [[ $CI_LINUX == true ]]; then sudo apt install lcov -y; fi
+  - sh: if [[ $CI_LINUX == true ]]; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 1000 --slave /usr/bin/g++ g++ /usr/bin/g++-9; fi
+  - sh: if [[ $CI_LINUX == true ]]; then wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh; bash miniconda.sh -b -p $HOME/miniconda; export PATH="$HOME/miniconda/bin:$PATH"; else curl https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -L -o miniconda.sh; bash miniconda.sh -b -p $HOME/miniconda; export PATH="$HOME/miniconda/bin:$PATH"; fi
+  - sh: hash -r
+  - sh: source activate
+  - cmd: SET MINICONDA_PATH="C:\\Miniconda38-x64"
+  - cmd: SET PATH=%MINICONDA_PATH%;%MINICONDA_PATH%"\\Scripts";%PATH%
+  - cmd: conda init cmd.exe
+  - conda config --set always_yes yes --set changeps1 no
+  - conda config --set auto_update_conda no
+  - conda update -q conda
+  - conda create -n ezc3d
+  - conda activate ezc3d
+  
+  # Set environment variables  
+  - sh: EZC3D_FOLDER=`pwd`
+  - sh: EZC3D_BUILD_FOLDER=$EZC3D_FOLDER/build
+  - sh: EZC3D_COVERAGE_BUILD_FOLDER=$EZC3D_FOLDER/build_coverage
+  - sh: EZC3D_COVERAGE_BUILD_FOLDER=$EZC3D_FOLDER/build_coverage  
+  - sh: CONDA_ENV_PATH=$HOME/miniconda/envs
+  - sh: if [[ $CI_LINUX == true ]]; then export CC=/usr/bin/gcc; fi
+  - sh: if [[ $CI_LINUX == true ]]; then export CXX=/usr/bin/g++; fi
+  - cmd: SET EZC3D_FOLDER=%cd%
+  - cmd: SET EZC3D_BUILD_FOLDER=%EZC3D_FOLDER%\\build
+  - cmd: SET CONDA_ENV_PATH=%MINICONDA_PATH%\\envs
+
+  # Setup the conda environment
+  - conda install git numpy pytest swig pkgconfig cmake -c conda-forge
+  - sh: conda install octave -cconda-forge
+  - cmd: conda install ninja -cconda-forge
+  - conda list
+
+
+test_script: 
+  ############################################################################
+  # Test the build
+  ############################################################################    
+  - sh: cd $EZC3D_FOLDER
+  - cmd: cd %EZC3D_FOLDER%
+  
+  # LINUX and MAC
+  - sh: mkdir -p $EZC3D_BUILD_FOLDER
+  - sh: cd $EZC3D_BUILD_FOLDER
+  - sh: cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH/ezc3d/ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=ON -DOctave_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=ON ..
+  - sh: make install
+  
+  # WINDOWS
+  - cmd: mkdir %EZC3D_BUILD_FOLDER%
+  - cmd: cd %EZC3D_BUILD_FOLDER%
+  - cmd: cmake -GNinja -DCMAKE_INSTALL_PREFIX=%CONDA_ENV_PATH%\\ezc3d -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=OFF -DBINDER_PYTHON3=ON ..
+  - cmd: cmake --build . --config Release --target install
+  
+  # Run the tests
+  - cd test
+  - cmd: xcopy ..\*.dll .
+  - cmd: xcopy ..\bin\*.dll .
+  - sh: ./ezc3d_test
+  - cmd: .\\ezc3d_test.exe
+  - cd ..
+  
+  # Test the python binder
+  - pytest -v --color=yes ../test/python3
+  
+  # Test the octave binder (LINUX and MAC)
+  - sh: cd $EZC3D_FOLDER/test/matlab
+  - sh: cp $HOME/ezc3d_octave/* .
+  - sh: octave test_binder_matlab.m
+  - sh: octave test_binder_matlab_force_platform.m
+  - sh: cd $EZC3D_BUILD_FOLDER
+  
+  
+  ############################################################################
+  # Code coverage  (on Linux)
+  ############################################################################  
+  - sh: if [[ $CI_LINUX == true ]]; then cd $EZC3D_FOLDER; mkdir $EZC3D_COVERAGE_BUILD_FOLDER; cd $EZC3D_COVERAGE_BUILD_FOLDER; fi
+  - sh: if [[ $CI_LINUX == true ]]; then cmake -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF ..; fi
+  - sh: if [[ $CI_LINUX == true ]]; then cp -r test/c3dTestFiles/ .; fi
+  - sh: if [[ $CI_LINUX == true ]]; then make ezc3d_coverage; fi
+  - sh: if [[ $CI_LINUX == true ]]; then cd $EZC3D_BUILD_FOLDER; fi  
+  
+  
+on_success:
+  # Uploading report to CodeCov
+  - sh: if [[ $CI_LINUX == true ]]; then cd $EZC3D_COVERAGE_BUILD_FOLDER; fi
+  - sh: if [[ $CI_LINUX == true ]]; then lcov --directory . --capture --output-file coverage.info; lcov --remove coverage.info '/usr/*' --output-file coverage.info; lcov --list coverage.info; bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"; fi
+  - sh: if [[ $CI_LINUX == true ]]; then cd $EZC3D_FOLDER; fi
+
