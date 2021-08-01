@@ -9,7 +9,7 @@ set(EZC3D_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(EZC3D_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(EZC3D_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
 # Set a default build type to 'Release' if none was specified
 IF(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -82,8 +82,9 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 
 # Install target
 if(WIN32)
-    set(${PROJECT_NAME}_LIB_FOLDER Lib)
-    set(${PROJECT_NAME}_BIN_FOLDER bin)
+# TODO GNU install dir or something like that
+    set(${PROJECT_NAME}_LIB_FOLDER ezc3d)
+    set(${PROJECT_NAME}_BIN_FOLDER ezc3d)
     set(${PROJECT_NAME}_INCLUDE_FOLDER include/${PROJECT_NAME})
 else()
     set(${PROJECT_NAME}_LIB_FOLDER lib/${PROJECT_NAME})

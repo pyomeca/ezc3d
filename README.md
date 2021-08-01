@@ -33,6 +33,11 @@ So, without further ado, let's begin C3Ding!
 
 [Cite](#cite)
 
+# MOVE TO ACCORDING POSITION LATER
+```powershell
+python .\setup.py develop -- -G"Visual Studio 16 2019" -A x64
+```
+
 ## Headers
 
 # How to install

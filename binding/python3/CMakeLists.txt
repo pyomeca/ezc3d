@@ -4,15 +4,21 @@ else()
     project(${EZC3D_NAME})
 endif()
 
-# Include python
-find_package(Python3 REQUIRED
-    COMPONENTS Interpreter Development NumPy
-)
-include_directories(${Python3_INCLUDE_DIRS})
+#set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+#set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "ezc3d")
+#include(InstallRequiredSystemLibraries)
 
-include_directories(${Python3_NumPy_INCLUDE_DIRS})
+# Include python
+#find_package(Python3 REQUIRED
+#    COMPONENTS Interpreter Development NumPy
+#)
+find_package(NumPy REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIR})
+
+include_directories(${NumPy_INCLUDE_DIRS})
 if(WIN32)
-    link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
+    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARY} DIRECTORY)
+    link_directories(${PYTHON_LIB_DIR})
 endif()
 
 # Add swig module
@@ -57,7 +63,8 @@ set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
 )
 
 # Define the python install folder
-set(PYTHON_INSTALL_PREFIX "${Python3_SITELIB}/${EZC3D_NAME}" CACHE PATH
+# TODO Dont break old usage
+set(PYTHON_INSTALL_PREFIX "ezc3d" CACHE PATH
     "Path where to install the python binder, default is $Python_LIB/site-package/ezc3d"
 )
 
@@ -69,6 +76,7 @@ INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${EZC3D_NAME}.py"
 INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
     DESTINATION "${PYTHON_INSTALL_PREFIX}"
 )
+
 
 # Create the version file
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in"
@@ -91,6 +99,6 @@ else()
     message( FATAL_ERROR "Swig must be version 3 or 4" )
 endif()
 # Install the library
-INSTALL(TARGETS ${PYTHON_PROJECT_NAME}
+INSTALL(TARGETS ${PYTHON_PROJECT_NAME} ${PROJECT_NAME}
     DESTINATION "${PYTHON_PROJECT_INSTALL_DESTINATION}"
 )
