@@ -4,21 +4,24 @@ else()
     project(${EZC3D_NAME})
 endif()
 
-#set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
-#set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "ezc3d")
-#include(InstallRequiredSystemLibraries)
+# include python
+if(SKBUILD)
+    find_package(NumPy REQUIRED)
+else()
+    find_package(Python3 REQUIRED
+        COMPONENTS Interpreter Development NumPy
+    )
+endif()
 
-# Include python
-#find_package(Python3 REQUIRED
-#    COMPONENTS Interpreter Development NumPy
-#)
-find_package(NumPy REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIR})
-
 include_directories(${NumPy_INCLUDE_DIRS})
 if(WIN32)
-    get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARY} DIRECTORY)
-    link_directories(${PYTHON_LIB_DIR})
+    if(SKBUILD)
+        get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARY} DIRECTORY)
+        link_directories(${PYTHON_LIB_DIR})
+    else()
+        link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
+    endif()
 endif()
 
 # Add swig module
@@ -104,6 +107,6 @@ else()
     message( FATAL_ERROR "Swig must be version 3 or 4" )
 endif()
 # Install the library
-INSTALL(TARGETS ${PYTHON_PROJECT_NAME} ${PROJECT_NAME}
+INSTALL(TARGETS ${PYTHON_PROJECT_NAME}
     DESTINATION "${PYTHON_PROJECT_INSTALL_DESTINATION}"
 )
