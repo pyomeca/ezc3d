@@ -33,11 +33,6 @@ So, without further ado, let's begin C3Ding!
 
 [Cite](#cite)
 
-# MOVE TO ACCORDING POSITION LATER
-```powershell
-python .\setup.py develop -- -G"Visual Studio 16 2019" -A x64
-```
-
 ## Headers
 
 # How to install
@@ -75,6 +70,14 @@ The building status for the current EZC3D branches is as follow
 | Dev | [![Build status](https://ci.appveyor.com/api/projects/status/cyiaxoflypuk4eb4/branch/dev?svg=true)](https://ci.appveyor.com/project/pariterre/ezc3d/branch/dev) |
 | Test coverage | [![codecov](https://codecov.io/gh/pyomeca/ezc3d/branch/dev/graph/badge.svg?token=fc2ZGOexD1)](https://codecov.io/gh/pyomeca/ezc3d) |
 | DOI | [![DOI](https://zenodo.org/badge/131555942.svg)](https://zenodo.org/badge/latestdoi/131555942) |
+
+## Compile via `setup.py`
+This way of "installing" is mostly for convenience when developing on ezc3d and the python-wrapper. It is **not** recommended for normal usage. Refer to [Anaconda](#anaconda-for-windows-linux-and-mac) for that.
+
+The call is similar to the following (example for windows). (`pip install` is **not** supported)
+```powershell
+python .\setup.py develop -- -G"Visual Studio 16 2019" -A x64 -DSWIG_EXECUTABLE="D:/swigwin-4.0.2/swig.exe" -DSWIG_DIR="D:/swigwin-4.0.2/Lib"
+```
 
 ### Dependencies
 EZC3D does not rely on any external dependency. However, it comes in the form of a CMake (https://cmake.org/) project. Consequently, CMake must be installed on your computer to compile EZC3D. It can be installed from the official website or by Anaconda using the following command:

@@ -12,8 +12,6 @@ setup(
     cmake_args=[
         '-DBUILD_EXAMPLE:BOOL=OFF',
         '-DBINDER_PYTHON3:BOOL=ON',
-        R"-DSWIG_DIR=D:\KleineProjekte\ezc3d\swigwin-4.0.2\Lib",
-        R"-DSWIG_EXECUTABLE=D:\KleineProjekte\ezc3d\swigwin-4.0.2\swig.exe",
         '-DCMAKE_INSTALL_BINDIR="ezc3d"',
         '-Dezc3d_BIN_FOLDER=ezc3d',
         '-Dezc3d_LIB_FOLDER=ezc3d'
