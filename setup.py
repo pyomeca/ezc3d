@@ -1,6 +1,5 @@
 from skbuild import setup
 
-# TODO Move swig stuff to command line
 setup(
     # NOTE: Could still add stuff like homepage or author mail, but since this isn't used to redistribute, not important
     name="ezc3d",
