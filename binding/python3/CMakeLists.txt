@@ -62,11 +62,16 @@ set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
     INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
-# Define the python install folder
-# TODO Dont break old usage
-set(PYTHON_INSTALL_PREFIX "ezc3d" CACHE PATH
+# Define the python install 
+if(SKBUILD)
+    set(PYTHON_INSTALL_PREFIX "ezc3d" CACHE PATH
     "Path where to install the python binder, default is $Python_LIB/site-package/ezc3d"
-)
+    )
+else()
+    set(PYTHON_INSTALL_PREFIX "${Python3_SITELIB}/${EZC3D_NAME}" CACHE PATH
+        "Path where to install the python binder, default is $Python_LIB/site-package/ezc3d"
+    )
+endif()
 
 # Install to the proper directories
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${EZC3D_NAME}.py"
