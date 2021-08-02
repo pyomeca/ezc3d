@@ -7,14 +7,16 @@ endif()
 # include python
 if(SKBUILD)
     find_package(NumPy REQUIRED)
+    include_directories(${PYTHON_INCLUDE_DIR})
+    include_directories(${NumPy_INCLUDE_DIRS})
 else()
     find_package(Python3 REQUIRED
         COMPONENTS Interpreter Development NumPy
     )
+    include_directories(${Python3_INCLUDE_DIRS})
+    include_directories(${Python3_NumPy_INCLUDE_DIRS})
 endif()
 
-include_directories(${PYTHON_INCLUDE_DIR})
-include_directories(${NumPy_INCLUDE_DIRS})
 if(WIN32)
     if(SKBUILD)
         get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARY} DIRECTORY)
