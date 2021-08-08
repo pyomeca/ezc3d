@@ -567,22 +567,8 @@ class c3d(C3dMapper):
         for i in range(nb_analog_subframes):
             analogs.subframe(subframe)
 
-        # Fill the data
-        for f in range(nb_frames):
-            for i in range(nb_points):
-                pt.set(data_points[0, i, f], data_points[1, i, f], data_points[2, i, f])
-                pt.residual(data_meta_points["residuals"][0, i, f])
-                pt.cameraMask(data_meta_points["camera_masks"][:, i, f].tolist())
-                pts.point(pt, i)
-
-            for sf in range(nb_analog_subframes):
-                for i in range(nb_analogs):
-                    c.data(data_analogs[0, i, nb_analog_subframes * f + sf])
-                    subframe.channel(c, i)
-                analogs.subframe(subframe, sf)
-            frame = ezc3d.Frame()
-            frame.add(pts, analogs)
-            new_c3d.frame(frame)
+        # # Fill the data
+        new_c3d.numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
 
         # Write the file
         new_c3d.write(path)
