@@ -171,7 +171,7 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 %}
 
 %inline %{
-    void _numpy_data(ezc3d::c3d *self, PyArrayObject *pointsData, PyArrayObject *residualsData, PyArrayObject* cameraMasksData, PyArrayObject *analogData){
+    void _import_numpy_data(ezc3d::c3d *self, PyArrayObject *pointsData, PyArrayObject *residualsData, PyArrayObject* cameraMasksData, PyArrayObject *analogData){
         const size_t nbFrames = PyArray_DIM(pointsData, 2);
         const size_t nbPoints = PyArray_DIM(pointsData, 1);
         const size_t nbAnalog = PyArray_DIM(analogData, 1);
@@ -226,12 +226,12 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 {
 
     // Extend c3d class to "import" data from numpy-arrays into object efficiently
-    void numpy_data(PyObject *pointsData, PyObject *residualsData, PyObject *cameraMasksData, PyObject *analogData){
+    void import_numpy_data(PyObject *pointsData, PyObject *residualsData, PyObject *cameraMasksData, PyObject *analogData){
         PyArrayObject *pointsDataArr = helper_getPyArrayObject(pointsData, NPY_DOUBLE);
         PyArrayObject *residualsDataArr = helper_getPyArrayObject(residualsData, NPY_DOUBLE);
         PyArrayObject *cameraMasksDataArr = helper_getPyArrayObject(cameraMasksData, NPY_DOUBLE);
         PyArrayObject *analogDataArr = helper_getPyArrayObject(analogData, NPY_DOUBLE);
-        _numpy_data(self, pointsDataArr, residualsDataArr, cameraMasksDataArr, analogDataArr);
+        _import_numpy_data(self, pointsDataArr, residualsDataArr, cameraMasksDataArr, analogDataArr);
     }
 
     // Extend c3d class to get an easy accessor to data points
