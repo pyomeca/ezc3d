@@ -513,17 +513,23 @@ void ezc3d::c3d::frame(
                 "Number of points in POINT:USED parameter must equal"
                 "the number of points sent in the frame");
 
-    // Can I delete this?
-    //    std::vector<std::string> labels(parameters().group("POINT")
-    //                                    .parameter("LABELS").valuesAsString());
-    //    for (size_t i=0; i<labels.size(); ++i)
-    //        try {
-    //            pointIdx(labels[i]);
-    //        } catch (std::invalid_argument) {
-    //            throw std::invalid_argument(
-    //                    "All the points in the frame must appear "
-    //                    "in the POINT:LABELS parameter");
-    //        }
+    std::vector<std::string> labels(parameters().group("POINT")
+                                .parameter("LABELS").valuesAsString());
+    try {
+        // Check if all the labels are in the actual LABELSX parameter
+        const std::vector<std::string> &namesParameter(pointNames());
+        for (size_t i=0; i<labels.size(); ++i){
+            for (size_t i = 0; i < namesParameter.size(); ++i){
+                if (!namesParameter[i].compare(labels[i])){
+                    break;
+                }
+            }
+        }
+    } catch (std::invalid_argument) {
+        throw std::invalid_argument(
+                "All the points in the frame must appear "
+                "in the POINT:LABELS parameter");
+    }
 
     if (f.points().nbPoints() > 0
             && parameters().group("POINT")
