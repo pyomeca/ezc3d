@@ -8,6 +8,7 @@
 %}
 
 %include "numpy.i"
+%fragment("NumPy_Fragments");
 %init %{
     import_array();
 %}
@@ -147,8 +148,92 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
 }
 %}
 
+%inline %{
+PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
+  PyArrayObject *obj;
+
+  if (PyArray_Check( input )) {
+    obj = (PyArrayObject *) input;
+    // RO - read-only
+    if (!PyArray_ISBEHAVED_RO( obj )) {
+      PyErr_SetString( PyExc_TypeError, "not algned or not in machine byte order" );
+      return NULL;
+    }
+    int conversion_done = 0;
+    obj = (PyArrayObject *) obj_to_array_allow_conversion( input, type, &conversion_done );
+    if (!obj) return NULL;
+  } else {
+    PyErr_SetString( PyExc_TypeError, "not an array" );
+    return NULL;
+  }
+  return obj;
+}
+%}
+
+%inline %{
+    void _import_numpy_data(ezc3d::c3d *self, PyArrayObject *pointsData, PyArrayObject *residualsData, PyArrayObject* cameraMasksData, PyArrayObject *analogData){
+        const size_t nbFrames = PyArray_DIM(pointsData, 2);
+        const size_t nbPoints = PyArray_DIM(pointsData, 1);
+        const size_t nbAnalog = PyArray_DIM(analogData, 1);
+        const size_t nbAnalogFrames = PyArray_DIM(analogData, 2);
+        const size_t nbAnalogSubframes = nbAnalogFrames / nbFrames;
+
+        ezc3d::DataNS::Points3dNS::Points pts;
+        ezc3d::DataNS::Points3dNS::Point pt;
+
+        ezc3d::DataNS::AnalogsNS::Channel c;
+        ezc3d::DataNS::AnalogsNS::SubFrame subframe;
+        ezc3d::DataNS::AnalogsNS::Analogs analogs;
+
+        ezc3d::DataNS::Frame currFrame;
+
+        for(size_t f = 0; f < nbFrames; ++f){
+            for(size_t i = 0; i < nbPoints; ++i){
+                const double x = *static_cast<double*>(PyArray_GETPTR3(pointsData, 0, i, f));
+                const double y = *static_cast<double*>(PyArray_GETPTR3(pointsData, 1, i, f));
+                const double z = *static_cast<double*>(PyArray_GETPTR3(pointsData, 2, i, f));
+                pt.set(x, y, z);
+
+                const double res = *static_cast<double*>(PyArray_GETPTR3(residualsData, 0, i, f));
+                pt.residual(res);
+
+                std::vector<bool> cameraMask;
+                for(int j = 0; j < 7; ++j){
+                    const int cam = *static_cast<int*>(PyArray_GETPTR3(cameraMasksData, j, i, f));
+                    cameraMask.push_back(cam != 0);
+                }   
+
+                pt.cameraMask(cameraMask);
+                pts.point(pt, i);
+            }
+
+            for(size_t sf = 0; sf < nbAnalogSubframes; ++sf){
+                for(size_t i = 0; i < nbAnalog; ++i){
+                    double data = *static_cast<double*>(PyArray_GETPTR3(analogData, 0, i, nbAnalogSubframes * f + sf));
+                    c.data(data);
+                    subframe.channel(c, i);
+                }
+                analogs.subframe(subframe, sf);
+            }
+
+            currFrame.add(pts, analogs);
+            self->frame(currFrame);
+        }
+    }
+%}
+
 %extend ezc3d::c3d
 {
+
+    // Extend c3d class to "import" data from numpy-arrays into object efficiently
+    void import_numpy_data(PyObject *pointsData, PyObject *residualsData, PyObject *cameraMasksData, PyObject *analogData){
+        PyArrayObject *pointsDataArr = helper_getPyArrayObject(pointsData, NPY_DOUBLE);
+        PyArrayObject *residualsDataArr = helper_getPyArrayObject(residualsData, NPY_DOUBLE);
+        PyArrayObject *cameraMasksDataArr = helper_getPyArrayObject(cameraMasksData, NPY_DOUBLE);
+        PyArrayObject *analogDataArr = helper_getPyArrayObject(analogData, NPY_DOUBLE);
+        _import_numpy_data(self, pointsDataArr, residualsDataArr, cameraMasksDataArr, analogDataArr);
+    }
+
     // Extend c3d class to get an easy accessor to data points
     PyObject * get_points(){
         std::vector<int> points;

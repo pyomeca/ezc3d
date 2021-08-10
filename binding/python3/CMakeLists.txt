@@ -40,7 +40,6 @@ SWIG_ADD_LIBRARY(${PROJECT_NAME}
 )
 swig_link_libraries(${PROJECT_NAME}
     "${EZC3D_NAME}"
-    "${Python3_LIBRARIES}"
 )
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
