@@ -589,7 +589,7 @@ class c3d(C3dMapper):
             analogs.subframe(subframe)
 
         # # Fill the data
-        new_c3d.numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
+        new_c3d.import_numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
 
         # Write the file
         new_c3d.write(path)
