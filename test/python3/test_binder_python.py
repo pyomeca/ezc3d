@@ -108,6 +108,7 @@ def test_deepcopy():
     point_frame_rate = 100
     n_second = 2
     points = np.random.rand(4, len(point_names), point_frame_rate * n_second)
+    points[3, :, :] = 1
 
     analog_names = ("analog1", "analog2", "analog3", "analog4", "analog5", "analog6")
     analog_frame_rate = 1000
@@ -135,7 +136,7 @@ def test_deepcopy():
     # Change some of its values
     change_new_group_param = ("NewGroup", "newGroupParam", ["MyParam3", "MyParam4"])
     c3d_deepcopied.add_parameter(change_new_group_param[0], change_new_group_param[1], change_new_group_param[2])
-    c3d_deepcopied["data"]["points"][:, :] = 0
+    c3d_deepcopied["data"]["points"][:3, :, :] = 0
 
     # Write the new file and read it back
     c3d_deepcopied.write("temporary.c3d")
@@ -146,8 +147,14 @@ def test_deepcopy():
     assert c3d_deepcopied["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam3", "MyParam4"]
     assert c3d_loaded["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam3", "MyParam4"]
 
-    np.testing.assert_almost_equal(c3d["data"]["points"] - c3d_deepcopied["data"]["points"], c3d["data"]["points"])
-    np.testing.assert_almost_equal(c3d["data"]["points"] - c3d_loaded["data"]["points"], c3d["data"]["points"])
+    np.testing.assert_almost_equal(
+        c3d["data"]["points"][:3, :, :] - c3d_deepcopied["data"]["points"][:3, :, :], c3d["data"]["points"][:3, :, :]
+    )
+    np.testing.assert_almost_equal(c3d["data"]["points"][3, :, :], c3d_deepcopied["data"]["points"][3, :, :])
+    np.testing.assert_almost_equal(
+        c3d["data"]["points"][:3, :, :] - c3d_loaded["data"]["points"][:3, :, :], c3d["data"]["points"][:3, :, :]
+    )
+    np.testing.assert_almost_equal(c3d["data"]["points"][3, :, :], c3d_loaded["data"]["points"][3, :, :])
 
 
 def test_create_and_read_c3d():
