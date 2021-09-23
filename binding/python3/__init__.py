@@ -1,5 +1,6 @@
 from typing import Union
 from collections.abc import Mapping, MutableMapping
+from copy import deepcopy
 
 import numpy as np
 
@@ -133,10 +134,22 @@ class c3d(C3dMapper):
         return
 
     def __deepcopy__(self, memodict={}):
+        # Create a valid structure
         new = c3d()
-        new._storage["header"] = c3d.Header(self.c3d_swig.header())
-        new._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
-        new._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
+        new.extract_forceplat_data = self.extract_forceplat_data
+        new._storage["header"] = c3d.Header(new.c3d_swig.header())
+        new._storage["parameters"] = c3d.Parameter(new.c3d_swig.parameters())
+        new._storage["data"] = c3d.Data(new.c3d_swig, new.extract_forceplat_data)
+
+        # Update the structure with a copy of all data
+        for header_key in self["header"]:
+            for value_key in self["header"][header_key]:
+                new["header"][header_key][value_key] = deepcopy(self["header"][header_key][value_key])
+        for group_key in self["parameters"]:
+            new["parameters"][group_key] = deepcopy(self["parameters"][group_key])
+        for data_key in self["data"]:
+            new["data"][data_key] = deepcopy(self["data"][data_key])
+
         return new
 
     class Header(C3dMapper):
@@ -576,7 +589,7 @@ class c3d(C3dMapper):
             analogs.subframe(subframe)
 
         # # Fill the data
-        new_c3d.import_numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
+        new_c3d.numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
 
         # Write the file
         new_c3d.write(path)

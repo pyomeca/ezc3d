@@ -2,6 +2,7 @@
 Test for file IO
 """
 from pathlib import Path
+from copy import deepcopy
 
 import numpy as np
 import pytest
@@ -96,6 +97,57 @@ def test_create_c3d():
     # Test the data
     assert c3d["data"]["points"].shape == (4, 0, 0)
     assert c3d["data"]["analogs"].shape == (1, 0, 0)
+
+
+def test_deepcopy():
+    # Load an empty c3d structure
+    c3d = ezc3d.c3d()
+
+    # Fill it with random data
+    point_names = ("point1", "point2", "point3", "point4", "point5")
+    point_frame_rate = 100
+    n_second = 2
+    points = np.random.rand(4, len(point_names), point_frame_rate * n_second)
+
+    analog_names = ("analog1", "analog2", "analog3", "analog4", "analog5", "analog6")
+    analog_frame_rate = 1000
+    analogs = np.random.rand(1, len(analog_names), analog_frame_rate * n_second)
+
+    c3d["parameters"]["POINT"]["RATE"]["value"] = [100]
+    c3d["parameters"]["POINT"]["LABELS"]["value"] = point_names
+    c3d["data"]["points"] = points
+
+    c3d["parameters"]["ANALOG"]["RATE"]["value"] = [1000]
+    c3d["parameters"]["ANALOG"]["LABELS"]["value"] = analog_names
+    c3d["data"]["analogs"] = analogs
+
+    # Add a custom parameter to the POINT group
+    point_new_param = ("POINT", "newPointParam", (1.0, 2.0, 3.0))
+    c3d.add_parameter(point_new_param[0], point_new_param[1], point_new_param[2])
+
+    # Add a custom parameter a new group
+    new_group_param = ("NewGroup", "newGroupParam", ["MyParam1", "MyParam2"])
+    c3d.add_parameter(new_group_param[0], new_group_param[1], new_group_param[2])
+
+    # Deepcopy the c3d
+    c3d_deepcopied = deepcopy(c3d)
+
+    # Change some of its values
+    change_new_group_param = ("NewGroup", "newGroupParam", ["MyParam3", "MyParam4"])
+    c3d_deepcopied.add_parameter(change_new_group_param[0], change_new_group_param[1], change_new_group_param[2])
+    c3d_deepcopied["data"]["points"][:, :] = 0
+
+    # Write the new file and read it back
+    c3d_deepcopied.write("temporary.c3d")
+    c3d_loaded = ezc3d.c3d("temporary.c3d")
+
+    # Check that the new value changed, but not the old one
+    assert c3d["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam1", "MyParam2"]
+    assert c3d_deepcopied["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam3", "MyParam4"]
+    assert c3d_loaded["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam3", "MyParam4"]
+
+    np.testing.assert_almost_equal(c3d["data"]["points"] - c3d_deepcopied["data"]["points"], c3d["data"]["points"])
+    np.testing.assert_almost_equal(c3d["data"]["points"] - c3d_loaded["data"]["points"], c3d["data"]["points"])
 
 
 def test_create_and_read_c3d():
