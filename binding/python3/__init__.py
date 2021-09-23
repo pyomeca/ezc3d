@@ -126,10 +126,18 @@ class c3d(C3dMapper):
         else:
             self.c3d_swig = ezc3d.c3d(path)
 
+        self.extract_forceplat_data = extract_forceplat_data
         self._storage["header"] = c3d.Header(self.c3d_swig.header())
         self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
-        self._storage["data"] = c3d.Data(self.c3d_swig, extract_forceplat_data)
+        self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
+
+    def __deepcopy__(self, memodict={}):
+        new = c3d()
+        new._storage["header"] = c3d.Header(self.c3d_swig.header())
+        new._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
+        new._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
+        return new
 
     class Header(C3dMapper):
         def __init__(self, swig_header):
