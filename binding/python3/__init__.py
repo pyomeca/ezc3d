@@ -1,5 +1,6 @@
 from typing import Union
 from collections.abc import Mapping, MutableMapping
+from copy import deepcopy
 
 import numpy as np
 
@@ -126,10 +127,30 @@ class c3d(C3dMapper):
         else:
             self.c3d_swig = ezc3d.c3d(path)
 
+        self.extract_forceplat_data = extract_forceplat_data
         self._storage["header"] = c3d.Header(self.c3d_swig.header())
         self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
-        self._storage["data"] = c3d.Data(self.c3d_swig, extract_forceplat_data)
+        self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
+
+    def __deepcopy__(self, memodict={}):
+        # Create a valid structure
+        new = c3d()
+        new.extract_forceplat_data = self.extract_forceplat_data
+        new._storage["header"] = c3d.Header(new.c3d_swig.header())
+        new._storage["parameters"] = c3d.Parameter(new.c3d_swig.parameters())
+        new._storage["data"] = c3d.Data(new.c3d_swig, new.extract_forceplat_data)
+
+        # Update the structure with a copy of all data
+        for header_key in self["header"]:
+            for value_key in self["header"][header_key]:
+                new["header"][header_key][value_key] = deepcopy(self["header"][header_key][value_key])
+        for group_key in self["parameters"]:
+            new["parameters"][group_key] = deepcopy(self["parameters"][group_key])
+        for data_key in self["data"]:
+            new["data"][data_key] = deepcopy(self["data"][data_key])
+
+        return new
 
     class Header(C3dMapper):
         def __init__(self, swig_header):
