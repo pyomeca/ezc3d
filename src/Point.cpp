@@ -63,7 +63,7 @@ void ezc3d::DataNS::Points3dNS::Point::write(
     }
     else {
         float zero(0);
-        int minusOne(-1);
+        int minusOne(-16512); // 0xbf80 - 0xFFFF - 1   This is the Qualisys and Vicon value for missing marker);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
