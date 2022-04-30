@@ -30,9 +30,6 @@ ezc3d::DataNS::RotationNS::Rotations::Rotations(
     if (!group.isParameter("DATA_START")){
         throw std::runtime_error("DATA_START is not present in ROTATION.");
     }
-    if (!group.isParameter("FRAMES")){
-        throw std::runtime_error("FRAMES is not present in ROTATION.");
-    }
     if (!group.isParameter("RATIO") && !group.isParameter("RATE")){
         throw std::runtime_error("RATIO or RATE must be present in ROTATION.");
     }
@@ -41,15 +38,14 @@ ezc3d::DataNS::RotationNS::Rotations::Rotations(
     }
 
     // Prepare the reading
-    group.isParameter("DATA_START");
-    file.seekg(static_cast<int>(c3d.header().dataStart()-1)*512, std::ios::beg);
+    file.seekg(static_cast<int>(group.parameter("DATA_START").valuesAsInt()[0]-1)*512, std::ios::beg);
     PROCESSOR_TYPE processorType(c3d.parameters().processorType());
 
     std::vector<std::string> names = c3d.parameters()
             .group("ROTATION").parameter("LABELS").valuesAsString();
     int ratio = group.isParameter("RATIO") ?
-                group.isParameter("RATIO") :
-                group.isParameter("RATE") / c3d.header().frameRate();
+                group.parameter("RATIO").valuesAsInt()[0] :
+                group.parameter("RATE").valuesAsDouble()[0] / c3d.header().frameRate();
     _nbRotations = group.parameter("USED").valuesAsInt()[0];
     size_t nbFrames = c3d.header().nbFrames() * ratio;
 
@@ -79,14 +75,14 @@ ezc3d::DataNS::RotationNS::Rotations::Rotations(
             double elem13 = c3d.readFloat(processorType, file);
             double elem23 = c3d.readFloat(processorType, file);
             double elem33 = c3d.readFloat(processorType, file);
-            double residual = c3d.readFloat(processorType, file);
+            double reliability = c3d.readFloat(processorType, file);
 
             _rotations[j][i] = ezc3d::DataNS::RotationNS::Rotation(
                         elem00, elem01, elem02, elem03,
                         elem10, elem11, elem12, elem13,
                         elem20, elem21, elem22, elem23,
                         elem30, elem31, elem32, elem33,
-                        residual);
+                        reliability);
 
         }
     }

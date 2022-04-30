@@ -338,7 +338,7 @@ void ezc3d::Header::hasRotationalData(bool value)
 }
 
 size_t ezc3d::Header::nbFrames() const {
-    if (nb3dPoints() == 0 && nbAnalogs() == 0)
+    if (nb3dPoints() == 0 && nbAnalogs() == 0 && !hasRotationalData())
         return 0;
     else
         return _lastFrame - _firstFrame + 1;

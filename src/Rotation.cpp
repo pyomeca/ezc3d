@@ -13,7 +13,7 @@
 
 ezc3d::DataNS::RotationNS::Rotation::Rotation() :
     ezc3d::Matrix44(),
-    _residual(-1)
+    _reliability(-1)
 {
 
 }
@@ -23,12 +23,12 @@ ezc3d::DataNS::RotationNS::Rotation::Rotation(
         double elem10, double elem11, double elem12, double elem13,
         double elem20, double elem21, double elem22, double elem23,
         double elem30, double elem31, double elem32, double elem33,
-        double residual):
+        double reliability):
     ezc3d::Matrix44(elem00, elem01, elem02, elem03,
                     elem10, elem11, elem12, elem13,
                     elem20, elem21, elem22, elem23,
                     elem30, elem31, elem32, elem33),
-    _residual(residual)
+    _reliability(reliability)
 {
 
 }
@@ -37,18 +37,18 @@ ezc3d::DataNS::RotationNS::Rotation::Rotation(
         const ezc3d::DataNS::RotationNS::Rotation &r) :
     ezc3d::Matrix44(r)
 {
-    residual(r.residual());
+    reliability(r.reliability());
 }
 
 void ezc3d::DataNS::RotationNS::Rotation::print() const {
     ezc3d::Matrix44::print();
-    std::cout << "Residual = " << residual() << std::endl;
+    std::cout << "Reliability = " << reliability() << std::endl;
 }
 
 void ezc3d::DataNS::RotationNS::Rotation::write(
         std::fstream &f,
         float scaleFactor) const {
-//    if (residual() >= 0){
+//    if (reliability() >= 0){
 //        for (size_t i = 0; i<size(); ++i) {
 //            float data(static_cast<float>(_data[i]));
 //            f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
@@ -65,8 +65,8 @@ void ezc3d::DataNS::RotationNS::Rotation::write(
 //        cameraMasksBits[7] = 0;
 //        size_t cameraMasks(cameraMasksBits.to_ulong());
 //        f.write(reinterpret_cast<const char*>(&cameraMasks), ezc3d::DATA_TYPE::WORD);
-//        int residual(static_cast<int>(_residual / fabsf(scaleFactor)));
-//        f.write(reinterpret_cast<const char*>(&residual), ezc3d::DATA_TYPE::WORD);
+//        int reliability(static_cast<int>(_reliability / fabsf(scaleFactor)));
+//        f.write(reinterpret_cast<const char*>(&reliability), ezc3d::DATA_TYPE::WORD);
 //    }
 //    else {
 //        float zero(0);
@@ -84,14 +84,14 @@ void ezc3d::DataNS::RotationNS::Rotation::set(
         double elem10, double elem11, double elem12, double elem13,
         double elem20, double elem21, double elem22, double elem23,
         double elem30, double elem31, double elem32, double elem33,
-        double residual)
+        double reliability)
 {
     ezc3d::Matrix44::set(
         elem00, elem01, elem02, elem03,
         elem10, elem11, elem12, elem13,
         elem20, elem21, elem22, elem23,
         elem30, elem31, elem32, elem33);
-    _residual = residual;
+    _reliability = reliability;
 }
 
 void ezc3d::DataNS::RotationNS::Rotation::set(
@@ -105,14 +105,19 @@ void ezc3d::DataNS::RotationNS::Rotation::set(
         elem10, elem11, elem12, elem13,
         elem20, elem21, elem22, elem23,
         elem30, elem31, elem32, elem33);
-    residual(0);
+    reliability(0);
 }
 
-double ezc3d::DataNS::RotationNS::Rotation::residual() const {
-    return _residual;
+double ezc3d::DataNS::RotationNS::Rotation::reliability() const {
+    return _reliability;
 }
 
-void ezc3d::DataNS::RotationNS::Rotation::residual(
-        double residual) {
-    _residual = residual;
+void ezc3d::DataNS::RotationNS::Rotation::reliability(
+        double reliability) {
+    _reliability = reliability;
+}
+
+bool ezc3d::DataNS::RotationNS::Rotation::isValid() const
+{
+    return _reliability < 0 ? false : true;
 }

@@ -133,6 +133,9 @@ TEST(Matrix, unittest){
     m3(2,0) = 11.1;
     m3(2,1) = 12.2;
 
+    // Sum of all elements
+    EXPECT_DOUBLE_EQ(m1.sum(), 23.1);
+
     // Transpose
     ezc3d::Matrix m_transp(m1.T());
     EXPECT_EQ(m_transp.nbRows(), 3);

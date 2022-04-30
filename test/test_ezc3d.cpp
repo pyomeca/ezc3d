@@ -1672,6 +1672,58 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     EXPECT_TRUE(std::isnan(channel.data()));
 }
 
+TEST(c3dFileIO, readC3DWithRotation){
+    ezc3d::c3d c3d("c3dTestFiles/C3DRotationExample.c3d");
+
+    // Header test
+    // Point stuff
+    EXPECT_EQ(c3d.header().nb3dPoints(), 0);
+    EXPECT_EQ(c3d.header().nbMaxInterpGap(), 10);
+    EXPECT_FLOAT_EQ(c3d.header().scaleFactor(), static_cast<float>(-1));
+    EXPECT_FLOAT_EQ(c3d.header().frameRate(), 85);
+
+    // Analog stuff
+    EXPECT_EQ(c3d.header().nbAnalogsMeasurement(), 0);
+    EXPECT_EQ(c3d.header().nbAnalogByFrame(), 0);
+    EXPECT_EQ(c3d.header().nbAnalogs(), 0);
+
+    // Parameter tests
+    EXPECT_EQ(c3d.parameters().checksum(), 80);
+    EXPECT_EQ(c3d.parameters().nbGroups(), 9);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("USED").valuesAsInt()[0], 21);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("DATA_START").type(), ezc3d::INT);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt().size(), 1);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt()[0], 6);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("RATIO").type(), ezc3d::INT);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("RATIO").valuesAsInt().size(), 1);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("RATIO").valuesAsInt()[0], 1);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("LABELS").valuesAsString().size(), 21);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("DESCRIPTIONS").valuesAsString().size(), 21);
+
+    // DATA
+    EXPECT_EQ(c3d.rotations().nbFrames(), 340);
+    EXPECT_EQ(c3d.rotations().nbRotations(), 21);
+
+    // Test some values randomly
+    EXPECT_FLOAT_EQ(c3d.rotations().rotation(5, 2)(2, 3), 931.63824);
+
+    // Test sum of all values
+    double sumValues(0);
+    for (size_t f = 0; f < 340; ++f){
+        for (size_t r = 0; r < 21; ++r){
+            for (auto rot : c3d.rotations().rotations(f)){
+                if (rot.isValid()){
+                    sumValues += rot.sum();
+                }
+            }
+        }
+    }
+    EXPECT_FLOAT_EQ(sumValues, 196707989.8847814);
+}
 
 TEST(c3dFileIO, readViconC3D){
     ezc3d::c3d Vicon("c3dTestFiles/Vicon.c3d");

@@ -382,6 +382,10 @@ const ezc3d::DataNS::Data& ezc3d::c3d::data() const {
     return *_data;
 }
 
+const ezc3d::DataNS::RotationNS::Rotations& ezc3d::c3d::rotations() const {
+    return *_rotations;
+}
+
 const std::vector<std::string> ezc3d::c3d::pointNames() const {
     std::vector<std::string> labels =
             parameters().group("POINT").parameter("LABELS").valuesAsString();

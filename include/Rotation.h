@@ -39,14 +39,14 @@ public:
     /// \param elem31 fourth col, second row
     /// \param elem32 fourth col, third row
     /// \param elem33 fourth col, fourth row
-    /// \param residual The residual
+    /// \param reliability The reliability
     ///
     Rotation(
             double elem00, double elem01, double elem02, double elem03,
             double elem10, double elem11, double elem12, double elem13,
             double elem20, double elem21, double elem22, double elem23,
             double elem30, double elem31, double elem32, double elem33,
-            double residual);
+            double reliability);
 
     ///
     /// \brief Copy a rotation
@@ -80,7 +80,7 @@ public:
 
     //---- DATA ----//
 protected:
-    double _residual; ///< Residual of the rotation
+    double _reliability; ///< Reliability metric of the rotation
 
 public:
     ///
@@ -101,17 +101,17 @@ public:
     /// \param elem31 fourth col, second row
     /// \param elem32 fourth col, third row
     /// \param elem33 fourth col, fourth row
-    /// \param residual The residual of the rotation
+    /// \param reliability The reliability of the rotation
     ///
     virtual void set(
             double elem00, double elem01, double elem02, double elem03,
             double elem10, double elem11, double elem12, double elem13,
             double elem20, double elem21, double elem22, double elem23,
             double elem30, double elem31, double elem32, double elem33,
-            double residual);
+            double reliability);
 
     ///
-    /// \brief set All the values of the rotation at once. Don't change the residual value
+    /// \brief set All the values of the rotation at once. Don't change the reliability value
     /// \param elem00 first col, first row
     /// \param elem01 first col, second row
     /// \param elem02 first col, third row
@@ -136,17 +136,22 @@ public:
             double elem30, double elem31, double elem32, double elem33) override;
 
     ///
-    /// \brief Get the residual component of the rotation
-    /// \return The residual component of the rotation
+    /// \brief Get the reliability component of the rotation
+    /// \return The reliability component of the rotation
     ///
-    virtual double residual() const;
+    virtual double reliability() const;
 
     ///
-    /// \brief Set the residualZ component of the rotation
-    /// \param residual The residual component of the rotation
+    /// \brief Set the reliability component of the rotation
+    /// \param reliability The reliability component of the rotation
     ///
-    virtual void residual(
-            double residual);
+    virtual void reliability(
+            double reliability);
+
+    ///
+    /// \brief If the rotation is valid
+    ///
+    virtual bool isValid() const;
 
 };
 

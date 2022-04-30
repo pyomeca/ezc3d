@@ -77,6 +77,12 @@ protected:
 
 public:
     ///
+    /// \brief The sum of all elements in the matrix
+    /// \return The sum of all elements in the matrix
+    ///
+    virtual double sum();
+
+    ///
     /// \brief Set all values to zero
     ///
     virtual void setZeros();

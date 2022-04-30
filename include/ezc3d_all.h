@@ -13,6 +13,7 @@
 #include "Header.h"
 #include "Parameters.h"
 #include "Data.h"
+#include "Rotations.h"
 
 #include "modules/ForcePlatforms.h"
 

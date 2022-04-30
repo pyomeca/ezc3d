@@ -426,6 +426,12 @@ public:
     ///
     const ezc3d::DataNS::Data& data() const;
 
+    ///
+    /// \brief The rotations data of the C3D
+    /// \return The rotations data of the C3D
+    ///
+    const ezc3d::DataNS::RotationNS::Rotations& rotations() const;
+
     // ---- PUBLIC GETTER INTERFACE ---- //
 public:
     ///

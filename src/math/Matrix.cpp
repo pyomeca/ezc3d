@@ -82,6 +82,14 @@ void ezc3d::Matrix::print() const
     std::cout << std::endl;
 }
 
+double ezc3d::Matrix::sum()
+{
+    double sum(0);
+    for (size_t i = 0; i < _data.size(); ++i)
+        sum += _data[i];
+    return sum;
+}
+
 void ezc3d::Matrix::setZeros()
 {
     for (size_t i=0; i<nbRows(); ++i){
