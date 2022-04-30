@@ -38,6 +38,8 @@ set(SRC_LIST
     src/Parameters.cpp
     src/Point.cpp
     src/Points.cpp
+    src/Rotation.cpp
+    src/Rotations.cpp
     src/Subframe.cpp
     src/modules/ForcePlatforms.cpp
 )

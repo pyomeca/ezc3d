@@ -150,7 +150,16 @@ namespace ezc3d {
             class EZC3D_API SubFrame;
             class EZC3D_API Channel;
         }
+
+        ///
+        /// \brief Namespace that holds the Rotations hierarchy
+        ///
+        namespace RotationNS {
+            class EZC3D_API Rotations;
+            class EZC3D_API Rotation;
+        }
     }
+
 
     ///
     /// \brief Namespace for all the analysis modules
