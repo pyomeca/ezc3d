@@ -16,6 +16,7 @@ ezc3d::Header::Header():
     _checksum(0x50),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
+    _hasRotationalData(false),
     _firstFrame(0),
     _lastFrame(0),
     _nbMaxInterpGap(10),
@@ -44,6 +45,7 @@ ezc3d::Header::Header(
     _checksum(0),
     _nb3dPoints(0),
     _nbAnalogsMeasurement(0),
+    _hasRotationalData(false),
     _firstFrame(0),
     _lastFrame(0),
     _nbMaxInterpGap(10),
@@ -68,9 +70,9 @@ ezc3d::Header::Header(
 void ezc3d::Header::print() const {
     std::cout << "HEADER" << std::endl;
     std::cout << "nb3dPoints = " << nb3dPoints() << std::endl;
-    std::cout << "nbAnalogsMeasurement = "
-              << nbAnalogsMeasurement() << std::endl;
+    std::cout << "nbAnalogsMeasurement = " << nbAnalogsMeasurement() << std::endl;
     std::cout << "nbAnalogs = " << nbAnalogs() << std::endl;
+    std::cout << "hasRotationalData = " << hasRotationalData() << std::endl;
     std::cout << "firstFrame = " << firstFrame() << std::endl;
     std::cout << "lastFrame = " << lastFrame() << std::endl;
     std::cout << "nbFrames = " << nbFrames() << std::endl;
@@ -323,6 +325,16 @@ void ezc3d::Header::nbAnalogs(
 
 size_t ezc3d::Header::nbAnalogsMeasurement() const {
     return _nbAnalogsMeasurement;
+}
+
+bool ezc3d::Header::hasRotationalData() const
+{
+    return _hasRotationalData;
+}
+
+void ezc3d::Header::hasRotationalData(bool value)
+{
+    _hasRotationalData = value;
 }
 
 size_t ezc3d::Header::nbFrames() const {
