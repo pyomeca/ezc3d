@@ -167,6 +167,7 @@ To read a C3D file you simply have to call the `c3d` class with a path
 ```C++
 ezc3d::c3d c3d("path/to/c3d.c3d");
 ```
+Additionnally, a default `ignoreBadFormatting` flag can be set to `true` so file with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 Please note that on Windows, the path must be `/` or `\\` separated (and not only`\`), for obvious reasons. 
 
 ### Write a C3D
@@ -400,6 +401,7 @@ To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as th
 c3d = ezc3dRead('path_to_c3d.c3d');
 disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
+Additionnally, a default `ignoreBadFormatting` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 
 ### Write a C3D
 To write a C3D to a file, you must call the `ezc3dWrite` function. This function waits for the path of the C3D to write and a valid structure. Please note that the header is actually ignore since it is fully constructed from required parameters. Hence, a valid structure may omit the header. Still, for simplicity, it is easier to send a structure created via the `ezc3dRead` function.
@@ -480,6 +482,7 @@ analog_data = c['data']['analogs']
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 > The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT.
 
+Additionnally, a default `c3d(..., ignore_bad_formatting=False)` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 
 ### Write a C3D
 To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
