@@ -10,6 +10,7 @@
 
 #include "math/Matrix.h"
 #include "math/Matrix33.h"
+#include "math/Matrix44.h"
 #include "math/Matrix66.h"
 #include "math/Vector3d.h"
 #include "math/Vector6d.h"

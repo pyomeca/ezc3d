@@ -322,6 +322,116 @@ TEST(Matrix33, unittest){
 #endif
 }
 
+TEST(Matrix44, unittest){
+    ezc3d::Matrix44 m_toFill;
+    EXPECT_EQ(m_toFill.nbRows(), 4);
+    EXPECT_EQ(m_toFill.nbCols(), 4);
+    EXPECT_EQ(m_toFill.size(), 16);
+    EXPECT_THROW(m_toFill.resize(0, 0), std::runtime_error);
+    m_toFill(0, 0) = 2.;
+    m_toFill(0, 1) = 3.;
+    m_toFill(0, 2) = 4.;
+    m_toFill(0, 3) = 5.;
+    m_toFill(1, 0) = 6.;
+    m_toFill(1, 1) = 7.;
+    m_toFill(1, 2) = 8.;
+    m_toFill(1, 3) = 9.;
+    m_toFill(2, 0) = 10.;
+    m_toFill(2, 1) = 11.;
+    m_toFill(2, 2) = 12.;
+    m_toFill(2, 3) = 13.;
+    m_toFill(3, 0) = 14.;
+    m_toFill(3, 1) = 15.;
+    m_toFill(3, 2) = 16.;
+    m_toFill(3, 3) = 17.;
+    EXPECT_DOUBLE_EQ(m_toFill(0, 0), 2.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 1), 3.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 2), 4.);
+    EXPECT_DOUBLE_EQ(m_toFill(0, 3), 5.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 0), 6.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 1), 7.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 2), 8.);
+    EXPECT_DOUBLE_EQ(m_toFill(1, 3), 9.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 0), 10.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 1), 11.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 2), 12.);
+    EXPECT_DOUBLE_EQ(m_toFill(2, 3), 13.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 0), 14.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 1), 15.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 2), 16.);
+    EXPECT_DOUBLE_EQ(m_toFill(3, 3), 17.);
+
+    ezc3d::Matrix44 m1(
+                1.,  2.,  3.,  4.,
+                5.,  6.,  7.,  8.,
+                9.,  10., 11., 12.,
+                13., 14., 15., 16.);
+    EXPECT_EQ(m1.nbRows(), 4);
+    EXPECT_EQ(m1.nbCols(), 4);
+    EXPECT_EQ(m1.size(), 16);
+
+    EXPECT_DOUBLE_EQ(m1(0, 0), 1.);
+    EXPECT_DOUBLE_EQ(m1(0, 1), 2.);
+    EXPECT_DOUBLE_EQ(m1(0, 2), 3.);
+    EXPECT_DOUBLE_EQ(m1(0, 3), 4.);
+    EXPECT_DOUBLE_EQ(m1(1, 0), 5.);
+    EXPECT_DOUBLE_EQ(m1(1, 1), 6.);
+    EXPECT_DOUBLE_EQ(m1(1, 2), 7.);
+    EXPECT_DOUBLE_EQ(m1(1, 3), 8.);
+    EXPECT_DOUBLE_EQ(m1(2, 0), 9.);
+    EXPECT_DOUBLE_EQ(m1(2, 1), 10.);
+    EXPECT_DOUBLE_EQ(m1(2, 2), 11.);
+    EXPECT_DOUBLE_EQ(m1(2, 3), 12.);
+    EXPECT_DOUBLE_EQ(m1(3, 0), 13.);
+    EXPECT_DOUBLE_EQ(m1(3, 1), 14.);
+    EXPECT_DOUBLE_EQ(m1(3, 2), 15.);
+    EXPECT_DOUBLE_EQ(m1(3, 3), 16.);
+
+    ezc3d::Matrix44 m1_copy(m1);
+    EXPECT_EQ(m1_copy.nbRows(), 4);
+    EXPECT_EQ(m1_copy.nbCols(), 4);
+    EXPECT_EQ(m1_copy.size(), 16);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 0), 1.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 1), 2.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 2), 3.);
+    EXPECT_DOUBLE_EQ(m1_copy(0, 3), 4.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 0), 5.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 1), 6.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 2), 7.);
+    EXPECT_DOUBLE_EQ(m1_copy(1, 3), 8.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 0), 9.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 1), 10.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 2), 11.);
+    EXPECT_DOUBLE_EQ(m1_copy(2, 3), 12.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 0), 13.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 1), 14.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 2), 15.);
+    EXPECT_DOUBLE_EQ(m1_copy(3, 3), 16.);
+
+    ezc3d::Matrix44 m_fromMult(m1 * m_toFill);
+    EXPECT_DOUBLE_EQ(m_fromMult(0, 0), 100.);
+    EXPECT_DOUBLE_EQ(m_fromMult(0, 1), 110.);
+    EXPECT_DOUBLE_EQ(m_fromMult(0, 2), 120.);
+    EXPECT_DOUBLE_EQ(m_fromMult(0, 3), 130.);
+    EXPECT_DOUBLE_EQ(m_fromMult(1, 0), 228.);
+    EXPECT_DOUBLE_EQ(m_fromMult(1, 1), 254.);
+    EXPECT_DOUBLE_EQ(m_fromMult(1, 2), 280.);
+    EXPECT_DOUBLE_EQ(m_fromMult(1, 3), 306.);
+    EXPECT_DOUBLE_EQ(m_fromMult(2, 0), 356.);
+    EXPECT_DOUBLE_EQ(m_fromMult(2, 1), 398.);
+    EXPECT_DOUBLE_EQ(m_fromMult(2, 2), 440.);
+    EXPECT_DOUBLE_EQ(m_fromMult(2, 3), 482.);
+    EXPECT_DOUBLE_EQ(m_fromMult(3, 0), 484.);
+    EXPECT_DOUBLE_EQ(m_fromMult(3, 1), 542.);
+    EXPECT_DOUBLE_EQ(m_fromMult(3, 2), 600.);
+    EXPECT_DOUBLE_EQ(m_fromMult(3, 3), 658.);
+
+#ifndef USE_MATRIX_FAST_ACCESSOR
+    EXPECT_THROW(ezc3d::Matrix44(ezc3d::Matrix(2, 4)), std::runtime_error);
+    EXPECT_THROW(ezc3d::Matrix44(ezc3d::Matrix(4, 2)), std::runtime_error);
+#endif
+}
+
 TEST(Matrix66, unittest){
     ezc3d::Matrix66 m_toFill;
     EXPECT_EQ(m_toFill.nbRows(), 6);

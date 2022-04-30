@@ -23,6 +23,7 @@ ENDIF()
 set(SRC_LIST
     src/math/Matrix.cpp
     src/math/Matrix33.cpp
+    src/math/Matrix44.cpp
     src/math/Matrix66.cpp
     src/math/Vector3d.cpp
     src/math/Vector6d.cpp
