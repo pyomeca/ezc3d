@@ -180,8 +180,12 @@ public:
     ///
     /// \brief Read and store a C3D
     /// \param filePath The file path of the C3D file
+    /// \param ignoreBadFormatting If bad formatting of the c3d should be ignored, use with caution as it can results in a segmentation fault
     ///
-    c3d(const std::string &filePath);
+    c3d(
+            const std::string &filePath,
+            bool ignoreBadFormatting = false
+    );
 
     //---- STREAM ----//
 public:

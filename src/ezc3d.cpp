@@ -46,7 +46,8 @@ ezc3d::c3d::c3d():
 }
 
 ezc3d::c3d::c3d(
-        const std::string &filePath):
+        const std::string &filePath,
+        bool ignoreBadFormatting):
     _filePath(filePath),
     m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
     m_nByteToReadMax_int(100) {
@@ -62,7 +63,7 @@ ezc3d::c3d::c3d(
     // Read all the section
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this, stream));
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
-                new ezc3d::ParametersNS::Parameters(*this, stream));
+                new ezc3d::ParametersNS::Parameters(*this, stream, ignoreBadFormatting));
 
     // header may be inconsistent with the parameters, so it must be
     // update to make sure sizes are consistent

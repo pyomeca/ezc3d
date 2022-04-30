@@ -20,7 +20,8 @@ ezc3d::ParametersNS::Parameters::Parameters():
 
 ezc3d::ParametersNS::Parameters::Parameters(
         ezc3d::c3d &c3d,
-        std::fstream &file) :
+        std::fstream &file,
+        bool ignoreBadFormatting) :
     _parametersStart(0),
     _checksum(0),
     _nbParamBlock(0),
@@ -49,7 +50,7 @@ ezc3d::ParametersNS::Parameters::Parameters(
         _parametersStart = 1;
         _checksum = 0x50;
     }
-    if (_checksum != 0x50) // If checkbyte is wrong
+    if (!ignoreBadFormatting && _checksum != 0x50) // If checkbyte is wrong
         throw std::ios_base::failure("File must be a valid c3d file");
 
     if (processorTypeId == 84)
@@ -73,8 +74,9 @@ ezc3d::ParametersNS::Parameters::Parameters(
     {
         // Check if we spontaneously got to the next parameter.
         // Otherwise c3d is messed up
-        if (file.tellg() != nextParamByteInFile)
+        if (!ignoreBadFormatting && file.tellg() != nextParamByteInFile){
             throw std::ios_base::failure("Bad c3d formatting");
+        }
 
         // Nb of char in the group name, locked if negative,
         // 0 if we finished the section
