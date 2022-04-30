@@ -25,10 +25,12 @@ public:
     /// \brief Construct group holder from a C3D file
     /// \param c3d C3D reference to copy the data in
     /// \param file Already opened fstream file with read access
+    /// \param ignoreBadFormatting If bad formatting of the c3d should be ignored, use with caution as it can results in a segmentation fault
     ///
     Parameters(
             c3d &c3d,
-            std::fstream &file);
+            std::fstream &file,
+            bool ignoreBadFormatting = false);
 
 public:
     ///

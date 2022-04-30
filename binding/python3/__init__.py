@@ -118,14 +118,14 @@ class C3dMutableMapper(C3dMapper):
 
 
 class c3d(C3dMapper):
-    def __init__(self, path="", extract_forceplat_data=False):
+    def __init__(self, path="", extract_forceplat_data=False, ignore_bad_formatting=False):
         super(c3d, self).__init__()
 
         # Interface to swig pointers
         if path == "":
             self.c3d_swig = ezc3d.c3d()
         else:
-            self.c3d_swig = ezc3d.c3d(path)
+            self.c3d_swig = ezc3d.c3d(path, ignore_bad_formatting)
 
         self.extract_forceplat_data = extract_forceplat_data
         self._storage["header"] = c3d.Header(self.c3d_swig.header())
