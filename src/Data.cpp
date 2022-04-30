@@ -151,24 +151,13 @@ ezc3d::DataNS::Data::Data(
         f.add(analog);
         _frames.push_back(f);
     }
-
-    // remove the trailing empty frames if they exist
-    size_t nFrames(_frames.size());
-    if (nFrames > 0)
-        for (size_t i=0; i<nFrames-1; i--){
-            // -1 so we at least keep one frame if frames are empty
-            if (_frames.back().isEmpty())
-                _frames.pop_back();
-            else
-                break;
-        }
 }
 
 void ezc3d::DataNS::Data::print() const {
     for (size_t i = 0; i < nbFrames(); ++i){
-        std::cout << "Frame " << i << std::endl;
+        std::cout << "Frame " << i << "\n";
         frame(i).print();
-        std::cout << std::endl;
+        std::cout << "\n";
     }
 }
 

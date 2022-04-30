@@ -91,6 +91,7 @@ void ezc3d::c3d::print() const {
     header().print();
     parameters().print();
     data().print();
+    rotations().print();
 }
 
 void ezc3d::c3d::write(
@@ -115,6 +116,7 @@ void ezc3d::c3d::write(
     float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
     std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
     data().write(f, pointScaleFactor, pointAnalogFactors);
+    rotations().write(f);
 
     f.close();
 }

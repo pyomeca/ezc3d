@@ -67,15 +67,13 @@ public:
     virtual void print() const override;
 
     ///
-    /// \brief Write the rotation to an opened file
+    /// \brief Write the rotation to an opened file (scaleFactor is necessarily -1)
     /// \param f Already opened fstream file with write access
-    /// \param scaleFactor The factor to scale the data with
     ///
     /// Write the values of the rotation to a file
     ///
     void write(
-            std::fstream &f,
-            float scaleFactor) const;
+            std::fstream &f) const;
 
 
     //---- DATA ----//

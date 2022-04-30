@@ -90,18 +90,19 @@ ezc3d::DataNS::RotationNS::Rotations::Rotations(
 
 void ezc3d::DataNS::RotationNS::Rotations::print() const {
     for (size_t i = 0; i < nbFrames(); ++i){
+        std::cout << "Frame: " << i << "\n";
         for (size_t j = 0; j < nbRotations(); ++j){
+            std::cout << "Rotation: " << j << "\n";
             rotation(i, j).print();
         }
     }
 }
 
 void ezc3d::DataNS::RotationNS::Rotations::write(
-        std::fstream &f,
-        float scaleFactor) const {
+        std::fstream &f) const {
     for (size_t i = 0; i < nbFrames(); ++i){
         for (size_t j = 0; j < nbRotations(); ++j){
-            rotation(i, j).write(f, scaleFactor);
+            rotation(i, j).write(f);
         }
     }
 }

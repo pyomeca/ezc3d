@@ -66,7 +66,7 @@ ezc3d::Matrix::Matrix(
 
 void ezc3d::Matrix::print() const
 {
-    std::cout << " Matrix = [" << std::endl;
+    std::cout << " Matrix = [" << "\n";
     for (size_t i=0; i<_nbRows; ++i){
         for (size_t j=0; j<_nbCols; ++j){
             std::cout << operator ()(i, j);
@@ -77,9 +77,9 @@ void ezc3d::Matrix::print() const
         if (i == _nbRows-1){
             std::cout << "]";
         }
-        std::cout << std::endl;
+        std::cout << "\n";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 double ezc3d::Matrix::sum()
@@ -378,7 +378,7 @@ std::ostream &operator<<(
             }
         }
         if (i < m.nbRows() - 1){
-            out << std::endl;
+            out << "\n";
         }
     }
     out << "]";

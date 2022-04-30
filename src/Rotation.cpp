@@ -41,42 +41,27 @@ ezc3d::DataNS::RotationNS::Rotation::Rotation(
 }
 
 void ezc3d::DataNS::RotationNS::Rotation::print() const {
-    ezc3d::Matrix44::print();
-    std::cout << "Reliability = " << reliability() << std::endl;
+    for (size_t i=0; i<_nbRows; ++i){
+        for (size_t j=0; j<_nbCols; ++j){
+            std::cout << operator ()(i, j);
+            if (j != _nbCols-1){
+                std::cout << ", ";
+            }
+        }
+        std::cout << "\n";
+    };
+    std::cout << "Reliability = " << reliability() << "\n";
 }
 
 void ezc3d::DataNS::RotationNS::Rotation::write(
-        std::fstream &f,
-        float scaleFactor) const {
-//    if (reliability() >= 0){
-//        for (size_t i = 0; i<size(); ++i) {
-//            float data(static_cast<float>(_data[i]));
-//            f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
-//        }
-//        std::bitset<8> cameraMasksBits;
-//        for (size_t i = 0; i < _cameraMasks.size(); ++i){
-//            if (_cameraMasks[i]){
-//                cameraMasksBits[i] = 1;
-//            }
-//            else {
-//                cameraMasksBits[i] = 0;
-//            }
-//        }
-//        cameraMasksBits[7] = 0;
-//        size_t cameraMasks(cameraMasksBits.to_ulong());
-//        f.write(reinterpret_cast<const char*>(&cameraMasks), ezc3d::DATA_TYPE::WORD);
-//        int reliability(static_cast<int>(_reliability / fabsf(scaleFactor)));
-//        f.write(reinterpret_cast<const char*>(&reliability), ezc3d::DATA_TYPE::WORD);
-//    }
-//    else {
-//        float zero(0);
-//        int minusOne(-16512); // 0xbf80 - 0xFFFF - 1   This is the Qualisys and Vicon value for missing marker);
-//        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
-//        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
-//        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
-//        f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::WORD);
-//        f.write(reinterpret_cast<const char*>(&minusOne), ezc3d::DATA_TYPE::WORD);
-//    }
+        std::fstream &f) const {
+    for (size_t i = 0; i<16; ++i) {
+        float data(static_cast<float>(_reliability < 0 ? NAN : _data[i]));
+        f.write(reinterpret_cast<const char*>(&data), ezc3d::DATA_TYPE::FLOAT);
+    }
+
+    float reliability(static_cast<float>(_reliability));
+    f.write(reinterpret_cast<const char*>(&reliability), ezc3d::DATA_TYPE::FLOAT);
 }
 
 void ezc3d::DataNS::RotationNS::Rotation::set(

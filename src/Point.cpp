@@ -35,7 +35,7 @@ void ezc3d::DataNS::Points3dNS::Point::print() const {
     if (_cameraMasks.size() > 0){
         std::cout << _cameraMasks[_cameraMasks.size()-1] << "]";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 void ezc3d::DataNS::Points3dNS::Point::write(

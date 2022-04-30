@@ -14,9 +14,9 @@ ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
 
 void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
     for (size_t i = 0; i < nbSubframes(); ++i) {
-        std::cout << "Subframe = " << i << std::endl;
+        std::cout << "Subframe = " << i << "\n";
         subframe(i).print();
-        std::cout << std::endl;
+        std::cout << "\n";
     }
 }
 

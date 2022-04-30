@@ -22,28 +22,28 @@ ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
-    std::cout << "parameterName = " << name() << std::endl;
-    std::cout << "isLocked = " << isLocked() << std::endl;
+    std::cout << "parameterName = " << name() << "\n";
+    std::cout << "isLocked = " << isLocked() << "\n";
 
     // Data are not separated according to _dimension, which could help to read
     if (_data_type == DATA_TYPE::CHAR)
         for (unsigned int i = 0; i < _param_data_string.size(); ++i)
             std::cout << "param_data_string[" << i << "] = "
-                      << _param_data_string[i] << std::endl;
+                      << _param_data_string[i] << "\n";
     if (_data_type == DATA_TYPE::BYTE)
         for (unsigned int i = 0; i < _param_data_int.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_int[i] << std::endl;
+                      << _param_data_int[i] << "\n";
     if (_data_type == DATA_TYPE::INT)
         for (unsigned int i = 0; i < _param_data_int.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_int[i] << std::endl;
+                      << _param_data_int[i] << "\n";
     if (_data_type == DATA_TYPE::FLOAT)
         for (unsigned int i = 0; i < _param_data_double.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_double[i] << std::endl;
+                      << _param_data_double[i] << "\n";
 
-    std::cout << "description = " << _description << std::endl;
+    std::cout << "description = " << _description << "\n";
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::write(

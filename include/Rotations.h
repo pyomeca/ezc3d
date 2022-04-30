@@ -43,15 +43,13 @@ public:
     void print() const;
 
     ///
-    /// \brief Write rotations to an opened file
+    /// \brief Write rotations to an opened file (scaleFactor is necessarily -1)
     /// \param f Already opened fstream file with write access
-    /// \param scaleFactor The factor to scale the data with
     ///
     /// Write all the rotations to a file by calling sequentially the write method of each rotation
     ///
     void write(
-            std::fstream &f,
-            float scaleFactor) const;
+            std::fstream &f) const;
 
 
     //---- ROTATION ----//

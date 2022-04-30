@@ -68,33 +68,33 @@ ezc3d::Header::Header(
 }
 
 void ezc3d::Header::print() const {
-    std::cout << "HEADER" << std::endl;
-    std::cout << "nb3dPoints = " << nb3dPoints() << std::endl;
-    std::cout << "nbAnalogsMeasurement = " << nbAnalogsMeasurement() << std::endl;
-    std::cout << "nbAnalogs = " << nbAnalogs() << std::endl;
-    std::cout << "hasRotationalData = " << hasRotationalData() << std::endl;
-    std::cout << "firstFrame = " << firstFrame() << std::endl;
-    std::cout << "lastFrame = " << lastFrame() << std::endl;
-    std::cout << "nbFrames = " << nbFrames() << std::endl;
-    std::cout << "nbMaxInterpGap = " << nbMaxInterpGap() << std::endl;
-    std::cout << "scaleFactor = " << scaleFactor() << std::endl;
-    std::cout << "dataStart = " << dataStart() << std::endl;
-    std::cout << "nbAnalogByFrame = " << nbAnalogByFrame() << std::endl;
-    std::cout << "frameRate = " << frameRate() << std::endl;
-    std::cout << "keyLabelPresent = " << keyLabelPresent() << std::endl;
-    std::cout << "firstBlockKeyLabel = " << firstBlockKeyLabel() << std::endl;
-    std::cout << "fourCharPresent = " << fourCharPresent() << std::endl;
-    std::cout << "nbEvents = " << nbEvents() << std::endl;
+    std::cout << "HEADER" << "\n";
+    std::cout << "nb3dPoints = " << nb3dPoints() << "\n";
+    std::cout << "nbAnalogsMeasurement = " << nbAnalogsMeasurement() << "\n";
+    std::cout << "nbAnalogs = " << nbAnalogs() << "\n";
+    std::cout << "hasRotationalData = " << hasRotationalData() << "\n";
+    std::cout << "firstFrame = " << firstFrame() << "\n";
+    std::cout << "lastFrame = " << lastFrame() << "\n";
+    std::cout << "nbFrames = " << nbFrames() << "\n";
+    std::cout << "nbMaxInterpGap = " << nbMaxInterpGap() << "\n";
+    std::cout << "scaleFactor = " << scaleFactor() << "\n";
+    std::cout << "dataStart = " << dataStart() << "\n";
+    std::cout << "nbAnalogByFrame = " << nbAnalogByFrame() << "\n";
+    std::cout << "frameRate = " << frameRate() << "\n";
+    std::cout << "keyLabelPresent = " << keyLabelPresent() << "\n";
+    std::cout << "firstBlockKeyLabel = " << firstBlockKeyLabel() << "\n";
+    std::cout << "fourCharPresent = " << fourCharPresent() << "\n";
+    std::cout << "nbEvents = " << nbEvents() << "\n";
     for (size_t i=0; i < eventsTime().size(); ++i)
         std::cout << "eventsTime[" << i << "] = "
-                  << eventsTime(i) << std::endl;
+                  << eventsTime(i) << "\n";
     for (size_t i=0; i < eventsDisplay().size(); ++i)
         std::cout << "eventsDisplay[" << i << "] = "
-                  << eventsDisplay(i) << std::endl;
+                  << eventsDisplay(i) << "\n";
     for (size_t i=0; i < eventsLabel().size(); ++i)
         std::cout << "eventsLabel[" << i << "] = "
-                  << eventsLabel(i) << std::endl;
-    std::cout << std::endl;
+                  << eventsLabel(i) << "\n";
+    std::cout << "\n";
 }
 
 void ezc3d::Header::write(

@@ -42,7 +42,7 @@ void ezc3d::Vector3d::print() const
               << x() << ", "
               << y() << ", "
               << z() << "];"
-              << std::endl;
+              << "\n";
 }
 
 void ezc3d::Vector3d::resize(

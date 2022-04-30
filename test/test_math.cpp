@@ -3,6 +3,15 @@
 
 #include "ezc3d_all.h"
 
+void testPrintingCall(const ezc3d::Matrix& m){
+    std::streambuf *old = std::cout.rdbuf(); // Save cout direction
+    std::stringstream ss; // create a redirection
+    std::cout.rdbuf (ss.rdbuf());       // <-- redirect to null
+    m.print();
+    std::cout << "Another way to print : " << "\n" << m << "\n";
+    std::cout.rdbuf (old);              // <-- restore the old direction
+}
+
 TEST(Matrix, create){
     ezc3d::Matrix m1(2, 3);
     EXPECT_EQ(m1.nbRows(), 2);
@@ -15,8 +24,8 @@ TEST(Matrix, create){
     m1(1,0) = 4.8;
     m1(1,1) = 6.0;
     m1(1,2) = 7.2;
-    m1.print();
-    std::cout << "Another way to print : " << std::endl << m1 << std::endl;
+
+    testPrintingCall(m1);
 
     EXPECT_EQ(m1(0,0), 1.2);
     EXPECT_EQ(m1(0,1), 2.4);
@@ -678,7 +687,7 @@ TEST(Vector6d, unittest){
     EXPECT_EQ(random.size(), 6);
     EXPECT_THROW(random.resize(0, 0), std::runtime_error);
 
-    random.print();
+    testPrintingCall(random);
 #ifndef USE_MATRIX_FAST_ACCESSOR
     EXPECT_THROW(random(6), std::runtime_error);
     EXPECT_THROW(random(6) = 0, std::runtime_error);

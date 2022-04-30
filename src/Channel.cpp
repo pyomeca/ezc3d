@@ -19,7 +19,7 @@ ezc3d::DataNS::AnalogsNS::Channel::Channel(
 }
 
 void ezc3d::DataNS::AnalogsNS::Channel::print() const {
-    std::cout << "Analog = " << data() << std::endl;
+    std::cout << "Analog = " << data() << "\n";
 }
 
 void ezc3d::DataNS::AnalogsNS::Channel::write(

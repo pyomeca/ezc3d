@@ -297,6 +297,14 @@ void defaultParametersTest(const ezc3d::c3d& new_c3d, PARAMETER_TYPE type){
     }
 }
 
+void testPrintingCall(const ezc3d::c3d& c3d){
+    std::streambuf *old = std::cout.rdbuf(); // Save cout direction
+    std::stringstream ss; // create a redirection
+    std::cout.rdbuf (ss.rdbuf());       // <-- redirect to null
+    c3d.print();
+    std::cout.rdbuf (old);              // <-- restore the old direction
+}
+
 TEST(String, unittest){
     EXPECT_STREQ(ezc3d::toUpper("toUpper").c_str(), "TOUPPER");
 }
@@ -1714,15 +1722,61 @@ TEST(c3dFileIO, readC3DWithRotation){
     // Test sum of all values
     double sumValues(0);
     for (size_t f = 0; f < 340; ++f){
-        for (size_t r = 0; r < 21; ++r){
-            for (auto rot : c3d.rotations().rotations(f)){
-                if (rot.isValid()){
-                    sumValues += rot.sum();
-                }
+        for (auto rot : c3d.rotations().rotations(f)){
+            if (rot.isValid()){
+                sumValues += rot.sum();
             }
         }
     }
-    EXPECT_FLOAT_EQ(sumValues, 196707989.8847814);
+    EXPECT_FLOAT_EQ(sumValues, 9367047.137371358);
+
+    // Test printing of rotations
+    testPrintingCall(c3d);
+
+    // Write the file and read it back to test the rotations structure
+    std::string savePath("temporary.c3d");
+    c3d.write(savePath);
+    ezc3d::c3d c3dCopy(savePath);
+    remove(savePath.c_str());
+
+    // Header test
+
+    EXPECT_EQ(c3dCopy.header().nb3dPoints(), 0);
+    EXPECT_EQ(c3dCopy.header().nbMaxInterpGap(), 10);
+    EXPECT_FLOAT_EQ(c3dCopy.header().scaleFactor(), static_cast<float>(-1));
+    EXPECT_FLOAT_EQ(c3dCopy.header().frameRate(), 85);
+
+    // Analog stuff
+    EXPECT_EQ(c3dCopy.header().nbAnalogsMeasurement(), 0);
+    EXPECT_EQ(c3dCopy.header().nbAnalogByFrame(), 0);
+    EXPECT_EQ(c3dCopy.header().nbAnalogs(), 0);
+
+    // Parameter tests
+    EXPECT_EQ(c3dCopy.parameters().checksum(), 80);
+    EXPECT_EQ(c3dCopy.parameters().nbGroups(), 10);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("USED").valuesAsInt()[0], 21);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").type(), ezc3d::INT);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt().size(), 1);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt()[0], 6);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("RATIO").type(), ezc3d::INT);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("RATIO").valuesAsInt().size(), 1);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("RATIO").valuesAsInt()[0], 1);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("LABELS").valuesAsString().size(), 21);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DESCRIPTIONS").valuesAsString().size(), 21);
+
+    double sumValuesCopy(0);
+    for (size_t f = 0; f < 340; ++f){
+        for (auto rot : c3dCopy.rotations().rotations(f)){
+            if (rot.isValid()){
+                sumValuesCopy += rot.sum();
+            }
+        }
+    }
+    EXPECT_FLOAT_EQ(sumValues, sumValuesCopy);
 }
 
 TEST(c3dFileIO, readViconC3D){
@@ -2304,5 +2358,5 @@ TEST(c3dShow, printIt){
     c3dTestStruct new_c3d;
     fillC3D(new_c3d, true, true);
 
-    EXPECT_NO_THROW(new_c3d.c3d.print());
+    EXPECT_NO_THROW(testPrintingCall(new_c3d.c3d));
 }
