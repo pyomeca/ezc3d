@@ -426,6 +426,12 @@ TEST(Matrix44, unittest){
     EXPECT_DOUBLE_EQ(m_fromMult(3, 2), 600.);
     EXPECT_DOUBLE_EQ(m_fromMult(3, 3), 658.);
 
+    ezc3d::Vector3d vec(3, 4, 5);
+    ezc3d::Vector3d v_fromMult(m_toFill * vec);
+    EXPECT_DOUBLE_EQ(v_fromMult(0), 43);
+    EXPECT_DOUBLE_EQ(v_fromMult(1), 95);
+    EXPECT_DOUBLE_EQ(v_fromMult(2), 147);
+
 #ifndef USE_MATRIX_FAST_ACCESSOR
     EXPECT_THROW(ezc3d::Matrix44(ezc3d::Matrix(2, 4)), std::runtime_error);
     EXPECT_THROW(ezc3d::Matrix44(ezc3d::Matrix(4, 2)), std::runtime_error);
