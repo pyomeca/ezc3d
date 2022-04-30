@@ -11,6 +11,7 @@
 #include "Header.h"
 #include "Data.h"
 #include "Parameters.h"
+#include "Rotations.h"
 
 
 void ezc3d::removeTrailingSpaces(
@@ -43,6 +44,8 @@ ezc3d::c3d::c3d():
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
                 new ezc3d::ParametersNS::Parameters());
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
+    _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
+                new ezc3d::DataNS::RotationNS::Rotations());
 }
 
 ezc3d::c3d::c3d(
@@ -72,6 +75,9 @@ ezc3d::c3d::c3d(
     // Now read the data
     _data = std::shared_ptr<ezc3d::DataNS::Data>(
                 new ezc3d::DataNS::Data(*this, stream));
+
+    _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
+                new ezc3d::DataNS::RotationNS::Rotations(*this, stream));
 
     // Parameters and header may be inconsistent with data,
     // so reprocess them if needed

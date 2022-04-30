@@ -405,6 +405,7 @@ protected:
     std::shared_ptr<ezc3d::Header> _header; ///< Pointer that holds the header of the C3D
     std::shared_ptr<ezc3d::ParametersNS::Parameters> _parameters; ///< Pointer that holds the parameters of the C3D
     std::shared_ptr<ezc3d::DataNS::Data> _data; ///< Pointer that holds the data of the C3D
+    std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations> _rotations; ///< Pointer that holds the rotations data of the C3D
 
 public:
     ///

@@ -19,6 +19,21 @@ ezc3d::DataNS::RotationNS::Rotation::Rotation() :
 }
 
 ezc3d::DataNS::RotationNS::Rotation::Rotation(
+        double elem00, double elem01, double elem02, double elem03,
+        double elem10, double elem11, double elem12, double elem13,
+        double elem20, double elem21, double elem22, double elem23,
+        double elem30, double elem31, double elem32, double elem33,
+        double residual):
+    ezc3d::Matrix44(elem00, elem01, elem02, elem03,
+                    elem10, elem11, elem12, elem13,
+                    elem20, elem21, elem22, elem23,
+                    elem30, elem31, elem32, elem33),
+    _residual(residual)
+{
+
+}
+
+ezc3d::DataNS::RotationNS::Rotation::Rotation(
         const ezc3d::DataNS::RotationNS::Rotation &r) :
     ezc3d::Matrix44(r)
 {
