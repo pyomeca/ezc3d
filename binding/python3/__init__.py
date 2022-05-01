@@ -503,6 +503,49 @@ class c3d(C3dMapper):
                 "'c3d['parameters']['ANALOG']['LABELSX']' must have the same length as nAnalogs of the data. "
             )
 
+        rotation_group = None
+        if "rotations" in self._storage["data"]:
+            data_rotations = self._storage["data"]["rotations"]
+            if len(data_rotations.shape) != 4:
+                raise TypeError("Rotations should be a numpy with exactly 4 dimensions (4 x 4 x nRotations x nFrames)")
+            nb_rotations = data_rotations.shape[2]
+            nb_rotations_frames = data_rotations.shape[3]
+            if data_rotations.shape[0] != 4 or data_rotations.shape[1] != 4:
+                raise TypeError("Rotations should be a numpy with first and second dimension exactly equals to 4 element")
+
+            if "ROTATION" in self._storage["parameters"]:
+                rotation_group = self._storage["parameters"]["ROTATION"]
+                if "RATIO" in rotation_group:
+                    rotations_ratio = rotation_group["RATIO"]["value"][0]
+                elif "RATE" in rotation_group:
+                    rotations_ratio = rotation_group["RATE"]["value"][0] / self._storage["parameters"]["POINT"]["RATE"]["value"][0]
+                    if round(rotations_ratio) != rotations_ratio:
+                        raise ValueError("ROTATION:RATE should be a multiple of POINT:RATE")
+                    rotations_ratio = int(rotations_ratio)
+                
+                if rotations_ratio * nb_point_frames != nb_rotations_frames:
+                    raise ValueError("Wrong number of frames in rotations")
+                
+            else:
+                if self.c3d_swig.parameters().isGroup("ROTATION"):
+                    rotation_group = self.c3d_swig.parameters().group("ROTATION")
+                    if "RATIO" in rotation_group.isParameter("RATIO"):
+                        rotations_ratio = rotation_group.parameter("RATIO").valuesAsInt()[0]
+                    elif "RATE" in rotation_group:
+                        rotations_ratio = rotation_group.parameter("RATE").valuesAsDouble()[0] / \
+                                          self._storage["parameters"]["POINT"]["RATE"]["value"][0]
+                        if round(rotations_ratio) != rotations_ratio:
+                            raise ValueError("ROTATION:RATE should be a multiple of POINT:RATE")
+                        rotations_ratio = int(rotations_ratio)
+
+                    if rotations_ratio * nb_point_frames != nb_rotations_frames:
+                        raise ValueError("Wrong number of frames in rotations")
+                else:
+                    rotations_ratio = nb_rotations_frames / nb_point_frames
+
+                self.add_parameter("ROTATION", "USED", int(nb_rotations))
+                self.add_parameter("ROTATION", "RATIO", int(rotations_ratio))
+            
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
 
