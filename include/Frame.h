@@ -132,6 +132,13 @@ public:
             const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
 
     ///
+    /// \brief Add rotations to a frame
+    /// \param rotations The rotations data to add
+    ///
+    void add(
+            const ezc3d::DataNS::RotationNS::Rotations &rotations);
+
+    ///
     /// \brief Add points and analogs to a frame
     /// \param points The 3D points to add
     /// \param analogs The analogous data to add
@@ -139,6 +146,17 @@ public:
     void add(
             const ezc3d::DataNS::Points3dNS::Points &points,
             const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
+
+    ///
+    /// \brief Add points and analogs to a frame
+    /// \param points The 3D points to add
+    /// \param analogs The analogous data to add
+    /// \param rotations The rotations data to add
+    ///
+    void add(
+            const ezc3d::DataNS::Points3dNS::Points &points,
+            const ezc3d::DataNS::AnalogsNS::Analogs &analogs,
+            const ezc3d::DataNS::RotationNS::Rotations &rotations);
 
     ///
     /// \brief Return if the frame is empty

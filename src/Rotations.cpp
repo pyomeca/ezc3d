@@ -21,19 +21,11 @@ ezc3d::DataNS::RotationNS::Rotations::Rotations()
 
 ezc3d::DataNS::RotationNS::Rotations::Rotations(
         ezc3d::c3d &c3d,
-        std::fstream &file)
+        std::fstream &file,
+        const ezc3d::DataNS::RotationNS::Info& info)
 {
     if (!c3d.header().hasRotationalData())
         return;
-
-    ezc3d::DataNS::RotationNS::Info info(c3d);
-    auto& group = c3d.parameters().group("ROTATION");
-
-    // Prepare the reading
-    if (!group.isParameter("DATA_START")){
-        throw std::runtime_error("DATA_START is not present in ROTATION.");
-    }
-    file.seekg(static_cast<int>(group.parameter("DATA_START").valuesAsInt()[0]-1)*512, std::ios::beg);
 
     size_t nbSubframes = info.ratio();
     for (size_t k = 0; k < nbSubframes; ++k){

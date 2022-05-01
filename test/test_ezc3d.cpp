@@ -1717,7 +1717,7 @@ TEST(c3dFileIO, readC3DWithRotation){
     EXPECT_EQ(c3d.data().frame(0).rotations().subframe(0).nbRotations(), 21);
 
     // Test some values randomly
-    EXPECT_FLOAT_EQ(c3d.data().frame(0).rotations().subframe(5).rotation(2)(2, 3), 931.63824);
+    EXPECT_FLOAT_EQ(c3d.data().frame(5).rotations().subframe(0).rotation(2)(2, 3), 931.63824);
 
     // Test sum of all values
     double sumValues(0);

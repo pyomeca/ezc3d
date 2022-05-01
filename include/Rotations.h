@@ -26,10 +26,12 @@ public:
     /// \brief Create an empty holder for Rotation data preallocating the size of it
     /// \param c3d Reference to the c3d to copy the data in
     /// \param file File to copy the data from
+    /// \param info The information about the rotations
     ///
     Rotations(
             ezc3d::c3d &c3d,
-            std::fstream &file);
+            std::fstream &file,
+            const RotationNS::Info& info);
 
 
     //---- STREAM ----//

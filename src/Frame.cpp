@@ -61,7 +61,7 @@ ezc3d::DataNS::RotationNS::Rotations &ezc3d::DataNS::Frame::rotations()
 
 void ezc3d::DataNS::Frame::add(
         const ezc3d::DataNS::Frame &frame) {
-    add(frame.points(), frame.analogs());
+    add(frame.points(), frame.analogs(), frame.rotations());
 }
 
 void ezc3d::DataNS::Frame::add(
@@ -77,10 +77,27 @@ void ezc3d::DataNS::Frame::add(
 }
 
 void ezc3d::DataNS::Frame::add(
+        const ezc3d::DataNS::RotationNS::Rotations &rotations)
+{
+    _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
+                new ezc3d::DataNS::RotationNS::Rotations(rotations));
+}
+
+void ezc3d::DataNS::Frame::add(
         const ezc3d::DataNS::Points3dNS::Points &point3d_frame,
         const ezc3d::DataNS::AnalogsNS::Analogs &analog_frame) {
     add(point3d_frame);
     add(analog_frame);
+}
+
+void ezc3d::DataNS::Frame::add(
+        const ezc3d::DataNS::Points3dNS::Points &points,
+        const ezc3d::DataNS::AnalogsNS::Analogs &analogs,
+        const ezc3d::DataNS::RotationNS::Rotations &rotations)
+{
+    add(points);
+    add(analogs);
+    add(rotations);
 }
 
 bool ezc3d::DataNS::Frame::isEmpty() const {

@@ -15,8 +15,21 @@
 ezc3d::DataNS::RotationNS::Info::Info(
         const ezc3d::c3d &c3d)
 {
-    auto& group = c3d.parameters().group("ROTATION");
-    // Do a sanity check
+    if (!c3d.parameters().isGroup("ROTATION")){
+        _hasGroup = false;
+        return;
+    }
+    _hasGroup = true;
+
+    const ezc3d::ParametersNS::GroupNS::Group& group =
+            c3d.parameters().group("ROTATION");
+
+    // Do a sanity check before accessing
+    if (!group.isParameter("DATA_START")){
+        throw std::runtime_error("DATA_START is not present in ROTATION.");
+    }
+    _dataStart = group.parameter("DATA_START").valuesAsInt()[0];
+
     if (!group.isParameter("USED")){
         throw std::runtime_error("USED is not present in ROTATION.");
     }
@@ -30,6 +43,11 @@ ezc3d::DataNS::RotationNS::Info::Info(
                 group.parameter("RATE").valuesAsDouble()[0] / c3d.header().frameRate();
 
     _processorType = c3d.parameters().processorType();
+}
+
+size_t ezc3d::DataNS::RotationNS::Info::dataStart() const
+{
+    return _dataStart;
 }
 
 size_t ezc3d::DataNS::RotationNS::Info::used() const

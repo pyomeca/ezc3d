@@ -12,6 +12,7 @@
 #include "Parameters.h"
 #include "AnalogsInfo.h"
 #include "PointsInfo.h"
+#include "RotationsInfo.h"
 
 ezc3d::DataNS::Data::Data() {
 }
@@ -24,6 +25,7 @@ ezc3d::DataNS::Data::Data(
     // Read the data
     ezc3d::DataNS::Points3dNS::Info pointsInfo(c3d);
     ezc3d::DataNS::AnalogsNS::Info analogsInfo(c3d);
+    ezc3d::DataNS::RotationNS::Info rotationsInfo(c3d);
 
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
         if (file.eof())
@@ -34,16 +36,20 @@ ezc3d::DataNS::Data::Data(
         f.add(ezc3d::DataNS::Points3dNS::Points(c3d, file, pointsInfo));
 
         // Read analogs
-        ezc3d::DataNS::AnalogsNS::Analogs analog(c3d, file, analogsInfo);
-        f.add(analog);
+        f.add(ezc3d::DataNS::AnalogsNS::Analogs(c3d, file, analogsInfo));
         _frames.push_back(f);
     }
 
     // Read the rotation data
     if (c3d.header().hasRotationalData()){
-        for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
+        // Prepare the reading
+        file.seekg(static_cast<int>(rotationsInfo.dataStart()-1)*512, std::ios::beg);
+
+        for (size_t i = 0; i < c3d.header().nbFrames(); ++i){
             if (file.eof())
                 break;
+
+            _frames[i].add(ezc3d::DataNS::RotationNS::Rotations(c3d, file, rotationsInfo));
         }
     }
 }

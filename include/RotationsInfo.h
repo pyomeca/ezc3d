@@ -22,7 +22,29 @@ public:
     ///
     Info(const ezc3d::c3d& c3d);
 
+
     //---- DATA ----//
+protected:
+    bool _hasGroup;  ///< If the group parameter is present
+
+public:
+    ///
+    /// \brief Returns If the group parameter is present
+    /// \return If the group parameter is present
+    ///
+    bool hasGroup() const;
+
+
+protected:
+    size_t _dataStart; ///< The data start parameter
+
+public:
+    ///
+    /// \brief Returns the data start parameter
+    /// \return The data start parameter
+    ///
+    size_t dataStart() const;
+
 protected:
     size_t _used; ///< The number of Rotations
 
