@@ -130,7 +130,7 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
     for (size_t f = 0; f < nFrames; ++f)
         for (size_t sf = 0; sf < nSubframe; ++sf)
             for (int a = 0; a < nAnalogs; ++a)
-                data[nSubframe*nFrames*a + sf+nSubframe*f] = c3d.data().frame(f).analogs().subframe(sf).channel(a).data();
+                data[nSubframe*nFrames*a + sf+nSubframe*f] = c3d.data().frame(f).analogs().subframe(sf).channel(analogs[a]).data();
 
     // Export them to Python Object
     int nArraySize = 3;
