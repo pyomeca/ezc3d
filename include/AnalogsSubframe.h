@@ -1,7 +1,7 @@
-#ifndef SUBFRAME_H
-#define SUBFRAME_H
+#ifndef ANALOGS_SUBFRAME_H
+#define ANALOGS_SUBFRAME_H
 ///
-/// \file Subframe.h
+/// \file AnalogsSubframe.h
 /// \brief Declaration of Subframe class
 /// \author Pariterre
 /// \version 1.0

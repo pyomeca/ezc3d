@@ -11,6 +11,7 @@
 #include "Header.h"
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
+
 }
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs(

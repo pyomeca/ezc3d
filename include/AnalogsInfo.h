@@ -1,5 +1,5 @@
-#ifndef ANALOG_INFO_H
-#define ANALOG_INFO_H
+#ifndef ANALOGS_INFO_H
+#define ANALOGS_INFO_H
 ///
 /// \file AnalogInfo.cpp
 /// \brief Implementation of AnalogInfo class
