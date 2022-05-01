@@ -214,19 +214,38 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 %}
 
 %inline %{
-    void _import_numpy_data(ezc3d::c3d *self, PyArrayObject *pointsData, PyArrayObject *residualsData, PyArrayObject* cameraMasksData, PyArrayObject *analogData){
+    void _import_numpy_data(
+            ezc3d::c3d *self,
+            PyArrayObject *pointsData,
+            PyArrayObject *residualsData,
+            PyArrayObject *cameraMasksData,
+            PyArrayObject *analogData,
+            PyArrayObject *rotationData
+        ){
         const size_t nbFrames = PyArray_DIM(pointsData, 2);
         const size_t nbPoints = PyArray_DIM(pointsData, 1);
         const size_t nbAnalog = PyArray_DIM(analogData, 1);
         const size_t nbAnalogFrames = PyArray_DIM(analogData, 2);
         const size_t nbAnalogSubframes = nbAnalogFrames / nbFrames;
+        size_t nbRotation;
+        size_t nbRotationFrames;
+        size_t nbRotationSubframes;
+        if (rotationData){
+            nbRotation = PyArray_DIM(rotationData, 2);
+            nbRotationFrames = PyArray_DIM(rotationData, 3);
+            nbRotationSubframes = nbRotationFrames / nbFrames;
+        }
 
         ezc3d::DataNS::Points3dNS::Points pts;
         ezc3d::DataNS::Points3dNS::Point pt;
 
         ezc3d::DataNS::AnalogsNS::Channel c;
-        ezc3d::DataNS::AnalogsNS::SubFrame subframe;
+        ezc3d::DataNS::AnalogsNS::SubFrame analogsSubframe;
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
+
+        ezc3d::DataNS::RotationNS::Rotation rot;
+        ezc3d::DataNS::RotationNS::SubFrame rotationsSubframe;
+        ezc3d::DataNS::RotationNS::Rotations rotations;
 
         ezc3d::DataNS::Frame currFrame;
 
@@ -254,12 +273,49 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
                 for(size_t i = 0; i < nbAnalog; ++i){
                     double data = *static_cast<double*>(PyArray_GETPTR3(analogData, 0, i, nbAnalogSubframes * f + sf));
                     c.data(data);
-                    subframe.channel(c, i);
+                    analogsSubframe.channel(c, i);
                 }
-                analogs.subframe(subframe, sf);
+                analogs.subframe(analogsSubframe, sf);
             }
 
-            currFrame.add(pts, analogs);
+            if (rotationData){
+                for(size_t sf = 0; sf < nbRotationSubframes; ++sf){
+                    for(size_t r = 0; r < nbRotation; ++r){
+                        double elem00 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 0, 0, r, nbRotationSubframes * f + sf));
+                        double elem10 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 1, 0, r, nbRotationSubframes * f + sf));
+                        double elem20 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 2, 0, r, nbRotationSubframes * f + sf));
+                        double elem30 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 3, 0, r, nbRotationSubframes * f + sf));
+                        double elem01 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 0, 1, r, nbRotationSubframes * f + sf));
+                        double elem11 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 1, 1, r, nbRotationSubframes * f + sf));
+                        double elem21 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 2, 1, r, nbRotationSubframes * f + sf));
+                        double elem31 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 3, 1, r, nbRotationSubframes * f + sf));
+                        double elem02 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 0, 2, r, nbRotationSubframes * f + sf));
+                        double elem12 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 1, 2, r, nbRotationSubframes * f + sf));
+                        double elem22 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 2, 2, r, nbRotationSubframes * f + sf));
+                        double elem32 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 3, 2, r, nbRotationSubframes * f + sf));
+                        double elem03 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 0, 3, r, nbRotationSubframes * f + sf));
+                        double elem13 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 1, 3, r, nbRotationSubframes * f + sf));
+                        double elem23 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 2, 3, r, nbRotationSubframes * f + sf));
+                        double elem33 = *static_cast<double*>(PyArray_GETPTR4(rotationData, 3, 3, r, nbRotationSubframes * f + sf));
+                        double reliability =
+                                std::isnan(elem00 + elem01 + elem02 + elem03 +
+                                           elem10 + elem11 + elem12 + elem13 +
+                                           elem20 + elem21 + elem22 + elem23 +
+                                           elem30 + elem31 + elem32 + elem33)
+                                ? -1. : 0.;
+
+                        rot.set(elem00, elem01, elem02, elem03,
+                                elem10, elem11, elem12, elem13,
+                                elem20, elem21, elem22, elem23,
+                                elem30, elem31, elem32, elem33,
+                                reliability);
+                        rotationsSubframe.rotation(rot, r);
+                    }
+                    rotations.subframe(rotationsSubframe, sf);
+                }
+            }
+
+            currFrame.add(pts, analogs, rotations);
             self->frame(currFrame);
         }
     }
@@ -267,14 +323,22 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 
 %extend ezc3d::c3d
 {
-
     // Extend c3d class to "import" data from numpy-arrays into object efficiently
-    void import_numpy_data(PyObject *pointsData, PyObject *residualsData, PyObject *cameraMasksData, PyObject *analogData){
+    void import_numpy_data(
+            PyObject *pointsData,
+            PyObject *residualsData,
+            PyObject *cameraMasksData,
+            PyObject *analogData,
+            PyObject *rotationsData
+        ){
         PyArrayObject *pointsDataArr = helper_getPyArrayObject(pointsData, NPY_DOUBLE);
         PyArrayObject *residualsDataArr = helper_getPyArrayObject(residualsData, NPY_DOUBLE);
         PyArrayObject *cameraMasksDataArr = helper_getPyArrayObject(cameraMasksData, NPY_DOUBLE);
         PyArrayObject *analogDataArr = helper_getPyArrayObject(analogData, NPY_DOUBLE);
-        _import_numpy_data(self, pointsDataArr, residualsDataArr, cameraMasksDataArr, analogDataArr);
+        PyArrayObject *rotationDataArr = nullptr;
+        if (rotationsData != Py_None)
+            rotationDataArr = helper_getPyArrayObject(rotationsData, NPY_DOUBLE);
+        _import_numpy_data(self, pointsDataArr, residualsDataArr, cameraMasksDataArr, analogDataArr, rotationDataArr);
     }
 
     // Extend c3d class to get an easy accessor to data points

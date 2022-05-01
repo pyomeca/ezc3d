@@ -140,10 +140,12 @@ class c3d(C3dMapper):
             memodict = {}
         # Create a valid structure
         new = c3d()
+        rotations_info = ezc3d.RotationsInfo(self.c3d_swig)
         new.extract_forceplat_data = self.extract_forceplat_data
-        new._storage["header"] = c3d.Header(new.c3d_swig.header())
+
+        new._storage["header"] = c3d.Header(new.c3d_swig.header(), rotations_info)
         new._storage["parameters"] = c3d.Parameter(new.c3d_swig.parameters())
-        new._storage["data"] = c3d.Data(new.c3d_swig, new.extract_forceplat_data)
+        new._storage["data"] = c3d.Data(new.c3d_swig, rotations_info, new.extract_forceplat_data)
 
         # Update the structure with a copy of all data
         for header_key in self["header"]:
@@ -503,49 +505,21 @@ class c3d(C3dMapper):
                 "'c3d['parameters']['ANALOG']['LABELSX']' must have the same length as nAnalogs of the data. "
             )
 
-        rotation_group = None
+        data_rotations = None
         if "rotations" in self._storage["data"]:
             data_rotations = self._storage["data"]["rotations"]
             if len(data_rotations.shape) != 4:
                 raise TypeError("Rotations should be a numpy with exactly 4 dimensions (4 x 4 x nRotations x nFrames)")
-            nb_rotations = data_rotations.shape[2]
-            nb_rotations_frames = data_rotations.shape[3]
             if data_rotations.shape[0] != 4 or data_rotations.shape[1] != 4:
                 raise TypeError("Rotations should be a numpy with first and second dimension exactly equals to 4 element")
+            nb_rotations = data_rotations.shape[2]
+            nb_rotations_frames = data_rotations.shape[3]
 
-            if "ROTATION" in self._storage["parameters"]:
-                rotation_group = self._storage["parameters"]["ROTATION"]
-                if "RATIO" in rotation_group:
-                    rotations_ratio = rotation_group["RATIO"]["value"][0]
-                elif "RATE" in rotation_group:
-                    rotations_ratio = rotation_group["RATE"]["value"][0] / self._storage["parameters"]["POINT"]["RATE"]["value"][0]
-                    if round(rotations_ratio) != rotations_ratio:
-                        raise ValueError("ROTATION:RATE should be a multiple of POINT:RATE")
-                    rotations_ratio = int(rotations_ratio)
-                
-                if rotations_ratio * nb_point_frames != nb_rotations_frames:
-                    raise ValueError("Wrong number of frames in rotations")
-                
-            else:
-                if self.c3d_swig.parameters().isGroup("ROTATION"):
-                    rotation_group = self.c3d_swig.parameters().group("ROTATION")
-                    if "RATIO" in rotation_group.isParameter("RATIO"):
-                        rotations_ratio = rotation_group.parameter("RATIO").valuesAsInt()[0]
-                    elif "RATE" in rotation_group:
-                        rotations_ratio = rotation_group.parameter("RATE").valuesAsDouble()[0] / \
-                                          self._storage["parameters"]["POINT"]["RATE"]["value"][0]
-                        if round(rotations_ratio) != rotations_ratio:
-                            raise ValueError("ROTATION:RATE should be a multiple of POINT:RATE")
-                        rotations_ratio = int(rotations_ratio)
+            # Store the ratio
+            if nb_rotations_frames % nb_point_frames != 0:
+                raise ValueError("Number of rotations' frame should be an integer multiple of frames")
+            self.add_parameter("ROTATION", "RATIO", int(nb_rotations_frames / nb_point_frames))
 
-                    if rotations_ratio * nb_point_frames != nb_rotations_frames:
-                        raise ValueError("Wrong number of frames in rotations")
-                else:
-                    rotations_ratio = nb_rotations_frames / nb_point_frames
-
-                self.add_parameter("ROTATION", "USED", int(nb_rotations))
-                self.add_parameter("ROTATION", "RATIO", int(rotations_ratio))
-            
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
 
@@ -641,7 +615,7 @@ class c3d(C3dMapper):
         for i in range(nb_points):
             pts.point(pt)
         c = ezc3d.Channel()
-        subframe = ezc3d.SubFrame()
+        subframe = ezc3d.AnalogsSubframe()
         for i in range(nb_analogs):
             subframe.channel(c)
         analogs = ezc3d.Analogs()
@@ -649,7 +623,9 @@ class c3d(C3dMapper):
             analogs.subframe(subframe)
 
         # # Fill the data
-        new_c3d.import_numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
+        new_c3d.import_numpy_data(
+            data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs, data_rotations
+        )
 
         # Write the file
         new_c3d.write(path)
