@@ -5,6 +5,7 @@
 #include "Header.h"
 #include "Data.h"
 #include "Parameters.h"
+#include "RotationsInfo.h"
 %}
 
 %include "numpy.i"
@@ -125,19 +126,61 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
     // Get the data
     size_t nAnalogs(analogs.size());
     size_t nFrames(c3d.data().nbFrames());
-    int nSubframe(c3d.header().nbAnalogByFrame());
-    double * data = new double[nAnalogs * nFrames * nSubframe];
+    int nSubframes(c3d.header().nbAnalogByFrame());
+    double * data = new double[nAnalogs * nFrames * nSubframes];
     for (size_t f = 0; f < nFrames; ++f)
-        for (size_t sf = 0; sf < nSubframe; ++sf)
+        for (size_t sf = 0; sf < nSubframes; ++sf)
             for (int a = 0; a < nAnalogs; ++a)
-                data[nSubframe*nFrames*a + sf+nSubframe*f] = c3d.data().frame(f).analogs().subframe(sf).channel(analogs[a]).data();
+                data[nSubframes*nFrames*a + sf+nSubframes*f] = c3d.data().frame(f).analogs().subframe(sf).channel(analogs[a]).data();
 
     // Export them to Python Object
     int nArraySize = 3;
     npy_intp * arraySizes = new npy_intp[nArraySize];
     arraySizes[0] = 1;
     arraySizes[1] = nAnalogs;
-    arraySizes[2] = nFrames * nSubframe;
+    arraySizes[2] = nFrames * nSubframes;
+    PyArrayObject * c = (PyArrayObject *)PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, data);
+    delete[] arraySizes;
+
+    // Give ownership to Python so it will free the memory when needed
+    PyArray_ENABLEFLAGS(c, NPY_ARRAY_OWNDATA);
+
+    return PyArray_Return(c);
+}
+%}
+
+%inline %{
+PyObject * _get_rotations(
+            const ezc3d::c3d& c3d,
+            const std::vector<int>& rotations,
+            const ezc3d::DataNS::RotationNS::Info& rotationInfo
+        )
+{
+    size_t nRotations(rotations.size());
+    size_t nFrames(c3d.data().nbFrames());
+    size_t nSubframes(rotationInfo.ratio());
+    int cmp  = 0;
+    double * data = new double[16 * nRotations * nFrames * nSubframes];
+    for (size_t f = 0; f < nFrames; ++f)
+        for (size_t sf = 0; sf < nSubframes; ++sf)
+            for (size_t r = 0; r < nRotations; ++r){
+                const ezc3d::DataNS::RotationNS::Rotation& currentData =
+                        c3d.data().frame(f).rotations().subframe(sf).rotation(rotations[r]);
+                for (size_t i = 0; i<4; ++i){
+                    for (size_t j = 0; j<4; ++j){
+                        data[f + r*nFrames*nSubframes + j*nRotations*nFrames*nSubframes + i*4*nRotations*nFrames*nSubframes] =
+                                currentData(i, j);
+                    }
+                }
+            }
+
+    // Export them to Python Object
+    int nArraySize = 4;
+    npy_intp * arraySizes = new npy_intp[nArraySize];
+    arraySizes[0] = 4;
+    arraySizes[1] = 4;
+    arraySizes[2] = nRotations;
+    arraySizes[3] = nFrames * nSubframes;
     PyArrayObject * c = (PyArrayObject *)PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, data);
     delete[] arraySizes;
 
@@ -328,6 +371,34 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
         std::vector<int> channels;
         channels.push_back(channel);
         return _get_analogs(*self, channels);
+    }
+
+
+    // Extend c3d class to get an easy accessor to data points
+    PyObject * get_rotations(){
+        // Get the data
+        ezc3d::DataNS::RotationNS::Info rotationInfo(*self);
+        std::vector<int> rotations;
+        for (int i = 0; i < rotationInfo.used(); ++i)
+            rotations.push_back(i);
+        return _get_rotations(*self, rotations, rotationInfo);
+    }
+
+    PyObject * get_rotations(int* rotations, int nRotations)
+    {
+        ezc3d::DataNS::RotationNS::Info rotationInfo(*self);
+        std::vector<int> _rotations;
+        for (int i = 0; i < nRotations; ++i)
+            _rotations.push_back(rotations[i]);
+        return _get_rotations(*self, _rotations, rotationInfo);
+    }
+
+    PyObject * get_rotations(int rotation)
+    {
+        ezc3d::DataNS::RotationNS::Info rotationInfo(*self);
+        std::vector<int> rotations;
+        rotations.push_back(rotation);
+        return _get_rotations(*self, rotations, rotationInfo);
     }
 }
 

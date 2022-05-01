@@ -127,10 +127,12 @@ class c3d(C3dMapper):
         else:
             self.c3d_swig = ezc3d.c3d(path, ignore_bad_formatting)
 
+        rotations_info = ezc3d.RotationsInfo(self.c3d_swig)
+
         self.extract_forceplat_data = extract_forceplat_data
-        self._storage["header"] = c3d.Header(self.c3d_swig.header(), ezc3d.RotationsInfo(self.c3d_swig))
+        self._storage["header"] = c3d.Header(self.c3d_swig.header(), rotations_info)
         self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
-        self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
+        self._storage["data"] = c3d.Data(self.c3d_swig, rotations_info, self.extract_forceplat_data)
         return
 
     def __deepcopy__(self, memodict=None):
@@ -173,7 +175,7 @@ class c3d(C3dMapper):
                 "first_frame": self.header.nbAnalogByFrame() * self.header.firstFrame(),
                 "last_frame": self.header.nbAnalogByFrame() * (self.header.lastFrame() + 1) - 1,
             }
-            if rotation_info.rotation_info.hasGroup():
+            if rotation_info.hasGroup():
                 rotation_frame_rate = self.header.frameRate() * rotation_info.ratio()
                 self._storage["rotations"] = {
                     "size": rotation_info.used(),
@@ -271,7 +273,7 @@ class c3d(C3dMapper):
                 self._storage["Tz"][:, i] = Tz[i].to_array()[:, 0]
 
     class Data(C3dMutableMapper):
-        def __init__(self, swig_c3d, extract_forceplat_data):
+        def __init__(self, swig_c3d, rotations_info, extract_forceplat_data):
             super().__init__()
 
             # Interface to swig pointers
@@ -283,6 +285,9 @@ class c3d(C3dMapper):
                 "camera_masks": swig_c3d.get_point_camera_masks(),
             }
             self._storage["analogs"] = swig_c3d.get_analogs()
+
+            if rotations_info.hasGroup():
+                self._storage["rotations"] = swig_c3d.get_rotations()
 
             # Add the platform filer if required
             if extract_forceplat_data:
