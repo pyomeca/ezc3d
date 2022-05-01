@@ -27,7 +27,8 @@ namespace std {
     %template(VecPoints) vector<ezc3d::DataNS::Points3dNS::Point>;
     %template(VecAnalogSubFrames) vector<ezc3d::DataNS::AnalogsNS::SubFrame>;
     %template(VecAnalogChannels) vector<ezc3d::DataNS::AnalogsNS::Channel>;
-
+    %template(VecRotationSubFrames) vector<ezc3d::DataNS::RotationNS::SubFrame>;
+    %template(VecRotations) vector<ezc3d::DataNS::RotationNS::Rotation>;
 }
 
 // Manage exceptions raised
@@ -51,11 +52,15 @@ namespace std {
 }
 
 // Includes all necessary files from the API
+%rename(AnalogsSubframe) ezc3d::DataNS::AnalogsNS::SubFrame;
+%rename(RotationsSubframe) ezc3d::DataNS::RotationNS::SubFrame;
+
 #define __attribute__(x)
 %include "ezc3dConfig.h"
 %include "ezc3d.h"
 %include "math/Matrix.h"
 %include "math/Matrix33.h"
+%include "math/Matrix44.h"
 %include "math/Matrix66.h"
 %include "math/Vector3d.h"
 %include "math/Vector6d.h"
@@ -68,8 +73,13 @@ namespace std {
 %include "Points.h"
 %include "Point.h"
 %include "Analogs.h"
-%include "Subframe.h"
+%include "AnalogsSubframe.h"
 %include "Channel.h"
+%include "Rotations.h"
+%include "RotationsSubframe.h"
+%include "Rotation.h"
+%include "RotationsInfo.h"
+
 
 // Add the modules
 namespace std {

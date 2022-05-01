@@ -133,7 +133,9 @@ class c3d(C3dMapper):
         self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict=None):
+        if memodict is None:
+            memodict = {}
         # Create a valid structure
         new = c3d()
         new.extract_forceplat_data = self.extract_forceplat_data
@@ -154,7 +156,7 @@ class c3d(C3dMapper):
 
     class Header(C3dMapper):
         def __init__(self, swig_header):
-            super(c3d.Header, self).__init__()
+            super().__init__()
 
             # Interface to swig pointers
             self.header = swig_header
@@ -181,7 +183,7 @@ class c3d(C3dMapper):
 
     class Parameter(C3dMutableMapper):
         def __init__(self, swig_param):
-            super(c3d.Parameter, self).__init__()
+            super().__init__()
 
             # Interface to swig pointers
             self.parameters = swig_param
@@ -222,6 +224,8 @@ class c3d(C3dMapper):
                 value = []
                 for element in table:
                     value.append(element)
+            else:
+                raise RuntimeError("Data type not recognized")
             param["value"] = value
 
             param_name = param_ezc3d.name()
@@ -231,7 +235,7 @@ class c3d(C3dMapper):
 
     class PlatForm(C3dMapper):
         def __init__(self, swig_pf):
-            super(c3d.PlatForm, self).__init__()
+            super().__init__()
 
             self._storage["unit_force"] = swig_pf.forceUnit()
             self._storage["unit_moment"] = swig_pf.momentUnit()
@@ -260,7 +264,7 @@ class c3d(C3dMapper):
 
     class Data(C3dMutableMapper):
         def __init__(self, swig_c3d, extract_forceplat_data):
-            super(c3d.Data, self).__init__()
+            super().__init__()
 
             # Interface to swig pointers
             self.data = swig_c3d.data()
@@ -594,3 +598,4 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+

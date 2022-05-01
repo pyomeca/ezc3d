@@ -13,7 +13,10 @@
 #include "Header.h"
 #include "Parameters.h"
 #include "Data.h"
-#include "Rotations.h"
+
+#include "PointsInfo.h"
+#include "AnalogsInfo.h"
+#include "RotationsInfo.h"
 
 #include "modules/ForcePlatforms.h"
 
