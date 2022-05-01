@@ -49,6 +49,17 @@ public:
             double reliability);
 
     ///
+    /// \brief Create a filled rotation class at a given subframe from a given file
+    /// \param c3d Reference to the c3d to copy the data in
+    /// \param file File to copy the data from
+    /// \param info The information about the rotations
+    ///
+    Rotation(
+            ezc3d::c3d& c3d,
+            std::fstream& file,
+            const RotationNS::Info& info);
+
+    ///
     /// \brief Copy a rotation
     /// \param rotation The rotation to copy
     ///

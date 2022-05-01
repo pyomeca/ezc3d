@@ -8,6 +8,7 @@
 ///
 
 #include "Rotation.h"
+#include "RotationsInfo.h"
 
 #include <bitset>
 
@@ -31,6 +32,36 @@ ezc3d::DataNS::RotationNS::Rotation::Rotation(
     _reliability(reliability)
 {
 
+}
+
+ezc3d::DataNS::RotationNS::Rotation::Rotation(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const ezc3d::DataNS::RotationNS::Info &info) :
+    ezc3d::Matrix44()
+{
+    // Scale -1 is mandatory (Float)
+    double elem00 = c3d.readFloat(info.processorType(), file);
+    double elem10 = c3d.readFloat(info.processorType(), file);
+    double elem20 = c3d.readFloat(info.processorType(), file);
+    double elem30 = c3d.readFloat(info.processorType(), file);
+    double elem01 = c3d.readFloat(info.processorType(), file);
+    double elem11 = c3d.readFloat(info.processorType(), file);
+    double elem21 = c3d.readFloat(info.processorType(), file);
+    double elem31 = c3d.readFloat(info.processorType(), file);
+    double elem02 = c3d.readFloat(info.processorType(), file);
+    double elem12 = c3d.readFloat(info.processorType(), file);
+    double elem22 = c3d.readFloat(info.processorType(), file);
+    double elem32 = c3d.readFloat(info.processorType(), file);
+    double elem03 = c3d.readFloat(info.processorType(), file);
+    double elem13 = c3d.readFloat(info.processorType(), file);
+    double elem23 = c3d.readFloat(info.processorType(), file);
+    double elem33 = c3d.readFloat(info.processorType(), file);
+    set(elem00, elem01, elem02, elem03,
+        elem10, elem11, elem12, elem13,
+        elem20, elem21, elem22, elem23,
+        elem30, elem31, elem32, elem33);
+    _reliability = c3d.readFloat(info.processorType(), file);
 }
 
 ezc3d::DataNS::RotationNS::Rotation::Rotation(

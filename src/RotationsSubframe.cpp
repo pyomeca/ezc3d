@@ -24,31 +24,7 @@ ezc3d::DataNS::RotationNS::SubFrame::SubFrame(
 
     // Read the rotations
     for (size_t i = 0; i < nbRotations(); ++i){
-        // Scale -1 is mandatory (Float)
-        double elem00 = c3d.readFloat(info.processorType(), file);
-        double elem10 = c3d.readFloat(info.processorType(), file);
-        double elem20 = c3d.readFloat(info.processorType(), file);
-        double elem30 = c3d.readFloat(info.processorType(), file);
-        double elem01 = c3d.readFloat(info.processorType(), file);
-        double elem11 = c3d.readFloat(info.processorType(), file);
-        double elem21 = c3d.readFloat(info.processorType(), file);
-        double elem31 = c3d.readFloat(info.processorType(), file);
-        double elem02 = c3d.readFloat(info.processorType(), file);
-        double elem12 = c3d.readFloat(info.processorType(), file);
-        double elem22 = c3d.readFloat(info.processorType(), file);
-        double elem32 = c3d.readFloat(info.processorType(), file);
-        double elem03 = c3d.readFloat(info.processorType(), file);
-        double elem13 = c3d.readFloat(info.processorType(), file);
-        double elem23 = c3d.readFloat(info.processorType(), file);
-        double elem33 = c3d.readFloat(info.processorType(), file);
-        double reliability = c3d.readFloat(info.processorType(), file);
-
-        rotation(ezc3d::DataNS::RotationNS::Rotation(
-                    elem00, elem01, elem02, elem03,
-                    elem10, elem11, elem12, elem13,
-                    elem20, elem21, elem22, elem23,
-                    elem30, elem31, elem32, elem33,
-                    reliability), i);
+        rotation(ezc3d::DataNS::RotationNS::Rotation(c3d, file, info), i);
     }
 }
 
