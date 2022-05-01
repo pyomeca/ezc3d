@@ -8,7 +8,7 @@
 /// \date April 30th, 2022
 ///
 
-#include "Rotation.h"
+#include "RotationsSubframe.h"
 
 ///
 /// \brief Rotation holder for C3D Rotations data
@@ -54,62 +54,76 @@ public:
 
     //---- ROTATION ----//
 protected:
-    std::vector<std::vector<ezc3d::DataNS::RotationNS::Rotation>> _rotations; ///< Holder of the 3D rotations at each frame
-    size_t _nbRotations; ///< Remembers the number of rotations
+    std::vector<ezc3d::DataNS::RotationNS::SubFrame> _subframe; ///< Holder of the 3D rotations at each frame
 
 public:
     ///
-    /// \brief Get the number of frames
-    /// \return The number of frames
+    /// \brief Get the number of subframes
+    /// \return The number of subframes
     ///
-    size_t nbFrames() const;
+    size_t nbSubframes() const;
 
     ///
-    /// \brief Get the number of rotations
-    /// \return The number of rotations
+    /// \brief Resize the number of subframes. Warning, this function drops data if subframes is downsized
+    /// \param nbSubframes The number of subframes to be in the holder
     ///
-    size_t nbRotations() const;
+    void nbSubframes(
+            size_t nbSubframes);
 
     ///
-    /// \brief Get a particular rotation of index idx from the rotations data
-    /// \param frame The frame index
-    /// \param idx The index of the rotation
-    /// \return The rotation
+    /// \brief Get a particular subframe of index idx from the rotation data set
+    /// \param idx The index of the subframe
+    /// \return The Subframe
     ///
-    /// Throw a std::out_of_range exception if idx is larger than the number of frames
+    /// Get a particular subframe of index idx from the rotation data set.
     ///
-    const ezc3d::DataNS::RotationNS::Rotation& rotation(
-            size_t frame,
+    /// Throw a std::out_of_range exception if idx is larger than the number of subframes
+    ///
+    const ezc3d::DataNS::RotationNS::SubFrame& subframe(
             size_t idx) const;
 
     ///
-    /// \brief Get a particular rotation of index idx from the 3D rotations data in order to be modified by the caller
-    /// \param frame The frame index
-    /// \param idx The index of the rotation
-    /// \return The rotation
+    /// \brief Get a particular subframe of index idx from the rotation data set in order to be modified by the caller
+    /// \param idx The index of the subframe
+    /// \return A non-const reference to the subframe
     ///
-    /// Get a particular rotation of index idx from the 3D rotations data in the form of a non-const reference.
-    /// The user can thereafter modify these rotations at will, but with the caution it requires.
+    /// Get a particular subframe of index idx from the rotation data in the form of a non-const reference.
+    /// The user can thereafter modify these points at will, but with the caution it requires.
     ///
-    /// Throw a std::out_of_range exception if idx is larger than the number of frames
+    /// Throw a std::out_of_range exception if idx is larger than the number of subframes
     ///
-    ezc3d::DataNS::RotationNS::Rotation& rotation(
-            size_t frame,
+    ezc3d::DataNS::RotationNS::SubFrame& subframe(
             size_t idx);
 
     ///
-    /// \brief Get all the rotations from the 3D rotations data at a specific frame
-    /// \param frame The frame
-    /// \return The rotations
+    /// \brief Add/replace a subframe to the rotation data set
+    /// \param subframe The subframe to add
+    /// \param idx The index of the subframe in the rotation data set
     ///
-    const std::vector<ezc3d::DataNS::RotationNS::Rotation>& rotations(
-            size_t frame) const;
+    /// Add or replace a subframe to the rotation data set.
+    ///
+    /// If no idx is sent, then the subframe is appended to the rotation data set.
+    /// If the idx correspond to a pre-existing subframe, it replaces it.
+    /// If idx is larger than the number of subframes, it resize the rotation data set accordingly and add the subframe
+    /// where it belongs but leaves the other created subframes empty.
+    ///
+    void subframe(
+            const ezc3d::DataNS::RotationNS::SubFrame& subframe,
+            size_t idx = SIZE_MAX);
+
+
+    ///
+    /// \brief Get all the subframes from the rotation data set
+    /// \return The subframes
+    ///
+    const std::vector<ezc3d::DataNS::RotationNS::SubFrame>& subframes() const;
 
     ///
     /// \brief Return if the rotations are empty
     /// \return if the rotations are empty
     ///
     bool isEmpty() const;
+
 };
 
 #endif

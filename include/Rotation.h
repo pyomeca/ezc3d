@@ -78,7 +78,7 @@ public:
 
     //---- DATA ----//
 protected:
-    double _reliability; ///< Reliability metric of the rotation
+    double _reliability;  ///< Reliability metric of the rotation
 
 public:
     ///
@@ -151,6 +151,11 @@ public:
     ///
     virtual bool isValid() const;
 
+    ///
+    /// \brief Returns if the rotation is empty
+    /// \return If the rotation is empty
+    ///
+    virtual bool isEmpty() const;
 };
 
 #endif

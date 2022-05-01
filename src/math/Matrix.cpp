@@ -82,7 +82,7 @@ void ezc3d::Matrix::print() const
     std::cout << "\n";
 }
 
-double ezc3d::Matrix::sum()
+double ezc3d::Matrix::sum() const
 {
     double sum(0);
     for (size_t i = 0; i < _data.size(); ++i)

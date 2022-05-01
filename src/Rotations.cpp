@@ -7,148 +7,114 @@
 /// \date April 30th, 2022
 ///
 
+#include "Rotations.h"
 #include "Header.h"
 #include "Parameters.h"
-#include "Rotations.h"
+#include "RotationsInfo.h"
+#include "RotationsSubframe.h"
 
 // Rotations data
-ezc3d::DataNS::RotationNS::Rotations::Rotations() {
+ezc3d::DataNS::RotationNS::Rotations::Rotations()
+{
 
 }
 
 ezc3d::DataNS::RotationNS::Rotations::Rotations(
         ezc3d::c3d &c3d,
-        std::fstream &file) {
+        std::fstream &file)
+{
     if (!c3d.header().hasRotationalData())
         return;
 
-    // Do a sanity check
+    ezc3d::DataNS::RotationNS::Info info(c3d);
     auto& group = c3d.parameters().group("ROTATION");
-    if (!group.isParameter("USED")){
-        throw std::runtime_error("USED is not present in ROTATION.");
-    }
+
+    // Prepare the reading
     if (!group.isParameter("DATA_START")){
         throw std::runtime_error("DATA_START is not present in ROTATION.");
     }
-    if (!group.isParameter("RATIO") && !group.isParameter("RATE")){
-        throw std::runtime_error("RATIO or RATE must be present in ROTATION.");
-    }
-    if (!group.isParameter("LABELS")){
-        throw std::runtime_error("LABELS is not present in ROTATION.");
-    }
-
-    // Prepare the reading
     file.seekg(static_cast<int>(group.parameter("DATA_START").valuesAsInt()[0]-1)*512, std::ios::beg);
-    PROCESSOR_TYPE processorType(c3d.parameters().processorType());
 
-    std::vector<std::string> names = c3d.parameters()
-            .group("ROTATION").parameter("LABELS").valuesAsString();
-    int ratio = group.isParameter("RATIO") ?
-                group.parameter("RATIO").valuesAsInt()[0] :
-                group.parameter("RATE").valuesAsDouble()[0] / c3d.header().frameRate();
-    _nbRotations = group.parameter("USED").valuesAsInt()[0];
-    size_t nbFrames = c3d.header().nbFrames() * ratio;
-
-    // Read the data
-    _rotations.resize(nbFrames);
-    for (size_t j = 0; j < nbFrames; ++j){
-        if (file.eof())
-            break;
-
-        _rotations[j].resize(nbRotations());
-        // Read the rotations
-        for (size_t i = 0; i < nbRotations(); ++i){
-            // Scale -1 is mandatory (Float)
-            double elem00 = c3d.readFloat(processorType, file);
-            double elem10 = c3d.readFloat(processorType, file);
-            double elem20 = c3d.readFloat(processorType, file);
-            double elem30 = c3d.readFloat(processorType, file);
-            double elem01 = c3d.readFloat(processorType, file);
-            double elem11 = c3d.readFloat(processorType, file);
-            double elem21 = c3d.readFloat(processorType, file);
-            double elem31 = c3d.readFloat(processorType, file);
-            double elem02 = c3d.readFloat(processorType, file);
-            double elem12 = c3d.readFloat(processorType, file);
-            double elem22 = c3d.readFloat(processorType, file);
-            double elem32 = c3d.readFloat(processorType, file);
-            double elem03 = c3d.readFloat(processorType, file);
-            double elem13 = c3d.readFloat(processorType, file);
-            double elem23 = c3d.readFloat(processorType, file);
-            double elem33 = c3d.readFloat(processorType, file);
-            double reliability = c3d.readFloat(processorType, file);
-
-            _rotations[j][i] = ezc3d::DataNS::RotationNS::Rotation(
-                        elem00, elem01, elem02, elem03,
-                        elem10, elem11, elem12, elem13,
-                        elem20, elem21, elem22, elem23,
-                        elem30, elem31, elem32, elem33,
-                        reliability);
-
-        }
+    size_t nbSubframes = info.ratio();
+    for (size_t k = 0; k < nbSubframes; ++k){
+        subframe(ezc3d::DataNS::RotationNS::SubFrame(c3d, file, info), k);
     }
 }
 
 void ezc3d::DataNS::RotationNS::Rotations::print() const {
-    for (size_t i = 0; i < nbFrames(); ++i){
-        std::cout << "Frame: " << i << "\n";
-        for (size_t j = 0; j < nbRotations(); ++j){
-            std::cout << "Rotation: " << j << "\n";
-            rotation(i, j).print();
-        }
+    for (size_t i = 0; i < nbSubframes(); ++i){
+        std::cout << "Subframe = " << i << "\n";
+        subframe(i).print();
+        std::cout << "\n";
     }
 }
 
 void ezc3d::DataNS::RotationNS::Rotations::write(
         std::fstream &f) const {
-    for (size_t i = 0; i < nbFrames(); ++i){
-        for (size_t j = 0; j < nbRotations(); ++j){
-            rotation(i, j).write(f);
-        }
+    for (size_t i = 0; i < nbSubframes(); ++i) {
+        subframe(i).write(f);
     }
 }
 
-size_t ezc3d::DataNS::RotationNS::Rotations::nbFrames() const {
-    return _rotations.size();
+size_t ezc3d::DataNS::RotationNS::Rotations::nbSubframes() const {
+    return _subframe.size();
 }
 
-size_t ezc3d::DataNS::RotationNS::Rotations::nbRotations() const
-{
-    return _nbRotations;
+void ezc3d::DataNS::RotationNS::Rotations::nbSubframes(
+        size_t nbSubframes) {
+    _subframe.resize(nbSubframes);
 }
 
-const ezc3d::DataNS::RotationNS::Rotation&
-ezc3d::DataNS::RotationNS::Rotations::rotation(
-        size_t frame,
+const ezc3d::DataNS::RotationNS::SubFrame&
+ezc3d::DataNS::RotationNS::Rotations::subframe(
         size_t idx) const {
     try {
-        return _rotations.at(frame).at(idx);
+        return _subframe.at(idx);
     } catch(std::out_of_range) {
-        throw std::out_of_range(
-                    "Rotations::rotation method is trying to access the frame "
-                    + std::to_string(frame) + " rotation " + std::to_string(idx) +
-                    " while the maximum number of frames is "
-                    + std::to_string(nbFrames()) + " and rotations is " +
-                    std::to_string(_nbRotations) + ".");
+        throw std::out_of_range("Analogs::subframe method is trying to access the subframe "
+                                + std::to_string(idx) +
+                                " while the maximum number of subframes is "
+                                + std::to_string(nbSubframes()) + ".");
     }
 }
 
-ezc3d::DataNS::RotationNS::Rotation&
-ezc3d::DataNS::RotationNS::Rotations::rotation(
-        size_t frame,
+ezc3d::DataNS::RotationNS::SubFrame&
+ezc3d::DataNS::RotationNS::Rotations::subframe(
         size_t idx) {
     try {
-        return _rotations.at(frame).at(idx);
+        return _subframe.at(idx);
     } catch(std::out_of_range) {
-        throw std::out_of_range(
-                    "Rotations::rotation method is trying to access the frame "
-                    + std::to_string(frame) + " rotation " + std::to_string(idx) +
-                    " while the maximum number of frames is "
-                    + std::to_string(nbFrames()) + " and rotations is " +
-                    std::to_string(_nbRotations) + ".");
+        throw std::out_of_range("Analogs::subframe method is trying to access the subframe "
+                                + std::to_string(idx) +
+                                " while the maximum number of subframes is "
+                                + std::to_string(nbSubframes()) + ".");
     }
 }
 
-const std::vector<ezc3d::DataNS::RotationNS::Rotation>&
-ezc3d::DataNS::RotationNS::Rotations::rotations(size_t frame) const {
-    return _rotations.at(frame);
+void ezc3d::DataNS::RotationNS::Rotations::subframe(
+        const ezc3d::DataNS::RotationNS::SubFrame& subframe,
+        size_t idx) {
+    if (idx == SIZE_MAX) {
+        _subframe.push_back(subframe);
+    }
+    else {
+        if (idx >= nbSubframes()) {
+            _subframe.resize(idx+1);
+        }
+        _subframe[idx] = subframe;
+    }
+}
+
+const std::vector<ezc3d::DataNS::RotationNS::SubFrame>&
+ezc3d::DataNS::RotationNS::Rotations::subframes() const {
+    return _subframe;
+}
+
+bool ezc3d::DataNS::RotationNS::Rotations::isEmpty() const {
+    for (SubFrame subframe : subframes()) {
+        if (!subframe.isEmpty()) {
+            return false;
+        }
+    }
+    return true;
 }

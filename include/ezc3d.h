@@ -159,6 +159,8 @@ namespace ezc3d {
         namespace RotationNS {
             class EZC3D_API Rotations;
             class EZC3D_API Rotation;
+            class EZC3D_API SubFrame;
+            class EZC3D_API Info;
         }
     }
 
@@ -407,7 +409,6 @@ protected:
     std::shared_ptr<ezc3d::Header> _header; ///< Pointer that holds the header of the C3D
     std::shared_ptr<ezc3d::ParametersNS::Parameters> _parameters; ///< Pointer that holds the parameters of the C3D
     std::shared_ptr<ezc3d::DataNS::Data> _data; ///< Pointer that holds the data of the C3D
-    std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations> _rotations; ///< Pointer that holds the rotations data of the C3D
 
 public:
     ///
@@ -427,12 +428,6 @@ public:
     /// \return The points and analogous data of the C3D
     ///
     const ezc3d::DataNS::Data& data() const;
-
-    ///
-    /// \brief The rotations data of the C3D
-    /// \return The rotations data of the C3D
-    ///
-    const ezc3d::DataNS::RotationNS::Rotations& rotations() const;
 
     // ---- PUBLIC GETTER INTERFACE ---- //
 public:

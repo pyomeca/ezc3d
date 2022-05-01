@@ -29,6 +29,7 @@ set(SRC_LIST
     src/math/Vector6d.cpp
     src/Analogs.cpp
     src/AnalogsInfo.cpp
+    src/AnalogsSubframe.cpp
     src/Channel.cpp
     src/Data.cpp
     src/ezc3d.cpp
@@ -42,7 +43,8 @@ set(SRC_LIST
     src/PointsInfo.cpp
     src/Rotation.cpp
     src/Rotations.cpp
-    src/Subframe.cpp
+    src/RotationsInfo.cpp
+    src/RotationsSubframe.cpp
     src/modules/ForcePlatforms.cpp
 )
 

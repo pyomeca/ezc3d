@@ -1713,18 +1713,20 @@ TEST(c3dFileIO, readC3DWithRotation){
     EXPECT_EQ(c3d.parameters().group("ROTATION").parameter("DESCRIPTIONS").valuesAsString().size(), 21);
 
     // DATA
-    EXPECT_EQ(c3d.rotations().nbFrames(), 340);
-    EXPECT_EQ(c3d.rotations().nbRotations(), 21);
+    EXPECT_EQ(c3d.data().nbFrames(), 340);
+    EXPECT_EQ(c3d.data().frame(0).rotations().subframe(0).nbRotations(), 21);
 
     // Test some values randomly
-    EXPECT_FLOAT_EQ(c3d.rotations().rotation(5, 2)(2, 3), 931.63824);
+    EXPECT_FLOAT_EQ(c3d.data().frame(0).rotations().subframe(5).rotation(2)(2, 3), 931.63824);
 
     // Test sum of all values
     double sumValues(0);
-    for (size_t f = 0; f < 340; ++f){
-        for (auto rot : c3d.rotations().rotations(f)){
-            if (rot.isValid()){
-                sumValues += rot.sum();
+    for (const auto& frame : c3d.data().frames()){
+        for (const auto& subframe : frame.rotations().subframes()){
+            for (const auto& rot : subframe.rotations()){
+                if (rot.isValid()){
+                    sumValues += rot.sum();
+                }
             }
         }
     }
@@ -1769,10 +1771,12 @@ TEST(c3dFileIO, readC3DWithRotation){
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DESCRIPTIONS").valuesAsString().size(), 21);
 
     double sumValuesCopy(0);
-    for (size_t f = 0; f < 340; ++f){
-        for (auto rot : c3dCopy.rotations().rotations(f)){
-            if (rot.isValid()){
-                sumValuesCopy += rot.sum();
+    for (const auto& frame : c3dCopy.data().frames()){
+        for (const auto& subframe : frame.rotations().subframes()){
+            for (const auto& rot : subframe.rotations()){
+                if (rot.isValid()){
+                    sumValuesCopy += rot.sum();
+                }
             }
         }
     }

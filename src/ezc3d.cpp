@@ -11,7 +11,6 @@
 #include "Header.h"
 #include "Data.h"
 #include "Parameters.h"
-#include "Rotations.h"
 
 
 void ezc3d::removeTrailingSpaces(
@@ -44,8 +43,6 @@ ezc3d::c3d::c3d():
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
                 new ezc3d::ParametersNS::Parameters());
     _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
-    _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
-                new ezc3d::DataNS::RotationNS::Rotations());
 }
 
 ezc3d::c3d::c3d(
@@ -76,9 +73,6 @@ ezc3d::c3d::c3d(
     _data = std::shared_ptr<ezc3d::DataNS::Data>(
                 new ezc3d::DataNS::Data(*this, stream));
 
-    _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
-                new ezc3d::DataNS::RotationNS::Rotations(*this, stream));
-
     // Parameters and header may be inconsistent with data,
     // so reprocess them if needed
     updateParameters();
@@ -91,7 +85,6 @@ void ezc3d::c3d::print() const {
     header().print();
     parameters().print();
     data().print();
-    rotations().print();
 }
 
 void ezc3d::c3d::write(
@@ -116,7 +109,6 @@ void ezc3d::c3d::write(
     float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
     std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
     data().write(f, pointScaleFactor, pointAnalogFactors);
-    rotations().write(f);
 
     f.close();
 }
@@ -382,10 +374,6 @@ const ezc3d::ParametersNS::Parameters& ezc3d::c3d::parameters() const {
 
 const ezc3d::DataNS::Data& ezc3d::c3d::data() const {
     return *_data;
-}
-
-const ezc3d::DataNS::RotationNS::Rotations& ezc3d::c3d::rotations() const {
-    return *_rotations;
 }
 
 const std::vector<std::string> ezc3d::c3d::pointNames() const {

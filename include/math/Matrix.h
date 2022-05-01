@@ -80,7 +80,7 @@ public:
     /// \brief The sum of all elements in the matrix
     /// \return The sum of all elements in the matrix
     ///
-    virtual double sum();
+    virtual double sum() const;
 
     ///
     /// \brief Set all values to zero

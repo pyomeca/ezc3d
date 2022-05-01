@@ -106,3 +106,8 @@ bool ezc3d::DataNS::RotationNS::Rotation::isValid() const
 {
     return _reliability < 0 ? false : true;
 }
+
+bool ezc3d::DataNS::RotationNS::Rotation::isEmpty() const
+{
+    return !isValid();
+}
