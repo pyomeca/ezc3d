@@ -45,6 +45,11 @@ ezc3d::DataNS::RotationNS::Info::Info(
     _processorType = c3d.parameters().processorType();
 }
 
+bool ezc3d::DataNS::RotationNS::Info::hasGroup() const
+{
+    return _hasGroup;
+}
+
 size_t ezc3d::DataNS::RotationNS::Info::dataStart() const
 {
     return _dataStart;

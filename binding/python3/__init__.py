@@ -128,7 +128,7 @@ class c3d(C3dMapper):
             self.c3d_swig = ezc3d.c3d(path, ignore_bad_formatting)
 
         self.extract_forceplat_data = extract_forceplat_data
-        self._storage["header"] = c3d.Header(self.c3d_swig.header())
+        self._storage["header"] = c3d.Header(self.c3d_swig.header(), ezc3d.RotationsInfo(self.c3d_swig))
         self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
         self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
@@ -155,7 +155,7 @@ class c3d(C3dMapper):
         return new
 
     class Header(C3dMapper):
-        def __init__(self, swig_header):
+        def __init__(self, swig_header, rotation_info):
             super().__init__()
 
             # Interface to swig pointers
@@ -173,6 +173,14 @@ class c3d(C3dMapper):
                 "first_frame": self.header.nbAnalogByFrame() * self.header.firstFrame(),
                 "last_frame": self.header.nbAnalogByFrame() * (self.header.lastFrame() + 1) - 1,
             }
+            if rotation_info.rotation_info.hasGroup():
+                rotation_frame_rate = self.header.frameRate() * rotation_info.ratio()
+                self._storage["rotations"] = {
+                    "size": rotation_info.used(),
+                    "frame_rate": rotation_frame_rate,
+                    "first_frame": rotation_frame_rate * self.header.firstFrame(),
+                    "last_frame": rotation_frame_rate * (self.header.lastFrame() + 1) - 1,
+                }
             self._storage["events"] = {
                 "size": len(self.header.eventsTime()),
                 "events_time": self.header.eventsTime(),
@@ -598,4 +606,5 @@ class c3d(C3dMapper):
         # Write the file
         new_c3d.write(path)
         return
+
 

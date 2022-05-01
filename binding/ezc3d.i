@@ -54,6 +54,7 @@ namespace std {
 // Includes all necessary files from the API
 %rename(AnalogsSubframe) ezc3d::DataNS::AnalogsNS::SubFrame;
 %rename(RotationsSubframe) ezc3d::DataNS::RotationNS::SubFrame;
+%rename(RotationsInfo) ezc3d::DataNS::RotationNS::Info;
 
 #define __attribute__(x)
 %include "ezc3dConfig.h"
