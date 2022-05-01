@@ -1,7 +1,7 @@
-#ifndef SUBFRAME_H
-#define SUBFRAME_H
+#ifndef ANALOGS_SUBFRAME_H
+#define ANALOGS_SUBFRAME_H
 ///
-/// \file Subframe.h
+/// \file AnalogsSubframe.h
 /// \brief Declaration of Subframe class
 /// \author Pariterre
 /// \version 1.0
@@ -21,6 +21,16 @@ public:
     ///
     SubFrame();
 
+    ///
+    /// \brief Create a filled SubFrame class at a given frame from a given file
+    /// \param c3d Reference to the c3d to copy the data in
+    /// \param file File to copy the data from
+    /// \param info The information about the analogs
+    ///
+    SubFrame(
+            ezc3d::c3d& c3d,
+            std::fstream& file,
+            const AnalogsNS::Info& info);
 
     //---- STREAM ----//
 public:

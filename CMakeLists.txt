@@ -23,10 +23,13 @@ ENDIF()
 set(SRC_LIST
     src/math/Matrix.cpp
     src/math/Matrix33.cpp
+    src/math/Matrix44.cpp
     src/math/Matrix66.cpp
     src/math/Vector3d.cpp
     src/math/Vector6d.cpp
     src/Analogs.cpp
+    src/AnalogsInfo.cpp
+    src/AnalogsSubframe.cpp
     src/Channel.cpp
     src/Data.cpp
     src/ezc3d.cpp
@@ -37,7 +40,11 @@ set(SRC_LIST
     src/Parameters.cpp
     src/Point.cpp
     src/Points.cpp
-    src/Subframe.cpp
+    src/PointsInfo.cpp
+    src/Rotation.cpp
+    src/Rotations.cpp
+    src/RotationsInfo.cpp
+    src/RotationsSubframe.cpp
     src/modules/ForcePlatforms.cpp
 )
 

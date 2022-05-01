@@ -20,12 +20,12 @@ ezc3d::ParametersNS::GroupNS::Group::Group(
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::print() const {
-    std::cout << "groupName = " << name() << std::endl;
-    std::cout << "isLocked = " << isLocked() << std::endl;
-    std::cout << "desc = " << description() << std::endl;
+    std::cout << "groupName = " << name() << "\n";
+    std::cout << "isLocked = " << isLocked() << "\n";
+    std::cout << "desc = " << description() << "\n";
 
     for (size_t i=0; i < nbParameters(); ++i){
-        std::cout << "Parameter " << i << std::endl;
+        std::cout << "Parameter " << i << "\n";
         parameter(i).print();
     }
 }

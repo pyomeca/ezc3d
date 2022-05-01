@@ -127,19 +127,25 @@ class c3d(C3dMapper):
         else:
             self.c3d_swig = ezc3d.c3d(path, ignore_bad_formatting)
 
+        rotations_info = ezc3d.RotationsInfo(self.c3d_swig)
+
         self.extract_forceplat_data = extract_forceplat_data
-        self._storage["header"] = c3d.Header(self.c3d_swig.header())
+        self._storage["header"] = c3d.Header(self.c3d_swig.header(), rotations_info)
         self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
-        self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
+        self._storage["data"] = c3d.Data(self.c3d_swig, rotations_info, self.extract_forceplat_data)
         return
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict=None):
+        if memodict is None:
+            memodict = {}
         # Create a valid structure
         new = c3d()
+        rotations_info = ezc3d.RotationsInfo(self.c3d_swig)
         new.extract_forceplat_data = self.extract_forceplat_data
-        new._storage["header"] = c3d.Header(new.c3d_swig.header())
+
+        new._storage["header"] = c3d.Header(new.c3d_swig.header(), rotations_info)
         new._storage["parameters"] = c3d.Parameter(new.c3d_swig.parameters())
-        new._storage["data"] = c3d.Data(new.c3d_swig, new.extract_forceplat_data)
+        new._storage["data"] = c3d.Data(new.c3d_swig, rotations_info, new.extract_forceplat_data)
 
         # Update the structure with a copy of all data
         for header_key in self["header"]:
@@ -153,8 +159,8 @@ class c3d(C3dMapper):
         return new
 
     class Header(C3dMapper):
-        def __init__(self, swig_header):
-            super(c3d.Header, self).__init__()
+        def __init__(self, swig_header, rotation_info):
+            super().__init__()
 
             # Interface to swig pointers
             self.header = swig_header
@@ -171,6 +177,14 @@ class c3d(C3dMapper):
                 "first_frame": self.header.nbAnalogByFrame() * self.header.firstFrame(),
                 "last_frame": self.header.nbAnalogByFrame() * (self.header.lastFrame() + 1) - 1,
             }
+            if rotation_info.hasGroup():
+                rotation_frame_rate = self.header.frameRate() * rotation_info.ratio()
+                self._storage["rotations"] = {
+                    "size": rotation_info.used(),
+                    "frame_rate": rotation_frame_rate,
+                    "first_frame": rotation_frame_rate * self.header.firstFrame(),
+                    "last_frame": rotation_frame_rate * (self.header.lastFrame() + 1) - 1,
+                }
             self._storage["events"] = {
                 "size": len(self.header.eventsTime()),
                 "events_time": self.header.eventsTime(),
@@ -181,7 +195,7 @@ class c3d(C3dMapper):
 
     class Parameter(C3dMutableMapper):
         def __init__(self, swig_param):
-            super(c3d.Parameter, self).__init__()
+            super().__init__()
 
             # Interface to swig pointers
             self.parameters = swig_param
@@ -222,6 +236,8 @@ class c3d(C3dMapper):
                 value = []
                 for element in table:
                     value.append(element)
+            else:
+                raise RuntimeError("Data type not recognized")
             param["value"] = value
 
             param_name = param_ezc3d.name()
@@ -231,7 +247,7 @@ class c3d(C3dMapper):
 
     class PlatForm(C3dMapper):
         def __init__(self, swig_pf):
-            super(c3d.PlatForm, self).__init__()
+            super().__init__()
 
             self._storage["unit_force"] = swig_pf.forceUnit()
             self._storage["unit_moment"] = swig_pf.momentUnit()
@@ -259,8 +275,8 @@ class c3d(C3dMapper):
                 self._storage["Tz"][:, i] = Tz[i].to_array()[:, 0]
 
     class Data(C3dMutableMapper):
-        def __init__(self, swig_c3d, extract_forceplat_data):
-            super(c3d.Data, self).__init__()
+        def __init__(self, swig_c3d, rotations_info, extract_forceplat_data):
+            super().__init__()
 
             # Interface to swig pointers
             self.data = swig_c3d.data()
@@ -271,6 +287,9 @@ class c3d(C3dMapper):
                 "camera_masks": swig_c3d.get_point_camera_masks(),
             }
             self._storage["analogs"] = swig_c3d.get_analogs()
+
+            if rotations_info.hasGroup():
+                self._storage["rotations"] = swig_c3d.get_rotations()
 
             # Add the platform filer if required
             if extract_forceplat_data:
@@ -486,6 +505,21 @@ class c3d(C3dMapper):
                 "'c3d['parameters']['ANALOG']['LABELSX']' must have the same length as nAnalogs of the data. "
             )
 
+        data_rotations = None
+        if "rotations" in self._storage["data"]:
+            data_rotations = self._storage["data"]["rotations"]
+            if len(data_rotations.shape) != 4:
+                raise TypeError("Rotations should be a numpy with exactly 4 dimensions (4 x 4 x nRotations x nFrames)")
+            if data_rotations.shape[0] != 4 or data_rotations.shape[1] != 4:
+                raise TypeError("Rotations should be a numpy with first and second dimension exactly equals to 4 element")
+            nb_rotations = data_rotations.shape[2]
+            nb_rotations_frames = data_rotations.shape[3]
+
+            # Store the ratio
+            if nb_rotations_frames % nb_point_frames != 0:
+                raise ValueError("Number of rotations' frame should be an integer multiple of frames")
+            self.add_parameter("ROTATION", "RATIO", int(nb_rotations_frames / nb_point_frames))
+
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
 
@@ -581,7 +615,7 @@ class c3d(C3dMapper):
         for i in range(nb_points):
             pts.point(pt)
         c = ezc3d.Channel()
-        subframe = ezc3d.SubFrame()
+        subframe = ezc3d.AnalogsSubframe()
         for i in range(nb_analogs):
             subframe.channel(c)
         analogs = ezc3d.Analogs()
@@ -589,8 +623,12 @@ class c3d(C3dMapper):
             analogs.subframe(subframe)
 
         # # Fill the data
-        new_c3d.import_numpy_data(data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs)
+        new_c3d.import_numpy_data(
+            data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs, data_rotations
+        )
 
         # Write the file
         new_c3d.write(path)
         return
+
+

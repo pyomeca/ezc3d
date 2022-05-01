@@ -460,6 +460,26 @@ def test_force_platform_filter():
     np.testing.assert_array_almost_equal(all_pf[1]["Tz"][:, [0, 1000, -1]], expected_Tz, decimal=3)
 
 
+def test_rotations():
+    c3d = ezc3d.c3d("test/c3dTestFiles/C3DRotationExample.c3d")
+    array = c3d["data"]["rotations"]
+    decimal = 6
+
+    np.testing.assert_array_equal(x=array.shape, y=(4, 4, 21, 340), err_msg="Shape does not match")
+    raveled = array.ravel()
+    np.testing.assert_array_almost_equal(
+        x=array[2, 3, 2, 5],
+        y=931.6382446289062,
+        decimal=decimal,
+    )
+    np.testing.assert_array_almost_equal(
+        x=raveled[-1],
+        y=1.0,
+        decimal=decimal,
+    )
+    np.testing.assert_array_almost_equal(x=np.nansum(array), y=9367125.137371363, decimal=decimal)
+
+
 @pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon", "Label2"])
 def c3d_build_rebuild_all(request):
     base_folder = Path("test/c3dTestFiles")
@@ -475,7 +495,7 @@ def c3d_build_rebuild_all(request):
     Path.unlink(rebuild_file)
 
 
-@pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon"])
+@pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon", "C3DRotationExample"])
 def c3d_build_rebuild_reduced(request):
     base_folder = Path("test/c3dTestFiles")
     orig_file = Path(base_folder / (request.param + ".c3d"))

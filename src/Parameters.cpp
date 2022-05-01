@@ -321,17 +321,17 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
 }
 
 void ezc3d::ParametersNS::Parameters::print() const {
-    std::cout << "Parameters header" << std::endl;
-    std::cout << "parametersStart = " << parametersStart() << std::endl;
-    std::cout << "nbParamBlock = " << nbParamBlock() << std::endl;
-    std::cout << "processorType = " << processorType() << std::endl;
+    std::cout << "Parameters header" << "\n";
+    std::cout << "parametersStart = " << parametersStart() << "\n";
+    std::cout << "nbParamBlock = " << nbParamBlock() << "\n";
+    std::cout << "processorType = " << processorType() << "\n";
 
     for (size_t i = 0; i < nbGroups(); ++i){
-        std::cout << "Group " << i << std::endl;
+        std::cout << "Group " << i << "\n";
         group(i).print();
-        std::cout << std::endl;
+        std::cout << "\n";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(

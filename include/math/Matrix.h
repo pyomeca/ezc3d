@@ -53,6 +53,7 @@ public:
 
     // Declare Friendship
     friend class ezc3d::Matrix33;
+    friend class ezc3d::Matrix44;
     friend class ezc3d::Matrix66;
     friend class ezc3d::Vector3d;
     friend class ezc3d::Vector6d;
@@ -75,6 +76,12 @@ protected:
     std::vector<double> _data; ///< Value of the Matrix
 
 public:
+    ///
+    /// \brief The sum of all elements in the matrix
+    /// \return The sum of all elements in the matrix
+    ///
+    virtual double sum() const;
+
     ///
     /// \brief Set all values to zero
     ///

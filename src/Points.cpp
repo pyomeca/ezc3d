@@ -8,6 +8,7 @@
 ///
 
 #include "Points.h"
+#include "Header.h"
 
 // Point3d data
 ezc3d::DataNS::Points3dNS::Points::Points() {
@@ -16,6 +17,17 @@ ezc3d::DataNS::Points3dNS::Points::Points() {
 ezc3d::DataNS::Points3dNS::Points::Points(
         size_t nbPoints) {
     _points.resize(nbPoints);
+}
+
+ezc3d::DataNS::Points3dNS::Points::Points(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const ezc3d::DataNS::Points3dNS::Info& info)
+{
+    for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i){
+        ezc3d::DataNS::Points3dNS::Point pt(c3d, file, info);
+        point(pt, i);
+    }
 }
 
 void ezc3d::DataNS::Points3dNS::Points::print() const {

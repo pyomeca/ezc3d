@@ -28,6 +28,16 @@ public:
     Points(
             size_t nbPoints);
 
+    ///
+    /// \brief Create a filled Points class at a given frame from a given file
+    /// \param c3d Reference to the c3d to copy the data in
+    /// \param file File to copy the data from
+    /// \param info The information about the points
+    ///
+    Points(
+            ezc3d::c3d& c3d,
+            std::fstream& file,
+            const Points3dNS::Info& info);
 
     //---- STREAM ----//
 public:

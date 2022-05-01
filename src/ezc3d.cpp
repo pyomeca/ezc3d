@@ -780,6 +780,9 @@ void ezc3d::c3d::updateHeader() {
                     static_cast<size_t>(parameters()
                                         .group("ANALOG").parameter("USED")
                                         .valuesAsInt()[0]));
+
+    if (parameters().isGroup("ROTATION"))
+        _header->hasRotationalData(true);
 }
 
 void ezc3d::c3d::updateParameters(

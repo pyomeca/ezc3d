@@ -1,57 +1,64 @@
 #define EZC3D_API_EXPORTS
 ///
-/// \file Analogs.cpp
-/// \brief Implementation of Analogs class
+/// \file Rotations.cpp
+/// \brief Implementation of Rotations class
 /// \author Pariterre
 /// \version 1.0
-/// \date October 17th, 2018
+/// \date April 30th, 2022
 ///
 
-#include "Analogs.h"
+#include "Rotations.h"
 #include "Header.h"
+#include "Parameters.h"
+#include "RotationsInfo.h"
+#include "RotationsSubframe.h"
 
-ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
+// Rotations data
+ezc3d::DataNS::RotationNS::Rotations::Rotations()
+{
 
 }
 
-ezc3d::DataNS::AnalogsNS::Analogs::Analogs(
+ezc3d::DataNS::RotationNS::Rotations::Rotations(
         ezc3d::c3d &c3d,
         std::fstream &file,
-        const AnalogsNS::Info& info)
+        const ezc3d::DataNS::RotationNS::Info& info)
 {
-    nbSubframes(c3d.header().nbAnalogByFrame());
-    for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
-        subframe(ezc3d::DataNS::AnalogsNS::SubFrame(c3d, file, info), k);
+    if (!c3d.header().hasRotationalData())
+        return;
+
+    size_t nbSubframes = info.ratio();
+    for (size_t k = 0; k < nbSubframes; ++k){
+        subframe(ezc3d::DataNS::RotationNS::SubFrame(c3d, file, info), k);
     }
 }
 
-void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
-    for (size_t i = 0; i < nbSubframes(); ++i) {
+void ezc3d::DataNS::RotationNS::Rotations::print() const {
+    for (size_t i = 0; i < nbSubframes(); ++i){
         std::cout << "Subframe = " << i << "\n";
         subframe(i).print();
         std::cout << "\n";
     }
 }
 
-void ezc3d::DataNS::AnalogsNS::Analogs::write(
-        std::fstream &f,
-        std::vector<double> scaleFactors) const {
+void ezc3d::DataNS::RotationNS::Rotations::write(
+        std::fstream &f) const {
     for (size_t i = 0; i < nbSubframes(); ++i) {
-        subframe(i).write(f, scaleFactors);
+        subframe(i).write(f);
     }
 }
 
-size_t ezc3d::DataNS::AnalogsNS::Analogs::nbSubframes() const {
+size_t ezc3d::DataNS::RotationNS::Rotations::nbSubframes() const {
     return _subframe.size();
 }
 
-void ezc3d::DataNS::AnalogsNS::Analogs::nbSubframes(
+void ezc3d::DataNS::RotationNS::Rotations::nbSubframes(
         size_t nbSubframes) {
     _subframe.resize(nbSubframes);
 }
 
-const ezc3d::DataNS::AnalogsNS::SubFrame&
-ezc3d::DataNS::AnalogsNS::Analogs::subframe(
+const ezc3d::DataNS::RotationNS::SubFrame&
+ezc3d::DataNS::RotationNS::Rotations::subframe(
         size_t idx) const {
     try {
         return _subframe.at(idx);
@@ -63,8 +70,8 @@ ezc3d::DataNS::AnalogsNS::Analogs::subframe(
     }
 }
 
-ezc3d::DataNS::AnalogsNS::SubFrame&
-ezc3d::DataNS::AnalogsNS::Analogs::subframe(
+ezc3d::DataNS::RotationNS::SubFrame&
+ezc3d::DataNS::RotationNS::Rotations::subframe(
         size_t idx) {
     try {
         return _subframe.at(idx);
@@ -76,8 +83,8 @@ ezc3d::DataNS::AnalogsNS::Analogs::subframe(
     }
 }
 
-void ezc3d::DataNS::AnalogsNS::Analogs::subframe(
-        const ezc3d::DataNS::AnalogsNS::SubFrame& subframe,
+void ezc3d::DataNS::RotationNS::Rotations::subframe(
+        const ezc3d::DataNS::RotationNS::SubFrame& subframe,
         size_t idx) {
     if (idx == SIZE_MAX) {
         _subframe.push_back(subframe);
@@ -90,12 +97,12 @@ void ezc3d::DataNS::AnalogsNS::Analogs::subframe(
     }
 }
 
-const std::vector<ezc3d::DataNS::AnalogsNS::SubFrame>&
-ezc3d::DataNS::AnalogsNS::Analogs::subframes() const {
+const std::vector<ezc3d::DataNS::RotationNS::SubFrame>&
+ezc3d::DataNS::RotationNS::Rotations::subframes() const {
     return _subframe;
 }
 
-bool ezc3d::DataNS::AnalogsNS::Analogs::isEmpty() const {
+bool ezc3d::DataNS::RotationNS::Rotations::isEmpty() const {
     for (SubFrame subframe : subframes()) {
         if (!subframe.isEmpty()) {
             return false;

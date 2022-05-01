@@ -10,6 +10,7 @@
 
 #include "Points.h"
 #include "Analogs.h"
+#include "Rotations.h"
 
 ///
 /// \brief Frame holder for C3D data
@@ -87,6 +88,26 @@ public:
     ezc3d::DataNS::AnalogsNS::Analogs& analogs();
 
 
+    //---- ROTATIONS ----//
+protected:
+    std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations> _rotations; ///< All the rotations for this frame
+
+public:
+    ///
+    /// \brief Return a reference to all the rotations
+    /// \return Reference to all the rotations
+    ///
+    const ezc3d::DataNS::RotationNS::Rotations& rotations() const;
+
+    ///
+    /// \brief Return a reference to all the rotations in order to be modified by the caller
+    /// \return A non-const reference to all the rotations
+    ///
+    /// Get all the rotations in the form of a non-const reference.
+    /// The user can thereafter modify these rotations at will, but with the caution it requires.
+    ///
+    ezc3d::DataNS::RotationNS::Rotations& rotations();
+
     //---- ACCESSORS ----//
 public:
     ///
@@ -111,6 +132,13 @@ public:
             const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
 
     ///
+    /// \brief Add rotations to a frame
+    /// \param rotations The rotations data to add
+    ///
+    void add(
+            const ezc3d::DataNS::RotationNS::Rotations &rotations);
+
+    ///
     /// \brief Add points and analogs to a frame
     /// \param points The 3D points to add
     /// \param analogs The analogous data to add
@@ -118,6 +146,17 @@ public:
     void add(
             const ezc3d::DataNS::Points3dNS::Points &points,
             const ezc3d::DataNS::AnalogsNS::Analogs &analogs);
+
+    ///
+    /// \brief Add points and analogs to a frame
+    /// \param points The 3D points to add
+    /// \param analogs The analogous data to add
+    /// \param rotations The rotations data to add
+    ///
+    void add(
+            const ezc3d::DataNS::Points3dNS::Points &points,
+            const ezc3d::DataNS::AnalogsNS::Analogs &analogs,
+            const ezc3d::DataNS::RotationNS::Rotations &rotations);
 
     ///
     /// \brief Return if the frame is empty

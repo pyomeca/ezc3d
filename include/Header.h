@@ -147,6 +147,24 @@ public:
     ///
     size_t nbAnalogsMeasurement() const;
 
+
+protected:
+    size_t _hasRotationalData; ///< This is a support for rotational data added by C-Motion
+
+public:
+    ///
+    /// \brief Get if rotational data are present in the c3d
+    /// \return If rotational data are in present in the c3d
+    ///
+    bool hasRotationalData() const;
+
+    ///
+    /// \brief Set if rotational data are present in the c3d
+    /// \param hasRotationalData If rotational data are present in the c3d
+    ///
+    void hasRotationalData(
+            bool hasRotationalData);
+
 protected:
     size_t _firstFrame; ///< Byte 4
                         ///<

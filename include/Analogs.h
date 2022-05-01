@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "Subframe.h"
+#include "AnalogsSubframe.h"
 
 ///
 /// \brief Analog holder for C3D analogous data
@@ -21,6 +21,16 @@ public:
     ///
     Analogs();
 
+    ///
+    /// \brief Create a filled Analogs class at a given frame from a given file
+    /// \param c3d Reference to the c3d to copy the data in
+    /// \param file File to copy the data from
+    /// \param info The information about the analogs
+    ///
+    Analogs(
+            ezc3d::c3d& c3d,
+            std::fstream& file,
+            const AnalogsNS::Info& info);
 
     //---- STREAM ----//
 public:

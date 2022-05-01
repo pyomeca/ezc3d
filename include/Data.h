@@ -60,6 +60,7 @@ public:
     //---- FRAME ----//
 protected:
     std::vector<ezc3d::DataNS::Frame> _frames; ///< Storage of the data
+
 public:
     ///
     /// \brief Get the number of frames in the data structure

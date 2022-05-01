@@ -53,7 +53,7 @@ void ezc3d::Vector6d::print() const
               << _data[3] << ", "
               << _data[4] << ", "
               << _data[5] << "];"
-              << std::endl;
+              << "\n";
 }
 
 ezc3d::Vector6d& ezc3d::Vector6d::operator=(

@@ -1,16 +1,28 @@
 #define EZC3D_API_EXPORTS
 ///
-/// \file Subframe.cpp
+/// \file AnalogsSubframe.cpp
 /// \brief Implementation of Subframe class
 /// \author Pariterre
 /// \version 1.0
 /// \date October 17th, 2018
 ///
 
-#include "Subframe.h"
+#include "AnalogsSubframe.h"
+#include "Header.h"
 
 ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame() {
 
+}
+
+ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const ezc3d::DataNS::AnalogsNS::Info &info)
+{
+    nbChannels(c3d.header().nbAnalogs());
+    for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i){
+        channel(ezc3d::DataNS::AnalogsNS::Channel(c3d, file, info, i), i);
+    }
 }
 
 void ezc3d::DataNS::AnalogsNS::SubFrame::print() const {
