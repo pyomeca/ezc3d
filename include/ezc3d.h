@@ -141,6 +141,7 @@ namespace ezc3d {
         namespace Points3dNS {
             class EZC3D_API Points;
             class EZC3D_API Point;
+            class EZC3D_API Info;
         }
         ///
         /// \brief Namespace that holds the Analogs hierarchy
@@ -149,6 +150,7 @@ namespace ezc3d {
             class EZC3D_API Analogs;
             class EZC3D_API SubFrame;
             class EZC3D_API Channel;
+            class EZC3D_API Info;
         }
 
         ///

@@ -8,8 +8,20 @@
 ///
 
 #include "Analogs.h"
+#include "Header.h"
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
+}
+
+ezc3d::DataNS::AnalogsNS::Analogs::Analogs(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const AnalogsNS::Info& info)
+{
+    nbSubframes(c3d.header().nbAnalogByFrame());
+    for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
+        subframe(ezc3d::DataNS::AnalogsNS::SubFrame(c3d, file, info), k);
+    }
 }
 
 void ezc3d::DataNS::AnalogsNS::Analogs::print() const {

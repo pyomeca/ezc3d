@@ -28,6 +28,18 @@ public:
     Channel(
             const ezc3d::DataNS::AnalogsNS::Channel &channel);
 
+    ///
+    /// \brief Create a filled Channel class at a given subframe from a given file
+    /// \param c3d Reference to the c3d to copy the data in
+    /// \param file File to copy the data from
+    /// \param info The information about the analogs
+    /// \param channelIndex The index of the channel currently created
+    ///
+    Channel(
+            ezc3d::c3d& c3d,
+            std::fstream& file,
+            const AnalogsNS::Info& info,
+            size_t channelIndex);
 
     //---- STREAM ----//
 public:

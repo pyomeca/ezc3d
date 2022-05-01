@@ -28,6 +28,7 @@ set(SRC_LIST
     src/math/Vector3d.cpp
     src/math/Vector6d.cpp
     src/Analogs.cpp
+    src/AnalogsInfo.cpp
     src/Channel.cpp
     src/Data.cpp
     src/ezc3d.cpp
@@ -38,6 +39,7 @@ set(SRC_LIST
     src/Parameters.cpp
     src/Point.cpp
     src/Points.cpp
+    src/PointsInfo.cpp
     src/Rotation.cpp
     src/Rotations.cpp
     src/Subframe.cpp

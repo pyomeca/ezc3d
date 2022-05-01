@@ -8,6 +8,8 @@
 ///
 
 #include "Channel.h"
+#include "Header.h"
+#include "AnalogsInfo.h"
 
 ezc3d::DataNS::AnalogsNS::Channel::Channel() {
 
@@ -16,6 +18,24 @@ ezc3d::DataNS::AnalogsNS::Channel::Channel() {
 ezc3d::DataNS::AnalogsNS::Channel::Channel(
         const ezc3d::DataNS::AnalogsNS::Channel &channel) :
     _data(channel._data) {
+}
+
+ezc3d::DataNS::AnalogsNS::Channel::Channel(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const ezc3d::DataNS::AnalogsNS::Info &info,
+        size_t channelIndex)
+{
+    if (c3d.header().scaleFactor() < 0) // if it is float
+        data( (c3d.readFloat(info.processorType(), file)
+                 - info.zeroOffset()[channelIndex])
+                *  info.scaleFactors()[channelIndex] * info.generalFactor() );
+    else
+        data( (static_cast<float>(
+                     c3d.readInt(info.processorType(), file,
+                                 ezc3d::DATA_TYPE::WORD))
+                 - info.zeroOffset()[channelIndex])
+                *  info.scaleFactors()[channelIndex] * info.generalFactor() );
 }
 
 void ezc3d::DataNS::AnalogsNS::Channel::print() const {

@@ -8,6 +8,8 @@
 ///
 
 #include "Point.h"
+#include "Header.h"
+#include "PointsInfo.h"
 
 #include <bitset>
 
@@ -24,6 +26,76 @@ ezc3d::DataNS::Points3dNS::Point::Point(
 {
     residual(p.residual());
     _cameraMasks = p._cameraMasks;
+}
+
+ezc3d::DataNS::Points3dNS::Point::Point(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const ezc3d::DataNS::Points3dNS::Info& info) :
+    ezc3d::Vector3d(),
+    _residual(-1)
+{
+    _cameraMasks.resize(7, false);
+    if (info.scaleFactor() < 0){ // if it is float
+        x(c3d.readFloat(info.processorType(), file));
+        y(c3d.readFloat(info.processorType(), file));
+        z(c3d.readFloat(info.processorType(), file));
+        if (info.processorType() == PROCESSOR_TYPE::INTEL){
+            cameraMask(c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD));
+            residual(static_cast<float>(c3d.readInt(
+                            info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+                        * -info.scaleFactor());
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::DEC){
+            residual(static_cast<float>(c3d.readInt(
+                            info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+                        * -info.scaleFactor());
+            cameraMask(c3d.readInt(
+                              info.processorType(), file, ezc3d::DATA_TYPE::WORD));
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::MIPS){
+            throw std::runtime_error(
+                        "MIPS processor type not supported yet, please open a "
+                        "GitHub issue to report that you want this feature!");
+        }
+    } else {
+        x(static_cast<float>(
+                 c3d.readInt(
+                     info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+             * info.scaleFactor());
+        y(static_cast<float>(
+                 c3d.readInt(
+                     info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+             * info.scaleFactor());
+        z(static_cast<float>(
+                 c3d.readInt(
+                     info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+             * info.scaleFactor());
+        if (info.processorType() == PROCESSOR_TYPE::INTEL){
+            cameraMask(c3d.readInt(
+                              info.processorType(), file, ezc3d::DATA_TYPE::BYTE));
+            residual(static_cast<float>(
+                            c3d.readInt(info.processorType(),
+                                        file, ezc3d::DATA_TYPE::BYTE))
+                        * info.scaleFactor());
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::DEC){
+            cameraMask(c3d.readInt(
+                              info.processorType(), file, ezc3d::DATA_TYPE::BYTE));
+            residual(static_cast<float>(
+                            c3d.readInt(info.processorType(),
+                                        file, ezc3d::DATA_TYPE::BYTE))
+                        * info.scaleFactor());
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::MIPS){
+            throw std::runtime_error(
+                        "MIPS processor type not supported yet, please open a "
+                        "GitHub issue to report that you want this feature!");
+        }
+    }
+    if (residual() < 0){
+        set(NAN, NAN, NAN);
+    }
 }
 
 void ezc3d::DataNS::Points3dNS::Point::print() const {
