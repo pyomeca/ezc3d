@@ -13,6 +13,7 @@
 #include "math/Matrix33.h"
 #include "math/Matrix66.h"
 #include "math/Vector3d.h"
+#include <iostream>
 
 ///
 /// \brief Force Platform analyse
