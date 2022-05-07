@@ -38,9 +38,6 @@
 // Includes for standard library
 #include <fstream>
 #include <vector>
-#ifdef _WIN32
-#include <string>
-#endif
 
 #include "ezc3dConfig.h"
 #include "ezc3dNamespace.h"

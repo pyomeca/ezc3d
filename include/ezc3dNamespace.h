@@ -37,9 +37,6 @@
 
 // Includes for standard library
 #include <memory>
-#ifdef _WIN32
-#include <string>
-#endif
 
 #include "ezc3dConfig.h"
 
