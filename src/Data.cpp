@@ -13,6 +13,7 @@
 #include "AnalogsInfo.h"
 #include "PointsInfo.h"
 #include "RotationsInfo.h"
+#include "DataStartInfo.h"
 
 ezc3d::DataNS::Data::Data() {
 }
@@ -63,11 +64,22 @@ void ezc3d::DataNS::Data::print() const {
 }
 
 void ezc3d::DataNS::Data::write(
+        const ezc3d::Header& header,
         std::fstream &f,
         float pointScaleFactor,
-        std::vector<double> analogScaleFactors) const {
+        std::vector<double> analogScaleFactors,
+        ezc3d::DataStartInfo& dataStartInfoToFill) const {
+
+    dataStartInfoToFill.setPointDataStart(f.tellg());
     for (size_t i = 0; i < nbFrames(); ++i)
-        frame(i).write(f, pointScaleFactor, analogScaleFactors);
+        frame(i).write(f, pointScaleFactor, analogScaleFactors, 0);
+
+    if (header.hasRotationalData()){
+        ezc3d::c3d::moveCursorToANewBlock(f);
+        dataStartInfoToFill.setRotationsDataStart(f.tellg());
+        for (size_t i = 0; i < nbFrames(); ++i)
+            frame(i).write(f, pointScaleFactor, analogScaleFactors, 1);
+    }
 }
 
 size_t ezc3d::DataNS::Data::nbFrames() const {

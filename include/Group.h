@@ -37,9 +37,12 @@ public:
     /// \brief Write the group to an opened file by calling the write method of all the parameters
     /// \param f Already opened fstream file with write access
     /// \param groupIdx Index of the group that this particular parameter is in
-    /// \param dataStartPosition The position in the file where the data start (special case for POINT:DATA_START parameter)
+    /// \param dataStartPositionToFill The position in the file where the data start (special case for POINT:DATA_START and ROTATION:DATA_START parameters)
     ///
-    void write(std::fstream &f, int groupIdx, std::streampos &dataStartPosition) const;
+    void write(
+            std::fstream &f,
+            int groupIdx,
+            ezc3d::DataStartInfo &dataStartPositionToFill) const;
 
     ///
     /// \brief Read and store a group of parameter from an opened C3D file
@@ -49,10 +52,11 @@ public:
     /// \param nbCharInName The number of character of the group name
     /// \return The position in the file of the next Group/Parameter
     ///
-    int read(ezc3d::c3d &c3d,
-             const Parameters &params,
-             std::fstream &file,
-             int nbCharInName);
+    int read(
+            ezc3d::c3d &c3d,
+            const Parameters &params,
+            std::fstream &file,
+            int nbCharInName);
 
     ///
     /// \brief isEmpty If the group has no name and no parameter, it is considered empty

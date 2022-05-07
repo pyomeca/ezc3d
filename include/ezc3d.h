@@ -112,6 +112,7 @@ namespace ezc3d {
     class EZC3D_API Vector3d;
     class EZC3D_API Vector6d;
     class EZC3D_API Header;
+    class DataStartInfo;
 
     ///
     /// \brief Namespace that holds the Parameters hierarchy
@@ -267,11 +268,9 @@ protected:
     /// \brief Write the data_start parameter where demanded
     /// \param file opened file stream to be read
     /// \param dataStartPosition The position in block of the data
-    /// \param type The type of data to write
     ///
     void writeDataStart(std::fstream &file,
-                        const std::streampos& dataStartPosition,
-                        const DATA_TYPE &type) const;
+                        const ezc3d::DataStartInfo& dataStartPosition) const;
 
 public:
     ///
@@ -373,6 +372,12 @@ public:
             const std::vector<size_t> &dimension,
             std::vector<std::string> &param_data);
 
+    ///
+    /// \brief Advance the cursor in a file to a new 512 bytes block
+    /// \param file The file stream
+    ///
+    static void moveCursorToANewBlock(
+            std::fstream & file);
 protected:
     ///
     /// \brief Internal function to dispatch a string array to a matrix of strings

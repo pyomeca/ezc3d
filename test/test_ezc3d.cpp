@@ -1761,7 +1761,7 @@ TEST(c3dFileIO, readC3DWithRotation){
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("USED").valuesAsInt()[0], 21);
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").type(), ezc3d::INT);
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt().size(), 1);
-    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt()[0], 6);
+    EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("DATA_START").valuesAsInt()[0], 7);
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("RATIO").type(), ezc3d::INT);
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("RATIO").valuesAsInt().size(), 1);
     EXPECT_EQ(c3dCopy.parameters().group("ROTATION").parameter("RATIO").valuesAsInt()[0], 1);

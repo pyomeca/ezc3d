@@ -41,11 +41,11 @@ public:
     ///
     /// \brief Write the header to an opened file
     /// \param f Already opened fstream file with write access
-    /// \param dataStartPosition Returns the byte where to put the data start parameter
+    /// \param dataStartPositionToFill Returns the byte where to put the data start parameter
     ///
     void write(
             std::fstream &f,
-            std::streampos &dataStartPosition) const;
+            ezc3d::DataStartInfo &dataStartPositionToFill) const;
 
     ///
     /// \brief Read and store a header from an opened C3D file

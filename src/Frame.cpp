@@ -8,6 +8,7 @@
 ///
 
 #include "Frame.h"
+#include "DataStartInfo.h"
 
 ezc3d::DataNS::Frame::Frame() {
     _points = std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>(
@@ -27,10 +28,16 @@ void ezc3d::DataNS::Frame::print() const {
 void ezc3d::DataNS::Frame::write(
         std::fstream &f,
         float pointScaleFactor,
-        std::vector<double> analogScaleFactors) const {
-    points().write(f, pointScaleFactor);
-    analogs().write(f, analogScaleFactors);
-    rotations().write(f);
+        std::vector<double> analogScaleFactors,
+        int dataTypeToWrite) const {
+    if (dataTypeToWrite == 0){  // Points and analogs
+        points().write(f, pointScaleFactor);
+        analogs().write(f, analogScaleFactors);
+    } else if (dataTypeToWrite == 1) {  // Rotations
+        rotations().write(f);
+    } else {
+        throw std::runtime_error("Data type not implemented yet");
+    }
 }
 
 const ezc3d::DataNS::Points3dNS::Points& ezc3d::DataNS::Frame::points() const {

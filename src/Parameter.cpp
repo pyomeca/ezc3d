@@ -9,6 +9,7 @@
 
 #include "Parameter.h"
 #include "Parameters.h"
+#include "DataStartInfo.h"
 
 ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
         const std::string &name,
@@ -49,7 +50,8 @@ void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
 void ezc3d::ParametersNS::GroupNS::Parameter::write(
         std::fstream &f,
         int groupIdx,
-        std::streampos &dataStartPosition) const {
+        ezc3d::DataStartInfo &dataStartPositionToFill,
+        int dataStartType) const {
     int nCharName(static_cast<int>(name().size()));
     if (isLocked())
         nCharName *= -1;
@@ -117,15 +119,16 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
                 writeImbricatedParameter(f, dimension, 1);
             }
         } else {
-            if (static_cast<int>(dataStartPosition) != -1
-                    && !_name.compare("DATA_START")){
-                // -1 means that it is not the POINT group
-
+            if (!_name.compare("DATA_START") && dataStartType >= 0){
                 // This is a special case defined in the standard where you write
-                // the number of blocks up to the data
-                dataStartPosition = f.tellg();
-                f.write(reinterpret_cast<const char*>(&blank),
-                        2*ezc3d::DATA_TYPE::BYTE);
+                // the number of blocks up to the data for POINT or ROTATION group
+                if (dataStartType == 0)  // POINT
+                    dataStartPositionToFill.setParameterPositionInC3dForPointDataStart(f.tellg());
+                else if (dataStartType == 1)  // ROTATION
+                    dataStartPositionToFill.setParameterPositionInC3dForRotationsDataStart(f.tellg());
+                else
+                    throw std::runtime_error("data start type not recognized");
+                f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::DATA_TYPE::BYTE);
             } else
                 writeImbricatedParameter(f, dimension);
         }

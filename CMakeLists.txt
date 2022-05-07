@@ -32,6 +32,7 @@ set(SRC_LIST
     src/AnalogsSubframe.cpp
     src/Channel.cpp
     src/Data.cpp
+    src/DataStartInfo.cpp
     src/ezc3d.cpp
     src/Frame.cpp
     src/Group.cpp

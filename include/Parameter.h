@@ -37,14 +37,16 @@ public:
     /// \brief Write the parameter to an opened file
     /// \param f Already opened fstream file with write access
     /// \param groupIdx Index of the group that this particular parameter is in
-    /// \param dataStartPosition The position in the file where the data start (special case for POINT:DATA_START parameter)
+    /// \param dataStartPositionToFill The position in the file where the data start (special case for POINT:DATA_START and ROTATION:DATA_START parameters)
+    /// \param dataStartType The type of data start (-1 no data start, 0 points, 1 rotations)
     ///
     /// Write the parameter and its values to a file
     ///
     void write(
             std::fstream &f,
             int groupIdx,
-            std::streampos &dataStartPosition) const;
+            ezc3d::DataStartInfo &dataStartPositionToFill,
+            int dataStartType) const;
 
 protected:
     ///

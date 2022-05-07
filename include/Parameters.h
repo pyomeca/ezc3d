@@ -67,13 +67,13 @@ public:
     ///
     /// \brief Write the groups to an opened file by calling the write method of all the groups
     /// \param f Already opened fstream file with write access
-    /// \param dataStartPosition Returns the byte where to put the data start parameter
+    /// \param dataStartPositionToFill Returns the byte where to put the data start parameter
     /// \param header A reference to the header section
     /// \param format What order should the file has
     ///
     ezc3d::ParametersNS::Parameters write(
             std::fstream &f,
-            std::streampos &dataStartPosition,
+            ezc3d::DataStartInfo &dataStartPositionToFill,
             const ezc3d::Header& header,
             const ezc3d::WRITE_FORMAT& format = ezc3d::WRITE_FORMAT::DEFAULT
             ) const;
