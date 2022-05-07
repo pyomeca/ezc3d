@@ -14,6 +14,7 @@
 #include "RotationsInfo.h"
 #include "RotationsSubframe.h"
 #include <iostream>
+#include <stdexcept>
 
 // Rotations data
 ezc3d::DataNS::RotationNS::Rotations::Rotations()

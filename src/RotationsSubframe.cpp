@@ -14,6 +14,7 @@
 #ifdef _WIN32
 #include <string>
 #endif
+#include <stdexcept>
 
 ezc3d::DataNS::RotationNS::SubFrame::SubFrame() {
 

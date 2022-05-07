@@ -8,6 +8,7 @@
 ///
 
 #include "DataStartInfo.h"
+#include <stdexcept>
 
 void ezc3d::DataStartInfo::setPointDataStart(
         const std::streampos &value)
