@@ -10,6 +10,8 @@
 #include "Parameters.h"
 #include "ezc3d.h"
 #include "Header.h"
+#include <iostream>
+#include <cmath>
 
 ezc3d::ParametersNS::Parameters::Parameters():
     _parametersStart(1),

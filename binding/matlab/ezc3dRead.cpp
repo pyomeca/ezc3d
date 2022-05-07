@@ -8,6 +8,8 @@
 #include "Parameters.h"
 #include "Data.h"
 #include "modules/ForcePlatforms.h"
+#include <string.h>
+#include <cmath>
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {

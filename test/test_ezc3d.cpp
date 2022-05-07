@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "ezc3d_all.h"
+#include <cmath>
 
 enum HEADER_TYPE{
     ALL,

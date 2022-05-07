@@ -10,6 +10,7 @@
 #include "Group.h"
 #include "ezc3d.h"
 #include "Parameters.h"
+#include <iostream>
 
 ezc3d::ParametersNS::GroupNS::Group::Group(
         const std::string &name,

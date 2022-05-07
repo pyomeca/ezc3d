@@ -11,6 +11,8 @@
 #include "ezc3d.h"
 #include "Parameters.h"
 #include "DataStartInfo.h"
+#include <iostream>
+#include <cmath>
 
 ezc3d::Header::Header():
     _nbOfZerosBeforeHeader(0),

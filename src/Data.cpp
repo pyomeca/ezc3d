@@ -15,6 +15,7 @@
 #include "PointsInfo.h"
 #include "RotationsInfo.h"
 #include "DataStartInfo.h"
+#include <iostream>
 
 ezc3d::DataNS::Data::Data() {
 }

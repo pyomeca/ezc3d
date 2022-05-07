@@ -10,8 +10,9 @@
 #include "Rotation.h"
 #include "ezc3d.h"
 #include "RotationsInfo.h"
-
+#include <iostream>
 #include <bitset>
+#include <cmath>
 
 ezc3d::DataNS::RotationNS::Rotation::Rotation() :
     ezc3d::Matrix44(),

@@ -9,6 +9,7 @@
 ///
 
 #include "ezc3dNamespace.h"
+#include <vector>
 
 ///
 /// \brief Matrix of unknown dimension

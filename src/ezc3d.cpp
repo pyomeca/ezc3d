@@ -12,7 +12,8 @@
 #include "Data.h"
 #include "Parameters.h"
 #include "DataStartInfo.h"
-
+#include <algorithm>
+#include <cmath>
 
 void ezc3d::removeTrailingSpaces(
         std::string& s) {

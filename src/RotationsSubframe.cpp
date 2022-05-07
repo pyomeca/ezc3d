@@ -10,6 +10,7 @@
 #include "RotationsSubframe.h"
 #include "Header.h"
 #include "RotationsInfo.h"
+#include <iostream>
 
 ezc3d::DataNS::RotationNS::SubFrame::SubFrame() {
 

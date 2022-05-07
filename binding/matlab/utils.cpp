@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "utils.h"
+#include <string.h>
 
 mxArray * fillMetadata(
         mxArray *field,

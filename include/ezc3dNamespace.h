@@ -36,14 +36,6 @@
 ///
 
 // Includes for standard library
-#include <sstream>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <vector>
-#include <string.h>
-#include <cmath>
-#include <stdexcept>
 #include <memory>
 #ifdef _WIN32
 #include <string>

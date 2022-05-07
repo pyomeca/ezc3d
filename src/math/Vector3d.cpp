@@ -8,6 +8,8 @@
 ///
 
 #include "math/Vector3d.h"
+#include <iostream>
+#include <cmath>
 
 ezc3d::Vector3d::Vector3d() :
     ezc3d::Matrix(3, 1)

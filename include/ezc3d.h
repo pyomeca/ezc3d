@@ -36,15 +36,8 @@
 ///
 
 // Includes for standard library
-#include <sstream>
-#include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <vector>
-#include <string.h>
-#include <cmath>
-#include <stdexcept>
-#include <memory>
 #ifdef _WIN32
 #include <string>
 #endif
@@ -123,7 +116,7 @@ protected:
         unsigned int nByteToRead,
         std::vector<char>& c,
         int nByteFromPrevious = 0,
-        const  std::ios_base::seekdir &pos = std::ios::cur);
+        const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Convert an hexadecimal value to an unsigned integer

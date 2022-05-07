@@ -10,6 +10,7 @@
 #include "Analogs.h"
 #include "ezc3d.h"
 #include "Header.h"
+#include <iostream>
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
 
