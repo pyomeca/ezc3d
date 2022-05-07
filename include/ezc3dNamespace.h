@@ -39,6 +39,9 @@
 #include <memory>
 
 #include "ezc3dConfig.h"
+#ifdef _WIN32
+#include <string>
+#endif
 
 ///
 /// \brief Namespace ezc3d

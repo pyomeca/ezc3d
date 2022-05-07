@@ -9,9 +9,6 @@
 
 #include "math/Vector6d.h"
 #include <iostream>
-#ifdef _WIN32
-#include <string>
-#endif
 
 ezc3d::Vector6d::Vector6d() :
     ezc3d::Matrix(6, 1)

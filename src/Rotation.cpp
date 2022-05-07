@@ -11,9 +11,6 @@
 #include "ezc3d.h"
 #include "RotationsInfo.h"
 #include <iostream>
-#ifdef _WIN32
-#include <string>
-#endif
 #include <bitset>
 #include <cmath>
 

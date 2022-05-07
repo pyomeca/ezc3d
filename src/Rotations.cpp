@@ -14,9 +14,6 @@
 #include "RotationsInfo.h"
 #include "RotationsSubframe.h"
 #include <iostream>
-#ifdef _WIN32
-#include <string>
-#endif
 
 // Rotations data
 ezc3d::DataNS::RotationNS::Rotations::Rotations()

@@ -12,9 +12,6 @@
 #include "Header.h"
 #include "PointsInfo.h"
 #include <iostream>
-#ifdef _WIN32
-#include <string>
-#endif
 #include <bitset>
 #include <cmath>
 

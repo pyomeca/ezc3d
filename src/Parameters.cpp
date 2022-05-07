@@ -11,9 +11,6 @@
 #include "ezc3d.h"
 #include "Header.h"
 #include <iostream>
-#ifdef _WIN32
-#include <string>
-#endif
 #include <cmath>
 
 ezc3d::ParametersNS::Parameters::Parameters():

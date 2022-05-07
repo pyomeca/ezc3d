@@ -9,9 +9,6 @@
 
 #include "math/Vector3d.h"
 #include <iostream>
-#ifdef _WIN32
-#include <string>
-#endif
 #include <cmath>
 
 ezc3d::Vector3d::Vector3d() :
