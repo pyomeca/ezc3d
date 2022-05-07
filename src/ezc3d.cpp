@@ -169,19 +169,19 @@ void ezc3d::c3d::writeDataStart(
         std::fstream &f,
         const ezc3d::DataStartInfo &dataStartPosition) const {
 
-    if (dataStartPosition.headerPointDataStart() != -1){
+    if (dataStartPosition.hasHeaderPointDataStart()){
         f.seekg(dataStartPosition.headerPointDataStart());
         int nBlocksToNext = int(dataStartPosition.pointDataStart())/512 + 1; // DATA_START is 1-based
         f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.headerPointDataStartSize());
     }
 
-    if (dataStartPosition.parameterPointDataStart() != -1){
+    if (dataStartPosition.hasParameterPointDataStart()){
         f.seekg(dataStartPosition.parameterPointDataStart());
         int nBlocksToNext = int(dataStartPosition.pointDataStart())/512 + 1; // DATA_START is 1-based
         f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.parameterPointDataStartSize());
     }
 
-    if (dataStartPosition.parameterRotationsDataStart() != -1){
+    if (dataStartPosition.hasParameterRotationsDataStart()){
         f.seekg(dataStartPosition.parameterRotationsDataStart());
         int nBlocksToNext = int(dataStartPosition.rotationsDataStart())/512 + 1; // DATA_START is 1-based
         f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.parameterRotationsDataStartSize());
