@@ -10,6 +10,7 @@
 
 
 #include "math/ezc3dMath.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "Parameters.h"
 #include "Data.h"

@@ -8,6 +8,7 @@
 ///
 
 #include "Data.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "Parameters.h"
 #include "AnalogsInfo.h"

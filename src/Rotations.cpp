@@ -8,6 +8,7 @@
 ///
 
 #include "Rotations.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "Parameters.h"
 #include "RotationsInfo.h"

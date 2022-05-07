@@ -8,6 +8,7 @@
 ///
 
 #include "Point.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "PointsInfo.h"
 

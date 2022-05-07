@@ -8,7 +8,6 @@
 ///
 
 #include "modules/ForcePlatforms.h"
-
 #include "ezc3d_all.h"
 
 ezc3d::Modules::ForcePlatform::ForcePlatform()

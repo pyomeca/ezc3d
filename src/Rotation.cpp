@@ -8,6 +8,7 @@
 ///
 
 #include "Rotation.h"
+#include "ezc3d.h"
 #include "RotationsInfo.h"
 
 #include <bitset>

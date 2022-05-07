@@ -8,6 +8,7 @@
 ///
 
 #include "AnalogsSubframe.h"
+#include "ezc3d.h"
 #include "Header.h"
 
 ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame() {

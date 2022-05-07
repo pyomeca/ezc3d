@@ -8,6 +8,7 @@
 ///
 
 #include "Group.h"
+#include "ezc3d.h"
 #include "Parameters.h"
 
 ezc3d::ParametersNS::GroupNS::Group::Group(

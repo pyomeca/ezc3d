@@ -8,6 +8,7 @@
 ///
 
 #include "Parameter.h"
+#include "ezc3d.h"
 #include "Parameters.h"
 #include "DataStartInfo.h"
 

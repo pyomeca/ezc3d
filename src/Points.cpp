@@ -8,6 +8,7 @@
 ///
 
 #include "Points.h"
+#include "ezc3d.h"
 #include "Header.h"
 
 // Point3d data

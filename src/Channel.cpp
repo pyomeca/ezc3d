@@ -8,6 +8,7 @@
 ///
 
 #include "Channel.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "AnalogsInfo.h"
 

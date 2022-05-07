@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "ezc3d.h"
+#include "ezc3dNamespace.h"
 
 ///
 /// \brief Header of a C3D file
