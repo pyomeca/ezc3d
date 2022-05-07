@@ -2,6 +2,9 @@
 #include <gtest/gtest.h>
 
 #include "ezc3d_all.h"
+#ifdef _WIN32
+#include <string>
+#endif
 
 void testPrintingCall(const ezc3d::Matrix& m){
     std::streambuf *old = std::cout.rdbuf(); // Save cout direction

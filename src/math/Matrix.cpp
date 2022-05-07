@@ -11,6 +11,9 @@
 #include "math/Vector3d.h"
 #include "math/Vector6d.h"
 #include <iostream>
+#ifdef _WIN32
+#include <string>
+#endif
 
 ezc3d::Matrix::Matrix():
     _nbRows(0),

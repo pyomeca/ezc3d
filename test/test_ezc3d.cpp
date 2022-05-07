@@ -3,6 +3,9 @@
 
 #include "ezc3d_all.h"
 #include <cmath>
+#ifdef _WIN32
+#include <string>
+#endif
 
 enum HEADER_TYPE{
     ALL,

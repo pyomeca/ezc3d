@@ -11,6 +11,9 @@
 #include "Header.h"
 #include "RotationsInfo.h"
 #include <iostream>
+#ifdef _WIN32
+#include <string>
+#endif
 
 ezc3d::DataNS::RotationNS::SubFrame::SubFrame() {
 

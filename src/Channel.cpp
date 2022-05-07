@@ -12,6 +12,9 @@
 #include "Header.h"
 #include "AnalogsInfo.h"
 #include <iostream>
+#ifdef _WIN32
+#include <string>
+#endif
 
 ezc3d::DataNS::AnalogsNS::Channel::Channel() {
 

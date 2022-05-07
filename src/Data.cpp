@@ -16,6 +16,9 @@
 #include "RotationsInfo.h"
 #include "DataStartInfo.h"
 #include <iostream>
+#ifdef _WIN32
+#include <string>
+#endif
 
 ezc3d::DataNS::Data::Data() {
 }
