@@ -9,6 +9,8 @@
 ///
 
 #include "ezc3dNamespace.h"
+#include <sstream>
+
 ///
 /// \brief Placeholder for stocking the position and value of data start
 ///
