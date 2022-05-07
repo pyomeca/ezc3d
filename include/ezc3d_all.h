@@ -8,7 +8,7 @@
 /// \date March 27th, 2020
 ///
 
-
+#include "ezc3dNamespace.h"
 #include "math/ezc3dMath.h"
 #include "ezc3d.h"
 #include "Header.h"

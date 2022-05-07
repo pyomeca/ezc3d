@@ -58,6 +58,7 @@ namespace std {
 
 #define __attribute__(x)
 %include "ezc3dConfig.h"
+%include "ezc3dNamespace.h"
 %include "ezc3d.h"
 %include "math/Matrix.h"
 %include "math/Matrix33.h"
