@@ -10,6 +10,7 @@
 #include "math/Matrix44.h"
 
 #include "math/Vector3d.h"
+#include <stdexcept>
 
 ezc3d::Matrix44::Matrix44() :
     ezc3d::Matrix(4, 4)

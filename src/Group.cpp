@@ -11,6 +11,7 @@
 #include "ezc3d.h"
 #include "Parameters.h"
 #include <iostream>
+#include <stdexcept>
 
 ezc3d::ParametersNS::GroupNS::Group::Group(
         const std::string &name,

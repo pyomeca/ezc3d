@@ -10,6 +10,10 @@
 
 #include "ezc3dNamespace.h"
 #include <vector>
+#include <iostream>
+#ifdef _WIN32
+#include <string>
+#endif
 
 ///
 /// \brief Parameter of a C3D file

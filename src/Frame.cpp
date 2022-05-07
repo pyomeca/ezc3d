@@ -9,6 +9,7 @@
 
 #include "Frame.h"
 #include "DataStartInfo.h"
+#include <stdexcept>
 
 ezc3d::DataNS::Frame::Frame() {
     _points = std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>(

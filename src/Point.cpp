@@ -14,6 +14,7 @@
 #include <iostream>
 #include <bitset>
 #include <cmath>
+#include <stdexcept>
 
 ezc3d::DataNS::Points3dNS::Point::Point() :
     ezc3d::Vector3d(),

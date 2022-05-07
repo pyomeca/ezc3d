@@ -10,6 +10,7 @@
 #include "math/Matrix66.h"
 
 #include "math/Vector6d.h"
+#include <stdexcept>
 
 ezc3d::Matrix66::Matrix66() :
     ezc3d::Matrix(6, 6)

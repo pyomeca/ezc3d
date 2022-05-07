@@ -13,6 +13,7 @@
 #include "DataStartInfo.h"
 #include <iostream>
 #include <cmath>
+#include <stdexcept>
 
 ezc3d::Header::Header():
     _nbOfZerosBeforeHeader(0),

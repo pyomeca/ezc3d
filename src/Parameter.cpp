@@ -12,6 +12,7 @@
 #include "Parameters.h"
 #include "DataStartInfo.h"
 #include <iostream>
+#include <stdexcept>
 
 ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
         const std::string &name,

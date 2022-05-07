@@ -12,6 +12,7 @@
 #include "Header.h"
 #include <iostream>
 #include <cmath>
+#include <stdexcept>
 
 ezc3d::ParametersNS::Parameters::Parameters():
     _parametersStart(1),

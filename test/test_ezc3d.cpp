@@ -3,6 +3,7 @@
 
 #include "ezc3d_all.h"
 #include <cmath>
+#include <stdexcept>
 
 enum HEADER_TYPE{
     ALL,
