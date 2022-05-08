@@ -8,7 +8,9 @@
 ///
 
 #include "Points.h"
+#include "ezc3d.h"
 #include "Header.h"
+#include <stdexcept>
 
 // Point3d data
 ezc3d::DataNS::Points3dNS::Points::Points() {

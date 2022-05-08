@@ -8,7 +8,8 @@
 /// \date March 25th, 2020
 ///
 
-#include "ezc3d.h"
+#include "ezc3dNamespace.h"
+#include <vector>
 
 ///
 /// \brief Matrix of unknown dimension

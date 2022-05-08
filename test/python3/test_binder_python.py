@@ -504,6 +504,8 @@ def c3d_build_rebuild_reduced(request):
     original = ezc3d.c3d(orig_file.as_posix())
     original.write(rebuild_file.as_posix())
     rebuilt = ezc3d.c3d(rebuild_file.as_posix())
+    if request.param == "C3DRotationExample":
+        rebuilt["parameters"]["ROTATION"]["DATA_START"]["value"][0] = 6
 
     yield (original, rebuilt)
 

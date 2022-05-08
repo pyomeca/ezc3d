@@ -8,6 +8,8 @@
 ///
 
 #include "math/Vector6d.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::Vector6d::Vector6d() :
     ezc3d::Matrix(6, 1)

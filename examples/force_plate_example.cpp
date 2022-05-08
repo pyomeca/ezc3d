@@ -1,5 +1,6 @@
-#include <vector>
 #include "ezc3d_all.h"
+#include <iostream>
+#include <vector>
 
 int main()
 {

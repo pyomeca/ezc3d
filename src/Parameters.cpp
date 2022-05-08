@@ -8,7 +8,11 @@
 ///
 
 #include "Parameters.h"
+#include "ezc3d.h"
 #include "Header.h"
+#include <iostream>
+#include <cmath>
+#include <stdexcept>
 
 ezc3d::ParametersNS::Parameters::Parameters():
     _parametersStart(1),
@@ -336,7 +340,7 @@ void ezc3d::ParametersNS::Parameters::print() const {
 
 ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
         std::fstream &f,
-        std::streampos &dataStartPosition,
+        ezc3d::DataStartInfo &dataStartPositionToFill,
         const ezc3d::Header& header,
         const ezc3d::WRITE_FORMAT& format) const {
     ezc3d::ParametersNS::Parameters p(prepareCopyForWriting(header, format));
@@ -357,21 +361,22 @@ ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
     for (size_t i=0; i < p.nbGroups(); ++i){
         const ezc3d::ParametersNS::GroupNS::Group& currentGroup(p.group(i));
         if (!currentGroup.isEmpty())
-            currentGroup.write(f, -static_cast<int>(i+1), dataStartPosition);
+            currentGroup.write(f, -static_cast<int>(i+1), dataStartPositionToFill);
     }
 
     // Move the cursor to a beginning of a block
+    ezc3d::c3d::moveCursorToANewBlock(f);
+    // Go back at the left blank space (next parameter position in the last parameter)
+    // and write the current position
     std::streampos currentPos(f.tellg());
-    for (int i=0; i<512 - static_cast<int>(currentPos) % 512; ++i){
-        f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
-    }
-    // Go back at the left blank space and write the current position
     currentPos = f.tellg();
     f.seekg(pos);
     int nBlocksToNext = int(currentPos - pos-2)/512;
     if (int(currentPos - pos-2) % 512 > 0)
         ++nBlocksToNext;
     f.write(reinterpret_cast<const char*>(&nBlocksToNext), ezc3d::BYTE);
+
+    // Go back to where to start writing the data
     f.seekg(currentPos);
 
     return p;

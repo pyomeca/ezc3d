@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "ezc3d_all.h"
+#include <stdexcept>
 
 void testPrintingCall(const ezc3d::Matrix& m){
     std::streambuf *old = std::cout.rdbuf(); // Save cout direction

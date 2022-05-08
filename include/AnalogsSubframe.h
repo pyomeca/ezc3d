@@ -9,6 +9,7 @@
 ///
 
 #include "Channel.h"
+#include <vector>
 
 ///
 /// \brief Subframe for the analogous data

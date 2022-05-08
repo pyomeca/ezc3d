@@ -8,7 +8,8 @@
 /// \date April 30th, 2022
 ///
 
-#include "ezc3d.h"
+#include "ezc3dNamespace.h"
+#include <vector>
 
 ///
 /// \brief 3D rotation data

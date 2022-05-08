@@ -8,8 +8,10 @@
 ///
 
 #include "RotationsInfo.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "Parameters.h"
+#include <stdexcept>
 
 
 ezc3d::DataNS::RotationNS::Info::Info(

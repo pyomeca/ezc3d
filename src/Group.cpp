@@ -8,7 +8,10 @@
 ///
 
 #include "Group.h"
+#include "ezc3d.h"
 #include "Parameters.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::ParametersNS::GroupNS::Group::Group(
         const std::string &name,
@@ -33,7 +36,7 @@ void ezc3d::ParametersNS::GroupNS::Group::print() const {
 void ezc3d::ParametersNS::GroupNS::Group::write(
         std::fstream &f,
         int groupIdx,
-        std::streampos &dataStartPosition) const {
+        ezc3d::DataStartInfo &dataStartPositionToFill) const {
     int nCharName(static_cast<int>(name().size()));
     if (isLocked())
         nCharName *= -1;
@@ -64,12 +67,15 @@ void ezc3d::ParametersNS::GroupNS::Group::write(
             2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(currentPos);
 
-    std::streampos defaultDataStartPosition(-1);
-    for (size_t i=0; i < nbParameters(); ++i)
+    for (size_t i=0; i < nbParameters(); ++i){
+        int tagForDataStartFilling = -1;
         if (!name().compare("POINT"))
-            parameter(i).write(f, -groupIdx, dataStartPosition);
-        else
-            parameter(i).write(f, -groupIdx, defaultDataStartPosition);
+            tagForDataStartFilling = 0;
+        else if (!name().compare("ROTATION"))
+            tagForDataStartFilling = 1;
+        parameter(i).write(f, -groupIdx, dataStartPositionToFill, tagForDataStartFilling);
+
+    }
 }
 
 int ezc3d::ParametersNS::GroupNS::Group::read(

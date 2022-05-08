@@ -8,7 +8,10 @@
 ///
 
 #include "Analogs.h"
+#include "ezc3d.h"
 #include "Header.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
 

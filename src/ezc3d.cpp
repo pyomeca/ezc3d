@@ -11,7 +11,10 @@
 #include "Header.h"
 #include "Data.h"
 #include "Parameters.h"
-
+#include "DataStartInfo.h"
+#include <algorithm>
+#include <cmath>
+#include <stdexcept>
 
 void ezc3d::removeTrailingSpaces(
         std::string& s) {
@@ -92,23 +95,22 @@ void ezc3d::c3d::write(
         const WRITE_FORMAT& format) const {
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
+    ezc3d::DataStartInfo dataStartInfoToFill;
+
     // Write the header
-    std::streampos dataStartHeader;
-    header().write(f, dataStartHeader);
+    header().write(f, dataStartInfoToFill);
 
     // Write the parameters
-    std::streampos dataStartParameters(-2); // -1 means not POINT group
     ezc3d::ParametersNS::Parameters p(
-                parameters().write(f, dataStartParameters, header(), format));
-
-    // Write the data start parameter in header and parameter sections
-    writeDataStart(f, dataStartHeader, DATA_TYPE::WORD);
-    writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
+                parameters().write(f, dataStartInfoToFill, header(), format));
 
     // Write the data
     float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
     std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
-    data().write(f, pointScaleFactor, pointAnalogFactors);
+    data().write(header(), f, pointScaleFactor, pointAnalogFactors, dataStartInfoToFill);
+
+    // Go back and write all the required data start
+    writeDataStart(f, dataStartInfoToFill);
 
     f.close();
 }
@@ -165,19 +167,25 @@ int ezc3d::c3d::hex2int(
 
 void ezc3d::c3d::writeDataStart(
         std::fstream &f,
-        const std::streampos &dataStartPosition,
-        const DATA_TYPE& type) const {
-    // Go back to data start blank space and write the current
-    // position (assuming current is the position of data!)
-    std::streampos dataPos = f.tellg();
-    f.seekg(dataStartPosition);
-    if (int(dataPos) % 512 > 0)
-        throw std::out_of_range(
-                "Something went wrong in the positioning of the pointer "
-                "for writting the data. Please report this error.");
-    int nBlocksToNext = int(dataPos)/512 + 1; // DATA_START is 1-based
-    f.write(reinterpret_cast<const char*>(&nBlocksToNext), type);
-    f.seekg(dataPos);
+        const ezc3d::DataStartInfo &dataStartPosition) const {
+
+    if (dataStartPosition.hasHeaderPointDataStart()){
+        f.seekg(dataStartPosition.headerPointDataStart());
+        int nBlocksToNext = int(dataStartPosition.pointDataStart())/512 + 1; // DATA_START is 1-based
+        f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.headerPointDataStartSize());
+    }
+
+    if (dataStartPosition.hasParameterPointDataStart()){
+        f.seekg(dataStartPosition.parameterPointDataStart());
+        int nBlocksToNext = int(dataStartPosition.pointDataStart())/512 + 1; // DATA_START is 1-based
+        f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.parameterPointDataStartSize());
+    }
+
+    if (dataStartPosition.hasParameterRotationsDataStart()){
+        f.seekg(dataStartPosition.parameterRotationsDataStart());
+        int nBlocksToNext = int(dataStartPosition.rotationsDataStart())/512 + 1; // DATA_START is 1-based
+        f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.parameterRotationsDataStartSize());
+    }
 }
 
 int ezc3d::c3d::readInt(
@@ -329,6 +337,17 @@ void ezc3d::c3d::readParam(
     }
     else
         _dispatchMatrix(dimension, param_data_string_tp, param_data_string);
+}
+
+void ezc3d::c3d::moveCursorToANewBlock(
+        std::fstream &f)
+{
+    // Move the cursor to the beginning of a block as rotations should start at a new block
+    int blankValue(0);
+    std::streampos currentPos(f.tellg());
+    for (int i=0; i<512 - static_cast<int>(currentPos) % 512; ++i){
+        f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
+    }
 }
 
 size_t ezc3d::c3d::_dispatchMatrix(

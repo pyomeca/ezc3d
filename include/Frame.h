@@ -39,13 +39,15 @@ public:
     /// \param f Already opened fstream file with write access
     /// \param pointScaleFactor The factor to scale the point data with
     /// \param analogScaleFactors The factor to scale the analog data with
+    /// \param dataTypeToWrite The type of data block (0 points/analogs, 1 rotations)
     ///
     /// Write the frame to a file by calling sequentially the write method for points and analogs
     ///
     void write(
             std::fstream &f,
             float pointScaleFactor,
-            std::vector<double> analogScaleFactors) const;
+            std::vector<double> analogScaleFactors,
+            int dataTypeToWrite) const;
 
 
     //---- POINTS ----//

@@ -8,10 +8,13 @@
 ///
 
 #include "Rotations.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "Parameters.h"
 #include "RotationsInfo.h"
 #include "RotationsSubframe.h"
+#include <iostream>
+#include <stdexcept>
 
 // Rotations data
 ezc3d::DataNS::RotationNS::Rotations::Rotations()

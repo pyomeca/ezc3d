@@ -8,11 +8,12 @@
 /// \date March 25th, 2020
 ///
 
-#include "ezc3d.h"
+#include "ezc3dNamespace.h"
 
 #include "math/Matrix33.h"
 #include "math/Matrix66.h"
 #include "math/Vector3d.h"
+#include <iostream>
 
 ///
 /// \brief Force Platform analyse

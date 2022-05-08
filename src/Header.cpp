@@ -8,7 +8,12 @@
 ///
 
 #include "Header.h"
+#include "ezc3d.h"
 #include "Parameters.h"
+#include "DataStartInfo.h"
+#include <iostream>
+#include <cmath>
+#include <stdexcept>
 
 ezc3d::Header::Header():
     _nbOfZerosBeforeHeader(0),
@@ -99,7 +104,7 @@ void ezc3d::Header::print() const {
 
 void ezc3d::Header::write(
         std::fstream &f,
-        std::streampos &dataStartPosition) const {
+        ezc3d::DataStartInfo &dataStartPositionToFill) const {
     // write the checksum byte and the start point of header
     int parameterAddessDefault(2);
     f.write(reinterpret_cast<const char*>(
@@ -132,7 +137,7 @@ void ezc3d::Header::write(
             2*ezc3d::DATA_TYPE::WORD);
 
     // Parameters of analog data
-    dataStartPosition = f.tellg();
+    dataStartPositionToFill.setHeaderPositionInC3dForPointDataStart(f.tellg());
     // dataStartPosition is to be changed when we know where the data are
     f.write(reinterpret_cast<const char*>(&_dataStart),
             1*ezc3d::DATA_TYPE::WORD);

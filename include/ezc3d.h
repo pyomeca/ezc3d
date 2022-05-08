@@ -36,143 +36,11 @@
 ///
 
 // Includes for standard library
-#include <sstream>
-#include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <vector>
-#include <string.h>
-#include <cmath>
-#include <stdexcept>
-#include <memory>
-#ifdef _WIN32
-#include <string>
-#endif
 
 #include "ezc3dConfig.h"
-
-///
-/// \brief Namespace ezc3d
-///
-/// Useful functions, enum and misc useful for the ezc3d project
-///
-namespace ezc3d {
-    // ---- UTILS ---- //
-    ///
-    /// \brief Enum that describes the size of different types
-    ///
-    enum DATA_TYPE{
-        CHAR = -1,
-        BYTE = 1,
-        INT = 2,
-        WORD = 2,
-        FLOAT = 4,
-        NO_DATA_TYPE = 10000
-    };
-
-    ///
-    /// \brief The type of processor used to store the data
-    ///
-    enum PROCESSOR_TYPE{
-        INTEL = 84,
-        DEC = 85,
-        MIPS = 86,
-        NO_PROCESSOR_TYPE = INTEL
-    };
-
-    ///
-    /// \brief The order of the parameters in the new c3d file
-    ///
-    enum WRITE_FORMAT{
-        DEFAULT=0,
-        NEXUS
-    };
-
-    ///
-    /// \brief Remove the spaces at the end of a string
-    /// \param str The string to remove the trailing spaces from.
-    ///
-    /// The function receive a string and modify it by remove the trailing spaces
-    ///
-    EZC3D_API void removeTrailingSpaces(std::string& str);
-
-    ///
-    /// \brief Swap all characters of a string to capital letters
-    /// \param str The string to capitalize
-    ///
-    EZC3D_API std::string toUpper(const std::string &str);
-
-
-    // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
-    class c3d;
-    class EZC3D_API Matrix;
-    class EZC3D_API Matrix33;
-    class EZC3D_API Matrix44;
-    class EZC3D_API Matrix66;
-    class EZC3D_API Vector3d;
-    class EZC3D_API Vector6d;
-    class EZC3D_API Header;
-
-    ///
-    /// \brief Namespace that holds the Parameters hierarchy
-    ///
-    namespace ParametersNS {
-        class EZC3D_API Parameters;
-
-        ///
-        /// \brief Namespace that holds the Group and Parameter classes
-        ///
-        namespace GroupNS {
-                class EZC3D_API Group;
-                class EZC3D_API Parameter;
-            }
-    }
-
-    ///
-    /// \brief Namespace that holds the Data hierarchy
-    ///
-    namespace DataNS {
-        class EZC3D_API Data;
-
-        class Frame;
-        ///
-        /// \brief Namespace that holds the Points hierarchy
-        ///
-        namespace Points3dNS {
-            class EZC3D_API Points;
-            class EZC3D_API Point;
-            class EZC3D_API Info;
-        }
-        ///
-        /// \brief Namespace that holds the Analogs hierarchy
-        ///
-        namespace AnalogsNS {
-            class EZC3D_API Analogs;
-            class EZC3D_API SubFrame;
-            class EZC3D_API Channel;
-            class EZC3D_API Info;
-        }
-
-        ///
-        /// \brief Namespace that holds the Rotations hierarchy
-        ///
-        namespace RotationNS {
-            class EZC3D_API Rotations;
-            class EZC3D_API Rotation;
-            class EZC3D_API SubFrame;
-            class EZC3D_API Info;
-        }
-    }
-
-
-    ///
-    /// \brief Namespace for all the analysis modules
-    ///
-    namespace Modules {
-        class EZC3D_API ForcePlatform;
-        class EZC3D_API ForcePlatforms;
-    }
-}
+#include "ezc3dNamespace.h"
 
 ///
 /// \brief Main class for C3D holder
@@ -245,7 +113,7 @@ protected:
         unsigned int nByteToRead,
         std::vector<char>& c,
         int nByteFromPrevious = 0,
-        const  std::ios_base::seekdir &pos = std::ios::cur);
+        const std::ios_base::seekdir &pos = std::ios::cur);
 
     ///
     /// \brief Convert an hexadecimal value to an unsigned integer
@@ -267,11 +135,9 @@ protected:
     /// \brief Write the data_start parameter where demanded
     /// \param file opened file stream to be read
     /// \param dataStartPosition The position in block of the data
-    /// \param type The type of data to write
     ///
     void writeDataStart(std::fstream &file,
-                        const std::streampos& dataStartPosition,
-                        const DATA_TYPE &type) const;
+                        const ezc3d::DataStartInfo& dataStartPosition) const;
 
 public:
     ///
@@ -373,6 +239,12 @@ public:
             const std::vector<size_t> &dimension,
             std::vector<std::string> &param_data);
 
+    ///
+    /// \brief Advance the cursor in a file to a new 512 bytes block
+    /// \param file The file stream
+    ///
+    static void moveCursorToANewBlock(
+            std::fstream & file);
 protected:
     ///
     /// \brief Internal function to dispatch a string array to a matrix of strings

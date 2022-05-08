@@ -1,8 +1,12 @@
 #include "mex.h"
 #include <iostream>
+#ifdef _WIN32
+#include <string>
+#endif
 #include <memory>
 
 #include "utils.h"
+#include <string.h>
 
 mxArray * fillMetadata(
         mxArray *field,

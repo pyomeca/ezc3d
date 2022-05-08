@@ -8,8 +8,10 @@
 ///
 
 #include "Channel.h"
+#include "ezc3d.h"
 #include "Header.h"
 #include "AnalogsInfo.h"
+#include <iostream>
 
 ezc3d::DataNS::AnalogsNS::Channel::Channel() {
 
