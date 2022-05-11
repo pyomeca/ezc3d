@@ -1,8 +1,19 @@
+if(POLICY CMP0078)
+    cmake_policy(SET CMP0078 NEW)
+endif()
+if(POLICY CMP0086)
+    cmake_policy(SET CMP0086 OLD)
+endif()
+
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     project(_${EZC3D_NAME})
 else()
     project(${EZC3D_NAME})
 endif()
+
+# Set up swig
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
 
 # include python
 if(SKBUILD)
