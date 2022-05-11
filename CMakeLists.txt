@@ -83,41 +83,32 @@ set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 if (BUILD_SHARED_LIBS)
     set(EZC3D_SHARED TRUE)
 endif()
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in
-    ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3d/ezc3dConfig.h.in
+    ${EZC3D_BINARY_DIR}/include/ezc3d/ezc3dConfig.h
 )
 
 # Add headers
-# Include directories when building the library:
-target_include_directories(${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${EZC3D_BINARY_DIR}/include"
-)
-# Include directories when other targets in this project use this library:
-target_include_directories(${PROJECT_NAME} INTERFACE
+target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3d>
     $<BUILD_INTERFACE:${EZC3D_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${EZC3D_BINARY_DIR}/include/ezc3d>
 )
 
 # Install target
 include(GNUInstallDirs)
-set(${PROJECT_NAME}_INCLUDE_FOLDER ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME} CACHE STRING "INCLUDE DESTINATION")
 install(TARGETS ${PROJECT_NAME} EXPORT ezc3dTargets
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
 )
-install(DIRECTORY include/ DESTINATION ${${PROJECT_NAME}_INCLUDE_FOLDER}
+install(DIRECTORY include/ezc3d DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     # Exclude ezc3dConfig.h.in.
     PATTERN "*.h.in" EXCLUDE
 )
-# Include directories when a client uses the library from an installed ezc3d:
-target_include_directories(${PROJECT_NAME} INTERFACE
-    $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}>
-    $<INSTALL_INTERFACE:${${PROJECT_NAME}_INCLUDE_FOLDER}/..>  # allow for <ezc3d/*.h>
-)
-install(FILES "${EZC3D_BINARY_DIR}/include/ezc3dConfig.h"
-    DESTINATION "${${PROJECT_NAME}_INCLUDE_FOLDER}"
+install(FILES "${EZC3D_BINARY_DIR}/include/ezc3d/ezc3dConfig.h"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
 )
 
 # Prepare share
