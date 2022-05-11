@@ -121,23 +121,31 @@ install(FILES "${EZC3D_BINARY_DIR}/include/ezc3dConfig.h"
 )
 
 # Prepare share
-if(WIN32 AND NOT CYGWIN)
-  set(CMAKE_SHARE_DIR CMake)
-else()
-  set(CMAKE_SHARE_DIR lib/cmake/${EZC3D_NAME})
-endif()
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-    share/${PROJECT_NAME}Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION "${CMAKE_SHARE_DIR}"
-    PATH_VARS
-        CMAKE_INSTALL_PREFIX
+    ${CMAKE_CURRENT_SOURCE_DIR}/share/ezc3dConfig.cmake.in
+    ezc3dConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ezc3d
 )
-install(EXPORT ezc3dTargets DESTINATION "${CMAKE_SHARE_DIR}")
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    DESTINATION "${CMAKE_SHARE_DIR}"
+write_basic_package_version_file(
+    ezc3dConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+export(
+    EXPORT ezc3dTargets
+    FILE ezc3dTargets.cmake
+)
+install(
+    EXPORT ezc3dTargets
+    FILE ezc3dTargets.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ezc3d
+)
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/ezc3dConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/ezc3dConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ezc3d
 )
 
 # uninstall target
