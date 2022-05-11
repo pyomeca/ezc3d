@@ -71,8 +71,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     VISIBILITY_INLINES_HIDDEN ON
 )
 
-if(NOT BUILD_SHARED_LIBS AND BINDER_MATLAB)
-    # static ezc3d must be PIC for matlab bindings (always shared)
+if(NOT BUILD_SHARED_LIBS AND (BINDER_MATLAB OR BINDER_OCTAVE))
+    # static ezc3d must be PIC for matlab and octave bindings (always shared)
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
