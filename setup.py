@@ -24,7 +24,6 @@ setup(
         '-DBUILD_EXAMPLE:BOOL=OFF',
         '-DBINDER_PYTHON3:BOOL=ON',
         '-DCMAKE_INSTALL_BINDIR="ezc3d"',
-        '-Dezc3d_BIN_FOLDER=ezc3d',
-        '-Dezc3d_LIB_FOLDER=ezc3d'
+        '-DCMAKE_INSTALL_LIBDIR="ezc3d"'
     ],
 )
