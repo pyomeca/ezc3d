@@ -1,5 +1,20 @@
 cmake_minimum_required(VERSION 3.8)
 project(ezc3d VERSION 1.4.8)
+
+option(BUILD_SHARED_LIBS "Choose if build should be a dynamic or static library" ON)
+# Option to allow checking of size for matrix getter (slower but safer if activated)
+option(USE_MATRIX_FAST_ACCESSOR
+    "If fast accessor (without bound checks) should be use. Prevent SegFault from the user not activated, but is much slower (mostly for Debug purposes)"
+    ON
+)
+option(BUILD_EXAMPLE "Build a C++ example" ON)
+option(BUILD_DOC "Build documentation" OFF)
+option(GET_OFFICIAL_DOCUMENTATION "Automatically download the C3D documentation" OFF)
+option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
+option(BINDER_PYTHON3 "Build Python SWIG module" OFF)
+option(BINDER_MATLAB "Build Matlab module" OFF)
+option(BINDER_OCTAVE "Build Octave module" OFF)
+
 set(EZC3D_NAME ${PROJECT_NAME})
 set(EZC3D_ROOT_FOLDER ${PROJECT_SOURCE_DIR})
 
@@ -47,11 +62,6 @@ set(SRC_LIST
     src/modules/ForcePlatforms.cpp
 )
 
-set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
-if (BUILD_SHARED_LIBS)
-    set(EZC3D_SHARED TRUE)
-endif()
-
 add_library(${PROJECT_NAME} ${SRC_LIST})
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
@@ -69,13 +79,10 @@ endif()
 # Remember the CMAKE_CURRENT_BINARY_DIR (important if ezc3d is used as submodule)
 set(EZC3D_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-# Option to allow checking of size for matrix getter (slower but safer if activated)
-option(USE_MATRIX_FAST_ACCESSOR
-    "If fast accessor (without bound checks) should be use. Prevent SegFault from the user not activated, but is much slower (mostly for Debug purposes)"
-    ON
-)
-
 # Create the configuration header file associated with the asked options
+if (BUILD_SHARED_LIBS)
+    set(EZC3D_SHARED TRUE)
+endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/ezc3dConfig.h.in
     ${EZC3D_BINARY_DIR}/include/ezc3dConfig.h
 )
@@ -156,19 +163,16 @@ endif()
 add_subdirectory(binding)
 
 # Examples
-option(BUILD_EXAMPLE "Build a C++ example" ON)
 if (BUILD_EXAMPLE)
     add_subdirectory(examples)
 endif()
 
 
 # Doc
-option(BUILD_DOC "Build documentation" OFF)
 if (BUILD_DOC)
     add_subdirectory(doc)
 endif (BUILD_DOC)
 
-option(GET_OFFICIAL_DOCUMENTATION "Automatically download the C3D documentation" OFF)
 if (GET_OFFICIAL_DOCUMENTATION)
     file(
         DOWNLOAD https://www.c3d.org/docs/C3D_User_Guide.pdf
@@ -179,7 +183,6 @@ if (GET_OFFICIAL_DOCUMENTATION)
 endif()
 
 # Testing
-option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
 if (BUILD_TESTS)
     add_subdirectory(test)
 endif()

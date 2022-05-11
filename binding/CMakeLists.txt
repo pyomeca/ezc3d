@@ -1,7 +1,3 @@
-option(BINDER_PYTHON3 "Build Python SWIG module" OFF)
-option(BINDER_MATLAB "Build Matlab module" OFF)
-option(BINDER_OCTAVE "Build Octave module" OFF)
-
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     cmake_policy(SET CMP0078 NEW)
 endif()
