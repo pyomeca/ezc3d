@@ -36,7 +36,6 @@ foreach(SUFFIXES Read Write)
 
     # Add headers
     target_include_directories(${PROJECT_NAME}_${SUFFIXES} PRIVATE
-        "${EZC3D_BINARY_DIR}/include"
         "${OCTAVE_INCLUDE_DIRS}"
     )
 
