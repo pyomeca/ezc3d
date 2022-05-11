@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(ezc3d VERSION 1.4.8)
 set(EZC3D_NAME ${PROJECT_NAME})
 set(EZC3D_ROOT_FOLDER ${PROJECT_SOURCE_DIR})
-set(CMAKE_CXX_STANDARD 11)
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(EZC3D_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(EZC3D_VERSION_MINOR ${PROJECT_VERSION_MINOR})
@@ -51,10 +51,11 @@ set(SRC_LIST
 set(BUILD_SHARED_LIBS TRUE CACHE BOOL "Choose if build should be a dynamic or static library")
 if (BUILD_SHARED_LIBS)
     set(EZC3D_SHARED TRUE)
-    add_library(${PROJECT_NAME} SHARED ${SRC_LIST})
-else()
-    add_library(${PROJECT_NAME} STATIC ${SRC_LIST})
 endif()
+
+add_library(${PROJECT_NAME} ${SRC_LIST})
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
     DEBUG_POSTFIX "_debug"
     CXX_VISIBILITY_PRESET hidden
