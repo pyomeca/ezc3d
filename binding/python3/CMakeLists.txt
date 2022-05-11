@@ -59,6 +59,12 @@ else()
     set(PYTHON_PROJECT_NAME _${PROJECT_NAME})
 endif()
 
+# Add headers
+set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
+    SWIG_INCLUDE_DIRECTORIES
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../include;${CMAKE_CURRENT_SOURCE_DIR}/../../include/ezc3d;${EZC3D_BINARY_DIR}/include;${EZC3D_BINARY_DIR}/include/ezc3d"
+)
+
 if(APPLE)
     set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
         SUFFIX ".so")
