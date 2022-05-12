@@ -1,17 +1,13 @@
 #include <iostream>
 #include <memory>
 
-#include "ezc3d.h"
+#include <ezc3d/ezc3d.h>
 #include "utils.h"
-#include "Header.h"
-#include "Parameters.h"
-#if defined(_WIN32) || defined(__APPLE__)
-#include "../../ezc3d/include/Data.h"  // This clash with data.h from Octave.. It will fail if directories are moved
-#else
-#include "Data.h"
-#endif
-#include "Frame.h"
-#include "modules/ForcePlatforms.h"
+#include <ezc3d/Header.h>
+#include <ezc3d/Parameters.h>
+#include <ezc3d/Data.h>
+#include <ezc3d/Frame.h>
+#include <ezc3d/modules/ForcePlatforms.h>
 #include <string.h>
 #include <cmath>
 

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 
-#include "ezc3d.h"
+#include <ezc3d/ezc3d.h>
 
 #define METADATA_FIELD "META_DATA"
 #define DESCRIPTION_FIELD "DESCRIPTION"
