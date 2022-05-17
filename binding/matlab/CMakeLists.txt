@@ -36,7 +36,6 @@ foreach(SUFFIXES Read Write)
 
     # Add headers
     target_include_directories(${PROJECT_NAME}_${SUFFIXES} PRIVATE
-        "${EZC3D_BINARY_DIR}/include"
         "${Matlab_INCLUDE_DIRS}"
     )
 
@@ -80,7 +79,7 @@ foreach(SUFFIXES Read Write)
 
     # Set runtime path for linux
     set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
-        INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${${EZC3D_NAME}_BIN_FOLDER}"
+        INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
         INSTALL_RPATH_USE_LINK_PATH TRUE
     )
 

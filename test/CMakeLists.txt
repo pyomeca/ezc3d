@@ -54,23 +54,7 @@ set(TEST_SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/test_modules.cpp"
 )
 add_executable(${PROJECT_NAME} "${TEST_SRC_FILES}")
-add_dependencies(${PROJECT_NAME} ${EZC3D_NAME})
-
-# headers for the project
-target_include_directories(${PROJECT_NAME} PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/../include"
-    "${EZC3D_BINARY_DIR}/include"
-)
-
-# Standard linking to gtest stuff.
-target_link_libraries(${PROJECT_NAME}
-    "gtest_main"
-)
-
-# Extra linking for the project.
-target_link_libraries(${PROJECT_NAME}
-    "${EZC3D_NAME}"
-)
+target_link_libraries(${PROJECT_NAME} gtest_main ezc3d)
 
 # This is so you can do 'make test' to see all your tests run, instead of
 # manually running the executable ezc3d_test to see those specific tests.

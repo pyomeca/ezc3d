@@ -1,8 +1,19 @@
+if(POLICY CMP0078)
+    cmake_policy(SET CMP0078 NEW)
+endif()
+if(POLICY CMP0086)
+    cmake_policy(SET CMP0086 OLD)
+endif()
+
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     project(_${EZC3D_NAME})
 else()
     project(${EZC3D_NAME})
 endif()
+
+# Set up swig
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
 
 # include python
 if(SKBUILD)
@@ -51,7 +62,7 @@ endif()
 # Add headers
 set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
     SWIG_INCLUDE_DIRECTORIES
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../include;${EZC3D_BINARY_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../include;${CMAKE_CURRENT_SOURCE_DIR}/../../include/ezc3d;${EZC3D_BINARY_DIR}/include;${EZC3D_BINARY_DIR}/include/ezc3d"
 )
 
 if(APPLE)
@@ -62,7 +73,7 @@ if(APPLE)
 endif()
 set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
     PREFIX ""
-    INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${${EZC3D_NAME}_BIN_FOLDER}"
+    INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
     INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
