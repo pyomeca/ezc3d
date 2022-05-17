@@ -323,7 +323,7 @@ To help the user, `ezc3d` include a force platform analyzer filter.
 So if one is interested by extracting some process data related, they may use the filter like so:
 ```C++
 #include <vector>
-#include "ezc3d_all.h"
+#include "ezc3d/ezc3d_all.h"
 
 int main()
 {
