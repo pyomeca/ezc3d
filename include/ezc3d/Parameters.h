@@ -53,9 +53,16 @@ public:
 
 protected:
     ///
-    /// \brief Add all required parameter for a c3d to be valid
+    /// \brief Add all required parameters for a c3d to be valid
     ///
     void setMandatoryParameters();
+
+    ///
+    /// \brief Set the required parameters for some specific but non-mandatory groups
+    /// \param groupName The name of the group to add to the c3d
+    ///
+    void setMandatoryParametersForSpecialGroup(
+            const std::string& groupName);
 
     //---- STREAM ----//
 public:
