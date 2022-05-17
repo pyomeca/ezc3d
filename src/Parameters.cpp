@@ -324,6 +324,46 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
     }
 }
 
+void ezc3d::ParametersNS::Parameters::setMandatoryParametersForSpecialGroup(
+        const std::string& groupName) {
+    // Mandatory groups
+    if (!groupName.compare("ROTATION"))
+    {
+        if (!isGroup("ROTATION")){
+            group(ezc3d::ParametersNS::GroupNS::Group ("ROTATION"));
+        }
+
+        ezc3d::ParametersNS::GroupNS::Group& grp(group("ROTATION"));
+        if (!grp.isParameter("USED")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("USED", "");
+            p.set(0);
+            grp.parameter(p);
+        }
+        if (!grp.isParameter("DATA_START")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("DATA_START", "");
+            p.set(std::vector<int>()={1});
+            grp.parameter(p);
+        }
+        if (!grp.isParameter("RATE")){
+            // Double is better as default than RATIO as RATIO is chosen in
+            // priority when writing.
+            ezc3d::ParametersNS::GroupNS::Parameter p("RATE", "");
+            p.set(std::vector<double>()=group("POINT").parameter("RATE").valuesAsDouble());
+            grp.parameter(p);
+        }
+        if (!grp.isParameter("LABELS")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("LABELS", "");
+            p.set(std::vector<std::string>()={});
+            grp.parameter(p);
+        }
+        if (!grp.isParameter("DESCRIPTIONS")){
+            ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
+            p.set(std::vector<double>()={});
+            grp.parameter(p);
+        }
+    }
+}
+
 void ezc3d::ParametersNS::Parameters::print() const {
     std::cout << "Parameters header" << "\n";
     std::cout << "parametersStart = " << parametersStart() << "\n";
@@ -562,6 +602,9 @@ void ezc3d::ParametersNS::Parameters::group(
         for (size_t i=0; i < g.nbParameters(); ++i)
             _groups[alreadyExtIdx].parameter(g.parameter(i));
     }
+
+    // Do a sanity check for some specific group
+    setMandatoryParametersForSpecialGroup(g.name());
 }
 
 void ezc3d::ParametersNS::Parameters::remove(
