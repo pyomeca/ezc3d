@@ -7,10 +7,10 @@
 /// \date April 30th, 2022
 ///
 
-#include "PointsInfo.h"
-#include "ezc3d.h"
-#include "Header.h"
-#include "Parameters.h"
+#include "ezc3d/PointsInfo.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/Parameters.h"
 
 
 ezc3d::DataNS::Points3dNS::Info::Info(

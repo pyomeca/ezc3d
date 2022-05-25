@@ -39,8 +39,8 @@
 #include <fstream>
 #include <vector>
 
-#include "ezc3dConfig.h"
-#include "ezc3dNamespace.h"
+#include "ezc3d/ezc3dConfig.h"
+#include "ezc3d/ezc3dNamespace.h"
 
 ///
 /// \brief Main class for C3D holder

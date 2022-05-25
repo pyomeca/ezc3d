@@ -7,7 +7,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "DataStartInfo.h"
+#include "ezc3d/DataStartInfo.h"
 #include <stdexcept>
 
 bool ezc3d::DataStartInfo::hasPointDataStart() const

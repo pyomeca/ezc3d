@@ -7,10 +7,10 @@
 /// \date October 17th, 2018
 ///
 
-#include "Channel.h"
-#include "ezc3d.h"
-#include "Header.h"
-#include "AnalogsInfo.h"
+#include "ezc3d/Channel.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/AnalogsInfo.h"
 #include <iostream>
 
 ezc3d::DataNS::AnalogsNS::Channel::Channel() {

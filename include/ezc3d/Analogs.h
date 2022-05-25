@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "AnalogsSubframe.h"
+#include "ezc3d/AnalogsSubframe.h"
 
 ///
 /// \brief Analog holder for C3D analogous data
