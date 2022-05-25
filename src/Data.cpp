@@ -7,14 +7,14 @@
 /// \date October 17th, 2018
 ///
 
-#include "Data.h"
-#include "ezc3d.h"
-#include "Header.h"
-#include "Parameters.h"
-#include "AnalogsInfo.h"
-#include "PointsInfo.h"
-#include "RotationsInfo.h"
-#include "DataStartInfo.h"
+#include "ezc3d/Data.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/AnalogsInfo.h"
+#include "ezc3d/PointsInfo.h"
+#include "ezc3d/RotationsInfo.h"
+#include "ezc3d/DataStartInfo.h"
 #include <iostream>
 #include <stdexcept>
 

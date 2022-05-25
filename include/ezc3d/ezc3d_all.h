@@ -8,17 +8,17 @@
 /// \date March 27th, 2020
 ///
 
-#include "ezc3dNamespace.h"
-#include "math/ezc3dMath.h"
-#include "ezc3d.h"
-#include "Header.h"
-#include "Parameters.h"
-#include "Data.h"
+#include "ezc3d/ezc3dNamespace.h"
+#include "ezc3d/math/ezc3dMath.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/Data.h"
 
-#include "PointsInfo.h"
-#include "AnalogsInfo.h"
-#include "RotationsInfo.h"
+#include "ezc3d/PointsInfo.h"
+#include "ezc3d/AnalogsInfo.h"
+#include "ezc3d/RotationsInfo.h"
 
-#include "modules/ForcePlatforms.h"
+#include "ezc3d/modules/ForcePlatforms.h"
 
 #endif

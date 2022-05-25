@@ -8,7 +8,7 @@
 /// \date April 30th, 2022
 ///
 
-#include "RotationsSubframe.h"
+#include "ezc3d/RotationsSubframe.h"
 
 ///
 /// \brief Rotation holder for C3D Rotations data

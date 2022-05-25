@@ -7,9 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "AnalogsSubframe.h"
-#include "ezc3d.h"
-#include "Header.h"
+#include "ezc3d/AnalogsSubframe.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
 #include <stdexcept>
 
 ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame() {

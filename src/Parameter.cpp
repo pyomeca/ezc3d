@@ -7,10 +7,10 @@
 /// \date October 17th, 2018
 ///
 
-#include "Parameter.h"
-#include "ezc3d.h"
-#include "Parameters.h"
-#include "DataStartInfo.h"
+#include "ezc3d/Parameter.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/DataStartInfo.h"
 #include <iostream>
 #include <stdexcept>
 

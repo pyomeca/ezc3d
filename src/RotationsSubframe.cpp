@@ -7,9 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "RotationsSubframe.h"
-#include "Header.h"
-#include "RotationsInfo.h"
+#include "ezc3d/RotationsSubframe.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/RotationsInfo.h"
 #include <iostream>
 #ifdef _WIN32
 #include <string>

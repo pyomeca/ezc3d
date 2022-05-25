@@ -7,9 +7,9 @@
 /// \date April 30th, 2022
 ///
 
-#include "Rotation.h"
-#include "ezc3d.h"
-#include "RotationsInfo.h"
+#include "ezc3d/Rotation.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/RotationsInfo.h"
 #include <iostream>
 #include <bitset>
 #include <cmath>

@@ -8,7 +8,7 @@
 /// \date March 25th, 2020
 ///
 
-#include "ezc3dNamespace.h"
+#include "ezc3d/ezc3dNamespace.h"
 #include <vector>
 
 ///

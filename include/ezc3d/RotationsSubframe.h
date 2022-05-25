@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "Rotation.h"
+#include "ezc3d/Rotation.h"
 
 ///
 /// \brief Subframe for the rotation data

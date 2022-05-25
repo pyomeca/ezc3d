@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "ezc3dNamespace.h"
+#include "ezc3d/ezc3dNamespace.h"
 #include <vector>
 #include <iostream>
 #ifdef _WIN32

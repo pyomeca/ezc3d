@@ -7,12 +7,12 @@
 /// \date April 30th, 2022
 ///
 
-#include "Rotations.h"
-#include "ezc3d.h"
-#include "Header.h"
-#include "Parameters.h"
-#include "RotationsInfo.h"
-#include "RotationsSubframe.h"
+#include "ezc3d/Rotations.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/RotationsInfo.h"
+#include "ezc3d/RotationsSubframe.h"
 #include <iostream>
 #include <stdexcept>
 

@@ -7,9 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "math/Matrix.h"
-#include "math/Vector3d.h"
-#include "math/Vector6d.h"
+#include "ezc3d/math/Matrix.h"
+#include "ezc3d/math/Vector3d.h"
+#include "ezc3d/math/Vector6d.h"
 #include <iostream>
 #include <stdexcept>
 
