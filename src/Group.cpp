@@ -7,8 +7,11 @@
 /// \date October 17th, 2018
 ///
 
-#include "Group.h"
-#include "Parameters.h"
+#include "ezc3d/Group.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Parameters.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::ParametersNS::GroupNS::Group::Group(
         const std::string &name,
@@ -20,12 +23,12 @@ ezc3d::ParametersNS::GroupNS::Group::Group(
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::print() const {
-    std::cout << "groupName = " << name() << std::endl;
-    std::cout << "isLocked = " << isLocked() << std::endl;
-    std::cout << "desc = " << description() << std::endl;
+    std::cout << "groupName = " << name() << "\n";
+    std::cout << "isLocked = " << isLocked() << "\n";
+    std::cout << "desc = " << description() << "\n";
 
     for (size_t i=0; i < nbParameters(); ++i){
-        std::cout << "Parameter " << i << std::endl;
+        std::cout << "Parameter " << i << "\n";
         parameter(i).print();
     }
 }
@@ -33,7 +36,7 @@ void ezc3d::ParametersNS::GroupNS::Group::print() const {
 void ezc3d::ParametersNS::GroupNS::Group::write(
         std::fstream &f,
         int groupIdx,
-        std::streampos &dataStartPosition) const {
+        ezc3d::DataStartInfo &dataStartPositionToFill) const {
     int nCharName(static_cast<int>(name().size()));
     if (isLocked())
         nCharName *= -1;
@@ -64,12 +67,15 @@ void ezc3d::ParametersNS::GroupNS::Group::write(
             2*ezc3d::DATA_TYPE::BYTE);
     f.seekg(currentPos);
 
-    std::streampos defaultDataStartPosition(-1);
-    for (size_t i=0; i < nbParameters(); ++i)
+    for (size_t i=0; i < nbParameters(); ++i){
+        int tagForDataStartFilling = -1;
         if (!name().compare("POINT"))
-            parameter(i).write(f, -groupIdx, dataStartPosition);
-        else
-            parameter(i).write(f, -groupIdx, defaultDataStartPosition);
+            tagForDataStartFilling = 0;
+        else if (!name().compare("ROTATION"))
+            tagForDataStartFilling = 1;
+        parameter(i).write(f, -groupIdx, dataStartPositionToFill, tagForDataStartFilling);
+
+    }
 }
 
 int ezc3d::ParametersNS::GroupNS::Group::read(

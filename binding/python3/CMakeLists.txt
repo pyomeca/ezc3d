@@ -1,18 +1,40 @@
+if(POLICY CMP0078)
+    cmake_policy(SET CMP0078 NEW)
+endif()
+if(POLICY CMP0086)
+    cmake_policy(SET CMP0086 OLD)
+endif()
+
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     project(_${EZC3D_NAME})
 else()
     project(${EZC3D_NAME})
 endif()
 
-# Include python
-find_package(Python3 REQUIRED
-    COMPONENTS Interpreter Development NumPy
-)
-include_directories(${Python3_INCLUDE_DIRS})
+# Set up swig
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
 
-include_directories(${Python3_NumPy_INCLUDE_DIRS})
+# include python
+if(SKBUILD)
+    find_package(NumPy REQUIRED)
+    include_directories(${PYTHON_INCLUDE_DIR})
+    include_directories(${NumPy_INCLUDE_DIRS})
+else()
+    find_package(Python3 REQUIRED
+        COMPONENTS Interpreter Development NumPy
+    )
+    include_directories(${Python3_INCLUDE_DIRS})
+    include_directories(${Python3_NumPy_INCLUDE_DIRS})
+endif()
+
 if(WIN32)
-    link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
+    if(SKBUILD)
+        get_filename_component(PYTHON_LIB_DIR ${PYTHON_LIBRARY} DIRECTORY)
+        link_directories(${PYTHON_LIB_DIR})
+    else()
+        link_directories(${Python3_RUNTIME_LIBRARY_DIRS}/libs)
+    endif()
 endif()
 
 # Add swig module
@@ -29,7 +51,6 @@ SWIG_ADD_LIBRARY(${PROJECT_NAME}
 )
 swig_link_libraries(${PROJECT_NAME}
     "${EZC3D_NAME}"
-    "${Python3_LIBRARIES}"
 )
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
@@ -41,7 +62,7 @@ endif()
 # Add headers
 set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
     SWIG_INCLUDE_DIRECTORIES
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../include;${EZC3D_BINARY_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../include;${CMAKE_CURRENT_SOURCE_DIR}/../../include/ezc3d;${EZC3D_BINARY_DIR}/include;${EZC3D_BINARY_DIR}/include/ezc3d"
 )
 
 if(APPLE)
@@ -52,14 +73,20 @@ if(APPLE)
 endif()
 set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
     PREFIX ""
-    INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${${EZC3D_NAME}_BIN_FOLDER}"
+    INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
     INSTALL_RPATH_USE_LINK_PATH TRUE
 )
 
-# Define the python install folder
-set(PYTHON_INSTALL_PREFIX "${Python3_SITELIB}/${EZC3D_NAME}" CACHE PATH
+# Define the python install 
+if(SKBUILD)
+    set(PYTHON_INSTALL_PREFIX "ezc3d" CACHE PATH
     "Path where to install the python binder, default is $Python_LIB/site-package/ezc3d"
-)
+    )
+else()
+    set(PYTHON_INSTALL_PREFIX "${Python3_SITELIB}/${EZC3D_NAME}" CACHE PATH
+        "Path where to install the python binder, default is $Python_LIB/site-package/ezc3d"
+    )
+endif()
 
 # Install to the proper directories
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${EZC3D_NAME}.py"
@@ -69,6 +96,7 @@ INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${EZC3D_NAME}.py"
 INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
     DESTINATION "${PYTHON_INSTALL_PREFIX}"
 )
+
 
 # Create the version file
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/_version.py.in"

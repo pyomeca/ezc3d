@@ -7,9 +7,14 @@
 /// \date October 17th, 2018
 ///
 
-#include "Point.h"
-
+#include "ezc3d/Point.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/PointsInfo.h"
+#include <iostream>
 #include <bitset>
+#include <cmath>
+#include <stdexcept>
 
 ezc3d::DataNS::Points3dNS::Point::Point() :
     ezc3d::Vector3d(),
@@ -26,6 +31,76 @@ ezc3d::DataNS::Points3dNS::Point::Point(
     _cameraMasks = p._cameraMasks;
 }
 
+ezc3d::DataNS::Points3dNS::Point::Point(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const ezc3d::DataNS::Points3dNS::Info& info) :
+    ezc3d::Vector3d(),
+    _residual(-1)
+{
+    _cameraMasks.resize(7, false);
+    if (info.scaleFactor() < 0){ // if it is float
+        x(c3d.readFloat(info.processorType(), file));
+        y(c3d.readFloat(info.processorType(), file));
+        z(c3d.readFloat(info.processorType(), file));
+        if (info.processorType() == PROCESSOR_TYPE::INTEL){
+            cameraMask(c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD));
+            residual(static_cast<float>(c3d.readInt(
+                            info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+                        * -info.scaleFactor());
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::DEC){
+            residual(static_cast<float>(c3d.readInt(
+                            info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+                        * -info.scaleFactor());
+            cameraMask(c3d.readInt(
+                              info.processorType(), file, ezc3d::DATA_TYPE::WORD));
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::MIPS){
+            throw std::runtime_error(
+                        "MIPS processor type not supported yet, please open a "
+                        "GitHub issue to report that you want this feature!");
+        }
+    } else {
+        x(static_cast<float>(
+                 c3d.readInt(
+                     info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+             * info.scaleFactor());
+        y(static_cast<float>(
+                 c3d.readInt(
+                     info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+             * info.scaleFactor());
+        z(static_cast<float>(
+                 c3d.readInt(
+                     info.processorType(), file, ezc3d::DATA_TYPE::WORD))
+             * info.scaleFactor());
+        if (info.processorType() == PROCESSOR_TYPE::INTEL){
+            cameraMask(c3d.readInt(
+                              info.processorType(), file, ezc3d::DATA_TYPE::BYTE));
+            residual(static_cast<float>(
+                            c3d.readInt(info.processorType(),
+                                        file, ezc3d::DATA_TYPE::BYTE))
+                        * info.scaleFactor());
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::DEC){
+            cameraMask(c3d.readInt(
+                              info.processorType(), file, ezc3d::DATA_TYPE::BYTE));
+            residual(static_cast<float>(
+                            c3d.readInt(info.processorType(),
+                                        file, ezc3d::DATA_TYPE::BYTE))
+                        * info.scaleFactor());
+        }
+        else if (info.processorType() == PROCESSOR_TYPE::MIPS){
+            throw std::runtime_error(
+                        "MIPS processor type not supported yet, please open a "
+                        "GitHub issue to report that you want this feature!");
+        }
+    }
+    if (residual() < 0){
+        set(NAN, NAN, NAN);
+    }
+}
+
 void ezc3d::DataNS::Points3dNS::Point::print() const {
     ezc3d::Vector3d::print();
     std::cout << "Residual = " << residual() << "; Masks = [";
@@ -35,7 +110,7 @@ void ezc3d::DataNS::Points3dNS::Point::print() const {
     if (_cameraMasks.size() > 0){
         std::cout << _cameraMasks[_cameraMasks.size()-1] << "]";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 void ezc3d::DataNS::Points3dNS::Point::write(
@@ -63,7 +138,7 @@ void ezc3d::DataNS::Points3dNS::Point::write(
     }
     else {
         float zero(0);
-        int minusOne(-1);
+        int minusOne(-16512); // 0xbf80 - 0xFFFF - 1   This is the Qualisys and Vicon value for missing marker);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);
         f.write(reinterpret_cast<const char*>(&zero), ezc3d::DATA_TYPE::FLOAT);

@@ -1,5 +1,3 @@
-project(${EZC3D_NAME}_example)
-
 set(EXAMPLE_FILES
     "create_and_read_example.cpp"
     "modify_c3d_example.cpp"
@@ -9,20 +7,9 @@ set(EXAMPLE_FILES
 foreach(FILE ${EXAMPLE_FILES})
     # Get the name of the current file
     get_filename_component(FILE_NAME ${FILE} NAME_WE)
-    set(PROJECT_NAME ${FILE_NAME})
 
-    add_executable(${PROJECT_NAME} ${FILE})
-    add_dependencies(${PROJECT_NAME} ${EZC3D_NAME})
-    # Headers
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_SOURCE_DIR}/../include
-        ${EZC3D_BINARY_DIR}/include
-    )
-
-    # Linker and instalation
-    target_link_libraries(${PROJECT_NAME}
-        "${EZC3D_NAME}"
-    )
+    add_executable(${FILE_NAME} ${FILE})
+    target_link_libraries(${FILE_NAME} ezc3d)
 endforeach()
 
 # Get the test suite from the pyomeca repository

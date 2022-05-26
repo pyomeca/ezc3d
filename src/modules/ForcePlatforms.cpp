@@ -7,9 +7,9 @@
 /// \date March 25th, 2020
 ///
 
-#include "modules/ForcePlatforms.h"
-
-#include "ezc3d_all.h"
+#include "ezc3d/modules/ForcePlatforms.h"
+#include "ezc3d/ezc3d_all.h"
+#include <stdexcept>
 
 ezc3d::Modules::ForcePlatform::ForcePlatform()
 {

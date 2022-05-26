@@ -1,5 +1,6 @@
-#include <vector>
 #include "ezc3d_all.h"
+#include <iostream>
+#include <vector>
 
 int main()
 {
@@ -8,26 +9,26 @@ int main()
     auto& pf0(pf.forcePlatform(0));
 
     // Show some metadata
-    std::cout << "Number of force platform (pf) = " << pf.forcePlatforms().size() << std::endl;
-    std::cout << std::endl;
-    std::cout << "Information for pf 0:" << std::endl;
-    std::cout << "Number of frames = " << pf0.nbFrames() << std::endl;
-    std::cout << "Type = " << pf0.type() << std::endl;
-    std::cout << "Force units = " << pf0.forceUnit() << std::endl;
-    std::cout << "Moment units = " << pf0.momentUnit() << std::endl;
-    std::cout << "Position units = " << pf0.positionUnit() << std::endl;
-    std::cout << "Calibration matrix = " << std::endl << pf0.calMatrix() << std::endl;
-    std::cout << "Corners = " << std::endl << pf0.corners() << std::endl;
-    std::cout << "Origin = " << std::endl << pf0.origin() << std::endl;
-    std::cout << std::endl;
+    std::cout << "Number of force platform (pf) = " << pf.forcePlatforms().size() << "\n";
+    std::cout << "\n";
+    std::cout << "Information for pf 0:" << "\n";
+    std::cout << "Number of frames = " << pf0.nbFrames() << "\n";
+    std::cout << "Type = " << pf0.type() << "\n";
+    std::cout << "Force units = " << pf0.forceUnit() << "\n";
+    std::cout << "Moment units = " << pf0.momentUnit() << "\n";
+    std::cout << "Position units = " << pf0.positionUnit() << "\n";
+    std::cout << "Calibration matrix = " << "\n" << pf0.calMatrix() << "\n";
+    std::cout << "Corners = " << "\n" << pf0.corners() << "\n";
+    std::cout << "Origin = " << "\n" << pf0.origin() << "\n";
+    std::cout << "\n";
 
     // Show some data
-    std::cout << "Data for 1st frame:" << std::endl;
+    std::cout << "Data for 1st frame:" << "\n";
     // Values
-    std::cout << "Forces = " << pf0.forces()[0].T() << std::endl;
-    std::cout << "Moments = " << pf0.moments()[0].T() << std::endl;
-    std::cout << "CoP = " << pf0.CoP()[0].T() << std::endl;
-    std::cout << "Tz = " << pf0.Tz()[0].T() << std::endl;
+    std::cout << "Forces = " << pf0.forces()[0].T() << "\n";
+    std::cout << "Moments = " << pf0.moments()[0].T() << "\n";
+    std::cout << "CoP = " << pf0.CoP()[0].T() << "\n";
+    std::cout << "Tz = " << pf0.Tz()[0].T() << "\n";
 
     return 0;
 }

@@ -7,7 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "math/Vector6d.h"
+#include "ezc3d/math/Vector6d.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::Vector6d::Vector6d() :
     ezc3d::Matrix(6, 1)
@@ -53,7 +55,7 @@ void ezc3d::Vector6d::print() const
               << _data[3] << ", "
               << _data[4] << ", "
               << _data[5] << "];"
-              << std::endl;
+              << "\n";
 }
 
 ezc3d::Vector6d& ezc3d::Vector6d::operator=(

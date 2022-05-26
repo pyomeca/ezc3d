@@ -7,9 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "math/Matrix33.h"
-
-#include "math/Vector3d.h"
+#include "ezc3d/math/Matrix33.h"
+#include "ezc3d/math/Vector3d.h"
+#include <stdexcept>
 
 ezc3d::Matrix33::Matrix33() :
     ezc3d::Matrix(3, 3)

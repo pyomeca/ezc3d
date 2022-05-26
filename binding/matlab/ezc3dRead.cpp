@@ -8,25 +8,37 @@
 #include "Parameters.h"
 #include "Data.h"
 #include "modules/ForcePlatforms.h"
+#include <string.h>
+#include <cmath>
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 {
     // Check inputs and outputs
-    if (nrhs > 1)
-        mexErrMsgTxt("Input argument must be a file path string or "
+    if (nrhs > 2)
+        mexErrMsgTxt("Input argument must be a file path string (with a boolean "
+                     "for accepting bad formatting files) or no input for a "
+                     "valid empty structure.");
+    if (nrhs >= 1 && !mxIsChar(prhs[0]))
+        mexErrMsgTxt("First input argument must be a file path string or "
                      "no input for a valid empty structure.");
-    if (nrhs == 1 && mxIsChar(prhs[0]) != 1)
-        mexErrMsgTxt("Input argument must be a file path string or "
-                     "no input for a valid empty structure.");
+    if (nrhs >= 2 && !mxIsLogical(prhs[1]))
+        mexErrMsgTxt("Second input argument must be a bool for allowing to load "
+                     "bad formatted c3d. Warning this can generate a segmentation "
+                     "fault.");
+
     if (nlhs > 2)
         mexErrMsgTxt("Only two outputs are available");
 
     // Receive the path
     std::string path;
-    if (nrhs == 1){
+    if (nrhs >= 1){
         char *buffer = mxArrayToString(prhs[0]);
         path = buffer;
         mxFree(buffer);
+    }
+    bool ignoreBadFormatting = false;
+    if (nrhs >= 2){
+        ignoreBadFormatting = toBool(prhs[1]);
     }
 
     // Preparer the first layer of the output structure
@@ -52,7 +64,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             c3d = new ezc3d::c3d;
         }
         else {
-            c3d = new ezc3d::c3d(path);
+            c3d = new ezc3d::c3d(path, ignoreBadFormatting);
         }
 
         // Fill the header

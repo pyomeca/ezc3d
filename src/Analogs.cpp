@@ -7,16 +7,32 @@
 /// \date October 17th, 2018
 ///
 
-#include "Analogs.h"
+#include "ezc3d/Analogs.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::DataNS::AnalogsNS::Analogs::Analogs() {
+
+}
+
+ezc3d::DataNS::AnalogsNS::Analogs::Analogs(
+        ezc3d::c3d &c3d,
+        std::fstream &file,
+        const AnalogsNS::Info& info)
+{
+    nbSubframes(c3d.header().nbAnalogByFrame());
+    for (size_t k = 0; k < c3d.header().nbAnalogByFrame(); ++k){
+        subframe(ezc3d::DataNS::AnalogsNS::SubFrame(c3d, file, info), k);
+    }
 }
 
 void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
     for (size_t i = 0; i < nbSubframes(); ++i) {
-        std::cout << "Subframe = " << i << std::endl;
+        std::cout << "Subframe = " << i << "\n";
         subframe(i).print();
-        std::cout << std::endl;
+        std::cout << "\n";
     }
 }
 

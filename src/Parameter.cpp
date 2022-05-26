@@ -7,8 +7,12 @@
 /// \date October 17th, 2018
 ///
 
-#include "Parameter.h"
-#include "Parameters.h"
+#include "ezc3d/Parameter.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/DataStartInfo.h"
+#include <iostream>
+#include <stdexcept>
 
 ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
         const std::string &name,
@@ -22,34 +26,35 @@ ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
-    std::cout << "parameterName = " << name() << std::endl;
-    std::cout << "isLocked = " << isLocked() << std::endl;
+    std::cout << "parameterName = " << name() << "\n";
+    std::cout << "isLocked = " << isLocked() << "\n";
 
     // Data are not separated according to _dimension, which could help to read
     if (_data_type == DATA_TYPE::CHAR)
         for (unsigned int i = 0; i < _param_data_string.size(); ++i)
             std::cout << "param_data_string[" << i << "] = "
-                      << _param_data_string[i] << std::endl;
+                      << _param_data_string[i] << "\n";
     if (_data_type == DATA_TYPE::BYTE)
         for (unsigned int i = 0; i < _param_data_int.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_int[i] << std::endl;
+                      << _param_data_int[i] << "\n";
     if (_data_type == DATA_TYPE::INT)
         for (unsigned int i = 0; i < _param_data_int.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_int[i] << std::endl;
+                      << _param_data_int[i] << "\n";
     if (_data_type == DATA_TYPE::FLOAT)
         for (unsigned int i = 0; i < _param_data_double.size(); ++i)
             std::cout << "param_data[" << i << "] = "
-                      << _param_data_double[i] << std::endl;
+                      << _param_data_double[i] << "\n";
 
-    std::cout << "description = " << _description << std::endl;
+    std::cout << "description = " << _description << "\n";
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::write(
         std::fstream &f,
         int groupIdx,
-        std::streampos &dataStartPosition) const {
+        ezc3d::DataStartInfo &dataStartPositionToFill,
+        int dataStartType) const {
     int nCharName(static_cast<int>(name().size()));
     if (isLocked())
         nCharName *= -1;
@@ -117,15 +122,16 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
                 writeImbricatedParameter(f, dimension, 1);
             }
         } else {
-            if (static_cast<int>(dataStartPosition) != -1
-                    && !_name.compare("DATA_START")){
-                // -1 means that it is not the POINT group
-
+            if (!_name.compare("DATA_START") && dataStartType >= 0){
                 // This is a special case defined in the standard where you write
-                // the number of blocks up to the data
-                dataStartPosition = f.tellg();
-                f.write(reinterpret_cast<const char*>(&blank),
-                        2*ezc3d::DATA_TYPE::BYTE);
+                // the number of blocks up to the data for POINT or ROTATION group
+                if (dataStartType == 0)  // POINT
+                    dataStartPositionToFill.setParameterPositionInC3dForPointDataStart(f.tellg());
+                else if (dataStartType == 1)  // ROTATION
+                    dataStartPositionToFill.setParameterPositionInC3dForRotationsDataStart(f.tellg());
+                else
+                    throw std::runtime_error("data start type not recognized");
+                f.write(reinterpret_cast<const char*>(&blank), 2*ezc3d::DATA_TYPE::BYTE);
             } else
                 writeImbricatedParameter(f, dimension);
         }

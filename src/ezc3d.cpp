@@ -7,11 +7,14 @@
 /// \date October 17th, 2018
 ///
 
-#include "ezc3d.h"
-#include "Header.h"
-#include "Data.h"
-#include "Parameters.h"
-
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/Data.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/DataStartInfo.h"
+#include <algorithm>
+#include <cmath>
+#include <stdexcept>
 
 void ezc3d::removeTrailingSpaces(
         std::string& s) {
@@ -46,7 +49,8 @@ ezc3d::c3d::c3d():
 }
 
 ezc3d::c3d::c3d(
-        const std::string &filePath):
+        const std::string &filePath,
+        bool ignoreBadFormatting):
     _filePath(filePath),
     m_nByteToRead_float(4*ezc3d::DATA_TYPE::BYTE),
     m_nByteToReadMax_int(100) {
@@ -62,7 +66,7 @@ ezc3d::c3d::c3d(
     // Read all the section
     _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this, stream));
     _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
-                new ezc3d::ParametersNS::Parameters(*this, stream));
+                new ezc3d::ParametersNS::Parameters(*this, stream, ignoreBadFormatting));
 
     // header may be inconsistent with the parameters, so it must be
     // update to make sure sizes are consistent
@@ -91,23 +95,22 @@ void ezc3d::c3d::write(
         const WRITE_FORMAT& format) const {
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
+    ezc3d::DataStartInfo dataStartInfoToFill;
+
     // Write the header
-    std::streampos dataStartHeader;
-    header().write(f, dataStartHeader);
+    header().write(f, dataStartInfoToFill);
 
     // Write the parameters
-    std::streampos dataStartParameters(-2); // -1 means not POINT group
     ezc3d::ParametersNS::Parameters p(
-                parameters().write(f, dataStartParameters, header(), format));
-
-    // Write the data start parameter in header and parameter sections
-    writeDataStart(f, dataStartHeader, DATA_TYPE::WORD);
-    writeDataStart(f, dataStartParameters, DATA_TYPE::BYTE);
+                parameters().write(f, dataStartInfoToFill, header(), format));
 
     // Write the data
     float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
     std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
-    data().write(f, pointScaleFactor, pointAnalogFactors);
+    data().write(header(), f, pointScaleFactor, pointAnalogFactors, dataStartInfoToFill);
+
+    // Go back and write all the required data start
+    writeDataStart(f, dataStartInfoToFill);
 
     f.close();
 }
@@ -164,19 +167,25 @@ int ezc3d::c3d::hex2int(
 
 void ezc3d::c3d::writeDataStart(
         std::fstream &f,
-        const std::streampos &dataStartPosition,
-        const DATA_TYPE& type) const {
-    // Go back to data start blank space and write the current
-    // position (assuming current is the position of data!)
-    std::streampos dataPos = f.tellg();
-    f.seekg(dataStartPosition);
-    if (int(dataPos) % 512 > 0)
-        throw std::out_of_range(
-                "Something went wrong in the positioning of the pointer "
-                "for writting the data. Please report this error.");
-    int nBlocksToNext = int(dataPos)/512 + 1; // DATA_START is 1-based
-    f.write(reinterpret_cast<const char*>(&nBlocksToNext), type);
-    f.seekg(dataPos);
+        const ezc3d::DataStartInfo &dataStartPosition) const {
+
+    if (dataStartPosition.hasHeaderPointDataStart()){
+        f.seekg(dataStartPosition.headerPointDataStart());
+        int nBlocksToNext = int(dataStartPosition.pointDataStart())/512 + 1; // DATA_START is 1-based
+        f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.headerPointDataStartSize());
+    }
+
+    if (dataStartPosition.hasParameterPointDataStart()){
+        f.seekg(dataStartPosition.parameterPointDataStart());
+        int nBlocksToNext = int(dataStartPosition.pointDataStart())/512 + 1; // DATA_START is 1-based
+        f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.parameterPointDataStartSize());
+    }
+
+    if (dataStartPosition.hasParameterRotationsDataStart()){
+        f.seekg(dataStartPosition.parameterRotationsDataStart());
+        int nBlocksToNext = int(dataStartPosition.rotationsDataStart())/512 + 1; // DATA_START is 1-based
+        f.write(reinterpret_cast<const char*>(&nBlocksToNext), dataStartPosition.parameterRotationsDataStartSize());
+    }
 }
 
 int ezc3d::c3d::readInt(
@@ -328,6 +337,17 @@ void ezc3d::c3d::readParam(
     }
     else
         _dispatchMatrix(dimension, param_data_string_tp, param_data_string);
+}
+
+void ezc3d::c3d::moveCursorToANewBlock(
+        std::fstream &f)
+{
+    // Move the cursor to the beginning of a block as rotations should start at a new block
+    int blankValue(0);
+    std::streampos currentPos(f.tellg());
+    for (int i=0; i<512 - static_cast<int>(currentPos) % 512; ++i){
+        f.write(reinterpret_cast<const char*>(&blankValue), ezc3d::BYTE);
+    }
 }
 
 size_t ezc3d::c3d::_dispatchMatrix(
@@ -514,15 +534,22 @@ void ezc3d::c3d::frame(
                 "the number of points sent in the frame");
 
     std::vector<std::string> labels(parameters().group("POINT")
-                                    .parameter("LABELS").valuesAsString());
-    for (size_t i=0; i<labels.size(); ++i)
-        try {
-            pointIdx(labels[i]);
-        } catch (std::invalid_argument) {
-            throw std::invalid_argument(
-                    "All the points in the frame must appear "
-                    "in the POINT:LABELS parameter");
+                                .parameter("LABELS").valuesAsString());
+    try {
+        // Check if all the labels are in the actual LABELSX parameter
+        const std::vector<std::string> &namesParameter(pointNames());
+        for (size_t i=0; i<labels.size(); ++i){
+            for (size_t i = 0; i < namesParameter.size(); ++i){
+                if (!namesParameter[i].compare(labels[i])){
+                    break;
+                }
+            }
         }
+    } catch (std::invalid_argument) {
+        throw std::invalid_argument(
+                "All the points in the frame must appear "
+                "in the POINT:LABELS parameter");
+    }
 
     if (f.points().nbPoints() > 0
             && parameters().group("POINT")
@@ -772,6 +799,9 @@ void ezc3d::c3d::updateHeader() {
                     static_cast<size_t>(parameters()
                                         .group("ANALOG").parameter("USED")
                                         .valuesAsInt()[0]));
+
+    if (parameters().isGroup("ROTATION"))
+        _header->hasRotationalData(true);
 }
 
 void ezc3d::c3d::updateParameters(
@@ -981,5 +1011,13 @@ void ezc3d::c3d::updateParameters(
             }
         }
     }
+
+    // Adjust some ROTATION parameters
+    if (_parameters->isGroup("ROTATION")){
+        ezc3d::ParametersNS::GroupNS::Group& grpRotation(
+                    _parameters->group(parameters().groupIdx("ROTATION")));
+        grpRotation.parameter("USED").set(_data->frame(0).rotations().subframe(0).nbRotations());
+    }
+
     updateHeader();
 }

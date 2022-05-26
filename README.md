@@ -71,6 +71,14 @@ The building status for the current EZC3D branches is as follow
 | Test coverage | [![codecov](https://codecov.io/gh/pyomeca/ezc3d/branch/dev/graph/badge.svg?token=fc2ZGOexD1)](https://codecov.io/gh/pyomeca/ezc3d) |
 | DOI | [![DOI](https://zenodo.org/badge/131555942.svg)](https://zenodo.org/badge/latestdoi/131555942) |
 
+## Compile via `setup.py`
+This way of "installing" is mostly for convenience when developing on ezc3d and the python-wrapper. It is **not** recommended for normal usage. Refer to [Anaconda](#anaconda-for-windows-linux-and-mac) for that.
+
+The call is similar to the following (example for windows). (`pip install` is **not** supported)
+```powershell
+python .\setup.py develop -- -G"Visual Studio 16 2019" -A x64 -DSWIG_EXECUTABLE="D:/swigwin-4.0.2/swig.exe" -DSWIG_DIR="D:/swigwin-4.0.2/Lib"
+```
+
 ### Dependencies
 EZC3D does not rely on any external dependency. However, it comes in the form of a CMake (https://cmake.org/) project. Consequently, CMake must be installed on your computer to compile EZC3D. It can be installed from the official website or by Anaconda using the following command:
 ```bash
@@ -159,6 +167,7 @@ To read a C3D file you simply have to call the `c3d` class with a path
 ```C++
 ezc3d::c3d c3d("path/to/c3d.c3d");
 ```
+Additionnally, a default `ignoreBadFormatting` flag can be set to `true` so file with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 Please note that on Windows, the path must be `/` or `\\` separated (and not only`\`), for obvious reasons. 
 
 ### Write a C3D
@@ -207,7 +216,7 @@ c3d.parameter("GroupName", param); // Add the parameter to the c3d structure
 Please note that if this parameter already exist in the group named "GroupName", then this parameter is replaced by the new one. Otherwise, if it doesn't exist or the group doesn't exist, then it is added to the group or the group is created then the parameter is added. For more information on how to set a new parameter from `c3d` accessors methods, please refer to the documentation on [c3d](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1c3d.html).
 
 #### Get data
-Point and analogous data are the core of the C3D file. To understand the structure though it is essential to understand that everything is based on points. For example, the base frame rate the point frame rate, while the analogous data is based on the number of data per point frame. Therefore to get a particular point in time, you must get the data at a certain frame and specify which point you are interested in, while to get a particular analogous data you must also specify the subframe.
+Point and analogous data are the core of the C3D file (please note that rotation data are also available, but are non-standard). To understand the structure though it is essential to understand that everything is based on points. For example, the base frame rate the point frame rate, while the analogous data is based on the number of data per point frame. Therefore to get a particular point in time, you must get the data at a certain frame and specify which point you are interested in, while to get a particular analogous data you must also specify the subframe.
 ```C++
 ezc3d::c3d c3d("path_to_c3d.c3d");
 ezc3d::DataNS::Points3dNS::Point pt(new_c3d.c3d.data().frame(f).points().point(0));
@@ -314,7 +323,7 @@ To help the user, `ezc3d` include a force platform analyzer filter.
 So if one is interested by extracting some process data related, they may use the filter like so:
 ```C++
 #include <vector>
-#include "ezc3d_all.h"
+#include "ezc3d/ezc3d_all.h"
 
 int main()
 {
@@ -392,6 +401,7 @@ To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as th
 c3d = ezc3dRead('path_to_c3d.c3d');
 disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
+Additionnally, a default `ignoreBadFormatting` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 
 ### Write a C3D
 To write a C3D to a file, you must call the `ezc3dWrite` function. This function waits for the path of the C3D to write and a valid structure. Please note that the header is actually ignore since it is fully constructed from required parameters. Hence, a valid structure may omit the header. Still, for simplicity, it is easier to send a structure created via the `ezc3dRead` function.
@@ -472,6 +482,7 @@ analog_data = c['data']['analogs']
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 > The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT.
 
+Additionnally, a default `c3d(..., ignore_bad_formatting=False)` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 
 ### Write a C3D
 To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
