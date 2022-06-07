@@ -125,7 +125,7 @@ public:
 protected:
     bool m_hasParameterRotationsDataStart = false;  ///< If the rotations data start is set for the parameters
     std::streampos m_parameterRotationsDataStart;  ///< Position in the c3d to put the rotations start start in the parameters
-    DATA_TYPE m_parameterRotationsDataStartSize = DATA_TYPE::BYTE;  ///< The size of the value in the c3d file
+    DATA_TYPE m_parameterRotationsDataStartSize = DATA_TYPE::WORD;  ///< The size of the value in the c3d file
 
 public:
     ///
