@@ -23,7 +23,7 @@ setup(
     cmake_args=[
         '-DBUILD_EXAMPLE:BOOL=OFF',
         '-DBINDER_PYTHON3:BOOL=ON',
-        '-DCMAKE_INSTALL_BINDIR="ezc3d"',
-        '-DCMAKE_INSTALL_LIBDIR="ezc3d"'
+        '-DCMAKE_INSTALL_BINDIR=ezc3d',
+        '-DCMAKE_INSTALL_LIBDIR=ezc3d'
     ],
 )
