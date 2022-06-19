@@ -7,9 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "Group.h"
-#include "ezc3d.h"
-#include "Parameters.h"
+#include "ezc3d/Group.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Parameters.h"
 #include <iostream>
 #include <stdexcept>
 

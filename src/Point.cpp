@@ -7,10 +7,10 @@
 /// \date October 17th, 2018
 ///
 
-#include "Point.h"
-#include "ezc3d.h"
-#include "Header.h"
-#include "PointsInfo.h"
+#include "ezc3d/Point.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/PointsInfo.h"
 #include <iostream>
 #include <bitset>
 #include <cmath>

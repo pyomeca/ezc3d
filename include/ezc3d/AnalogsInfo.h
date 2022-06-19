@@ -8,7 +8,7 @@
 /// \date April 30th, 2022
 ///
 
-#include "ezc3dNamespace.h"
+#include "ezc3d/ezc3dNamespace.h"
 #include <vector>
 
 ///

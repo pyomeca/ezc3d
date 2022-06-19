@@ -6,11 +6,6 @@
 
 int main()
 {
-    {
-        ezc3d::c3d c3d2("/home/pariterre/Programmation/ezc3d/test/c3dFiles/ezc3d-testFiles-master/ezc3d-testFiles-master/C3DRotationExample.c3d");
-        c3d2.print();
-    }
-
     // Create an empty fresh c3d
     ezc3d::c3d c3d_empty;
     ezc3d::ParametersNS::GroupNS::Parameter t("SCALE");

@@ -8,7 +8,7 @@
 /// \date April 30th, 2022
 ///
 
-#include "math/Matrix44.h"
+#include "ezc3d/math/Matrix44.h"
 
 ///
 /// \brief 3D rotation data

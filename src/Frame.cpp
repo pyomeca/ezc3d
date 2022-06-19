@@ -7,8 +7,8 @@
 /// \date October 17th, 2018
 ///
 
-#include "Frame.h"
-#include "DataStartInfo.h"
+#include "ezc3d/Frame.h"
+#include "ezc3d/DataStartInfo.h"
 #include <stdexcept>
 
 ezc3d::DataNS::Frame::Frame() {

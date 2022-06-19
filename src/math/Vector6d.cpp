@@ -7,7 +7,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "math/Vector6d.h"
+#include "ezc3d/math/Vector6d.h"
 #include <iostream>
 #include <stdexcept>
 

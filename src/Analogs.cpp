@@ -7,9 +7,9 @@
 /// \date October 17th, 2018
 ///
 
-#include "Analogs.h"
-#include "ezc3d.h"
-#include "Header.h"
+#include "ezc3d/Analogs.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
 #include <iostream>
 #include <stdexcept>
 

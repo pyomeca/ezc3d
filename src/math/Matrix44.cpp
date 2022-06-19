@@ -7,9 +7,8 @@
 /// \date April 30th, 2022
 ///
 
-#include "math/Matrix44.h"
-
-#include "math/Vector3d.h"
+#include "ezc3d/math/Matrix44.h"
+#include "ezc3d/math/Vector3d.h"
 #include <stdexcept>
 
 ezc3d::Matrix44::Matrix44() :

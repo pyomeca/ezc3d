@@ -8,7 +8,7 @@
 /// \date October 17th, 2018
 ///
 
-#include "Frame.h"
+#include "ezc3d/Frame.h"
 
 ///
 /// \brief Data of the C3D file
