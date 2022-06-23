@@ -581,6 +581,18 @@ You are invited to write tests for true positive, false positive, true negative 
 
 I also implemented some useful function such as `compareHeader(myFirstC3d, mySecondC3d)` and `compareData(myFirstC3d, mySecondC3d)` which strickly compares header and data respectively. If you expect differences though, these function are for no use and you should copy-paste the content of them in your test (and change whatever is expected to be different). It is also possible to create a fully filled structure using the `fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs)` function and it can be tested with the `defaultHeaderTest` and `defaultParametersTest` function. Again, if you expect differences with the default setting, you should not use these default testing functions, but copy the relevant part in you extra test. 
 
+## Running the tests
+To run the test, navigate to the `test` folder in your build folder and run the `ezc3d_test` binary. Please note that if you are on Windows, you will have to copy all the necessary dll next to this binary. 
+
+## Tests for the binders
+If you add a new feature that exposes something to the user, you are welcomed to implement them in the binders (Matlab/Octave and Python). 
+
+### Matlab/Octave
+Running the tests for Matlab/Octave is as simple as running the tests script in `{PATH_TO_EZC3D_ROOT_FOLDER}/test/python3`. Please note that the `PATH_TO_EZC3D_ROOT_FOLDER` is the main folder (for instance downloaded from GitHub, and not the build folder); please also note that on Windows, you will have to copy the dll in the build folder. 
+
+### Python
+For Python, the tests should be run using `pytest` from the build directory with the following command: `pytest -v {PATH_TO_EZC3D_ROOT_FOLDER}/test/python3`. Please note that the `PATH_TO_EZC3D_ROOT_FOLDER` is the main folder (for instance downloaded from GitHub, and not the build folder); please also note that on Windows, you will have to copy the dll in the build folder. 
+
 # Supported generated C3D
 The software companies have loosely implemented the C3D standard proposed by http://C3D.org. Hence, there are some workaround that must be incorporated to the code to be able to read the C3D created using third-party softwares. So far, C3D from four different companies were tested. Vicon (https://www.vicon.com/), Qualisys (https://www.qualisys.com/), Optotrak (https://www.ndigital.com/msci/products/optotrak-certus/) and BTS Bioengineering (https://www.btsbioengineering.com/). But I am sure there is plenty of other obscure companies or simply cases that were not tested from these companies (simply because I don't have C3D to test). If you find yourself with a bug when trying to read a C3D that should work, please open an issue and provide me with the corresponding C3D (see How to contribute). 
 
