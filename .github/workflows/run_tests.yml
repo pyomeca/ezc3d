@@ -90,7 +90,19 @@ jobs:
           MAIN_FOLDER=`pwd`
           cd $MAIN_FOLDER/$BUILD_FOLDER/test
           cp Release/ezc3d_test.exe .
-          ./ezc3d_test.exe
+          ls
           cd $MAIN_FOLDER
         if: matrix.label == 'win-64'
     
+      - name: Run python binder tests 
+        run: |
+          MAIN_FOLDER=`pwd`
+          pytest -v --color=yes $MAIN_FOLDER/test/python3
+          cd $MAIN_FOLDER
+
+      - name: Test installed version of python
+        run: | 
+          MAIN_FOLDER=`pwd`
+          cd
+          python -c "import ezc3d"
+          cd $MAIN_FOLDER

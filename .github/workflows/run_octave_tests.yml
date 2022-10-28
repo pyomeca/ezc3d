@@ -13,10 +13,10 @@ jobs:
         include:
           - os: ubuntu-20.04
             label: linux-64
-            prefix: /usr/share/miniconda3/envs/biorbd_eigen
+            prefix: /usr/share/miniconda3/envs/ezc3d
           - os: macos-latest
             label: osx-64
-            prefix: /Users/runner/miniconda3/envs/biorbd_casadi
+            prefix: /Users/runner/miniconda3/envs/ezc3d
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -46,8 +46,9 @@ jobs:
         run: | 
           mamba install cmake git pkgconfig octave -cconda-forge
           mamba list
+          git submodule update --init --recursive
 
-      - name: Build biorbd
+      - name: Build ezc3d
         run: |
           MAIN_FOLDER=`pwd`
           cd
