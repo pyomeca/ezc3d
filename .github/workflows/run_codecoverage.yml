@@ -54,7 +54,6 @@ jobs:
           mkdir -p $BUILD_FOLDER
           cd $BUILD_FOLDER
           cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF -DBUILD_DOC=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=OFF ..
-          cp -r test/models/ .
           make ezc3d_coverage -j${{ steps.cpu-cores.outputs.count }}
           lcov --directory . --capture --output-file coverage.info
           lcov --remove coverage.info '/usr/*' --output-file coverage.info
