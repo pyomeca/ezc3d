@@ -72,7 +72,7 @@ jobs:
           ./ezc3d_test
           cd $MAIN_FOLDER
         if: matrix.label != 'win-64'
-  
+
       - name: Build ezc3d WINDOWS
         run: |
           MAIN_FOLDER=`pwd`
@@ -85,12 +85,4 @@ jobs:
           cd $MAIN_FOLDER
         if: matrix.label == 'win-64'
 
-      - name: Run tests WINDOWS
-        run: |
-          MAIN_FOLDER=`pwd`
-          cd $MAIN_FOLDER/$BUILD_FOLDER/test
-          cp Release/ezc3d_test.exe .
-          ./ezc3d_test.exe
-          cd $MAIN_FOLDER
-        if: matrix.label == 'win-64'
     
