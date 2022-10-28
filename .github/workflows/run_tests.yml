@@ -64,6 +64,14 @@ jobs:
           make install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
         if: matrix.label != 'win-64'
+       
+      - name: Run tests UNIX
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          ./ezc3d_test
+          cd $MAIN_FOLDER
+        if: matrix.label != 'win-64'
 
       - name: Build ezc3d WINDOWS
         run: |
@@ -72,9 +80,17 @@ jobs:
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $BUILD_FOLDER
           cd $BUILD_FOLDER
-  - cmd: cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=OFF -DBINDER_PYTHON3=ON ..
+          cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=OFF -DBINDER_PYTHON3=ON ..
           cmake --build . --config Release --target install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
         if: matrix.label == 'win-64'
 
+      - name: Run tests WINDOWS
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          cp Release/ezc3d_test.exe .
+          ./ezc3d_test.exe
+          cd $MAIN_FOLDER
+        if: matrix.label == 'win-64'
     
