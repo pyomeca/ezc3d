@@ -89,7 +89,7 @@ jobs:
           MAIN_FOLDER=`pwd`
           cd $MAIN_FOLDER/$BUILD_FOLDER/test
           cp Release/ezc3d_test.exe .
-          ls
+          ls Release
           cd $MAIN_FOLDER
         if: matrix.label == 'win-64'
     
