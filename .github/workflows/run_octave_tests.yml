@@ -1,4 +1,4 @@
-name: Run the tests
+name: Run the Octave tests
 
 on: [pull_request]
 
@@ -56,7 +56,7 @@ jobs:
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
           cd $MAIN_FOLDER/$BUILD_FOLDER
-          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=ON -DOctave_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=ON ..
+          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=ON -DOctave_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=OFF ..
           make install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
       

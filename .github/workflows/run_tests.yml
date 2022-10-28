@@ -49,7 +49,7 @@ jobs:
           
       - name: Install extra common dependencies
         run: | 
-          mamba install cmake git pkgconfig swig pytest -cconda-forge
+          mamba install cmake git pkgconfig swig numpy pytest -cconda-forge
           mamba list
           git submodule update --init --recursive
 
