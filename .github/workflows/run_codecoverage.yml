@@ -1,0 +1,63 @@
+name: Code coverage
+
+on: [pull_request]
+
+env:
+  BUILD_FOLDER: build
+  EXAMPLES_FOLDER: examples
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            label: linux-64
+            prefix: /usr/share/miniconda3/envs/biorbd_eigen
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Setup environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          activate-environment: ezc3d
+          environment-file: environment.yml
+        
+      - name: Print mamba info
+        run: | 
+          mamba config --show
+          mamba info
+          mamba list
+          
+      - name: Install extra common dependencies
+        run: | 
+          mamba install cmake git pkgconfig codecov lcov -cconda-forge
+          mamba list
+          git submodule update --init --recursive
+
+      - name: Perform code coverage 
+        run: |
+          MAIN_FOLDER=`pwd`
+          CONDA_ENV_PATH=$CONDA/envs/ezc3d
+          mkdir -p $BUILD_FOLDER
+          cd $BUILD_FOLDER
+          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF -DBUILD_DOC=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=OFF ..
+          cp -r test/models/ .
+          make ezc3d_coverage -j${{ steps.cpu-cores.outputs.count }}
+          lcov --directory . --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --list coverage.info
+          bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+          cd $MAIN_FOLDER
