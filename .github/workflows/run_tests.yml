@@ -88,6 +88,8 @@ jobs:
         run: |
           MAIN_FOLDER=`pwd`
           cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          cp $MAIN_FOLDER/$BUILD_FOLDER/Release/*.dll .
+          cp $MAIN_FOLDER/$BUILD_FOLDER/bin/Release/*.dll .
           cp Release/ezc3d_test.exe .
           ./ezc3d_test.exe
           cd $MAIN_FOLDER
