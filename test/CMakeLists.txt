@@ -61,7 +61,7 @@ target_link_libraries(${PROJECT_NAME} gtest_main ezc3d)
 add_test(UnitTests ${PROJECT_NAME})
 
 if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../.travis/cmake)
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../modules)
 
     include(CodeCoverage)
     setup_target_for_coverage(${EZC3D_NAME}_coverage
@@ -113,4 +113,9 @@ foreach(FILE ${TEST_FILES_UNZIP})
     endif()
     file(COPY ${C3D_TEST_FILES}
          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/c3dTestFiles/)
+    
+    if (CMAKE_BUILD_TYPE STREQUAL "Coverage")
+    file(COPY ${C3D_TEST_FILES}
+         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../c3dTestFiles/)
+    endif()
 endforeach()
