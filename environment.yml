@@ -1,0 +1,8 @@
+# create a dev conda environment with: `make create_env` or `conda env create -f environment.yml`
+name: ezc3d
+channels:
+- conda-forge
+- default
+dependencies:
+- python >=3.10
+- eigen
