@@ -1,0 +1,138 @@
+name: Run the tests
+
+on: [pull_request]
+
+env:
+  BUILD_FOLDER: build
+  EXAMPLES_FOLDER: examples
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            label: linux-64
+            prefix: /usr/share/miniconda3/envs/biorbd_eigen
+          - os: macos-latest
+            label: osx-64
+            prefix: /Users/runner/miniconda3/envs/biorbd_casadi
+          - os: windows-latest
+            label: win-64
+            prefix: C:\Miniconda3\envs\biorbd_eigen
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Setup environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          activate-environment: ezc3d
+          environment-file: environment.yml
+        
+      - name: Print mamba info
+        run: | 
+          mamba config --show
+          mamba info
+          mamba list
+          
+      - name: Install extra common dependencies
+        run: | 
+          mamba install cmake git pkgconfig swig pytest -cconda-forge
+          mamba list
+          git submodule update --init --recursive
+
+      - name: Install extra common dependencies
+        run: | 
+          mamba install cmake git pkgconfig swig pytest -cconda-forge
+          mamba list
+          git submodule update --init --recursive
+
+      - name: Install extra UNIX dependencies
+        run: | 
+          mamba install octave -cconda-forge
+          mamba list
+          git submodule update --init --recursive
+        if: matrix.label != 'win-64'
+
+      - name: Build biorbd UNIX
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd
+          HOME=`pwd`
+          cd $MAIN_FOLDER
+          CONDA_ENV_PATH=$CONDA/envs/ezc3d
+          mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
+          cd $MAIN_FOLDER/$BUILD_FOLDER
+          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=ON -DOctave_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=ON ..
+          make install -j${{ steps.cpu-cores.outputs.count }}
+          cd $MAIN_FOLDER
+        if: matrix.label != 'win-64'
+
+      - name: Run tests UNIX
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          ./ezc3d_test
+          cd $MAIN_FOLDER
+        if: matrix.label != 'win-64'
+
+      - name: Run the Octave binder tests UNIX
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd
+          HOME=`pwd`
+          cd $MAIN_FOLDER/test/matlab
+          cp $HOME/ezc3d_octave/* .
+          octave test_binder_matlab.m
+          octave test_binder_matlab_force_platform.m
+          cd $MAIN_FOLDER
+        if: matrix.label != 'win-64'
+
+  
+      - name: Build biorbd WINDOWS
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd
+          HOME=`pwd`
+          cd $MAIN_FOLDER
+          CONDA_ENV_PATH=$CONDA/envs/ezc3d
+          mkdir -p $BUILD_FOLDER
+          cd $BUILD_FOLDER
+  - cmd: cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=OFF -DBINDER_PYTHON3=ON ..
+          cmake --build . --config Release --target install -j${{ steps.cpu-cores.outputs.count }}
+          cd $MAIN_FOLDER
+        if: matrix.label == 'win-64'
+
+      - name: Run tests WINDOWS
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          cp Release/biorbd_eigen_tests.exe .
+          ./ezc3d_test.exe
+          cd $MAIN_FOLDER
+        if: matrix.label == 'win-64'
+
+      - name: Run python binder tests 
+        run: |
+          MAIN_FOLDER=`pwd`
+          pytest -v --color=yes $MAIN_FOLDER/test/python3
+          cd $MAIN_FOLDER
+
+      - name: Test installed version of python
+        run: | 
+          MAIN_FOLDER=`pwd`
+          cd
+          python -c "import ezc3d"
+          cd $MAIN_FOLDER
