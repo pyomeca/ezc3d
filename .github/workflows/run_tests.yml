@@ -64,14 +64,6 @@ jobs:
           make install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
         if: matrix.label != 'win-64'
-       
-      - name: Run tests UNIX
-        run: |
-          MAIN_FOLDER=`pwd`
-          cd $MAIN_FOLDER/$BUILD_FOLDER/test
-          ./ezc3d_test
-          cd $MAIN_FOLDER
-        if: matrix.label != 'win-64'
 
       - name: Build ezc3d WINDOWS
         run: |
