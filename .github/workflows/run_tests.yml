@@ -13,13 +13,13 @@ jobs:
         include:
           - os: ubuntu-20.04
             label: linux-64
-            prefix: /usr/share/miniconda3/envs/biorbd_eigen
+            prefix: /usr/share/miniconda3/envs/ezc3d
           - os: macos-latest
             label: osx-64
-            prefix: /Users/runner/miniconda3/envs/biorbd_casadi
+            prefix: /Users/runner/miniconda3/envs/ezc3d
           - os: windows-latest
             label: win-64
-            prefix: C:\Miniconda3\envs\biorbd_eigen
+            prefix: C:\Miniconda3\envs\ezc3d
     name: ${{ matrix.label }}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -53,9 +53,10 @@ jobs:
           mamba list
           git submodule update --init --recursive
 
-      - name: Build biorbd UNIX
+      - name: Build ezc3d UNIX
         run: |
           MAIN_FOLDER=`pwd`
+          echo ${{ matrix.prefix }}
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
           cd $MAIN_FOLDER/$BUILD_FOLDER
@@ -63,3 +64,33 @@ jobs:
           make install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
         if: matrix.label != 'win-64'
+       
+      - name: Run tests UNIX
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          ./ezc3d_test
+          cd $MAIN_FOLDER
+        if: matrix.label != 'win-64'
+  
+      - name: Build ezc3d WINDOWS
+        run: |
+          MAIN_FOLDER=`pwd`
+          echo ${{ matrix.prefix }}
+          CONDA_ENV_PATH=$CONDA/envs/ezc3d
+          mkdir -p $BUILD_FOLDER
+          cd $BUILD_FOLDER
+  - cmd: cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_OCTAVE=OFF -DBINDER_PYTHON3=ON ..
+          cmake --build . --config Release --target install -j${{ steps.cpu-cores.outputs.count }}
+          cd $MAIN_FOLDER
+        if: matrix.label == 'win-64'
+
+      - name: Run tests WINDOWS
+        run: |
+          MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER/test
+          cp Release/ezc3d_test.exe .
+          ./ezc3d_test.exe
+          cd $MAIN_FOLDER
+        if: matrix.label == 'win-64'
+    
