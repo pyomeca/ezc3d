@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Get MAIN_FOLDER Environment
-        uses: `pwd`
+        run: `pwd`
         id: main-folder
         
       - name: Get number of CPU cores
@@ -102,6 +102,7 @@ jobs:
       - name: Run python binder tests 
         run: |
           MAIN_FOLDER=`pwd`
+          cd $MAIN_FOLDER/$BUILD_FOLDER
           pytest -v --color=yes $MAIN_FOLDER/test/python3
           cd $MAIN_FOLDER
 
