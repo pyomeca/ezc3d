@@ -41,7 +41,7 @@ jobs:
           mamba info
           mamba list
           
-      - name: Install extra common dependencies
+      - name: Install code coverage dependencies
         run: | 
           mamba install cmake git pkgconfig codecov lcov -cconda-forge
           mamba list

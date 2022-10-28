@@ -53,15 +53,9 @@ jobs:
           mamba list
           git submodule update --init --recursive
 
-      - name: Install extra common dependencies
-        run: | 
-          mamba install cmake git pkgconfig swig pytest -cconda-forge
-          mamba list
-          git submodule update --init --recursive
-
       - name: Install extra UNIX dependencies
         run: | 
-          mamba install octave -cconda-forge
+          mamba install python="3.10" octave -cconda-forge
           mamba list
           git submodule update --init --recursive
         if: matrix.label != 'win-64'
