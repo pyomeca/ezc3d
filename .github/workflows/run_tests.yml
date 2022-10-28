@@ -28,6 +28,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Get MAIN_FOLDER Environment
+        uses: `pwd`
+        id: main-folder
+        
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1
         id: cpu-cores
@@ -57,6 +61,7 @@ jobs:
         run: |
           MAIN_FOLDER=`pwd`
           echo ${{ matrix.prefix }}
+          echo ${{ steps.main-folder.outputs }}
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
           cd $MAIN_FOLDER/$BUILD_FOLDER
