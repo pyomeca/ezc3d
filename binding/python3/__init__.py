@@ -478,9 +478,9 @@ class c3d(C3dMapper):
                 if nb_analog_frames % nb_point_frames != 0:
                     raise ValueError("Number of frames of Points and Analogs should be a multiple of an integer")
             else:
-                if ~np.isclose(
-                    nb_analog_frames / self._storage["parameters"]["ANALOG"]["RATE"]["value"][0],
-                    nb_point_frames  / self._storage["parameters"]["POINT"]["RATE"]["value"][0],
+                if (
+                    nb_analog_frames * self._storage["parameters"]["POINT"]["RATE"]["value"][0]
+                    != nb_point_frames * self._storage["parameters"]["ANALOG"]["RATE"]["value"][0]
                 ):
                     raise ValueError("Number of frames in the data set must match the analog rate X point frame")
 
