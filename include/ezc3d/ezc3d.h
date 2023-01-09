@@ -85,6 +85,22 @@ public:
             const std::string& filePath,
             const WRITE_FORMAT& format = WRITE_FORMAT::DEFAULT) const;
 
+    ///
+    /// \brief Write the C3D to an opened file by calling write method of header, parameter and data.
+    /// The default parametrization will produce a valid and standard c3d. However, changing these value
+    /// will definitely produce a non-standard c3d which may or may not work on another software.
+    /// 
+    /// \param filePath Already opened fstream file with write access
+    /// \param format What order should the file has
+    /// \param forceZeroBasedOnFrameCount According to the standard, the first and last frame are stored
+    /// as a one-based value. But some software requires it to be zero. Leave the user the capability
+    /// to do so.
+    ///
+    void parametrizedWrite(
+            const std::string& filePath,
+            const WRITE_FORMAT& format = WRITE_FORMAT::DEFAULT, 
+            bool forceZeroBasedOnFrameCount = false) const;
+
 protected:
     // Internal reading and writting function
     std::vector<char> c_float; ///< Char to be used by the read function with the specific size of a float preventing to allocate it at each calls

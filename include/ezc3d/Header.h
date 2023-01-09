@@ -43,10 +43,14 @@ public:
     /// \brief Write the header to an opened file
     /// \param f Already opened fstream file with write access
     /// \param dataStartPositionToFill Returns the byte where to put the data start parameter
+    /// \param forceZeroBasedOnFrameCount According to the standard, the first and last frame are stored
+    /// as a one-based value. But some software requires it to be zero. Leave the user the capability
+    /// to do so.
     ///
     void write(
             std::fstream &f,
-            ezc3d::DataStartInfo &dataStartPositionToFill) const;
+            ezc3d::DataStartInfo &dataStartPositionToFill,
+            bool forceZeroBasedOnFrameCount = false) const;
 
     ///
     /// \brief Read and store a header from an opened C3D file

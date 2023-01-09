@@ -91,14 +91,22 @@ void ezc3d::c3d::print() const {
 }
 
 void ezc3d::c3d::write(
-        const std::string& filePath,
-        const WRITE_FORMAT& format) const {
+    const std::string& filePath,
+    const WRITE_FORMAT& format) const {
+    parametrizedWrite(filePath, format);
+}
+
+void ezc3d::c3d::parametrizedWrite(
+    const std::string & filePath,
+    const WRITE_FORMAT & format,
+    bool forceZeroBasedOnFrameCount) const {
+
     std::fstream f(filePath, std::ios::out | std::ios::binary);
 
     ezc3d::DataStartInfo dataStartInfoToFill;
 
     // Write the header
-    header().write(f, dataStartInfoToFill);
+    header().write(f, dataStartInfoToFill, forceZeroBasedOnFrameCount);
 
     // Write the parameters
     ezc3d::ParametersNS::Parameters p(

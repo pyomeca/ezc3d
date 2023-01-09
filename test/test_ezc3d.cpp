@@ -334,6 +334,44 @@ TEST(initialize, noC3D){
     EXPECT_THROW(ezc3d::c3d("ThereIsNoC3dThere.c3d"), std::ios_base::failure);
 }
 
+TEST(parametrizedC3d, zeroAndOneBasedFirstFrameValue) {
+    c3dTestStruct new_c3d;
+    fillC3D(new_c3d, true, false);
+    std::string savePath("temporary.c3d");
+
+    int firstFramePositionInFile = 6 * ezc3d::BYTE;
+
+    // First frame is 1 (standard C3D)
+    {
+        new_c3d.c3d.parametrizedWrite(savePath.c_str(), ezc3d::WRITE_FORMAT::DEFAULT, false);
+
+        // Check the byte corresponding to the first frame to make sure it is a one
+        std::fstream c3d_file(savePath.c_str(), std::ofstream::in);
+        c3d_file.seekg(firstFramePositionInFile);
+        int firstFrame = new_c3d.c3d.readInt(ezc3d::PROCESSOR_TYPE::INTEL, c3d_file, ezc3d::BYTE);
+        c3d_file.seekg(firstFramePositionInFile + 2);
+        int lastFrame = new_c3d.c3d.readInt(ezc3d::PROCESSOR_TYPE::INTEL, c3d_file, ezc3d::BYTE);
+        c3d_file.close();
+        EXPECT_EQ(firstFrame, 1);
+        EXPECT_EQ(lastFrame, 10);
+    }
+
+    // First frame is 0 (non-standard C3D)
+    {
+        new_c3d.c3d.parametrizedWrite(savePath.c_str(), ezc3d::WRITE_FORMAT::DEFAULT, true);
+
+        // Check the byte corresponding to the first frame to make sure it is a one
+        std::fstream c3d_file(savePath.c_str(), std::ofstream::in);
+        c3d_file.seekg(firstFramePositionInFile);
+        int firstFrame = new_c3d.c3d.readInt(ezc3d::PROCESSOR_TYPE::INTEL, c3d_file, ezc3d::BYTE);
+        c3d_file.seekg(firstFramePositionInFile + 2);
+        int lastFrame = new_c3d.c3d.readInt(ezc3d::PROCESSOR_TYPE::INTEL, c3d_file, ezc3d::BYTE);
+        c3d_file.close();
+        EXPECT_EQ(firstFrame, 0);
+        EXPECT_EQ(lastFrame, 9);
+    }
+}
+
 
 TEST(wrongC3D, wrongChecksumHeader){
     // Create an empty c3d
