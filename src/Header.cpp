@@ -104,7 +104,9 @@ void ezc3d::Header::print() const {
 
 void ezc3d::Header::write(
         std::fstream &f,
-        ezc3d::DataStartInfo &dataStartPositionToFill) const {
+        ezc3d::DataStartInfo &dataStartPositionToFill,
+        bool forceZeroBasedOnFrameCount
+    ) const {
     // write the checksum byte and the start point of header
     int parameterAddessDefault(2);
     f.write(reinterpret_cast<const char*>(
@@ -119,8 +121,8 @@ void ezc3d::Header::write(
             1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
-    size_t firstFrame(_firstFrame + 1); // 1-based!
-    size_t lastFrame(_lastFrame + 1); // 1-based!
+    size_t firstFrame(_firstFrame + (forceZeroBasedOnFrameCount ? 0 : 1)); // 1-based!
+    size_t lastFrame(_lastFrame + (forceZeroBasedOnFrameCount ? 0 : 1)); // 1-based!
     if (lastFrame > 0xFFFF)
         // Combine this with group("POINT").parameter("FRAMES") = -1
         lastFrame = 0xFFFF;
@@ -217,11 +219,14 @@ void ezc3d::Header::read(ezc3d::c3d &c3d, std::fstream &file)
     _firstFrame = c3d.readUint(processorType, file,
                                1*ezc3d::DATA_TYPE::WORD);
     // First frame is 1-based, but some forgot hence they put 0..
-    if (_firstFrame != 0)
+    bool isOneBased = false;
+    if (_firstFrame != 0) {
         _firstFrame -= 1;
+        isOneBased = true;
+    }
     _lastFrame = c3d.readUint(processorType, file, 1*ezc3d::DATA_TYPE::WORD);
     // Last frame is 1-based, but some forgot  hence they put 0..
-    if (_lastFrame != 0)
+    if (_lastFrame != 0 && isOneBased)
         _lastFrame -= 1;
 
     // Some info

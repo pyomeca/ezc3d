@@ -177,6 +177,8 @@ ezc3d::c3d c3d;
 c3d.write("path_to_c3d.c3d")
 ```
 
+Please note that there is a `parametrizedWrite` method as well which allows for non-standard `c3d` to be written. This must be used with care as the resulting `c3d` may or may not be readable by a third-party software. That said, some software expect non-standard `c3d`.
+
 ### Navigating through the C3D class
 The C3D class mimics the C3D structures as defined by the standard, that is separated into a `header`, a `parameters` and a `data` class. You can get a const-reference to these classes by simply calling their names (see below for more specific examples)
 
