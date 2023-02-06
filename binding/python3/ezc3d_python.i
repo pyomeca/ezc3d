@@ -226,7 +226,8 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
         const size_t nbPoints = PyArray_DIM(pointsData, 1);
         const size_t nbAnalog = PyArray_DIM(analogData, 1);
         const size_t nbAnalogFrames = PyArray_DIM(analogData, 2);
-        const size_t nbAnalogSubframes = nbAnalogFrames / nbFrames;
+        const size_t nbAnalogSubframes = nbFrames == 0 ? 0 : nbAnalogFrames / nbFrames;
+       
         size_t nbRotation;
         size_t nbRotationFrames;
         size_t nbRotationSubframes;
