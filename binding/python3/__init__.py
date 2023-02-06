@@ -391,7 +391,16 @@ class c3d(C3dMapper):
         self.add_parameter("EVENT", "ICON_IDS", icon_ids)
         self.add_parameter("EVENT", "GENERIC_FLAGS", generic_flags)
 
-    def write(self, path):
+    def write(self, path: str, *, first_frame_as_zero: bool = False):
+        """
+        Write a new C3D at path. If any extra parameter is provided, then the non-standard writer is called.
+        Please note the resulting C3D may or may not work with third parties
+
+        :param path: The path where to write the file
+        :param first_frame_as_zero: If the first frame should be flaged
+         as 1 (False, default and starndard) or 0 (True, non-standard)
+        """
+
         # Make sure path is a valid path
         extension = ".c3d"
         if path[-4:] != extension:
@@ -626,7 +635,9 @@ class c3d(C3dMapper):
         )
 
         # Write the file
-        new_c3d.write(path)
+        if first_frame_as_zero:
+            # As soon as at least one non-standard parameter is provided, use the parametrized write
+            new_c3d.parametrizedWrite(path, ezc3d.DEFAULT, first_frame_as_zero)
+        else:
+            new_c3d.write(path)
         return
-
-
