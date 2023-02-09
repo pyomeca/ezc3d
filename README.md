@@ -51,7 +51,7 @@ conda install -c conda-forge ezc3d=*=*octave*
 ```
 The binaries and includes of the core of EZC3D will be installed in `bin` and `include` folders of the environment respectively. Moreover, the Python3 or Octave binder will also be installed in the environment.
 
-Please note that it is possible to use the Octave binaries in MATLAB. The `.mex` extension must however be changed according to your operating system, namely `mexw32` or `.mexw64` for Windows (32 or 64-bits), `.mexmaci64` for MacOSX and `.mexa64` for Linux. 
+Please note, as a workaround, that it is possible to use the Octave binaries in MATLAB. The `.mex` extension must however be changed according to your operating system, namely `mexw32` or `.mexw64` for Windows (32 or 64-bits), `.mexmaci64` for MacOSX and `.mexa64` for Linux. This seems to recently have stopped working since MATLAB changed their API (earlier than R2021b?).
 
 
 The current building status for Anaconda release is as follow.
