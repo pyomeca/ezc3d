@@ -436,7 +436,7 @@ void mexFunction(
                     // Deal with special cases first
                     if (!groupName.compare("ROTATION") && !paramName.compare("RATIO")) {
                         std::vector<int> data;
-                        parseParam(mxGetDoubles(valueField), dimension, data);
+                        parseParam(mxGetPr(valueField), dimension, data);
                         newParam.set(std::vector<int>(data.begin(), data.end()), dimension);
 
                     // Now deal with usual parameters
