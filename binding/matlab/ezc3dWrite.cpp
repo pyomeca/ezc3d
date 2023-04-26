@@ -392,9 +392,10 @@ void mexFunction(
                     for (size_t i = 0; i < nDim; ++i)
                         dimension.push_back(mxGetDimensions(valueField)[i]);
 
-                if ( (!groupName.compare("POINT")
-                      && !paramName.compare("DESCRIPTIONS"))
-                     && dimension[0] != nPoints)
+                // Special cases
+                if ((!groupName.compare("POINT")
+                    && !paramName.compare("DESCRIPTIONS"))
+                    && dimension[0] != nPoints)
                     continue;
                 if ((!groupName.compare("ANALOG")
                     && !paramName.compare("DESCRIPTIONS"))

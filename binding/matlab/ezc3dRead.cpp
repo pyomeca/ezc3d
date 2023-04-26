@@ -338,6 +338,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         2, globalPlatFormDims,
                         sizeof(forcePlatformNames) / sizeof(*forcePlatformNames),
                         forcePlatformNames);
+
             for (size_t i=0; i<all_pf.forcePlatforms().size(); ++i){
                 auto& pf(all_pf.forcePlatform(i));
 
