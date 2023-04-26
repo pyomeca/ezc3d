@@ -139,7 +139,7 @@ void mexFunction(
         mexErrMsgTxt("'data.points' should be in "
                      "format XYZ x nPoints x nFrames.");
 
-    // Check if metadat exists and if so their dimensions
+    // Check if metadata exists and if so their dimensions
     mxArray *metadataResidual = nullptr;
     mxArray *metadataCamMasks = nullptr;
     if (dataMetaPoints) {
@@ -193,16 +193,16 @@ void mexFunction(
     size_t nFramesAnalogs(dimsAnalogs[0]);
 
     size_t nFrames(0);
-    size_t nSubframes(0);
+    size_t nSubframesAnalogs(0);
     if (nFramesPoints != 0){
         if (nFramesAnalogs % nFramesPoints != 0)
             mexErrMsgTxt("Number of frames of Points and Analogs "
                          "should be a multiple of an integer");
         nFrames = nFramesPoints;
-        nSubframes = nFramesAnalogs/nFramesPoints;
+        nSubframesAnalogs = nFramesAnalogs/nFramesPoints;
     } else {
         nFrames = nFramesAnalogs;
-        nSubframes = 1;
+        nSubframesAnalogs = 1;
     }
 
 
@@ -353,7 +353,8 @@ void mexFunction(
                  && !(!groupName.compare("ANALOG") && !paramName.compare("LABELS"))
                  && !(!groupName.compare("ANALOG") && !paramName.compare("SCALE"))
                  && !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET"))
-                 && !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))) {
+                 && !(!groupName.compare("ANALOG") && !paramName.compare("UNITS")) 
+            ) {
                 std::vector<size_t> dimension;
                 size_t nDim;
                 mxArray* valueField(mxGetField(paramField, 0, DATA_FIELD));
@@ -412,28 +413,28 @@ void mexFunction(
                                          "Unrecognized type for parameter."
                                          + groupName + "." + paramName + ".")
                                      .c_str());
-                    } catch (std::invalid_argument) {
-                        if (!valueField || mxIsDouble(valueField)) {
-                            std::vector<float> data;
-                            parseParam(mxGetDoubles(valueField), dimension, data);
-                            newParam.set(
-                                std::vector<double>(data.begin(), data.end()),
-                                dimension);
-                        } else if (mxIsCell(valueField)) {
-                            std::vector<std::string> data;
-                            parseParam(valueField, dimension, data);
-                            newParam.set(data, dimension);
-                        } else if (mxIsChar(valueField)) {
-                            std::vector<std::string> data;
-                            data.push_back (toString(valueField));
-                            dimension.pop_back();  // Matlab inserts length already
-                            newParam.set(data, dimension);
-                        } else
-                            mexErrMsgTxt(std::string(
-                                             "Unrecognized type for parameter."
-                                             + groupName + "." + paramName + ".")
-                                         .c_str());
-                    }
+                } catch (std::invalid_argument) {
+                    if (!valueField || mxIsDouble(valueField)) {
+                        std::vector<float> data;
+                        parseParam(mxGetDoubles(valueField), dimension, data);
+                        newParam.set(
+                            std::vector<double>(data.begin(), data.end()),
+                            dimension);
+                    } else if (mxIsCell(valueField)) {
+                        std::vector<std::string> data;
+                        parseParam(valueField, dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (mxIsChar(valueField)) {
+                        std::vector<std::string> data;
+                        data.push_back (toString(valueField));
+                        dimension.pop_back();  // Matlab inserts length already
+                        newParam.set(data, dimension);
+                    } else
+                        mexErrMsgTxt(std::string(
+                                            "Unrecognized type for parameter."
+                                            + groupName + "." + paramName + ".")
+                                        .c_str());
+                }
 
                 // Get the metadata for this parameter
                 mxArray* descriptionField(
@@ -497,18 +498,18 @@ void mexFunction(
         }
 
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
-        for (size_t sf=0; sf<nSubframes; ++sf){
+        for (size_t sf=0; sf<nSubframesAnalogs; ++sf){
             ezc3d::DataNS::AnalogsNS::SubFrame subframe;
             for (size_t i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 c.data(static_cast<float>(
-                           allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]));
+                           allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframesAnalogs]));
                 subframe.channel(c);
             }
             analogs.subframe(subframe);
         }
         frame.add(pts, analogs);
-        c3d.frame(frame);// Add the previously created frame
+        c3d.frame(frame); // Add the previously created frame
     }
     c3d.write(path);
     return;
