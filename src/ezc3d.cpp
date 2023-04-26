@@ -1024,7 +1024,11 @@ void ezc3d::c3d::updateParameters(
     if (_parameters->isGroup("ROTATION")){
         ezc3d::ParametersNS::GroupNS::Group& grpRotation(
                     _parameters->group(parameters().groupIdx("ROTATION")));
-        grpRotation.parameter("USED").set(_data->frame(0).rotations().subframe(0).nbRotations());
+        int nbRotations = 0;
+        if (_data->frame(0).rotations().nbSubframes() > 0) {
+            nbRotations = _data->frame(0).rotations().subframe(0).nbRotations();
+        }
+        grpRotation.parameter("USED").set(nbRotations);
     }
 
     updateHeader();

@@ -358,7 +358,7 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParametersForSpecialGroup(
         }
         if (!grp.isParameter("DESCRIPTIONS")){
             ezc3d::ParametersNS::GroupNS::Parameter p("DESCRIPTIONS", "");
-            p.set(std::vector<double>()={});
+            p.set(std::vector<std::string>()={});
             grp.parameter(p);
         }
     }
