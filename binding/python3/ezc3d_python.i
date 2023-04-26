@@ -159,7 +159,6 @@ PyObject * _get_rotations(
     size_t nRotations(rotations.size());
     size_t nFrames(c3d.data().nbFrames());
     size_t nSubframes(rotationInfo.ratio());
-    int cmp  = 0;
     double * data = new double[16 * nRotations * nFrames * nSubframes];
     for (size_t f = 0; f < nFrames; ++f)
         for (size_t sf = 0; sf < nSubframes; ++sf)
@@ -168,8 +167,13 @@ PyObject * _get_rotations(
                         c3d.data().frame(f).rotations().subframe(sf).rotation(rotations[r]);
                 for (size_t i = 0; i<4; ++i){
                     for (size_t j = 0; j<4; ++j){
-                        data[f + r*nFrames*nSubframes + j*nRotations*nFrames*nSubframes + i*4*nRotations*nFrames*nSubframes] =
-                                currentData(i, j);
+                        data[
+                            f + 
+                            sf * nFrames +
+                            r * nSubframes * nFrames + 
+                            j * nRotations * nSubframes * nFrames + 
+                            i * 4 * nRotations * nSubframes * nFrames
+                        ] = currentData(i, j);
                     }
                 }
             }
