@@ -237,5 +237,21 @@ strcmp(c3dToCompare.parameters.EVENT.SUBJECTS.DATA{4}, '');
 assert(sum(c3dToCompare.parameters.EVENT.ICON_IDS.DATA - [2, 0, 3, 0]) == 0);
 assert(sum(c3dToCompare.parameters.EVENT.GENERIC_FLAGS.DATA - [1, 0, 2, 0]) == 0);
 
+% Now test for a file with Rotation
+c3d = ezc3dRead('../c3dFiles/ezc3d-testFiles-master/ezc3d-testFiles-master/C3DRotationExample.c3d');
+assert(sum(size(c3d.data.rotations) == [4, 4, 21, 340]) == 4)
+comparisonValue = [-0.4584634900  0.8721544743 -0.1707565784 -455.0068664551
+     -0.3688277900 -0.3615344167 -0.8563054204 1048.7111816406
+     -0.8085649610 -0.3296049833  0.4874251187  991.1699218750
+      0.0000000000  0.0000000000  0.0000000000    1.0000000000];
+assert(sum(sum(c3d.data.rotations(:, :, 15, 256) - comparisonValue)) < 1e-8);
+
+ezc3dWrite('temporary.c3d', c3d);
+c3dToCompare = ezc3dRead('temporary.c3d');
+assert(sum(size(c3dToCompare.data.rotations) == [4, 4, 21, 340]) == 4)
+assert(sum(sum(c3dToCompare.data.rotations(:, :, 15, 256) - comparisonValue)) < 1e-8);
+
+% All done!
+delete('temporary.c3d');
 fprintf('\nMatlab tests successfully completed!\n')
 
