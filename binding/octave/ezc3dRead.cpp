@@ -254,8 +254,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             double * valAnalogs = mxGetPr(dataAnalogs);
 
             ezc3d::DataNS::RotationNS::Info rotationsInfo(*c3d);
-            size_t nRotations(rotationsInfo.used());
-            size_t nFramesRotations(static_cast<mwSize>(c3d->header().nbFrames() * rotationsInfo.ratio()));
+            mwSize nRotations(static_cast<mwSize>(rotationsInfo.used()));
+            mwSize nFramesRotations(static_cast<mwSize>(c3d->header().nbFrames() * rotationsInfo.ratio()));
             size_t nSubFramesRotations(static_cast<mwSize>(rotationsInfo.ratio()));
             mwSize nDataRotations[4] = {4, 4, nRotations, nFramesRotations};
             mxArray* dataRotations = mxCreateNumericArray(4, nDataRotations, mxDOUBLE_CLASS, mxREAL);
