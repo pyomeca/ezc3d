@@ -7,6 +7,7 @@
 #include <ezc3d/Parameters.h>
 #include <ezc3d/Data.h>
 #include <ezc3d/Frame.h>
+#include "RotationsInfo.h"
 #include <ezc3d/modules/ForcePlatforms.h>
 #include <string.h>
 #include <cmath>
@@ -88,7 +89,9 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                 mxSetFieldByNumber(headerStruct, 0, 0, pointsStruct);
 
                 fillMatlabField(pointsStruct, 0, c3d->header().nb3dPoints());
-                fillMatlabField(pointsStruct, 1, static_cast<mxDouble>(c3d->header().frameRate()));
+                fillMatlabField(pointsStruct, 1,
+                                static_cast<mxDouble>(
+                                    c3d->header().frameRate()));
                 fillMatlabField(pointsStruct, 2, c3d->header().firstFrame()+1);
                 fillMatlabField(pointsStruct, 3, c3d->header().lastFrame()+1);
             }
@@ -211,10 +214,10 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
         // Fill the data
         {
-        const char *dataFieldsNames[] = {"points", "meta_points", "analogs"};
-        mwSize dataFieldsDims[3] = {1, 1, 1};
+        const char *dataFieldsNames[] = {"points", "meta_points", "analogs", "rotations"};
+        mwSize dataFieldsDims[4] = {1, 1, 1, 1};
         mxArray * dataStruct =
-                mxCreateStructArray(3, dataFieldsDims, 3, dataFieldsNames);
+                mxCreateStructArray(4, dataFieldsDims, 4, dataFieldsNames);
         mxSetFieldByNumber(plhs[0], 0, dataIdx, dataStruct);
 
             // Fill the point data and analogous data
@@ -245,56 +248,81 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                         static_cast<size_t>(
                             nFramesPoints * c3d->header().nbAnalogByFrame()));
             size_t nAnalogs(c3d->header().nbAnalogs());
-            size_t nSubFrames(c3d->header().nbAnalogByFrame());
+            size_t nSubFramesAnalogs (c3d->header().nbAnalogByFrame());
             mxArray * dataAnalogs = mxCreateDoubleMatrix(
                         nFramesAnalogs, nAnalogs, mxREAL);
             double * valAnalogs = mxGetPr(dataAnalogs);
 
-            for (size_t f=0; f<nFramesPoints; ++f) {
+            ezc3d::DataNS::RotationNS::Info rotationsInfo(*c3d);
+            mwSize nRotations(static_cast<mwSize>(rotationsInfo.used()));
+            mwSize nFramesRotations(static_cast<mwSize>(c3d->header().nbFrames() * rotationsInfo.ratio()));
+            size_t nSubFramesRotations(static_cast<mwSize>(rotationsInfo.ratio()));
+            mwSize nDataRotations[4] = {4, 4, nRotations, nFramesRotations};
+            mxArray* dataRotations = mxCreateNumericArray(4, nDataRotations, mxDOUBLE_CLASS, mxREAL);
+            double* valRotations = mxGetPr(dataRotations);
+
+            for (size_t f = 0; f < nFramesPoints; ++f) {
                 ezc3d::DataNS::Frame frame(c3d->data().frame(f));
 
                 // Points side
-                for (size_t p = 0; p < frame.points().nbPoints(); ++p){
+                for (size_t p = 0; p < frame.points().nbPoints(); ++p) {
                     const ezc3d::DataNS::Points3dNS::Point& point(
-                                frame.points().point(p));
-                    if (point.residual() < 0){
-                        valPoints[f*nPoints*3+3*p+0] =
-                                static_cast<double>(NAN);
-                        valPoints[f*nPoints*3+3*p+1] =
-                                static_cast<double>(NAN);
-                        valPoints[f*nPoints*3+3*p+2] =
-                                static_cast<double>(NAN);
+                        frame.points().point(p));
+                    if (point.residual() < 0) {
+                        valPoints[f * nPoints * 3 + 3 * p + 0] =
+                            static_cast<double>(NAN);
+                        valPoints[f * nPoints * 3 + 3 * p + 1] =
+                            static_cast<double>(NAN);
+                        valPoints[f * nPoints * 3 + 3 * p + 2] =
+                            static_cast<double>(NAN);
                     }
                     else {
-                        valPoints[f*nPoints*3+3*p+0] =
-                                static_cast<double>(point.x());
-                        valPoints[f*nPoints*3+3*p+1] =
-                                static_cast<double>(point.y());
-                        valPoints[f*nPoints*3+3*p+2] =
-                                static_cast<double>(point.z());
+                        valPoints[f * nPoints * 3 + 3 * p + 0] =
+                            static_cast<double>(point.x());
+                        valPoints[f * nPoints * 3 + 3 * p + 1] =
+                            static_cast<double>(point.y());
+                        valPoints[f * nPoints * 3 + 3 * p + 2] =
+                            static_cast<double>(point.z());
                     }
 
                     // Metadata for points
-                    valMetaResiduals[f*nPoints+p] = static_cast<double>(point.residual());
+                    valMetaResiduals[f * nPoints + p] = static_cast<double>(point.residual());
                     std::vector<bool> cameraMasks(point.cameraMask());
-                    for (size_t cam = 0; cam < 7; ++cam){
-                        valMetaCameraMasks[f*nPoints*7+7*p+cam] = cameraMasks[cam];
+                    for (size_t cam = 0; cam < 7; ++cam) {
+                        valMetaCameraMasks[f * nPoints * 7 + 7 * p + cam] = cameraMasks[cam];
                     }
                 }
 
 
                 // Analogs side
-                for (size_t sf=0; sf<frame.analogs().nbSubframes(); ++sf)
-                    for (size_t c=0; c<frame.analogs().subframe(sf).nbChannels()
-                         ; ++c)
-                        valAnalogs[c*nSubFrames*nFramesPoints + sf + f*nSubFrames] =
-                                static_cast<double>(
-                                    frame.analogs().subframe(sf)
-                                    .channel(c).data());
+                for (size_t sf = 0; sf < frame.analogs().nbSubframes(); ++sf)
+                    for (size_t c = 0; c < frame.analogs().subframe(sf).nbChannels(); ++c)
+                        valAnalogs[c * nSubFramesAnalogs * nFramesPoints + sf + f * nSubFramesAnalogs] =
+                        static_cast<double>(
+                            frame.analogs().subframe(sf)
+                            .channel(c).data());
+
+
+                // Rotations side
+                for (size_t sf = 0; sf < frame.rotations().nbSubframes(); ++sf)
+                    for (size_t r = 0; r < frame.rotations().subframe(sf).nbRotations(); ++r)
+                    {
+                        const ezc3d::DataNS::RotationNS::Rotation& current(frame.rotations().subframe(sf).rotation(r));
+                        for (size_t i = 0; i < 4; ++i)
+                            for (size_t j = 0; j < 4; ++j) 
+                                valRotations[
+                                    f * nSubFramesRotations * 16 * nRotations +
+                                    sf * 16 * nRotations +
+                                    r * 16 + 
+                                    i * 4 +
+                                    j
+                                ] = current(j, i);
+                    }
             }
             mxSetFieldByNumber(dataStruct, 0, 0, dataPoints);
             mxSetFieldByNumber(dataStruct, 0, 1, dataMetaPointsStruct);
             mxSetFieldByNumber(dataStruct, 0, 2, dataAnalogs);
+            mxSetFieldByNumber(dataStruct, 0, 3, dataRotations);
             }
         }
 

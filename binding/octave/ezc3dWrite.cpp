@@ -119,6 +119,7 @@ void mexFunction(
     mxArray *dataPoints = mxGetField(data, 0, "points");
     mxArray *dataMetaPoints = mxGetField(data, 0, "meta_points");
     mxArray *dataAnalogs = mxGetField(data, 0, "analogs");
+    mxArray *dataRotations = mxGetField(data, 0, "rotations");
 
     // Setup important factors
     if (!dataPoints)
@@ -140,7 +141,7 @@ void mexFunction(
         mexErrMsgTxt("'data.points' should be in "
                      "format XYZ x nPoints x nFrames.");
 
-    // Check if metadat exists and if so their dimensions
+    // Check if metadata exists and if so their dimensions
     mxArray *metadataResidual = nullptr;
     mxArray *metadataCamMasks = nullptr;
     if (dataMetaPoints) {
@@ -193,17 +194,31 @@ void mexFunction(
     size_t nAnalogs(dimsAnalogs[1]);
     size_t nFramesAnalogs(dimsAnalogs[0]);
 
+    if (!dataRotations)
+        mexErrMsgTxt("'data.rotations' is not accessible in the structure.");
+    if (mxGetNumberOfDimensions(dataRotations) != 4)
+        mexErrMsgTxt("'data.rotations' should be in format 4 x 4 x nRotations x nTimes.");
+    const mwSize* dimsRotations = mxGetDimensions(dataRotations);
+    size_t nRotations(dimsRotations[2]);
+    size_t nFramesRotations(dimsRotations[3]);
+
     size_t nFrames(0);
-    size_t nSubframes(0);
+    size_t nSubframesAnalogs(0);
+    size_t nSubframesRotations(0);
     if (nFramesPoints != 0){
         if (nFramesAnalogs % nFramesPoints != 0)
             mexErrMsgTxt("Number of frames of Points and Analogs "
-                         "should be a multiple of an integer");
+                "should be a multiple of an integer");
+        if (nFramesRotations % nFramesPoints != 0)
+            mexErrMsgTxt("Number of frames of Points and Rotations "
+                "should be a multiple of an integer");
         nFrames = nFramesPoints;
-        nSubframes = nFramesAnalogs/nFramesPoints;
+        nSubframesAnalogs = nFramesAnalogs/nFramesPoints;
+        nSubframesRotations = nFramesRotations / nFramesPoints;
     } else {
         nFrames = nFramesAnalogs;
-        nSubframes = 1;
+        nSubframesAnalogs = 1;
+        nSubframesRotations = 1;
     }
 
 
@@ -311,6 +326,7 @@ void mexFunction(
         c3d.analog(analogsLabels[i]);
     }
 
+
     //  Fill the parameters
     for (int g=0; g<mxGetNumberOfFields(parameters); ++g){ // top level
         std::string groupName(mxGetFieldNameByNumber(parameters, g));
@@ -348,13 +364,14 @@ void mexFunction(
             // Copy the parameters into the c3d,
             // but skip those who are already done
             if ( !(!groupName.compare("POINT") && !paramName.compare("USED"))
-                 && !(!groupName.compare("POINT") && !paramName.compare("FRAMES"))
-                 && !(!groupName.compare("POINT") && !paramName.compare("LABELS"))
-                 && !(!groupName.compare("ANALOG") && !paramName.compare("USED"))
-                 && !(!groupName.compare("ANALOG") && !paramName.compare("LABELS"))
-                 && !(!groupName.compare("ANALOG") && !paramName.compare("SCALE"))
-                 && !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET"))
-                 && !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))) {
+                && !(!groupName.compare("POINT") && !paramName.compare("FRAMES"))
+                && !(!groupName.compare("POINT") && !paramName.compare("LABELS"))
+                && !(!groupName.compare("ANALOG") && !paramName.compare("USED"))
+                && !(!groupName.compare("ANALOG") && !paramName.compare("LABELS"))
+                && !(!groupName.compare("ANALOG") && !paramName.compare("SCALE"))
+                && !(!groupName.compare("ANALOG") && !paramName.compare("OFFSET"))
+                && !(!groupName.compare("ANALOG") && !paramName.compare("UNITS"))
+            ) {
                 std::vector<size_t> dimension;
                 size_t nDim;
                 mxArray* valueField(mxGetField(paramField, 0, DATA_FIELD));
@@ -377,21 +394,22 @@ void mexFunction(
                         dimension.push_back(mxGetDimensions(valueField)[i]);
 
                 // Special cases
-                if ( (!groupName.compare("POINT")
-                      && !paramName.compare("DESCRIPTIONS"))
-                     && dimension[0] != nPoints)
+                if ((!groupName.compare("POINT")
+                    && !paramName.compare("DESCRIPTIONS"))
+                    && dimension[0] != nPoints)
                     continue;
-                if ( (!groupName.compare("ANALOG")
-                      && !paramName.compare("DESCRIPTIONS"))
-                     && dimension[0] != nAnalogs)
+                if ((!groupName.compare("ANALOG")
+                    && !paramName.compare("DESCRIPTIONS"))
+                    && dimension[0] != nAnalogs)
                     continue;
+                
 
                 ezc3d::ParametersNS::GroupNS::Parameter newParam(paramName);
                 try {
                     ezc3d::DATA_TYPE type(
                                 c3d.parameters().group(groupName)
                                 .parameter(paramName).type());
-
+                    
                     if  (type == ezc3d::DATA_TYPE::INT
                          || type == ezc3d::DATA_TYPE::BYTE) {
                         std::vector<int> data;
@@ -413,28 +431,36 @@ void mexFunction(
                                          "Unrecognized type for parameter."
                                          + groupName + "." + paramName + ".")
                                      .c_str());
-                    } catch (std::invalid_argument) {
-                        if (!valueField || mxIsDouble(valueField)) {
-                            std::vector<float> data;
-                            parseParam(mxGetPr(valueField), dimension, data);
-                            newParam.set(
-                                std::vector<double>(data.begin(), data.end()),
-                                dimension);
-                        } else if (mxIsCell(valueField)) {
-                            std::vector<std::string> data;
-                            parseParam(valueField, dimension, data);
-                            newParam.set(data, dimension);
-                        } else if (mxIsChar(valueField)) {
-                            std::vector<std::string> data;
-                            data.push_back (toString(valueField));
-                            dimension.pop_back();  // Matlab inserts length already
-                            newParam.set(data, dimension);
-                        } else
-                            mexErrMsgTxt(std::string(
-                                             "Unrecognized type for parameter."
-                                             + groupName + "." + paramName + ".")
-                                         .c_str());
-                    }
+                } catch (std::invalid_argument) {
+
+                    // Deal with special cases first
+                    if (!groupName.compare("ROTATION") && !paramName.compare("RATIO")) {
+                        std::vector<int> data;
+                        parseParam(mxGetPr(valueField), dimension, data);
+                        newParam.set(std::vector<int>(data.begin(), data.end()), dimension);
+
+                    // Now deal with usual parameters
+                    } else if (!valueField || mxIsDouble(valueField)) {
+                        std::vector<float> data;
+                        parseParam(mxGetPr(valueField), dimension, data);
+                        newParam.set(
+                            std::vector<double>(data.begin(), data.end()),
+                            dimension);
+                    } else if (mxIsCell(valueField)) {
+                        std::vector<std::string> data;
+                        parseParam(valueField, dimension, data);
+                        newParam.set(data, dimension);
+                    } else if (mxIsChar(valueField)) {
+                        std::vector<std::string> data;
+                        data.push_back (toString(valueField));
+                        dimension.pop_back();  // Matlab inserts length already
+                        newParam.set(data, dimension);
+                    } else
+                        mexErrMsgTxt(std::string(
+                                            "Unrecognized type for parameter."
+                                            + groupName + "." + paramName + ".")
+                                        .c_str());
+                }
 
                 // Get the metadata for this parameter
                 mxArray* descriptionField(
@@ -472,6 +498,7 @@ void mexFunction(
         }
     }
     mxDouble* allDataAnalogs = mxGetPr(dataAnalogs);
+    mxDouble* allDataRotations = mxGetPr(dataRotations);
     for (size_t f=0; f<nFrames; ++f){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::Points3dNS::Points pts;
@@ -498,19 +525,50 @@ void mexFunction(
         }
 
         ezc3d::DataNS::AnalogsNS::Analogs analogs;
-        for (size_t sf=0; sf<nSubframes; ++sf){
+        for (size_t sf=0; sf<nSubframesAnalogs; ++sf){
             ezc3d::DataNS::AnalogsNS::SubFrame subframe;
             for (size_t i=0; i<nAnalogs; ++i){
                 ezc3d::DataNS::AnalogsNS::Channel c;
                 c.data(static_cast<float>(
-                           allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframes]));
+                           allDataAnalogs[nFramesAnalogs*i+sf+f*nSubframesAnalogs]));
                 subframe.channel(c);
             }
             analogs.subframe(subframe);
         }
-        frame.add(pts, analogs);
-        c3d.frame(frame);// Add the previously created frame
+
+        ezc3d::DataNS::RotationNS::Rotations rotations;
+        for (size_t sf = 0; sf < nSubframesRotations; ++sf) {
+            ezc3d::DataNS::RotationNS::SubFrame subframe;
+            for (size_t i = 0; i < nRotations; ++i) {
+                ezc3d::DataNS::RotationNS::Rotation r(
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 0]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 4]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 8]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 12]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 1]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 5]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 9]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 13]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 2]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 6]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 10]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 14]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 3]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 7]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 11]),
+                    static_cast<float>(allDataRotations[f * nSubframesRotations * 16 * nRotations + sf * 16 * nRotations + i * 16 + 15]),
+                    0
+                );
+                subframe.rotation(r);
+            }
+            rotations.subframe(subframe);
+        }
+
+        frame.add(pts, analogs, rotations);
+        c3d.frame(frame); // Add the previously created frame
     }
+
+   
     c3d.write(path);
     return;
 }

@@ -15,10 +15,13 @@
 
 
 ezc3d::DataNS::RotationNS::Info::Info(
-        const ezc3d::c3d &c3d)
+        const ezc3d::c3d &c3d) : 
+        _hasGroup(false),
+        _dataStart(-1),
+        _used(0),
+        _ratio(1)
 {
     if (!c3d.parameters().isGroup("ROTATION")){
-        _hasGroup = false;
         return;
     }
     _hasGroup = true;
