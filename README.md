@@ -130,7 +130,7 @@ The cmake variables to set are:
 > 
 > `BINDER_MATLAB` If you want (`ON`) or not (`OFF`) to build the MATLAB binder. Default is `OFF`.
 > 
-> `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory (something like /usr/local/MATLAB/R2018a). Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
+> `MATLAB_ROOT_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the root path of MATLAB directory (something like "C:\\Program Files\\MATLAB\\R2022b"). Please note that the MATLAB binder is based on MATLAB R2018a API and won't compile on earlier versions. This variable should be found automatically, except on Mac where the value should manually be set to the MATLAB in the App folder.
 > 
 > `MATLAB_ezc3d_INSTALL_DIR` If `BINDER_MATLAB` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/MATLAB`, which is not the default location. The default value is the toolbox folder of MATLAB, i.e., `{MATLAB_ROOT}/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 > 
@@ -140,13 +140,13 @@ The cmake variables to set are:
 > 
 > `Octave_ezc3d_INSTALL_DIR` If `BINDER_OCTAVE` is set to `ON` then this variable should point to the path where you want to install EZC3D. Typically, you want this to be in `{MY DOCUMENTS}/Octave`, which is not the default location. The default value is the toolbox folder on root, i.e., `/toolbox`. Please note that if you leave the default value, you will probably need to grant administrator rights to the installer. 
 
-*Fix for MATLAB*: There is a known issue with libstdc++.so.6 in MATLAB. To fix it, you need to copy the libstdc++.so.6 from your system to the MATLAB bin folder. For example, on Ubuntu 18.04, you can do the following:
+*Fix for MATLAB*: There is a known issue with libstdc++.so.6 in MATLAB on Ubuntu. To fix it, you need to copy the libstdc++.so.6 from your system to the MATLAB bin folder. For example, on Ubuntu 18.04, you can do the following:
 ```bash
 export LD_PRELOAD=/lib/x86_64-linux-gnu/libstdc++.so.6
 ```
 Then, you can run MATLAB from the same terminal. Or if you want to run MATLAB from the desktop, you can remove the original libstdc++.so.6 file in the MATLAB/sys/os/glnxa64 folder and replace it with a symbolic link to the system libstdc++.so.6 file with the following:
 ```bash
-cd /usr/local/MATLAB/R2018a/sys/os/glnxa64
+cd /usr/local/MATLAB/R2022b/sys/os/glnxa64
 ln -s /lib/x86_64-linux-gnu/libstdc++.so.6
 ```
 ### VCPKG (For Windows, Linux and Mac)
