@@ -265,7 +265,7 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
                 pt.residual(res);
 
                 std::vector<bool> cameraMask;
-                for(int j = 0; j < 7; ++j){
+                for(size_t j = 0; j < 7; ++j){
                     const int cam = *static_cast<int*>(PyArray_GETPTR3(cameraMasksData, j, i, f));
                     cameraMask.push_back(cam != 0);
                 }   
