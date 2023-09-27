@@ -7,9 +7,12 @@
 /// \date March 25th, 2020
 ///
 
+#include <cmath>
+
 #include "ezc3d/modules/ForcePlatforms.h"
 #include "ezc3d/ezc3d_all.h"
 #include <stdexcept>
+
 
 ezc3d::Modules::ForcePlatform::ForcePlatform()
 {
@@ -153,11 +156,12 @@ void ezc3d::Modules::ForcePlatform::extractType(
     else if (_type == 2 || _type == 4){
 
     }
-    else if (_type == 3 || _type == 7){
-        if (_type == 7){
-            throw std::runtime_error("Type 7 is not supported yet, "
-                                     "please open an Issue on github for "
-                                     "support");
+    else if (_type == 3){
+        const auto& copPoly = c3d.parameters().group("FORCE_PLATFORM").parameter("FPCOPPOLY").valuesAsDouble();
+        if (copPoly.size() != 0){
+            _type3copPoly = std::vector<double>(copPoly.begin() + idx * 12, copPoly.begin() + (idx + 1) * 12 + 1);
+        } else {
+            _type3copPoly = std::vector<double>(12);
         }
     }
     else if (_type == 5){
@@ -166,6 +170,10 @@ void ezc3d::Modules::ForcePlatform::extractType(
     }
     else if (_type == 6){
         throw std::runtime_error("Type 6 is not supported yet, please "
+                                 "open an Issue on github for support");
+    }
+    else if (_type == 7){
+        throw std::runtime_error("Type 7 is not supported yet, please "
                                  "open an Issue on github for support");
     }
     else if (_type == 11 || _type == 12){
@@ -428,6 +436,17 @@ void ezc3d::Modules::ForcePlatform::extractData(
                             -moment_raw(1)/force_raw(2),
                             moment_raw(0)/force_raw(2),
                             0);
+                if (_type == 3){
+                    // The following is based on https://nbviewer.org/github/BMClab/BMC/blob/master/notebooks/KistlerForcePlateCalculation.ipynb
+                    // which surpringly update CoP_raw.x() before computing both values (meaning CoP_raw.y() depends on the corrected x instead of the measured one). 
+                    double xOffset = 
+                        (_type3copPoly[0] * std::pow(CoP_raw.y(), 4) + _type3copPoly[ 1] * std::pow(CoP_raw.y(), 2) + _type3copPoly[ 2]) * std::pow(CoP_raw.x(), 3) + 
+                        (_type3copPoly[3] * std::pow(CoP_raw.y(), 4) + _type3copPoly[ 4] * std::pow(CoP_raw.y(), 2) + _type3copPoly[ 5]) * CoP_raw.x();
+                    CoP_raw(1) -= 
+                        (_type3copPoly[6] * std::pow(CoP_raw.x(), 4) + _type3copPoly[ 7] * std::pow(CoP_raw.x(), 2) + _type3copPoly[ 8]) * std::pow(CoP_raw.y(), 3) + 
+                        (_type3copPoly[9] * std::pow(CoP_raw.x(), 4) + _type3copPoly[10] * std::pow(CoP_raw.x(), 2) + _type3copPoly[11]) * CoP_raw.y();
+                    CoP_raw(0) -= xOffset;
+                }
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
                 _Tz[cmp] = _refFrame * static_cast<Vector3d>(
                             moment_raw - force_raw.cross(-1*CoP_raw));
