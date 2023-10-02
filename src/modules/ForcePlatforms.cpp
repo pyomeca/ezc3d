@@ -438,14 +438,16 @@ void ezc3d::Modules::ForcePlatform::extractData(
                             0);
                 if (_type == 3){
                     // The following is based on https://nbviewer.org/github/BMClab/BMC/blob/master/notebooks/KistlerForcePlateCalculation.ipynb
-                    // which surpringly update CoP_raw.x() before computing both values (meaning CoP_raw.y() depends on the corrected x instead of the measured one). 
+                    // With th difference that offset are added after being computed, which correspond to the actual documentation provided by 
+                    // Kistler, as discussed in here: https://github.com/pyomeca/ezc3d/issues/253 
                     double xOffset = 
                         (_type3copPoly[0] * std::pow(CoP_raw.y(), 4) + _type3copPoly[ 1] * std::pow(CoP_raw.y(), 2) + _type3copPoly[ 2]) * std::pow(CoP_raw.x(), 3) + 
                         (_type3copPoly[3] * std::pow(CoP_raw.y(), 4) + _type3copPoly[ 4] * std::pow(CoP_raw.y(), 2) + _type3copPoly[ 5]) * CoP_raw.x();
-                    CoP_raw(1) -= 
+                    double yOffset = 
                         (_type3copPoly[6] * std::pow(CoP_raw.x(), 4) + _type3copPoly[ 7] * std::pow(CoP_raw.x(), 2) + _type3copPoly[ 8]) * std::pow(CoP_raw.y(), 3) + 
                         (_type3copPoly[9] * std::pow(CoP_raw.x(), 4) + _type3copPoly[10] * std::pow(CoP_raw.x(), 2) + _type3copPoly[11]) * CoP_raw.y();
                     CoP_raw(0) -= xOffset;
+                    CoP_raw(1) -= yOffset;
                 }
                 _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
                 _Tz[cmp] = _refFrame * static_cast<Vector3d>(
