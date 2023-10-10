@@ -88,6 +88,8 @@ protected:
     std::vector<ezc3d::Vector3d> _CoP;  ///< Center of Pressure vectors for all instants (including subframes) in global reference frame
     std::vector<ezc3d::Vector3d> _Tz;  ///< Moment [0, 0, Tz] vectors for all instants (including subframes) expressed at the CoP
 
+    std::vector<double> _type3copPoly; ///< The polynomial coefficients of the Kistler platforms
+
 public:
     ///
     /// \brief Returns the number of frame recorded
