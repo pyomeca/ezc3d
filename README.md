@@ -508,6 +508,7 @@ import ezc3d
 c3d = ezc3d.c3d()
 
 # Fill it with random data
+c3d['parameters']['POINT']['UNITS']['value'] = ['m']
 c3d['parameters']['POINT']['RATE']['value'] = [100]
 c3d['parameters']['POINT']['LABELS']['value'] = ('point1', 'point2', 'point3', 'point4', 'point5')
 c3d['data']['points'] = np.random.rand(4, 5, 100)
