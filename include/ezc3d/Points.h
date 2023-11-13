@@ -58,7 +58,7 @@ public:
     ///
     void write(
             std::fstream &f,
-            float scaleFactor) const;
+            std::vector<double> scaleFactor) const;
 
 
     //---- POINT ----//

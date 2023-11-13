@@ -28,7 +28,7 @@ void ezc3d::DataNS::Frame::print() const {
 
 void ezc3d::DataNS::Frame::write(
         std::fstream &f,
-        float pointScaleFactor,
+        std::vector<double> pointScaleFactor,
         std::vector<double> analogScaleFactors,
         int dataTypeToWrite) const {
     if (dataTypeToWrite == 0){  // Points and analogs

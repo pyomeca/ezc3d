@@ -39,9 +39,9 @@ void ezc3d::DataNS::Points3dNS::Points::print() const {
 
 void ezc3d::DataNS::Points3dNS::Points::write(
         std::fstream &f,
-        float scaleFactor) const {
+        std::vector<double> scaleFactor) const {
     for (size_t i = 0; i < nbPoints(); ++i)
-        point(i).write(f, scaleFactor);
+        point(i).write(f, scaleFactor.size() == 1 ? scaleFactor[0] : scaleFactor[i]);
 }
 
 size_t ezc3d::DataNS::Points3dNS::Points::nbPoints() const {
