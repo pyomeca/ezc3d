@@ -97,7 +97,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
                 ezc3d::DataNS::AnalogsNS::SubFrame subframes;
                 for (size_t c = 0; c < c3dStruc.nAnalogs; ++c){
                     ezc3d::DataNS::AnalogsNS::Channel channel;
-                    channel.data(static_cast<float>(2*f+3*sf+4*c+1) / static_cast<float>(7.0)); // Generate random data
+                    channel.data(static_cast<float>(2*f+3*sf+4*c+1) / 7.0f); // Generate random data
                     subframes.channel(channel);
                 }
                 analogs.subframe(subframes);
@@ -1727,7 +1727,7 @@ TEST(c3dFileIO, readC3DWithRotation){
     // Point stuff
     EXPECT_EQ(c3d.header().nb3dPoints(), 0);
     EXPECT_EQ(c3d.header().nbMaxInterpGap(), 10);
-    EXPECT_FLOAT_EQ(c3d.header().scaleFactor(), static_cast<float>(-1));
+    EXPECT_FLOAT_EQ(c3d.header().scaleFactor(), -1.0f);
     EXPECT_FLOAT_EQ(c3d.header().frameRate(), 85);
 
     // Analog stuff
@@ -1785,7 +1785,7 @@ TEST(c3dFileIO, readC3DWithRotation){
 
     EXPECT_EQ(c3dCopy.header().nb3dPoints(), 0);
     EXPECT_EQ(c3dCopy.header().nbMaxInterpGap(), 10);
-    EXPECT_FLOAT_EQ(c3dCopy.header().scaleFactor(), static_cast<float>(-1));
+    EXPECT_FLOAT_EQ(c3dCopy.header().scaleFactor(), -1.0f);
     EXPECT_FLOAT_EQ(c3dCopy.header().frameRate(), 85);
 
     // Analog stuff
@@ -1840,7 +1840,7 @@ TEST(c3dFileIO, readViconC3D){
     // Point stuff
     EXPECT_EQ(Vicon.header().nb3dPoints(), 51);
     EXPECT_EQ(Vicon.header().nbMaxInterpGap(), 0);
-    EXPECT_FLOAT_EQ(Vicon.header().scaleFactor(), static_cast<float>(-0.01));
+    EXPECT_FLOAT_EQ(Vicon.header().scaleFactor(), -0.01f);
     EXPECT_FLOAT_EQ(Vicon.header().frameRate(), 100);
 
     // Analog stuff
@@ -1881,7 +1881,7 @@ TEST(c3dFileIO, readViconC3D){
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 51);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
-    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-0.0099999998));
+    EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -0.0099999998f);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
     EXPECT_FLOAT_EQ(Vicon.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 100);
@@ -1977,7 +1977,7 @@ TEST(c3dFileIO, readQualisysC3D){
     // Point stuff
     EXPECT_EQ(Qualisys.header().nb3dPoints(), 55);
     EXPECT_EQ(Qualisys.header().nbMaxInterpGap(), 10);
-    EXPECT_FLOAT_EQ(Qualisys.header().scaleFactor(), static_cast<float>(-0.0762322545));
+    EXPECT_FLOAT_EQ(Qualisys.header().scaleFactor(), -0.0762322545f);
     EXPECT_FLOAT_EQ(Qualisys.header().frameRate(), 200);
 
     // Analog stuff
@@ -2018,7 +2018,7 @@ TEST(c3dFileIO, readQualisysC3D){
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 55);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
-    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-0.076232255));
+    EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -0.076232255f);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
     EXPECT_FLOAT_EQ(Qualisys.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 200);
@@ -2082,7 +2082,6 @@ TEST(c3dFileIO, readQualisysC3D){
     }
 }
 
-
 TEST(c3dFileIO, readOptotrakC3D){
     ezc3d::c3d Optotrak("c3dTestFiles/Optotrak.c3d");
 
@@ -2100,7 +2099,7 @@ TEST(c3dFileIO, readOptotrakC3D){
     // Point stuff
     EXPECT_EQ(Optotrak.header().nb3dPoints(), 54);
     EXPECT_EQ(Optotrak.header().nbMaxInterpGap(), 0);
-    EXPECT_FLOAT_EQ(Optotrak.header().scaleFactor(), static_cast<float>(-7.8661418));
+    EXPECT_FLOAT_EQ(Optotrak.header().scaleFactor(), -7.8661418f);
     EXPECT_FLOAT_EQ(Optotrak.header().frameRate(), 30);
 
     // Analog stuff
@@ -2141,7 +2140,7 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 54);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
-    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-7.8661418));
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -7.8661418f);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
     EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 30);
@@ -2162,6 +2161,86 @@ TEST(c3dFileIO, readOptotrakC3D){
         EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 54);
 }
 
+TEST(c3dFileIO, readKistlerC3D) {
+    ezc3d::c3d Optotrak("c3dTestFiles/Kistler.c3d");
+
+    // Header test
+    // Generic stuff
+    EXPECT_EQ(Optotrak.header().checksum(), 80);
+    EXPECT_EQ(Optotrak.header().keyLabelPresent(), 0);
+    EXPECT_EQ(Optotrak.header().firstBlockKeyLabel(), 0);
+    EXPECT_EQ(Optotrak.header().fourCharPresent(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock1(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock2(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock3(), 0);
+    EXPECT_EQ(Optotrak.header().emptyBlock4(), 0);
+
+    // Point stuff
+    EXPECT_EQ(Optotrak.header().nb3dPoints(), 0);
+    EXPECT_EQ(Optotrak.header().nbMaxInterpGap(), 0);
+    EXPECT_FLOAT_EQ(Optotrak.header().scaleFactor(), 1.f);
+    EXPECT_FLOAT_EQ(Optotrak.header().frameRate(), 0);
+
+    // Analog stuff
+    EXPECT_EQ(Optotrak.header().nbAnalogsMeasurement(), 16);
+    EXPECT_EQ(Optotrak.header().nbAnalogByFrame(), 1);
+    EXPECT_EQ(Optotrak.header().nbAnalogs(), 16);
+
+    // Event stuff
+    EXPECT_EQ(Optotrak.header().nbEvents(), 0);
+
+    EXPECT_EQ(Optotrak.header().eventsTime().size(), 18);
+    for (size_t e = 0; e < Optotrak.header().eventsTime().size(); ++e)
+        EXPECT_FLOAT_EQ(Optotrak.header().eventsTime(e), 0);
+    EXPECT_THROW(Optotrak.header().eventsTime(Optotrak.header().eventsTime().size()), std::out_of_range);
+
+    EXPECT_EQ(Optotrak.header().eventsLabel().size(), 18);
+    for (size_t e = 0; e < Optotrak.header().eventsLabel().size(); ++e)
+        EXPECT_STREQ(Optotrak.header().eventsLabel(e).c_str(), "");
+    EXPECT_THROW(Optotrak.header().eventsLabel(Optotrak.header().eventsLabel().size()), std::out_of_range);
+
+    EXPECT_EQ(Optotrak.header().eventsDisplay().size(), 9);
+    for (size_t e = 0; e < Optotrak.header().eventsDisplay().size(); ++e)
+        EXPECT_EQ(Optotrak.header().eventsDisplay(e), 0);
+    EXPECT_THROW(Optotrak.header().eventsDisplay(Optotrak.header().eventsDisplay().size()), std::out_of_range);
+
+
+    EXPECT_EQ(Optotrak.header().firstFrame(), 0);
+    EXPECT_EQ(Optotrak.header().lastFrame(), 3968);
+    EXPECT_EQ(Optotrak.header().nbFrames(), 3969);
+
+
+    // Parameter tests
+    EXPECT_EQ(Optotrak.parameters().checksum(), 80);
+    EXPECT_EQ(Optotrak.parameters().nbGroups(), 3);
+ 
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("USED").type(), ezc3d::INT);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("USED").valuesAsInt().size(), 1);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("USED").valuesAsInt()[0], 16);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("SCALE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble().size(), 16);
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble()[0], 0.038985152f);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("RATE").type(), ezc3d::FLOAT);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("RATE").valuesAsDouble().size(), 1);
+    EXPECT_FLOAT_EQ(Optotrak.parameters().group("ANALOG").parameter("RATE").valuesAsDouble()[0], 600);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("LABELS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("LABELS").valuesAsString().size(), 16);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("DESCRIPTIONS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("DESCRIPTIONS").valuesAsString().size(), 16);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("UNITS").type(), ezc3d::CHAR);
+    EXPECT_EQ(Optotrak.parameters().group("ANALOG").parameter("UNITS").valuesAsString().size(), 16);
+
+    defaultParametersTest(Optotrak, PARAMETER_TYPE::POINT);
+
+    // DATA
+    for (size_t f = 0; f < 30; ++f) {
+        EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 0);
+        for (size_t sf = 0; sf < Optotrak.data().frame(f).analogs().nbSubframes(); sf++) {
+            EXPECT_EQ(Optotrak.data().frame(f).analogs().subframe(sf).nbChannels(), 16);
+        }
+    }
+}
+
 TEST(c3dFileio,readBtsC3D){
     ezc3d::c3d BTS("c3dTestFiles/BTS.c3d");
     // Header test
@@ -2178,8 +2257,8 @@ TEST(c3dFileio,readBtsC3D){
     // Point stuff
     EXPECT_EQ(BTS.header().nb3dPoints(), 22);
     EXPECT_EQ(BTS.header().nbMaxInterpGap(), 10);
-    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), static_cast<float>(-0.1));
-    EXPECT_FLOAT_EQ(BTS.header().frameRate(), static_cast<float>(100.0));
+    EXPECT_FLOAT_EQ(BTS.header().scaleFactor(), -0.1f);
+    EXPECT_FLOAT_EQ(BTS.header().frameRate(), 100.0f);
 
     // Analog stuff
     EXPECT_EQ(BTS.header().nbAnalogsMeasurement(), 440);
@@ -2218,7 +2297,7 @@ TEST(c3dFileio,readBtsC3D){
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("USED").valuesAsInt()[0], 22);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").type(), ezc3d::FLOAT);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsDouble().size(), 1);
-    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], static_cast<float>(-0.1));
+    EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("SCALE").valuesAsDouble()[0], -0.1f);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
     EXPECT_FLOAT_EQ(BTS.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 100);

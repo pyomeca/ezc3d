@@ -773,72 +773,51 @@ void ezc3d::c3d::analog(
 
 void ezc3d::c3d::updateHeader() {
     // Parameter is always consider as the right value.
-    if (static_cast<size_t>(parameters()
-                            .group("POINT").parameter("FRAMES")
-                            .valuesConvertedAsInt()[0]) != header().nbFrames()){
-        // If there is a discrepancy between them, change the header,
-        // while keeping the firstFrame value
-        _header->lastFrame(
-                    static_cast<size_t>(parameters()
-                                        .group("POINT").parameter("FRAMES")
-                                        .valuesAsInt()[0])
-                + _header->firstFrame() - 1);
+    const auto& points(parameters().group("POINT"));
+    size_t nbFrames(static_cast<size_t>(points.parameter("FRAMES").valuesConvertedAsInt()[0]));
+    if (nbFrames != 0 && nbFrames != header().nbFrames()) {
+        // The nbFrames != 0 is to account for Kistler implementation which does not declare points 
+        // If there is a discrepancy between them, change the header, while keeping the firstFrame value
+        _header->lastFrame(nbFrames + _header->firstFrame() - 1);
     }
-    double pointRate(parameters().group("POINT")
-                     .parameter("RATE").valuesAsDouble()[0]);
+    double pointRate(points.parameter("RATE").valuesAsDouble()[0]);
     float buffer(10000); // For decimal truncature
-    if (static_cast<int>(pointRate*buffer) != static_cast<int>(
-                header().frameRate()*buffer)){
+    if (static_cast<int>(pointRate*buffer) != static_cast<int>(header().frameRate()*buffer)){
         // If there are points but the rate don't match keep the one from header
-        if (parameters().group("POINT").parameter("RATE").valuesAsDouble()[0]
-                == 0.0 && parameters().group("POINT")
-                .parameter("USED").valuesAsInt()[0] != 0){
+        if (
+            points.parameter("RATE").valuesAsDouble()[0] == 0.0 
+            && points.parameter("USED").valuesAsInt()[0] != 0
+        ){
             ezc3d::ParametersNS::GroupNS::Parameter rate("RATE");
             rate.set(header().frameRate());
             parameter("POINT", rate);
         } else
             _header->frameRate(pointRate);
     }
-    if (static_cast<size_t>(parameters()
-                            .group("POINT").parameter("USED")
-                            .valuesAsInt()[0]) != header().nb3dPoints()){
-        _header->nb3dPoints(static_cast<size_t>(
-                                parameters()
-                                .group("POINT").parameter("USED")
-                                .valuesAsInt()[0]));
+    if (static_cast<size_t>(points.parameter("USED").valuesAsInt()[0]) != header().nb3dPoints()){
+        _header->nb3dPoints(static_cast<size_t>(points.parameter("USED").valuesAsInt()[0]));
     }
 
-    // Compare the subframe with data when possible,
-    // otherwise go with the parameters
+    // Compare the subframe with data when possible, otherwise go with the parameters
+    const auto& analog(parameters().group("ANALOG"));
     if (_data != nullptr && data().nbFrames() > 0
             && data().frame(0).analogs().nbSubframes() != 0) {
-        if (data().frame(0).analogs().nbSubframes()
-                != static_cast<size_t>(header().nbAnalogByFrame()))
+        if (data().frame(0).analogs().nbSubframes() != header().nbAnalogByFrame())
             _header->nbAnalogByFrame(data().frame(0).analogs().nbSubframes());
     } else {
         if (static_cast<size_t>(pointRate) == 0){
-            if (static_cast<size_t>(header().nbAnalogByFrame()) != 1)
+            if (header().nbAnalogByFrame() != 1)
                 _header->nbAnalogByFrame(1);
         } else {
-            if (static_cast<size_t>(parameters()
-                                    .group("ANALOG").parameter("RATE")
-                                    .valuesAsDouble()[0] / pointRate)
-                    != static_cast<size_t>(header().nbAnalogByFrame()))
+            if (static_cast<size_t>(analog.parameter("RATE").valuesAsDouble()[0] / pointRate) != header().nbAnalogByFrame())
                 _header->nbAnalogByFrame(
-                            static_cast<size_t>(
-                                parameters()
-                                .group("ANALOG").parameter("RATE")
-                                .valuesAsDouble()[0] / pointRate));
+                            static_cast<size_t>(analog.parameter("RATE").valuesAsDouble()[0] / pointRate));
         }
     }
 
-    if (static_cast<size_t>(parameters()
-                            .group("ANALOG").parameter("USED")
-                            .valuesAsInt()[0]) != header().nbAnalogs())
+    if (static_cast<size_t>(analog.parameter("USED").valuesAsInt()[0]) != header().nbAnalogs())
         _header->nbAnalogs(
-                    static_cast<size_t>(parameters()
-                                        .group("ANALOG").parameter("USED")
-                                        .valuesAsInt()[0]));
+                    static_cast<size_t>(analog.parameter("USED").valuesAsInt()[0]));
 
     if (parameters().isGroup("ROTATION"))
         _header->hasRotationalData(true);
