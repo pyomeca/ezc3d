@@ -69,7 +69,7 @@ void ezc3d::DataNS::Data::print() const {
 void ezc3d::DataNS::Data::write(
         const ezc3d::Header& header,
         std::fstream &f,
-        float pointScaleFactor,
+        std::vector<double> pointScaleFactor,
         std::vector<double> analogScaleFactors,
         ezc3d::DataStartInfo& dataStartInfoToFill) const {
 

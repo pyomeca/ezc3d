@@ -23,12 +23,10 @@ ezc3d::DataNS::AnalogsNS::Info::Info(
     _processorType = c3d.parameters().processorType();
 
     if (c3d.header().nbAnalogs())
-        _scaleFactors = c3d.parameters()
-                .group("ANALOG").parameter("SCALE").valuesAsDouble();
+        _scaleFactors = c3d.channelScales();
     _generalFactor = c3d.parameters()
                .group("ANALOG").parameter("GEN_SCALE").valuesAsDouble()[0];
-    _zeroOffset = c3d.parameters()
-                .group("ANALOG").parameter("OFFSET").valuesAsInt();
+    _zeroOffset = c3d.channelOffsets();
     for (int& offset : _zeroOffset){
         offset = abs(offset);
     }

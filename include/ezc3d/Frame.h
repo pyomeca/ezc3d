@@ -45,7 +45,7 @@ public:
     ///
     void write(
             std::fstream &f,
-            float pointScaleFactor,
+            std::vector<double> pointScaleFactor,
             std::vector<double> analogScaleFactors,
             int dataTypeToWrite) const;
 

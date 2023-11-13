@@ -56,7 +56,7 @@ public:
     void write(
             const ezc3d::Header& header,
             std::fstream &f,
-            float pointScaleFactor,
+            std::vector<double> pointScaleFactor,
             std::vector<double> analogScaleFactors,
             ezc3d::DataStartInfo& dataStartInfoToFill) const;
 

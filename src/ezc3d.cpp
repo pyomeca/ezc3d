@@ -112,9 +112,9 @@ void ezc3d::c3d::parametrizedWrite(
     ezc3d::ParametersNS::Parameters p(
                 parameters().write(f, dataStartInfoToFill, header(), format));
 
-    // Write the data
-    float pointScaleFactor(p.group("POINT").parameter("SCALE").valuesAsDouble()[0]);
-    std::vector<double> pointAnalogFactors(p.group("ANALOG").parameter("SCALE").valuesAsDouble());
+    // Write the data (Should the scales be taken from p?)
+    std::vector<double> pointScaleFactor(pointScales());
+    std::vector<double> pointAnalogFactors(channelScales());
     data().write(header(), f, pointScaleFactor, pointAnalogFactors, dataStartInfoToFill);
 
     // Go back and write all the required data start
@@ -409,12 +409,22 @@ const std::vector<std::string> ezc3d::c3d::pointNames() const {
     int i = 2;
     while (parameters().group("POINT").isParameter("LABELS" + std::to_string(i))){
         const std::vector<std::string>& labels_tp
-                = parameters().group("POINT").parameter(
-                    "LABELS" + std::to_string(i)).valuesAsString();
+            = parameters().group("POINT").parameter("LABELS" + std::to_string(i)).valuesAsString();
         labels.insert(labels.end(), labels_tp.begin(), labels_tp.end());
         ++i;
     }
     return labels;
+}
+
+const std::vector<double> ezc3d::c3d::pointScales() const {
+    std::vector<double> scales = parameters().group("POINT").parameter("SCALE").valuesAsDouble();
+    int i = 2;
+    while (parameters().group("POINT").isParameter("SCALE" + std::to_string(i))) {
+        const auto& scales_tp = parameters().group("POINT").parameter("SCALE" + std::to_string(i)).valuesAsDouble();
+        scales.insert(scales.end(), scales_tp.begin(), scales_tp.end());
+        ++i;
+    }
+    return scales;
 }
 
 size_t ezc3d::c3d::pointIdx(
@@ -423,8 +433,8 @@ size_t ezc3d::c3d::pointIdx(
     for (size_t i = 0; i < currentNames.size(); ++i)
         if (!currentNames[i].compare(pointName))
             return i;
-    throw std::invalid_argument("ezc3d::pointIdx could not find "
-                                + pointName + " in the points data set.");
+    throw std::invalid_argument(
+        "ezc3d::pointIdx could not find " + pointName + " in the points data set.");
 }
 
 const std::vector<std::string> ezc3d::c3d::channelNames() const {
@@ -442,14 +452,36 @@ const std::vector<std::string> ezc3d::c3d::channelNames() const {
     return labels;
 }
 
+const std::vector<double> ezc3d::c3d::channelScales() const {
+    std::vector<double> scales = parameters().group("ANALOG").parameter("SCALE").valuesAsDouble();
+    int i = 2;
+    while (parameters().group("ANALOG").isParameter("SCALE" + std::to_string(i))) {
+        const auto& scales_tp = parameters().group("ANALOG").parameter("SCALE" + std::to_string(i)).valuesAsDouble();
+        scales.insert(scales.end(), scales_tp.begin(), scales_tp.end());
+        ++i;
+    }
+    return scales;
+}
+
+const std::vector<int> ezc3d::c3d::channelOffsets() const {
+    std::vector<int> offsets = parameters().group("ANALOG").parameter("OFFSET").valuesAsInt();
+    int i = 2;
+    while (parameters().group("ANALOG").isParameter("OFFSET" + std::to_string(i))) {
+        const auto& offsets_tp = parameters().group("ANALOG").parameter("OFFSET" + std::to_string(i)).valuesAsInt();
+        offsets.insert(offsets.end(), offsets_tp.begin(), offsets_tp.end());
+        ++i;
+    }
+    return offsets;
+}
+
 size_t ezc3d::c3d::channelIdx(
         const std::string &channelName) const {
     const std::vector<std::string> &currentNames(channelNames());
     for (size_t i = 0; i < currentNames.size(); ++i)
         if (!currentNames[i].compare(channelName))
             return i;
-    throw std::invalid_argument("ezc3d::channelIdx could not find "
-                                + channelName + " in the analogous data set");
+    throw std::invalid_argument(
+        "ezc3d::channelIdx could not find " + channelName + " in the analogous data set");
 }
 
 void ezc3d::c3d::setFirstFrame(size_t firstFrame) {
