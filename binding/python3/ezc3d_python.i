@@ -252,7 +252,9 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
         ezc3d::DataNS::RotationNS::SubFrame rotationsSubframe;
         ezc3d::DataNS::RotationNS::Rotations rotations;
 
+        std::vector<ezc3d::DataNS::Frame> allFrames;
         ezc3d::DataNS::Frame currFrame;
+
 
         for(size_t f = 0; f < nbFrames; ++f){
             for(size_t i = 0; i < nbPoints; ++i){
@@ -321,8 +323,9 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
             }
 
             currFrame.add(pts, analogs, rotations);
-            self->frame(currFrame);
+            allFrames.push_back(currFrame);
         }
+        self->frames(allFrames);
     }
 %}
 

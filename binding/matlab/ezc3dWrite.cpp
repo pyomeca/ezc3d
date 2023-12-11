@@ -498,6 +498,8 @@ void mexFunction(
     }
     mxDouble* allDataAnalogs = mxGetDoubles(dataAnalogs);
     mxDouble* allDataRotations = mxGetDoubles(dataRotations);
+
+    std::vector<ezc3d::DataNS::Frame> frames;
     for (size_t f=0; f<nFrames; ++f){
         ezc3d::DataNS::Frame frame;
         ezc3d::DataNS::Points3dNS::Points pts;
@@ -564,9 +566,9 @@ void mexFunction(
         }
 
         frame.add(pts, analogs, rotations);
-        c3d.frame(frame); // Add the previously created frame
+        frames.push_back(frame);
     }
-
+    c3d.frames(frames); 
    
     c3d.write(path);
     return;

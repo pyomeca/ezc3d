@@ -564,17 +564,26 @@ void ezc3d::c3d::unlockGroup(
 
 void ezc3d::c3d::frame(
         const ezc3d::DataNS::Frame &f,
-        size_t idx) {
+        size_t idx, 
+        bool skipInternalUpdates
+    ) {
+
+    // Replace the jth frame
+    _data->frame(f, idx);
+
+    if (skipInternalUpdates) return;
+
     // Make sure f.points().points() is the same as data.f[ANY].points()
     size_t nPoints(static_cast<size_t>(parameters().group("POINT")
                                        .parameter("USED").valuesAsInt()[0]));
     if (nPoints != 0 && f.points().nbPoints() != nPoints)
         throw std::runtime_error(
-                "Number of points in POINT:USED parameter must equal"
+                "Number of points in POINT:USED parameter must equal to "
                 "the number of points sent in the frame");
 
     std::vector<std::string> labels(parameters().group("POINT")
                                 .parameter("LABELS").valuesAsString());
+    
     try {
         // Check if all the labels are in the actual LABELSX parameter
         const std::vector<std::string> &namesParameter(pointNames());
@@ -618,9 +627,19 @@ void ezc3d::c3d::frame(
                     "the number of analogs sent in the frame");
     }
 
-    // Replace the jth frame
-    _data->frame(f, idx);
+    // Finalize the internal structure
     updateParameters();
+}
+
+void ezc3d::c3d::frames(
+    const std::vector<ezc3d::DataNS::Frame> frames,
+    size_t firstFrameidx) {
+
+    for (int i = 0; i < frames.size(); i++) {
+        // Only performs internal updates on the first and last frames
+        bool skipInternalUpdates = i > 0 && i < frames.size() - 1;
+        frame(frames[i], firstFrameidx == SIZE_MAX ? SIZE_MAX : firstFrameidx + i, skipInternalUpdates);
+    }
 }
 
 void ezc3d::c3d::point(

@@ -109,16 +109,13 @@ void ezc3d::Header::write(
     ) const {
     // write the checksum byte and the start point of header
     int parameterAddessDefault(2);
-    f.write(reinterpret_cast<const char*>(
-                &parameterAddessDefault), ezc3d::BYTE);
+    f.write(reinterpret_cast<const char*>(&parameterAddessDefault), ezc3d::BYTE);
     int checksum(0x50);
     f.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
 
     // Number of data
-    f.write(reinterpret_cast<const char*>(&_nb3dPoints),
-            1*ezc3d::DATA_TYPE::WORD);
-    f.write(reinterpret_cast<const char*>(&_nbAnalogsMeasurement),
-            1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nb3dPoints), 1*ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char*>(&_nbAnalogsMeasurement), 1*ezc3d::DATA_TYPE::WORD);
 
     // Idx of first and last frame
     size_t firstFrame(_firstFrame + (forceZeroBasedOnFrameCount ? 0 : 1)); // 1-based!
