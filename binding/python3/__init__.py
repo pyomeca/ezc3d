@@ -629,7 +629,7 @@ class c3d(C3dMapper):
         for i in range(nb_analog_subframes):
             analogs.subframe(subframe)
 
-        # # Fill the data
+        # Fill the data
         new_c3d.import_numpy_data(
             data_points, data_meta_points["residuals"], data_meta_points["camera_masks"], data_analogs, data_rotations
         )

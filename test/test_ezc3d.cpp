@@ -39,7 +39,7 @@ struct c3dTestStruct{
     std::vector<std::string> analogNames;
 };
 
-void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
+void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs, int nFrames = 10){
     // Setup some variables
     if (withPoints){
         c3dStruc.pointNames = {"point1", "point2", "point3"};
@@ -59,7 +59,7 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
             c3dStruc.c3d.analog(c3dStruc.analogNames[a]);
     }
 
-    c3dStruc.nFrames = 10;
+    c3dStruc.nFrames = nFrames;
     c3dStruc.pointFrameRate = 100;
     if (withPoints){
         ezc3d::ParametersNS::GroupNS::Parameter pointRate("RATE");
@@ -76,9 +76,11 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
                 static_cast<double>(c3dStruc.analogFrameRate)});
         c3dStruc.c3d.parameter("ANALOG", analogRate);
     }
+
+    std::vector<ezc3d::DataNS::Frame> frames;
     for (size_t f = 0; f < c3dStruc.nFrames; ++f){
         ezc3d::DataNS::Frame frame;
-
+    
         ezc3d::DataNS::Points3dNS::Points pts;
         if (withPoints){
             for (size_t m = 0; m < c3dStruc.nPoints; ++m){
@@ -110,8 +112,10 @@ void fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs){
             frame.add(pts);
         else if (withAnalogs)
             frame.add(analogs);
-        c3dStruc.c3d.frame(frame);
+        
+        frames.push_back(frame);
     }
+    c3dStruc.c3d.frames(frames);
 }
 
 void defaultHeaderTest(const ezc3d::c3d& new_c3d, HEADER_TYPE type = HEADER_TYPE::ALL){
@@ -919,7 +923,6 @@ TEST(c3dModifier, addPoints) {
     remove(savepath.c_str());
 }
 
-
 TEST(c3dModifier, specificPoint){
     // Create an empty c3d
     c3dTestStruct new_c3d;
@@ -1720,6 +1723,22 @@ TEST(c3dFileIO, CreateWriteAndReadBackWithNan){
     EXPECT_TRUE(std::isnan(channel.data()));
 }
 
+TEST(c3dFileIO, writeLotOfFrames) {
+    // Create an empty c3d fill it with data and reopen
+    c3dTestStruct ref_c3d;
+    fillC3D(ref_c3d, true, false, 0xFFFF);
+
+    // Write the file
+    std::string savePath("temporary.c3d");
+    ref_c3d.c3d.write(savePath.c_str());
+
+    // Open it back and delete it
+    ezc3d::c3d read_c3d(savePath.c_str());
+    remove(savePath.c_str());
+
+    EXPECT_EQ(ref_c3d.c3d.header().nbFrames(), read_c3d.header().nbFrames());
+}
+
 TEST(c3dFileIO, readC3DWithRotation){
     ezc3d::c3d c3d("c3dTestFiles/C3DRotationExample.c3d");
 
@@ -2127,8 +2146,8 @@ TEST(c3dFileIO, readOptotrakC3D){
 
 
     EXPECT_EQ(Optotrak.header().firstFrame(), 0);
-    EXPECT_EQ(Optotrak.header().lastFrame(), 29);
-    EXPECT_EQ(Optotrak.header().nbFrames(), 30);
+    EXPECT_EQ(Optotrak.header().lastFrame(), 28);
+    EXPECT_EQ(Optotrak.header().nbFrames(), 29);
 
 
     // Parameter tests
@@ -2144,7 +2163,7 @@ TEST(c3dFileIO, readOptotrakC3D){
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").type(), ezc3d::FLOAT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsDouble().size(), 1);
     EXPECT_FLOAT_EQ(Optotrak.parameters().group("POINT").parameter("RATE").valuesAsDouble()[0], 30);
-    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 30); // ignore because it changes if analog is present
+    EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").valuesAsInt()[0], 29); // ignore because it changes if analog is present
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("FRAMES").type(), ezc3d::INT);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").type(), ezc3d::CHAR);
     EXPECT_EQ(Optotrak.parameters().group("POINT").parameter("LABELS").valuesAsString().size(), 54);
@@ -2157,7 +2176,7 @@ TEST(c3dFileIO, readOptotrakC3D){
     defaultParametersTest(Optotrak, PARAMETER_TYPE::FORCE_PLATFORM);
 
     // DATA
-    for (size_t f = 0; f < 30; ++f)
+    for (size_t f = 0; f < 29; ++f)
         EXPECT_EQ(Optotrak.data().frame(f).points().nbPoints(), 54);
 }
 

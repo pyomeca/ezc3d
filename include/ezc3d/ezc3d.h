@@ -448,6 +448,7 @@ public:
     /// \brief Add/replace a frame to the data set
     /// \param frame The frame to copy to the data
     /// \param idx The index of the frame in the data set
+    /// \param skipInternalUpdates If the updates of Parameters and Headers should be skipped
     ///
     /// Add or replace a frame to the data set.
     ///
@@ -456,6 +457,10 @@ public:
     /// If idx is larger than the number of frames, it resize the frames accordingly and add the frame
     /// where it belongs but leaves the other created frames empty.
     ///
+    /// If [skipInternalUpdates] is set to true, then no checks or updates are done to the parameters and 
+    /// the headers. This greatly improves the speed of creating a new file, but conversely it can create 
+    /// corrupted C3D.
+    /// 
     /// Throw a std::runtime_error if the number of points defined in POINT:USED parameter doesn't correspond
     /// to the number of point in the frame.
     ///
@@ -467,7 +472,26 @@ public:
     ///
     void frame(
             const ezc3d::DataNS::Frame &frame,
-            size_t idx = SIZE_MAX);
+            size_t idx = SIZE_MAX,
+            bool skipInternalUpdates = false
+        );
+
+    /// 
+    /// \brief Add/replace a batch of frames, calling the frame() method repeateadly but skipping the updateParameter
+    /// \param frames All the frame to add
+    /// \param firstFrameIdx The index of the frame of frames[0]. The others are assumed to be increments of one
+    /// 
+    /// See frame() for the description of the function with [skipInternalUpdates] set to true for all but the first and last
+    /// frames. If no [firstFrameIdx] is sent, then all the frames are appended to the existing values.
+    /// 
+    /// WARNING: since no checks are performed on the frames (apart from the first and the last), all the frames must have the
+    /// same number of subframes, points and analogs. Failing to do so will not throw an error, but will create a corrupted C3D
+    /// file.
+    /// 
+    void frames(
+            const std::vector<ezc3d::DataNS::Frame> frames,
+            size_t firstFrameidx = SIZE_MAX
+    );
 
     ///
     /// \brief Create a point to the data set of name pointName
