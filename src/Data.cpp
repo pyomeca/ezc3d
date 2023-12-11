@@ -32,15 +32,19 @@ ezc3d::DataNS::Data::Data(
     ezc3d::DataNS::RotationNS::Info rotationsInfo(c3d);
 
     for (size_t j = 0; j < c3d.header().nbFrames(); ++j){
-        if (file.eof())
-            break;
-
         ezc3d::DataNS::Frame f;
         // Read point 3d
         f.add(ezc3d::DataNS::Points3dNS::Points(c3d, file, pointsInfo));
 
         // Read analogs
         f.add(ezc3d::DataNS::AnalogsNS::Analogs(c3d, file, analogsInfo));
+
+        // If we ran out of space, then leave. The reason we test here is because
+        // is set after failing, resulting in one extra frame added if this if
+        // is after the push_back
+        if (file.eof())
+            break;
+
         _frames.push_back(f);
     }
 
