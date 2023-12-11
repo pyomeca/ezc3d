@@ -482,7 +482,7 @@ class c3d(C3dMapper):
         if nb_analog_components != 1:
             raise TypeError("Analogs should be a numpy with first dimension exactly equals to 1 element")
         nb_analog_subframes = 0
-        if nb_point_frames != 0:
+        if nb_point_frames != 0 and nb_points != 0:
             if self._storage["parameters"]["ANALOG"]["RATE"]["value"][0] == 0:
                 if nb_analog_frames % nb_point_frames != 0:
                     raise ValueError("Number of frames of Points and Analogs should be a multiple of an integer")
