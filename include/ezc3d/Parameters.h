@@ -116,8 +116,8 @@ protected:
 
 public:
     ///
-    /// \brief Get the byte in the file where the data starts
-    /// \return The byte in the file where the data starts
+    /// \brief Get the block index (bytes = block_index * 256) in the file where the data starts
+    /// \return The block in the file where the data starts
     ///
     size_t parametersStart() const;
 

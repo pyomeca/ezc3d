@@ -397,6 +397,8 @@ TEST(wrongC3D, wrongChecksumHeader){
 
 
 TEST(wrongC3D, wrongChecksumParameter){
+    // Checksum of paramaters should be diregarded
+
     // Create an empty c3d
     ezc3d::c3d new_c3d;
     std::string savePath("temporary.c3d");
@@ -409,38 +411,10 @@ TEST(wrongC3D, wrongChecksumParameter){
     c3d_file.write(reinterpret_cast<const char*>(&checksum), ezc3d::BYTE);
     c3d_file.close();
 
-    // Read the erroneous file
-    EXPECT_THROW(ezc3d::c3d new_c3d("temporary.c3d"), std::ios_base::failure);
-
-    // If a 0 is also on the byte before the checksum, this is a Qualisys C3D and should be read even if checksum si wrong
-    std::ofstream c3d_file2(savePath.c_str(), std::ofstream::in);
-    c3d_file2.seekp(static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1))); // move to the parameter checksum
-    int parameterStart(0x0);
-    c3d_file2.write(reinterpret_cast<const char*>(&parameterStart), ezc3d::BYTE);
-    c3d_file2.close();
-
-    // Read the Qualisys file
-    EXPECT_NO_THROW(ezc3d::c3d new_c3d("temporary.c3d"));
-
-    // Delete the file
-    remove(savePath.c_str());
-}
-
-TEST(wrongC3D, wrongNextparamParameter){
-    // Create an empty c3d
-    ezc3d::c3d new_c3d;
-    std::string savePath("temporary.c3d");
-    new_c3d.write(savePath.c_str());
-
-    // If a 0 is also on the byte before the checksum, this is a Qualisys C3D and should be read even if checksum si wrong
-    std::ofstream c3d_file(savePath.c_str(), std::ofstream::in);
-    c3d_file.seekp(static_cast<int>(256*ezc3d::DATA_TYPE::WORD*(new_c3d.header().parametersAddress()-1))); // move to the parameter checksum
-    int parameterStart(0x0);
-    c3d_file.write(reinterpret_cast<const char*>(&parameterStart), ezc3d::BYTE);
-    c3d_file.close();
-
-    // Read the erroneous file
-    EXPECT_THROW(ezc3d::c3d new_c3d("temporary.c3d"), std::ios_base::failure);
+    // Read the allegedly wrong file
+    ezc3d::c3d read_c3d("temporary.c3d");
+    EXPECT_EQ(read_c3d.parameters().checksum(), 0x50);
+    EXPECT_EQ(read_c3d.parameters().parametersStart(), 1);     
 
     // Delete the file
     remove(savePath.c_str());
