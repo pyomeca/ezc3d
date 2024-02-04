@@ -26,36 +26,36 @@ ezc3d::ParametersNS::Parameters::Parameters(
         ezc3d::c3d &c3d,
         std::fstream &file,
         bool ignoreBadFormatting) :
-    _parametersStart(0),
-    _checksum(0),
+    _parametersStart(1),
+    _checksum(0x50),
     _nbParamBlock(0),
     _processorType(PROCESSOR_TYPE::NO_PROCESSOR_TYPE) {
-    // Read the Parameters Header (assuming Intel processor)
+    
     _parametersStart = c3d.readUint(
-                processorType(),
-                file,
-                1*ezc3d::DATA_TYPE::BYTE, static_cast<int>(
-                    256*ezc3d::DATA_TYPE::WORD*(
-                        c3d.header().parametersAddress()-1)
-                    + c3d.header().nbOfZerosBeforeHeader()),
-                std::ios::beg);
-    _checksum = c3d.readUint(
-                processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
-    _nbParamBlock = c3d.readUint(
-                processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
-    size_t processorTypeId = c3d.readUint(
-                processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
-    if (_checksum == 0 && _parametersStart == 0){
-        // In theory, if this happens, this is a bad c3d formatting and should
-        // return an error, but for some reason Qualisys decided that they
-        // would not comply to the standard.
-        // Therefore set put "_parameterStart" and "_checksum" to 0
-        // This is a patch for Qualisys bad formatting c3d
+        processorType(),
+        file,
+        1*ezc3d::DATA_TYPE::BYTE, 
+        static_cast<int>(
+            256*ezc3d::DATA_TYPE::WORD*(c3d.header().parametersAddress()-1) + c3d.header().nbOfZerosBeforeHeader()
+        ),
+        std::ios::beg);
+    if (_parametersStart != 1){
+        // This is there for historical reasons. The parameters start is always 1 since the header is of fixed size
+        // but it is still in the file. So just ignore it.
         _parametersStart = 1;
-        _checksum = 0x50;
     }
-    if (!ignoreBadFormatting && _checksum != 0x50) // If checkbyte is wrong
-        throw std::ios_base::failure("File must be a valid c3d file");
+    
+    _checksum = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
+    if (_checksum != 0x50){
+        // This is there for historical reasons. The checksum is not used anymore
+        // but it is still in the file. So just ignore it.
+        _checksum = 0x50;
+    } 
+    
+    _nbParamBlock = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
+    size_t processorTypeId = c3d.readUint(processorType(), file, 1*ezc3d::DATA_TYPE::BYTE);
+    
+        
 
     if (processorTypeId == 84)
         _processorType = ezc3d::PROCESSOR_TYPE::INTEL;
@@ -72,8 +72,7 @@ ezc3d::ParametersNS::Parameters::Parameters(
 
     // Read parameter or group
     std::streampos nextParamByteInFile(
-                static_cast<int>(file.tellg())
-                + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
+            static_cast<int>(file.tellg()) + static_cast<int>(_parametersStart) - ezc3d::DATA_TYPE::BYTE);
     while (nextParamByteInFile)
     {
         // Check if we spontaneously got to the next parameter.
