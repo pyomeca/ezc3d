@@ -157,11 +157,12 @@ void ezc3d::Modules::ForcePlatform::extractType(
 
     }
     else if (_type == 3){
-        const auto& copPoly = c3d.parameters().group("FORCE_PLATFORM").parameter("FPCOPPOLY").valuesAsDouble();
-        if (copPoly.size() != 0){
-            _type3copPoly = std::vector<double>(copPoly.begin() + idx * 12, copPoly.begin() + (idx + 1) * 12);
-        } else {
-            _type3copPoly = std::vector<double>(12);
+        _type3copPoly = std::vector<double>(12);
+        if (c3d.parameters().group("FORCE_PLATFORM").isParameter("FPCOPPOLY")){
+            const auto& copPoly = c3d.parameters().group("FORCE_PLATFORM").parameter("FPCOPPOLY").valuesAsDouble();
+            if (copPoly.size() != 0){
+                _type3copPoly = std::vector<double>(copPoly.begin() + idx * 12, copPoly.begin() + (idx + 1) * 12);
+            }
         }
     }
     else if (_type == 5){
