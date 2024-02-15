@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(ezc3d VERSION 1.5.8)
+project(ezc3d VERSION 1.5.9)
 
 option(BUILD_SHARED_LIBS "Choose if build should be a dynamic or static library" ON)
 # Option to allow checking of size for matrix getter (slower but safer if activated)
