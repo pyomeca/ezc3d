@@ -495,6 +495,7 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
         }
         PyObject* output = PyArray_SimpleNewFromData(nArraySize,arraySizes,NPY_DOUBLE, mat);
         PyArray_ENABLEFLAGS((PyArrayObject *)output, NPY_ARRAY_OWNDATA);
+        delete[] arraySizes;
         return output;
     };
 }
