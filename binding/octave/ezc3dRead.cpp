@@ -43,7 +43,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
     }
 
     // Preparer the first layer of the output structure
-    const char *globalFieldsNames[] = {"header", "parameters","data"};
+    const char *globalFieldsNames[] = {"header", "parameters", "data"};
     int headerIdx = 0;
     int parametersIdx = 1;
     int dataIdx = 2;
@@ -70,7 +70,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
 
         // Fill the header
         {
-        const char *headerFieldsNames[] = {"points", "analogs", "events"};
+        const char *headerFieldsNames[] = {"points", "analogs", "rotations", "events"};
         mwSize headerFieldsDims[2] = {1, 1};
         mxArray * headerStruct = mxCreateStructArray(
                     2, headerFieldsDims,
@@ -79,8 +79,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
         mxSetFieldByNumber(plhs[0], 0, headerIdx, headerStruct);
             // fill points
             {
-                const char *pointsFieldsNames[] = {"size", "frameRate",
-                                                   "firstFrame", "lastFrame"};
+                const char *pointsFieldsNames[] = {
+                    "size", "frameRate", "firstFrame", "lastFrame"};
                 mwSize pointFieldsDims[2] = {1, 1};
                 mxArray * pointsStruct = mxCreateStructArray(
                             2, pointFieldsDims,
@@ -97,8 +97,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
             }
             // fill analogs
             {
-                const char *analogsFieldsNames[] = {"size", "frameRate",
-                                                    "firstFrame", "lastFrame"};
+                const char *analogsFieldsNames[] = {
+                    "size", "frameRate", "firstFrame", "lastFrame"};
                 mwSize analogsFieldsDims[2] = {1, 1};
                 mxArray * analogsStruct = mxCreateStructArray(
                             2, analogsFieldsDims,
@@ -118,20 +118,39 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[])
                                 c3d->header().nbAnalogByFrame()
                                 * (c3d->header().lastFrame()+1));
             }
+            // fill rotations
+            {
+                const char *rotationsFieldsNames[] = {
+                    "size", "frameRate", "firstFrame", "lastFrame"};
+                mwSize rotationsFieldsDims[2] = {1, 1};
+                mxArray * rotationsStruct = mxCreateStructArray(
+                            2, rotationsFieldsDims,
+                            sizeof(rotationsFieldsNames) / sizeof(*rotationsFieldsNames),
+                            rotationsFieldsNames);
+                mxSetFieldByNumber(headerStruct, 0, 2, rotationsStruct);
+
+                ezc3d::DataNS::RotationNS::Info rotationsInfo(*c3d);
+                fillMatlabField(rotationsStruct, 0, rotationsInfo.used());
+                fillMatlabField(rotationsStruct, 1,
+                    static_cast<mxDouble>(rotationsInfo.ratio() * c3d->header().frameRate()));
+                fillMatlabField(rotationsStruct, 2,
+                    rotationsInfo.ratio() * c3d->header().firstFrame()+1);
+                fillMatlabField(rotationsStruct, 3,
+                    rotationsInfo.ratio() * (c3d->header().lastFrame()+1));
+            }
 
             // fill events
             {
-                const char *eventsFieldsNames[] = {"size", "eventsTime",
-                                                   "eventsLabel"};
+                const char *eventsFieldsNames[] = {
+                    "size", "eventsTime", "eventsLabel"};
                 mwSize eventsFieldsDims[2] = {1, 1};
                 mxArray * eventsStruct = mxCreateStructArray(
                             2, eventsFieldsDims,
                             sizeof(eventsFieldsNames) / sizeof(*eventsFieldsNames),
                             eventsFieldsNames);
-                mxSetFieldByNumber(headerStruct, 0, 2, eventsStruct);
+                mxSetFieldByNumber(headerStruct, 0, 3, eventsStruct);
 
-                fillMatlabField(eventsStruct, 0, static_cast<int>(
-                                    c3d->header().eventsTime().size()));
+                fillMatlabField(eventsStruct, 0, static_cast<int>(c3d->header().eventsTime().size()));
                 fillMatlabField(eventsStruct, 1, c3d->header().eventsTime());
                 fillMatlabField(eventsStruct, 2, c3d->header().eventsLabel());
             }

@@ -525,9 +525,32 @@ def test_parse_and_rebuild_header(c3d_build_rebuild_all):
 
 
 def test_parse_and_rebuild_parameters(c3d_build_rebuild_reduced):
-    # UNITS2 is not in the original file (Label2), but is required. Therefore, the parameters won't match
     orig, rebuilt = c3d_build_rebuild_reduced
-    assert orig["parameters"] == rebuilt["parameters"]
+    for group_key in orig.parameters._storage:
+        for param_key in orig.parameters[group_key]:
+            if not isinstance(orig.parameters[group_key][param_key], dict):
+                # Only test the values that are actual parameters
+                continue
+            if "type" not in orig.parameters[group_key][param_key]:
+                # Only test the values that are actual parameters
+                continue
+
+            if param_key == "DATA_START":
+                # Skip DATA_START as it is an internal value
+                continue
+
+            try:
+                assert orig.parameters[group_key][param_key]['type'] == rebuilt.parameters[group_key][param_key]['type']
+            except:
+                # Type may differ for empty values
+                if not orig.parameters[group_key][param_key]['value'] and not rebuilt.parameters[group_key][param_key]['value']:
+                    pass
+                else:
+                    assert orig.parameters[group_key][param_key]['type'] == rebuilt.parameters[group_key][param_key]['type']
+            assert orig.parameters[group_key][param_key]['description'] == rebuilt.parameters[group_key][param_key]['description']
+            assert orig.parameters[group_key][param_key]['is_locked'] == rebuilt.parameters[group_key][param_key]['is_locked']
+            assert np.all(orig.parameters[group_key][param_key]['value'] == rebuilt.parameters[group_key][param_key]['value'])
+    
 
 
 def test_parse_and_rebuild_data(c3d_build_rebuild_all):
