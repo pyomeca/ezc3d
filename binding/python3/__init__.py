@@ -178,12 +178,11 @@ class c3d(C3dMapper):
                 "last_frame": self.header.nbAnalogByFrame() * (self.header.lastFrame() + 1) - 1,
             }
             if rotation_info.hasGroup():
-                rotation_frame_rate = self.header.frameRate() * rotation_info.ratio()
                 self._storage["rotations"] = {
                     "size": rotation_info.used(),
-                    "frame_rate": rotation_frame_rate,
-                    "first_frame": rotation_frame_rate * self.header.firstFrame(),
-                    "last_frame": rotation_frame_rate * (self.header.lastFrame() + 1) - 1,
+                    "frame_rate": self.header.frameRate() * rotation_info.ratio(),
+                    "first_frame": rotation_info.ratio() * self.header.firstFrame(),
+                    "last_frame": rotation_info.ratio() * (self.header.lastFrame() + 1) - 1,
                 }
             self._storage["events"] = {
                 "size": len(self.header.eventsTime()),
