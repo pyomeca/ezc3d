@@ -9,7 +9,7 @@ from ._version import __version__
 
 
 # This is a dummy class that is used as an interface for the group of the parameters
-class GroupParameter:
+class _GroupParameter:
     def __init__(self, data):
         self.__dict__ = data
 
@@ -223,7 +223,7 @@ class c3d(C3dMapper):
                 self._storage[group_name]["__METADATA__"]["IS_LOCKED"] = group.isLocked()
 
                 # Add easy accessor to the group 
-                setattr(self, group_name, GroupParameter(self._storage[group_name]))
+                setattr(self, group_name, _GroupParameter(self._storage[group_name]))
   
                 for parameter in group.parameters():
                     self.add_parameter(group_name, parameter)
@@ -367,7 +367,7 @@ class c3d(C3dMapper):
 
     def add_event(
         self,
-        time: (list, tuple),
+        time: list | tuple,
         context: str = "",
         label: str = "",
         description: str = "",
@@ -594,7 +594,7 @@ class c3d(C3dMapper):
         for group in groups:
             # Write the metadata of the group
             if not new_c3d.parameters().isGroup(group):
-                new_c3d.parameters().group(ezc3d.GroupParameter(group))
+                new_c3d.parameters().group(ezc3d.Group(group))
             new_c3d.parameters().group(group).description(groups[group]["__METADATA__"]["DESCRIPTION"])
             if groups[group]["__METADATA__"]["IS_LOCKED"]:
                 new_c3d.parameters().group(group).lock()
