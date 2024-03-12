@@ -8,6 +8,12 @@ from . import ezc3d
 from ._version import __version__
 
 
+# This is a dummy class that is used as an interface for the group of the parameters
+class GroupParameter:
+    def __init__(self, data):
+        self.__dict__ = data
+
+
 class C3dMapper(Mapping):
     def __init__(self, *args, **kw):
         self._storage = dict(*args, **kw)
@@ -132,8 +138,20 @@ class c3d(C3dMapper):
         self.extract_forceplat_data = extract_forceplat_data
         self._storage["header"] = c3d.Header(self.c3d_swig.header(), rotations_info)
         self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
-        self._storage["data"] = c3d.Data(self.c3d_swig, rotations_info, self.extract_forceplat_data)
+        self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
+    
+    @property
+    def header(self):
+        return self._storage["header"]
+    
+    @property
+    def parameters(self):
+        return self._storage["parameters"]
+    
+    @property
+    def data(self):
+        return self._storage["data"]
 
     def __deepcopy__(self, memodict=None):
         if memodict is None:
@@ -145,7 +163,7 @@ class c3d(C3dMapper):
 
         new._storage["header"] = c3d.Header(new.c3d_swig.header(), rotations_info)
         new._storage["parameters"] = c3d.Parameter(new.c3d_swig.parameters())
-        new._storage["data"] = c3d.Data(new.c3d_swig, rotations_info, new.extract_forceplat_data)
+        new._storage["data"] = c3d.Data(new.c3d_swig, new.extract_forceplat_data)
 
         # Update the structure with a copy of all data
         for header_key in self["header"]:
@@ -177,13 +195,12 @@ class c3d(C3dMapper):
                 "first_frame": self.header.nbAnalogByFrame() * self.header.firstFrame(),
                 "last_frame": self.header.nbAnalogByFrame() * (self.header.lastFrame() + 1) - 1,
             }
-            if rotation_info.hasGroup():
-                self._storage["rotations"] = {
-                    "size": rotation_info.used(),
-                    "frame_rate": self.header.frameRate() * rotation_info.ratio(),
-                    "first_frame": rotation_info.ratio() * self.header.firstFrame(),
-                    "last_frame": rotation_info.ratio() * (self.header.lastFrame() + 1) - 1,
-                }
+            self._storage["rotations"] = {
+                "size": rotation_info.used(),
+                "frame_rate": self.header.frameRate() * rotation_info.ratio(),
+                "first_frame": rotation_info.ratio() * self.header.firstFrame(),
+                "last_frame": rotation_info.ratio() * (self.header.lastFrame() + 1) - 1,
+            }
             self._storage["events"] = {
                 "size": len(self.header.eventsTime()),
                 "events_time": self.header.eventsTime(),
@@ -204,8 +221,15 @@ class c3d(C3dMapper):
                 self.create_group_if_needed(group_name)
                 self._storage[group_name]["__METADATA__"]["DESCRIPTION"] = group.description()
                 self._storage[group_name]["__METADATA__"]["IS_LOCKED"] = group.isLocked()
+
+                # Add easy accessor to the group 
+                setattr(self, group_name, GroupParameter(self._storage[group_name]))
+  
                 for parameter in group.parameters():
                     self.add_parameter(group_name, parameter)
+
+                    # There is no need to add an easy accessor to the parameter as it is implicit by the fact that it is added to the KEYS
+
             return
 
         def create_group_if_needed(self, group_name):
@@ -274,7 +298,7 @@ class c3d(C3dMapper):
                 self._storage["Tz"][:, i] = Tz[i].to_array()[:, 0]
 
     class Data(C3dMutableMapper):
-        def __init__(self, swig_c3d, rotations_info, extract_forceplat_data):
+        def __init__(self, swig_c3d, extract_forceplat_data):
             super().__init__()
 
             # Interface to swig pointers
@@ -287,8 +311,7 @@ class c3d(C3dMapper):
             }
             self._storage["analogs"] = swig_c3d.get_analogs()
 
-            if rotations_info.hasGroup():
-                self._storage["rotations"] = swig_c3d.get_rotations()
+            self._storage["rotations"] = swig_c3d.get_rotations()
 
             # Add the platform filer if required
             if extract_forceplat_data:
@@ -297,6 +320,22 @@ class c3d(C3dMapper):
                     all_pf.append(c3d.PlatForm(pf))
                 self._storage["platform"] = all_pf
             return
+        
+        @property
+        def points(self):
+            return self._storage["points"]
+        
+        @property
+        def meta_points(self):
+            return self._storage["meta_points"]
+        
+        @property
+        def analogs(self):
+            return self._storage["analogs"]
+        
+        @property
+        def rotations(self):
+            return self._storage["rotations"]
 
     def add_parameter(
         self,
@@ -555,7 +594,7 @@ class c3d(C3dMapper):
         for group in groups:
             # Write the metadata of the group
             if not new_c3d.parameters().isGroup(group):
-                new_c3d.parameters().group(ezc3d.Group(group))
+                new_c3d.parameters().group(ezc3d.GroupParameter(group))
             new_c3d.parameters().group(group).description(groups[group]["__METADATA__"]["DESCRIPTION"])
             if groups[group]["__METADATA__"]["IS_LOCKED"]:
                 new_c3d.parameters().group(group).lock()

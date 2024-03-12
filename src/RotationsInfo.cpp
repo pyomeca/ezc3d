@@ -19,7 +19,7 @@ ezc3d::DataNS::RotationNS::Info::Info(
         _hasGroup(false),
         _dataStart(-1),
         _used(0),
-        _ratio(1)
+        _ratio(0)
 {
     if (!c3d.parameters().isGroup("ROTATION")){
         return;
