@@ -15,7 +15,7 @@ So, without further ado, let's begin C3Ding!
 # Table of Contents  
 [How to install](#how-to-install)
 - [Anaconda](#anaconda-for-windows-linux-and-Mac)
-- [Compiling](#compiling-for-windows-linux-and-mac)
+- [Compiling](#compiling-for-windows-linux-and-mac)Py
 
 [How to use](#how-to-use)
 - [The C++ API](#the-c-api)
@@ -478,6 +478,25 @@ from ezc3d import c3d
 c = c3d()
 print(c['parameters']['POINT']['USED']['value'][0]);  # Print the number of points used
 ```
+
+#### Understanding the output
+The `c3d` instance returned by the `c3d('path_to_c3d.c3d')` mimics the internal structure of a C3D, that is a `header` section, a `parameters` section and a `data` section. 
+The `header` section is a standard read-only section and mostly contain redundant information with `parameters`. 
+The `parameters` section is partly standard, partly based on the data of the file. 
+If one wants to modify anything relating to the meta data of the c3d file, this is the section to modify.
+The `data` section is a standard section containing the data for the points, the analogs and the rotations. 
+
+To access the data, one can use the dictionary notation or the dot notation.
+```python3
+from ezc3d import c3d
+c = c3d()
+print(c['parameters']['POINT']['USED']['value'][0]
+print(c.parameters.POINT.USED['value'][0]
+````
+The dictionnary notation better reflects the internal structure of the C3D class, which makes it more reliable. 
+However, it is less convenient to use as one need to check the existing "keys" during programming.
+The dot notation is mostly an accessor to the dictionnary notation. 
+
 
 ### Read a C3D
 To read a C3D file you simply to call the `ezc3d.c3d()` with the path to c3d as the first argument.
