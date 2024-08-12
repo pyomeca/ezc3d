@@ -75,13 +75,12 @@ jobs:
 
       - name: Build MATLAB archives
         run: |
-          cd $HOME
-          zip -r $HOME/ezc3d_matlab.zip ezc3d_matlab
+          zip -r ezc3d_matlab.zip $HOME/ezc3d_matlab
 
       - name: Upload files to a GitHub release
         uses: xresloader/upload-to-github-release@v1
         with:
-          file: "$HOME/ezc3d_matlab.zip"
+          file: "ezc3d_matlab.zip"
           verbose: true
           overwrite: true
           update_latest_release: true
