@@ -80,12 +80,23 @@ jobs:
         run: |
           zip -r ezc3d_matlab.zip README.md
 
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: TATA
+          release_name: Release_TATA
+          draft: false
+          prerelease: false
+
       - name: Upload files to a GitHub release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://github.com/pyomeca/ezc3d/releases/tag/Release_1.5.10
+          upload_url: steps.create_release.outputs.upload_url
           asset_path: ./ezc3d_matlab.zip
           asset_name: ezc3d_matlab.zip
           asset_content_type: application/zip
