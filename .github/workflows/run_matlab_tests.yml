@@ -68,6 +68,7 @@ jobs:
           HOME=`pwd`
           cd $MAIN_FOLDER/test/matlab
           cp $HOME/ezc3d_matlab/* .
+          export DISPLAY=:0.0
           matlab test_binder_matlab.m
           matlab test_binder_matlab_force_platform.m
           cd $MAIN_FOLDER
