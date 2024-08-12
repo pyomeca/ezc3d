@@ -79,9 +79,9 @@ jobs:
           zip -r ezc3d_matlab.zip ezc3d_matlab
 
       - name: Upload files to a GitHub release
-        uses: svenstaro/upload-release-action@2.4.0
+        uses: xresloader/upload-to-github-release@v1
         with:
+          file: "ezc3d_matlab.zip"
           overwrite: true
-          tag: nightly-coucou
-          file: ezc3d_matlab.zip
-          prerelease: true
+          update_latest_release: true
+          
