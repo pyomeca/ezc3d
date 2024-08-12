@@ -81,19 +81,11 @@ jobs:
           zip -r ezc3d_matlab.zip README.md
 
       - name: Upload files to a GitHub release
-        uses: xresloader/upload-to-github-release@v1
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # with:
-        #   file: "ezc3d_matlab.zip"
-        #   verbose: true
-        #   overwrite: true
-        #   update_latest_release: true
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "ezc3d_matlab.zip"
-          tags: false
-          draft: true
-          tag_name: Release_1.5.10
-      
+          upload_url: https://github.com/pyomeca/ezc3d/releases/tag/Release_1.5.10
+          asset_path: ./ezc3d_matlab.zip
+          asset_name: ezc3d_matlab.zip
+          asset_content_type: application/zip
