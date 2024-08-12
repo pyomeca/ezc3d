@@ -75,6 +75,7 @@ jobs:
 
       - name: Build MATLAB archives
         run: |
+          cd $HOME
           zip -r ezc3d_matlab.zip ezc3d_matlab
 
       - name: Upload files to a GitHub release
