@@ -95,4 +95,5 @@ jobs:
           file: "ezc3d_matlab.zip"
           tags: false
           draft: true
+          tag_name: Release_1.5.10
       
