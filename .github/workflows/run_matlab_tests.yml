@@ -81,7 +81,7 @@ jobs:
       - name: Upload files to a GitHub release
         uses: xresloader/upload-to-github-release@v1
         with:
-          file: "ezc3d_matlab.zip"
+          file: "$HOME/ezc3d_matlab.zip"
+          verbose: true
           overwrite: true
           update_latest_release: true
-          
