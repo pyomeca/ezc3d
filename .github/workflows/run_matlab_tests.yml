@@ -1,35 +1,93 @@
-on:
-  push:
+name: Run the Matlab tests
 
-name: Upload Release Asset
+on: 
+  release: 
+    types: [published]
+
+env:
+  BUILD_FOLDER: build
+  EXAMPLES_FOLDER: examples
 
 jobs:
   build:
-    name: Upload Release Asset
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            label: linux-64
+            prefix: /usr/share/miniconda3/envs/ezc3d
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build project # This would actually build your project, using zip for an example artifact
+        uses: actions/checkout@v4
+      
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      # - name: Setup environment
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     miniforge-variant: Mambaforge
+      #     miniforge-version: latest
+      #     use-mamba: true
+        
+      # - name: Print mamba info
+      #   run: | 
+      #     mamba info
+      #     mamba list
+          
+      # - name: Install dependencies
+      #   run: | 
+      #     mamba install cmake git pkgconfig -cconda-forge
+      #     mamba list
+      #     git submodule update --init --recursive
+
+      # - name: Install MATLAB
+      #   uses: matlab-actions/setup-matlab@v2
+
+      # - name: Build ezc3d
+      #   run: |
+      #     MAIN_FOLDER=`pwd`
+      #     cd
+      #     HOME=`pwd`
+      #     cd $MAIN_FOLDER
+      #     CONDA_ENV_PATH=$CONDA/envs/ezc3d
+      #     mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
+      #     cd $MAIN_FOLDER/$BUILD_FOLDER
+      #     cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_MATLAB=ON -DMatlab_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=OFF ..
+      #     make install -j${{ steps.cpu-cores.outputs.count }}
+      #     cd $MAIN_FOLDER
+
+      # - name: Run the MATLAB binder tests
+      #   run: |
+      #     MAIN_FOLDER=`pwd`
+      #     cd
+      #     HOME=`pwd`
+      #     cd $MAIN_FOLDER/test/matlab
+      #     cp $HOME/ezc3d_matlab/* .
+      #     # We cannot run the tests as we do not have a license. They are however run on octave
+      #     # matlab -batch test_binder_matlab.m
+      #     # matlab -batch test_binder_matlab_force_platform.m
+      #     cd $MAIN_FOLDER
+
+      # - name: Build MATLAB archives
+      #   run: |
+      #     zip -r ezc3d_matlab.zip $HOME/ezc3d_matlab
+      - name: Build MATLAB archives
         run: |
-          zip --junk-paths my-artifact README.md
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+          zip -r ezc3d_matlab.zip README.md
+
+      - name: Upload files to a GitHub release
+        uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./my-artifact.zip
-          asset_name: my-artifact.zip
-          asset_content_type: application/zip
+          file: "ezc3d_matlab.zip"
+          update_latest_release: true
+          verbose: true
+          overwrite: true
