@@ -57,11 +57,11 @@ jobs:
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
           cd $MAIN_FOLDER/$BUILD_FOLDER
-          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_MATLAB=ON -DMatlab_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=OFF ..
+          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_MATLAB=ON -DMatlab_ezc3d_INSTALL_DIR=$HOME -DBINDER_PYTHON3=OFF ..
           make install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
 
-      - name: Run the Matlab binder tests
+      - name: Run the MATLAB binder tests
         run: |
           MAIN_FOLDER=`pwd`
           cd
@@ -72,3 +72,15 @@ jobs:
           # matlab -batch test_binder_matlab.m
           # matlab -batch test_binder_matlab_force_platform.m
           cd $MAIN_FOLDER
+
+      - name: Build MATLAB archives
+        run: |
+          zip -r ezc3d_matlab.zip ezc3d_matlab
+
+      - name: Upload files to a GitHub release
+        uses: svenstaro/upload-release-action@2.4.0
+        with:
+          overwrite: true
+          tag: nightly-coucou
+          file: ezc3d_matlab.zip
+          prerelease: true
