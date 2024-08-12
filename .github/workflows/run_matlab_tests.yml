@@ -79,6 +79,8 @@ jobs:
 
       - name: Upload files to a GitHub release
         uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "ezc3d_matlab.zip"
           verbose: true
