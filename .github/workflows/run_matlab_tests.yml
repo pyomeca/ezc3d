@@ -93,6 +93,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "ezc3d_matlab.zip"
-          tags: true
+          tags: false
           draft: true
       
