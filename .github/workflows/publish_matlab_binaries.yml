@@ -94,6 +94,13 @@ jobs:
           cd $MAIN_FOLDER
         if: matrix.label == 'win-64'
 
+      - name: Do some shinanigans on MACOS-ARM64
+        run: |
+          # Since Github actions arm64 provides the wrong "uname -m", we change it by hand
+          cd $HOME/ezc3d_matlab
+          for old in *.mexmaci64; do mv $old `basename $old .mexmaci64`.mexmaca64; done
+          cd $MAIN_FOLDER
+
       - name: Build MATLAB archives on UNIX
         run: |
           cp -r $HOME/ezc3d_matlab .
