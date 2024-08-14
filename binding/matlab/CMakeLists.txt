@@ -53,20 +53,32 @@ foreach(SUFFIXES Read Write)
             )
         endif(CMAKE_CL_64)
     elseif(APPLE)
-        if (CMAKE_APPLE_SILICON_PROCESSOR STREQUAL "x86_64")
+        # Get the current architecture
+        message(STATUS "Architecture: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
+        if (NOT CMAKE_APPLE_SILICON_PROCESSOR)
+            execute_process(
+                COMMAND uname -m
+                OUTPUT_VARIABLE CMAKE_APPLE_SILICON_PROCESSOR
+            )
+            message(STATUS "Ye")
+        endif()
+        message(STATUS "Architecture: ${CMAKE_APPLE_SILICON_PROCESSOR}")
+
+
+        if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
             message(STATUS "Using MATLAB for MacOS Intel")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexmaci64"
                 PREFIX ""
             )
-        elseif(CMAKE_APPLE_SILICON_PROCESSOR STREQUAL "arm64") 
+        elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64") 
             message(STATUS "Using MATLAB for MacOS Arm")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexmaca64"
                 PREFIX ""
             )
         else()
-            message(FATAL_ERROR "Unknown architecture: ${CMAKE_APPLE_SILICON_PROCESSOR}") 
+            message(FATAL_ERROR "Unknown architecture: ${CMAKE_HOST_SYSTEM_PROCESSOR}") 
         endif ()
     else()
         if (CMAKE_SIZEOF_VOID_P MATCHES "8")
