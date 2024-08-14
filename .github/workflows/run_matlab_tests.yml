@@ -9,14 +9,14 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-m1, macos-13, windows-latest]
         include:
           - os: ubuntu-latest
             label: linux-64
             prefix: /usr/share/miniconda3/envs/ezc3d
-          # - os: macos-latest
-          #   label: osx-arm64
-          #   prefix: /Users/runner/miniconda3/envs/ezc3d
+          - os: macos-m1
+            label: osx-arm64
+            prefix: /Users/runner/miniconda3/envs/ezc3d
           - os: macos-13
             label: osx-intel
             prefix: /Users/runner/miniconda3/envs/ezc3d
