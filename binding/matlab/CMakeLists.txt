@@ -66,7 +66,7 @@ foreach(SUFFIXES Read Write)
                 PREFIX ""
             )
         else()
-            message(FATAL_ERROR "Unknown architecture: ${CMAKE_SYSTEM_PROCESSOR}") 
+            message(FATAL_ERROR "Unknown architecture: ${CMAKE_APPLE_SILICON_PROCESSOR}") 
         endif ()
     else()
         if (CMAKE_SIZEOF_VOID_P MATCHES "8")
