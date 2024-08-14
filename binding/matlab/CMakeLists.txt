@@ -42,21 +42,25 @@ foreach(SUFFIXES Read Write)
     # Set the name of the library
     if(WIN32)
         if (CMAKE_CL_64)
+            message(STATUS "Using MATLAB for Windows 64-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexw64"
             )
         else(CMAKE_CL_64)
+            message(STATUS "Using MATLAB for Windows 32-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexw32"
             )
         endif(CMAKE_CL_64)
     elseif(APPLE)
-        if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        if (CMAKE_APPLE_SILICON_PROCESSOR STREQUAL "x86_64")
+            message(STATUS "Using MATLAB for MacOS Intel")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexmaci64"
                 PREFIX ""
             )
-        elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64") 
+        elseif(CMAKE_APPLE_SILICON_PROCESSOR STREQUAL "arm64") 
+            message(STATUS "Using MATLAB for MacOS Arm")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexmaca64"
                 PREFIX ""
@@ -66,17 +70,19 @@ foreach(SUFFIXES Read Write)
         endif ()
     else()
         if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+            message(STATUS "Using MATLAB for Linux 64-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexa64"
                 PREFIX ""
             )
         else(CMAKE_SIZEOF_VOID_P MATCHES "8")
+            message(STATUS "Using MATLAB for Linux 32-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexglx"
                 PREFIX ""
             )
         endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    endif(WIN32)
+    endif()
 
 
     # Set runtime path for linux
