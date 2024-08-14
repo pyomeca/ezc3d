@@ -42,48 +42,35 @@ foreach(SUFFIXES Read Write)
     # Set the name of the library
     if(WIN32)
         if (CMAKE_CL_64)
-            message(STATUS "Using MATLAB for Windows 64-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexw64"
             )
         else(CMAKE_CL_64)
-            message(STATUS "Using MATLAB for Windows 32-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexw32"
             )
         endif(CMAKE_CL_64)
     elseif(APPLE)
-        # Get the current architecture
-        if (CMAKE_APPLE_SILICON_PROCESSOR)
-            set(OSX_ARCHITECTURE ${CMAKE_APPLE_SILICON_PROCESSOR} CACHE INTERNAL "The osx architecture" FORCE)
-        else(CMAKE_APPLE_SILICON_PROCESSOR)
-            set(OSX_ARCHITECTURE ${CMAKE_HOST_SYSTEM_PROCESSOR} CACHE INTERNAL  "The osx architecture" FORCE)
-        endif(CMAKE_APPLE_SILICON_PROCESSOR)
-
-        if (OSX_ARCHITECTURE STREQUAL "x86_64")
-            message(STATUS "Using MATLAB for MacOS Intel")
+        if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexmaci64"
                 PREFIX ""
             )
-        elseif(OSX_ARCHITECTURE STREQUAL "arm64") 
-            message(STATUS "Using MATLAB for MacOS Arm")
+        elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64") 
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexmaca64"
                 PREFIX ""
             )
         else()
-            message(FATAL_ERROR "Unknown architecture: ${OSX_ARCHITECTURE}") 
+            message(FATAL_ERROR "Unknown architecture: ${CMAKE_HOST_SYSTEM_PROCESSOR}") 
         endif ()
     else()
         if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-            message(STATUS "Using MATLAB for Linux 64-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexa64"
                 PREFIX ""
             )
         else(CMAKE_SIZEOF_VOID_P MATCHES "8")
-            message(STATUS "Using MATLAB for Linux 32-bits")
             set_target_properties(${PROJECT_NAME}_${SUFFIXES} PROPERTIES
                 SUFFIX ".mexglx"
                 PREFIX ""
