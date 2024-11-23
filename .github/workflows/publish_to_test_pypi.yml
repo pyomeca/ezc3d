@@ -1,0 +1,131 @@
+name: Publish to PyPI
+
+on: 
+  release: 
+    types: [published]
+
+env:
+  BUILD_FOLDER: build
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            label: linux-64
+            prefix: /usr/share/miniconda3/envs/ezc3d
+          - os: macos-latest
+            label: osx-64
+            prefix: /Users/runner/miniconda3/envs/ezc3d
+          - os: windows-latest
+            label: win-64
+            prefix: C:\Miniconda3\envs\ezc3d
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Setup environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          activate-environment: ezc3d
+          environment-file: environment.yml
+        
+      - name: Print mamba info
+        run: | 
+          mamba info
+          mamba list
+          
+      - name: Install dependencies
+        run: | 
+          mamba install cmake git pkgconfig swig numpy pip scikit-build -cconda-forge
+          mamba list
+          pip install build
+
+      - name: Install cibuildwheel on Linux
+        run: python -m pip install cibuildwheel==2.21.3
+        if: matrix.label == 'linux-64'
+
+      - name: Build wheels on Linux
+        uses: pypa/cibuildwheel@v2.21.3
+        with:
+          output-dir: dist
+          config-file: "pyproject.toml"
+        env:
+          CIBW_SKIP: "pp*-manylinux_i686"
+          CIBW_BEFORE_BUILD: >-
+            rm -rf _skbuild
+        if: matrix.label == 'linux-64'
+
+      - name: Build wheels on Mac or Windows
+        run: python -m build --sdist --wheel
+        if: matrix.label != 'linux-64'
+      
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions-${{ matrix.label }}
+          path: dist/*.whl/
+          
+  publish-to-pypi:
+    name: Publish to PyPI
+    needs:
+    - build
+
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ezc3d
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        pattern: python-package-distributions-*
+        path: dist/
+        merge-multiple: true
+
+    - name: Publish distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/ezc3d
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        pattern: python-package-distributions-*
+        path: dist/
+        merge-multiple: true
+
+    - name: Publish distribution to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/

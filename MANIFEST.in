@@ -1,0 +1,35 @@
+# Include only essential Python code and metadata for installation.
+include setup.py pyproject.toml
+include environment.yml
+include LICENSE README.md
+exclude MANIFEST.in 
+
+# Include shared libraries or compiled files (if needed for runtime).
+recursive-include _skbuild *.so
+recursive-include _skbuild *.dll
+recursive-include _skbuild *.dylib
+recursive-include _skbuild *.pyd
+recursive-include _skbuild *.lib
+recursive-include _skbuild *.py
+
+# Exclude source and development files
+exclude CMakeLists.txt
+exclude *.cmake.in
+exclude binding/*
+exclude include/*
+exclude logo/*
+exclude modules/*
+exclude share/*
+exclude src/*
+exclude external/*
+
+# Exclude docs, tests and example data
+exclude doc/*
+exclude test/*
+exclude examples/*
+
+# Exclude version control and temporary files
+global-exclude *.git*
+global-exclude __pycache__/*
+global-exclude *.py[co]
+

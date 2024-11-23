@@ -26,8 +26,29 @@ examples/c3dFiles/*
 examples/python3/*.c3d
 examples/matlab/*.c3d
 
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+_skbuild/
+
+
 # Documentation
 doc/*.pdf
 
 # Pycharm
 .idea
+
