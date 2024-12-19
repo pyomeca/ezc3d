@@ -51,7 +51,14 @@ ezc3d::DataNS::Data::Data(
     // Read the rotation data
     if (c3d.header().hasRotationalData()){
         // Prepare the reading
-        file.seekg(static_cast<int>(rotationsInfo.dataStart()-1)*512, std::ios::beg);
+        
+        // If the max length of the file is smaller than the data start, then there is no data
+        std::streampos fileSize = file.seekg(0, std::ios::end).tellg();
+        int targetPos(static_cast<int>(rotationsInfo.dataStart()-1)*512);
+        if (fileSize < targetPos){
+            return;
+        }
+        file.seekg(targetPos, std::ios::beg);
 
         for (size_t i = 0; i < c3d.header().nbFrames(); ++i){
             if (file.eof())
