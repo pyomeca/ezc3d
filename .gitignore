@@ -52,3 +52,5 @@ doc/*.pdf
 # Pycharm
 .idea
 
+
+.vscode/settings.json

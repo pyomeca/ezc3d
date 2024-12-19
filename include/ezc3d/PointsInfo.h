@@ -13,35 +13,35 @@
 ///
 /// \brief 3D rotation data
 ///
-class EZC3D_API ezc3d::DataNS::Points3dNS::Info {
-    //---- CONSTRUCTORS ----//
+class ezc3d::DataNS::Points3dNS::Info {
+  //---- CONSTRUCTORS ----//
 public:
-    ///
-    /// \brief Reads and create a proper PointsInfo class
-    /// c3d The c3d structure to read the values from
-    ///
-    Info(const ezc3d::c3d& c3d);
+  ///
+  /// \brief Reads and create a proper PointsInfo class
+  /// c3d The c3d structure to read the values from
+  ///
+  EZC3D_API Info(const ezc3d::c3d &c3d);
 
-    //---- DATA ----//
+  //---- DATA ----//
 protected:
-    PROCESSOR_TYPE _processorType; ///< The type of processor formatting
+  PROCESSOR_TYPE _processorType; ///< The type of processor formatting
 
 public:
-    ///
-    /// \brief Returns the type of processor formatting
-    /// \return The type of processor formatting
-    ///
-    PROCESSOR_TYPE processorType() const;
+  ///
+  /// \brief Returns the type of processor formatting
+  /// \return The type of processor formatting
+  ///
+  EZC3D_API PROCESSOR_TYPE processorType() const;
 
 protected:
-    double _scaleFactor; ///< The scale factor for all the points
+  double _scaleFactor; ///< The scale factor for all the points
 
 public:
-    ///
-    /// \brief Returns the scale factor for all the points
-    /// \return The scale factor for all the points
-    ///
-    double scaleFactor() const;
+  ///
+  /// \brief Returns the scale factor for all the points
+  /// \return The scale factor for all the points
+  ///
+  EZC3D_API double scaleFactor() const;
 };
 
 #endif

@@ -14,58 +14,55 @@
 ///
 /// \brief 3D rotation data
 ///
-class EZC3D_API ezc3d::DataNS::AnalogsNS::Info {
-    //---- CONSTRUCTORS ----//
+class ezc3d::DataNS::AnalogsNS::Info {
+  //---- CONSTRUCTORS ----//
 public:
-    ///
-    /// \brief Reads and create a proper AnalogInfo class
-    /// c3d The c3d structure to read the values from
-    ///
-    Info(const ezc3d::c3d& c3d);
+  ///
+  /// \brief Reads and create a proper AnalogInfo class
+  /// c3d The c3d structure to read the values from
+  ///
+  EZC3D_API Info(const ezc3d::c3d &c3d);
 
-    //---- DATA ----//
+  //---- DATA ----//
 protected:
-    PROCESSOR_TYPE _processorType; ///< The type of processor formatting
+  PROCESSOR_TYPE _processorType; ///< The type of processor formatting
 
 public:
-    ///
-    /// \brief Returns the type of processor formatting
-    /// \return The type of processor formatting
-    ///
-    PROCESSOR_TYPE processorType() const;
-
-
-protected:
-    std::vector<double> _scaleFactors; ///< The scale factors by channel
-
-public:
-    ///
-    /// \brief Returns the scale factors by channel
-    /// \return The scale factors by channel
-    ///
-    const std::vector<double>& scaleFactors() const;
-
+  ///
+  /// \brief Returns the type of processor formatting
+  /// \return The type of processor formatting
+  ///
+  EZC3D_API PROCESSOR_TYPE processorType() const;
 
 protected:
-    double _generalFactor; ///< The general scale factor
+  std::vector<double> _scaleFactors; ///< The scale factors by channel
 
 public:
-    ///
-    /// \brief Returns the general scale factor
-    /// \return The general scale factor
-    ///
-    double generalFactor() const;
-
+  ///
+  /// \brief Returns the scale factors by channel
+  /// \return The scale factors by channel
+  ///
+  EZC3D_API const std::vector<double> &scaleFactors() const;
 
 protected:
-    std::vector<int> _zeroOffset; ///< The offset of the analogs
+  double _generalFactor; ///< The general scale factor
 
 public:
-    ///
-    /// \brief Returns the zero offset
-    /// \return The zero offset
-    ///
-    const std::vector<int>& zeroOffset() const;
+  ///
+  /// \brief Returns the general scale factor
+  /// \return The general scale factor
+  ///
+  EZC3D_API double generalFactor() const;
+
+protected:
+  std::vector<int> _zeroOffset; ///< The offset of the analogs
+
+public:
+  ///
+  /// \brief Returns the zero offset
+  /// \return The zero offset
+  ///
+  EZC3D_API const std::vector<int> &zeroOffset() const;
 };
 
 #endif
