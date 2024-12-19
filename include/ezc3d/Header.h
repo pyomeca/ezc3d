@@ -354,8 +354,8 @@ protected:
   size_t _fourCharPresent;    ///< Byte 150
                               ///<
                               ///< The four characters flag. If it is equal to
-                           ///< 12345, then event labels are represented as 4
-                           ///< characters. Otherwise it is 2 characters.
+                              ///< 12345, then event labels are represented as 4
+                              ///< characters. Otherwise it is 2 characters.
 
   size_t _nbEvents; ///< Byte 151
                     ///<

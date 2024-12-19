@@ -126,11 +126,11 @@ PyObject * _get_analogs(const ezc3d::c3d& c3d, const std::vector<int>& analogs)
     // Get the data
     size_t nAnalogs(analogs.size());
     size_t nFrames(c3d.data().nbFrames());
-    int nSubframes(c3d.header().nbAnalogByFrame());
+    size_t nSubframes(c3d.header().nbAnalogByFrame());
     double * data = new double[nAnalogs * nFrames * nSubframes];
     for (size_t f = 0; f < nFrames; ++f)
         for (size_t sf = 0; sf < nSubframes; ++sf)
-            for (int a = 0; a < nAnalogs; ++a)
+            for (size_t a = 0; a < nAnalogs; ++a)
                 data[
                     f * nSubframes + 
                     sf + 
@@ -482,8 +482,8 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 %extend ezc3d::Matrix
 {
     PyObject* to_array(){
-        int nRows($self->nbRows());
-        int nCols($self->nbCols());
+        size_t nRows($self->nbRows());
+        size_t nCols($self->nbCols());
         int nArraySize(2);
         npy_intp * arraySizes = new npy_intp[nArraySize];
         arraySizes[0] = nRows;
