@@ -30,21 +30,19 @@ jobs:
       - name: Setup environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
-          use-mamba: true
           activate-environment: ezc3d
           environment-file: environment.yml
         
-      - name: Print mamba info
+      - name: Print conda info
         run: | 
-          mamba info
-          mamba list
+          conda info
+          conda list
           
       - name: Install code coverage dependencies
         run: | 
-          mamba install cmake git pkgconfig codecov lcov -cconda-forge
-          mamba list
+          conda install cmake git pkgconfig codecov lcov -cconda-forge
+          conda list
           git submodule update --init --recursive
 
       - name: Perform code coverage 
