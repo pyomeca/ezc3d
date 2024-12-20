@@ -88,13 +88,13 @@ enum WRITE_FORMAT { DEFAULT = 0, NEXUS };
 ///
 /// The function receive a string and modify it by remove the trailing spaces
 ///
-EZC3D_API void removeTrailingSpaces(std::string &str);
+EZC3D_VISIBILITY EZC3D_API void removeTrailingSpaces(std::string &str);
 
 ///
 /// \brief Swap all characters of a string to capital letters
 /// \param str The string to capitalize
 ///
-EZC3D_API std::string toUpper(const std::string &str);
+EZC3D_VISIBILITY EZC3D_API std::string toUpper(const std::string &str);
 
 // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
 class c3d;
