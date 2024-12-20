@@ -37,7 +37,7 @@ jobs:
         id: cpu-cores
 
       - name: Setup environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
           
