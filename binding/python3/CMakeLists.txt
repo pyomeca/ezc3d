@@ -1,9 +1,6 @@
 if(POLICY CMP0078)
     cmake_policy(SET CMP0078 NEW)
 endif()
-if(POLICY CMP0086)
-    cmake_policy(SET CMP0086 OLD)
-endif()
 
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
     project(_${EZC3D_NAME})
