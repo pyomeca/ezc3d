@@ -243,21 +243,24 @@ public:
 /// \param scalar The scalar to add with
 /// \return The matrix added
 ///
-EZC3D_API ezc3d::Matrix operator+(double scalar, ezc3d::Matrix mat);
+EZC3D_VISIBILITY EZC3D_API ezc3d::Matrix operator+(double scalar,
+                                                   ezc3d::Matrix mat);
 
 ///
 /// \brief Defining matrix addition with a scalar
 /// \param scalar The scalar to add with
 /// \return The matrix added
 ///
-EZC3D_API ezc3d::Matrix operator-(double scalar, ezc3d::Matrix mat);
+EZC3D_VISIBILITY EZC3D_API ezc3d::Matrix operator-(double scalar,
+                                                   ezc3d::Matrix mat);
 
 ///
 /// \brief Defining matrix multiplication with a scalar
 /// \param scalar The scalar to multiply with
 /// \return The matrix multiplied
 ///
-EZC3D_API ezc3d::Matrix operator*(double scalar, ezc3d::Matrix mat);
+EZC3D_VISIBILITY EZC3D_API ezc3d::Matrix operator*(double scalar,
+                                                   ezc3d::Matrix mat);
 
 ///
 /// \brief Allows for printing matrices
@@ -265,7 +268,8 @@ EZC3D_API ezc3d::Matrix operator*(double scalar, ezc3d::Matrix mat);
 /// \param m The matrix to print
 /// \return The stream to print to
 ///
-EZC3D_API std::ostream &operator<<(std::ostream &out, const ezc3d::Matrix &m);
+EZC3D_VISIBILITY EZC3D_API std::ostream &operator<<(std::ostream &out,
+                                                    const ezc3d::Matrix &m);
 
 #endif
 

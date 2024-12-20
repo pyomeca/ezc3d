@@ -152,7 +152,8 @@ public:
 /// \param other The other vetor to add
 /// \return The vector added
 ///
-EZC3D_API ezc3d::Vector3d operator+(ezc3d::Vector3d vec, ezc3d::Vector3d other);
+EZC3D_VISIBILITY EZC3D_API ezc3d::Vector3d operator+(ezc3d::Vector3d vec,
+                                                     ezc3d::Vector3d other);
 
 #endif
 
