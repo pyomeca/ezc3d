@@ -277,7 +277,6 @@ public:
   ///
   EZC3D_API void set(size_t data);
 
-#ifndef SWIG
   ///
   /// \brief Set the integer vector of values for the parameter
   /// \param data The integer data
@@ -290,7 +289,6 @@ public:
   ///
   EZC3D_API void set(const std::vector<int> &data,
                      const std::vector<size_t> &dimension = {});
-#endif
 
   ///
   /// \brief Set the float scalar value for the parameter
@@ -328,7 +326,6 @@ public:
   ///
   EZC3D_API void set(const std::string &data);
 
-#ifndef SWIG
   ///
   /// \brief Set the vector of strings for the parameter
   /// \param data The vector of strings
@@ -342,7 +339,6 @@ public:
   ///
   EZC3D_API void set(const std::vector<std::string> &data,
                      const std::vector<size_t> &dimension = {});
-#endif
 };
 
 #endif
