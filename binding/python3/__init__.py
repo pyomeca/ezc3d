@@ -137,7 +137,7 @@ class c3d(C3dMapper):
 
         self.extract_forceplat_data = extract_forceplat_data
         self._storage["header"] = c3d.Header(self.c3d_swig.header(), rotations_info)
-        self._storage["parameters"] = c3d.Parameter(self.c3d_swig.parameters())
+        self._storage["parameters"] = c3d.Parameters(self.c3d_swig.parameters())
         self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
     
@@ -162,7 +162,7 @@ class c3d(C3dMapper):
         new.extract_forceplat_data = self.extract_forceplat_data
 
         new._storage["header"] = c3d.Header(new.c3d_swig.header(), rotations_info)
-        new._storage["parameters"] = c3d.Parameter(new.c3d_swig.parameters())
+        new._storage["parameters"] = c3d.Parameters(new.c3d_swig.parameters())
         new._storage["data"] = c3d.Data(new.c3d_swig, new.extract_forceplat_data)
 
         # Update the structure with a copy of all data
@@ -209,7 +209,7 @@ class c3d(C3dMapper):
             self._storage.keys()
             return
 
-    class Parameter(C3dMutableMapper):
+    class Parameters(C3dMutableMapper):
         def __init__(self, swig_param):
             super().__init__()
 

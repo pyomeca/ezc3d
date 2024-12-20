@@ -13,7 +13,7 @@
 ///
 /// \brief Subframe for the rotation data
 ///
-class ezc3d::DataNS::RotationNS::SubFrame {
+class EZC3D_VISIBILITY ezc3d::DataNS::RotationNS::SubFrame {
   //---- CONSTRUCTORS ----//
 public:
   ///

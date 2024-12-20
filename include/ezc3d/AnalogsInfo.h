@@ -14,7 +14,7 @@
 ///
 /// \brief 3D rotation data
 ///
-class ezc3d::DataNS::AnalogsNS::Info {
+class EZC3D_VISIBILITY ezc3d::DataNS::AnalogsNS::Info {
   //---- CONSTRUCTORS ----//
 public:
   ///

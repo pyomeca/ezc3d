@@ -13,7 +13,7 @@
 ///
 /// \brief Group of parameter of a C3D file
 ///
-class ezc3d::ParametersNS::GroupNS::Group {
+class EZC3D_VISIBILITY ezc3d::ParametersNS::GroupNS::Group {
   //---- CONSTRUCTOR ----//
 public:
   ///

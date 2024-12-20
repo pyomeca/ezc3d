@@ -13,7 +13,7 @@
 ///
 /// \brief Channel of an analogous data
 ///
-class ezc3d::DataNS::AnalogsNS::Channel {
+class EZC3D_VISIBILITY ezc3d::DataNS::AnalogsNS::Channel {
   //---- CONSTRUCTORS ----//
 public:
   ///

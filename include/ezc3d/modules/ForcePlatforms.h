@@ -24,7 +24,7 @@
 /// If one has a C3D with the Y-axis pointing upward, they must transform
 /// their data accordingly in order to use the force platform filter.
 ///
-class ezc3d::Modules::ForcePlatform {
+class EZC3D_VISIBILITY ezc3d::Modules::ForcePlatform {
   //---- CONSTRUCTORS ----//
 public:
   ///
@@ -210,7 +210,7 @@ protected:
 ///
 /// \brief Force Platform analyse holder
 ///
-class ezc3d::Modules::ForcePlatforms {
+class EZC3D_VISIBILITY ezc3d::Modules::ForcePlatforms {
   //---- CONSTRUCTORS ----//
 public:
   ///

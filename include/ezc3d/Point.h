@@ -13,7 +13,8 @@
 ///
 /// \brief 3D point data
 ///
-class ezc3d::DataNS::Points3dNS::Point : public ezc3d::Vector3d {
+class EZC3D_VISIBILITY ezc3d::DataNS::Points3dNS::Point
+    : public ezc3d::Vector3d {
   //---- CONSTRUCTORS ----//
 public:
   ///

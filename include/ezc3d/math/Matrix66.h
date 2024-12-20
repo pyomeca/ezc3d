@@ -13,7 +13,7 @@
 ///
 /// \brief Matrix of unknown dimension
 ///
-class ezc3d::Matrix66 : public ezc3d::Matrix {
+class EZC3D_VISIBILITY ezc3d::Matrix66 : public ezc3d::Matrix {
   //---- CONSTRUCTORS ----//
 public:
   ///

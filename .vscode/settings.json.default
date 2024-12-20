@@ -1,6 +1,8 @@
 {
-    "editor.rulers": [80],
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "ms-vscode.cpptools",
+    "[cpp]" : {
+        "editor.rulers": [80],
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+    },
     "C_Cpp.clang_format_fallbackStyle": "LLVM"
 }

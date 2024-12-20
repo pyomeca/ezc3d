@@ -15,7 +15,7 @@
 ///
 /// \brief Frame holder for C3D data
 ///
-class ezc3d::DataNS::Frame {
+class EZC3D_VISIBILITY ezc3d::DataNS::Frame {
   //---- CONSTRUCTORS ----//
 public:
   ///

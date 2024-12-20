@@ -13,7 +13,7 @@
 ///
 /// \brief Group holder of C3D parameters
 ///
-class ezc3d::ParametersNS::Parameters {
+class EZC3D_VISIBILITY ezc3d::ParametersNS::Parameters {
   //---- CONSTRUCTOR ----//
 public:
   ///

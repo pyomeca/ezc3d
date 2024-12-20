@@ -14,7 +14,7 @@
 ///
 /// \brief Subframe for the analogous data
 ///
-class ezc3d::DataNS::AnalogsNS::SubFrame {
+class EZC3D_VISIBILITY ezc3d::DataNS::AnalogsNS::SubFrame {
   //---- CONSTRUCTORS ----//
 public:
   ///

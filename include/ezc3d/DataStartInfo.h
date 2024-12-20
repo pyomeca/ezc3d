@@ -14,7 +14,7 @@
 ///
 /// \brief Placeholder for stocking the position and value of data start
 ///
-class ezc3d::DataStartInfo {
+class EZC3D_VISIBILITY ezc3d::DataStartInfo {
 
 protected:
   bool m_hasPointDataStart = false; ///< If the point data start is set

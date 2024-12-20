@@ -14,7 +14,7 @@
 ///
 /// \brief Header of a C3D file
 ///
-class ezc3d::Header {
+class EZC3D_VISIBILITY ezc3d::Header {
   //---- CONSTRUCTORS ----//
 public:
   ///

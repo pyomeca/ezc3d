@@ -13,7 +13,7 @@
 ///
 /// \brief 3D data
 ///
-class ezc3d::Vector3d : public ezc3d::Matrix {
+class EZC3D_VISIBILITY ezc3d::Vector3d : public ezc3d::Matrix {
   //---- CONSTRUCTORS ----//
 public:
   ///

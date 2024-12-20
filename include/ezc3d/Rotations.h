@@ -15,7 +15,7 @@
 /// base on documentation from
 /// https://www.c-motion.com/v3dwiki/index.php?title=ROTATION_DATA_TYPE
 ///
-class ezc3d::DataNS::RotationNS::Rotations {
+class EZC3D_VISIBILITY ezc3d::DataNS::RotationNS::Rotations {
   //---- CONSTRUCTORS ----//
 public:
   ///

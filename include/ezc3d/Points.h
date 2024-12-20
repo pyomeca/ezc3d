@@ -13,7 +13,7 @@
 ///
 /// \brief Points holder for C3D data 3D points data
 ///
-class ezc3d::DataNS::Points3dNS::Points {
+class EZC3D_VISIBILITY ezc3d::DataNS::Points3dNS::Points {
   //---- CONSTRUCTORS ----//
 public:
   ///

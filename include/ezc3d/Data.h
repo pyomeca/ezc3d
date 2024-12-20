@@ -16,7 +16,7 @@
 /// The class stores all the data frames of a given or create C3D into a STL
 /// vector of frame.
 ///
-class ezc3d::DataNS::Data {
+class EZC3D_VISIBILITY ezc3d::DataNS::Data {
   //---- CONSTRUCTORS ----//
 public:
   ///

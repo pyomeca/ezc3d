@@ -13,7 +13,7 @@
 ///
 /// \brief Analog holder for C3D analogous data
 ///
-class ezc3d::DataNS::AnalogsNS::Analogs {
+class EZC3D_VISIBILITY ezc3d::DataNS::AnalogsNS::Analogs {
   //---- CONSTRUCTORS ----//
 public:
   ///

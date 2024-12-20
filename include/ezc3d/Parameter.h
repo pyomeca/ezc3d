@@ -18,7 +18,7 @@
 ///
 /// \brief Parameter of a C3D file
 ///
-class ezc3d::ParametersNS::GroupNS::Parameter {
+class EZC3D_VISIBILITY ezc3d::ParametersNS::GroupNS::Parameter {
   //---- CONSTRUCTOR ----//
 public:
   ///

@@ -13,7 +13,8 @@
 ///
 /// \brief 3D rotation data
 ///
-class ezc3d::DataNS::RotationNS::Rotation : public ezc3d::Matrix44 {
+class EZC3D_VISIBILITY ezc3d::DataNS::RotationNS::Rotation
+    : public ezc3d::Matrix44 {
   //---- CONSTRUCTORS ----//
 public:
   ///

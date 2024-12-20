@@ -13,7 +13,7 @@
 ///
 /// \brief 3D rotation data
 ///
-class ezc3d::DataNS::Points3dNS::Info {
+class EZC3D_VISIBILITY ezc3d::DataNS::Points3dNS::Info {
   //---- CONSTRUCTORS ----//
 public:
   ///
