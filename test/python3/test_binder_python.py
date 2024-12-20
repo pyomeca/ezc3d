@@ -381,22 +381,22 @@ def test_values():
     array = c3d["data"]["points"]
     decimal = 6
 
-    np.testing.assert_array_equal(x=array.shape, y=(4, 51, 580), err_msg="Shape does not match")
+    np.testing.assert_array_equal(actual=array.shape, desired=(4, 51, 580), err_msg="Shape does not match")
     raveled = array.ravel()
     np.testing.assert_array_almost_equal(
-        x=raveled[0],
-        y=44.16278839111328,
+        actual=raveled[0],
+        desired=44.16278839111328,
         decimal=decimal,
     )
     np.testing.assert_array_almost_equal(
-        x=raveled[-1],
-        y=1.0,
+        actual=raveled[-1],
+        desired=1.0,
         decimal=decimal,
     )
-    np.testing.assert_array_almost_equal(x=np.nanmean(array), y=362.2979849093196, decimal=decimal)
-    np.testing.assert_array_almost_equal(x=np.nanmedian(array), y=337.7519226074219, decimal=decimal)
+    np.testing.assert_array_almost_equal(actual=np.nanmean(array), desired=362.2979849093196, decimal=decimal)
+    np.testing.assert_array_almost_equal(actual=np.nanmedian(array), desired=337.7519226074219, decimal=decimal)
     np.testing.assert_allclose(actual=np.nansum(array), desired=42535594.91827867, rtol=0.05)
-    np.testing.assert_array_equal(x=np.isnan(array).sum(), y=915)
+    np.testing.assert_array_equal(actual=np.isnan(array).sum(), desired=915)
 
 
 def test_force_platform_filter():
@@ -465,19 +465,19 @@ def test_rotations():
     array = c3d["data"]["rotations"]
     decimal = 6
 
-    np.testing.assert_array_equal(x=array.shape, y=(4, 4, 21, 340), err_msg="Shape does not match")
+    np.testing.assert_array_equal(actual=array.shape, desired=(4, 4, 21, 340), err_msg="Shape does not match")
     raveled = array.ravel()
     np.testing.assert_array_almost_equal(
-        x=array[2, 3, 2, 5],
-        y=931.6382446289062,
+        actual=array[2, 3, 2, 5],
+        desired=931.6382446289062,
         decimal=decimal,
     )
     np.testing.assert_array_almost_equal(
-        x=raveled[-1],
-        y=1.0,
+        actual=raveled[-1],
+        desired=1.0,
         decimal=decimal,
     )
-    np.testing.assert_array_almost_equal(x=np.nansum(array), y=9367125.137371363, decimal=decimal)
+    np.testing.assert_array_almost_equal(actual=np.nansum(array), desired=9367125.137371363, decimal=decimal)
 
 
 @pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon", "Label2"])
@@ -540,10 +540,13 @@ def test_parse_and_rebuild_parameters(c3d_build_rebuild_reduced):
                 continue
 
             try:
+                if orig.parameters[group_key][param_key]['type'] != rebuilt.parameters[group_key][param_key]['type']:
+                    print(f"Type mismatch for {group_key} - {param_key} ")
+                    
                 assert orig.parameters[group_key][param_key]['type'] == rebuilt.parameters[group_key][param_key]['type']
             except:
                 # Type may differ for empty values
-                if not orig.parameters[group_key][param_key]['value'] and not rebuilt.parameters[group_key][param_key]['value']:
+                if orig.parameters[group_key][param_key]['value'].any() == rebuilt.parameters[group_key][param_key]['value'].any() == False:
                     pass
                 else:
                     assert orig.parameters[group_key][param_key]['type'] == rebuilt.parameters[group_key][param_key]['type']
