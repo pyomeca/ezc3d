@@ -33,19 +33,17 @@ jobs:
       - name: Setup environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
-          use-mamba: true
-        
-      - name: Print mamba info
+          
+      - name: Print conda info
         run: | 
-          mamba info
-          mamba list
+          conda info
+          conda list
           
       - name: Install dependencies
         run: | 
-          mamba install cmake git pkgconfig octave -cconda-forge
-          mamba list
+          conda install cmake git pkgconfig octave -cconda-forge
+          conda list
           git submodule update --init --recursive
 
       - name: Build ezc3d
