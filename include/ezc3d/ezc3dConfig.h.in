@@ -17,7 +17,12 @@
 #else
 #define EZC3D_API
 #endif
+
+#ifdef _WIN32
+#define EZC3D_VISIBILITY
+#else
 #define EZC3D_VISIBILITY __attribute__((visibility("default")))
+#endif
 
 // If fast or safe accessor should be used
 #cmakedefine USE_MATRIX_FAST_ACCESSOR
