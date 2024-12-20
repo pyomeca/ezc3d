@@ -338,6 +338,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(size_t data) {
   set(static_cast<int>(data));
 }
 
+#ifndef SWIG
 void ezc3d::ParametersNS::GroupNS::Parameter::set(
     const std::vector<int> &data, const std::vector<size_t> &dimension) {
   std::vector<size_t> dimensionCopy;
@@ -354,6 +355,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(
   _dimension = dimensionCopy;
   setEmptyFlag();
 }
+#endif
 
 void ezc3d::ParametersNS::GroupNS::Parameter::set(float data) {
   set(std::vector<double>() = {static_cast<double>(data)});
@@ -385,6 +387,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(const std::string &data) {
   set(std::vector<std::string>() = {data});
 }
 
+#ifndef SWIG
 void ezc3d::ParametersNS::GroupNS::Parameter::set(
     const std::vector<std::string> &data,
     const std::vector<size_t> &dimension) {
@@ -410,6 +413,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::set(
   _dimension = dimensionWithStrLen;
   setEmptyFlag();
 }
+#endif
 
 const std::vector<int> &
 ezc3d::ParametersNS::GroupNS::Parameter::valuesAsByte() const {
