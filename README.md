@@ -427,6 +427,9 @@ Finally, the data can be extracted by calling the method related the desired val
     // ...
 }
 ```
+Please note that the moments are transported to the ground plane using the ORIGIN parameter of the FORCE_PLATFORM group.
+This may or may not be what is expected (i.e., the C3D standard specifies that this is ultimately the choice of the manufacturer) with your data. 
+If you know that this should not be done, you will need to compute the forces, moments, and center of pressure separately from the analog data. 
 
 Warning: Something important to remember is that there is no easy way to detect what is the upward vector.
 Consequently, `ezc3d` has to assume one. 
