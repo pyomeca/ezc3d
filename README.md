@@ -2,11 +2,11 @@
 
 <img src="logo/logo.png" width="40%" height="40%">
 
-EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written en C++ with proper binders for Python and MATLAB/Octave scripting langages. 
+EZC3D is an easy to use reader, modifier and writer for C3D format files. It is written in C++ with proper binders for Python and MATLAB/Octave scripting languages. 
 
 C3D (http://c3d.org) is a format specifically designed to store biomechanics data. Hence many biomechanics softwares can produce C3D files in order to share data. However, there is a lack in the biomechanics community of an easy to use, free and open source library to read, modify and write them as needed when it gets to the data analysis. There was at some point the BTK project (https://github.com/Biomechanical-ToolKit/BTKCore) that was targeting this goal, but the project is now obsolete. 
 
-EZC3D addresses these issues. It offers a comprehensive and light API to read and write C3D files. The source code is written in C++ allowing to be compiled and used by higher level langages thanks to SWIG (http://www.swig.org/). Still, proper interface are written on top of the SWIG binder in order to facilitate the experience of the coders in their respective langages. 
+EZC3D addresses these issues. It offers a comprehensive and light API to read and write C3D files. The source code is written in C++ allowing to be compiled and used by higher level languages thanks to SWIG (http://www.swig.org/). Still, proper interface are written on top of the SWIG binder in order to facilitate the experience of the coders in their respective languages. 
 
 You can get the online version of the paper for EZC3D here: [![DOI](https://joss.theoj.org/papers/10.21105/joss.02911/status.svg)](https://doi.org/10.21105/joss.02911)
 
@@ -57,9 +57,6 @@ So, without further ado, let's begin C3Ding!
     - [Slow C3D opening](#slow-c3d-opening)
     - [Non-working C3D](#non-working-c3d)
 - [Cite](#cite)
-
-
-## Headers
 
 # How to install
 There are two main ways to install EZC3D on your computer: the easy method, installing the binaries from pip or Anaconda (Python users) or from the Release page (Matlab users); or the hard method, compiling the source code yourself (more versatile and up to date).
@@ -119,13 +116,13 @@ conda install -c conda-forge cmake
 
 Moreover, if ones is interested in developing EZC3D, the ```googletest``` suite is required to test your modifications. Fortunately, the CMake project should download and compile the test suite for you!
 
-When compiling the binders, some additional dependendies are required. For the Python binder, Python3 is indeed required but also *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/). They can be installed from their respective official websites or by Anaconda using the following command:
+When compiling the binders, some additional dependencies are required. For the Python binder, Python3 is indeed required but also *numpy* (https://numpy.org/) and *SWIG* (http://www.swig.org/). They can be installed from their respective official websites or by Anaconda using the following command:
 ```bash
 conda install -c conda-forge numpy swig
 ```
-For the MATLAB binder, the only additional dependecy is MATLAB (https://www.mathworks.com/) itself.
+For the MATLAB binder, the only additional dependency is MATLAB (https://www.mathworks.com/) itself.
 
-For the Octave binder, the only additional dependecy is Octave (https://www.gnu.org/software/octave/index) itself.
+For the Octave binder, the only additional dependency is Octave (https://www.gnu.org/software/octave/index) itself.
 On Linux and Mac, it can be easily installed using conda:
 ```bash
 conda install -c conda-forge octave
@@ -138,7 +135,7 @@ EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't kn
 
 The cmake variables to set are:
 
-> `CMAKE_INSTALL_PREFIX` Which is the `path/to/install` EZC3D in. If you compile the Python3 binder, a valid installation of Python with Numpy should be installed relatived to this path.
+> `CMAKE_INSTALL_PREFIX` Which is the `path/to/install` EZC3D in. If you compile the Python3 binder, a valid installation of Python with Numpy should be installed relative to this path.
 >
 > `BUILD_SHARED_LIBS` If you wan to build EZC3D in a shared `TRUE` or static `FALSE` library manner. Default is `TRUE`.
 >
@@ -195,14 +192,14 @@ python install .
 
 
 # How to use
-The aim of EZC3D is to be, indeed, eazy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
+The aim of EZC3D is to be, indeed, easy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
 
 There are example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
 Octave example are not specifically provided, but it is used in the exact same way as the MATLAB binder.
 
 ## The C++ API
 The core code is written in C++, meaning that you can fully create from scratch, read and write C3D from C++. 
-The informations that follows is a basic guide that should allow you to perform everything you want to do.
+The information that follows is a basic guide that should allow you to perform everything you want to do.
 
 ### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `c3d` class without parameter.
@@ -242,10 +239,10 @@ float pointRate(c3d.header().frameRate());
 Please note that the names mimics those used by the C3D format as described by the c3d.org documentation. For more information on what you can get from the header, please refer to the documentation on [header](https://pyomeca.github.io/Documentation/ezc3d/classezc3d_1_1Header.html).
 
 #### Set a value to the header <!-- omit from toc -->
-It is not possible from outside to add, remove or even modify the header directly. The reason for that is that the header has a very specific formatting to be compliant to the standard. Therefore, the header will update itself if needed when the parameters class is modify. If it doesn't this is a bug that should be reported. 
+It is not possible from outside to add, remove or even modify the header directly. The reason for that is that the header has a very specific formatting to be compliant to the standard. Therefore, the header will update itself if needed when the parameters class is modified. If it doesn't this is a bug that should be reported. 
 
 #### Get a parameter <!-- omit from toc -->
-Parameters in C3D are arranged in a GROUP:PAMETER manner and the classes in EZC3D mimic this arrangement. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the labels of the points, you can navigate up to the POINT group and then to the LABELS parameter. 
+Parameters in C3D are arranged in a GROUP:PARAMETER manner and the classes in EZC3D mimic this arrangement. Therefore a particular parameter always stands inside of a group. For example, if you are interested in the labels of the points, you can navigate up to the POINT group and then to the LABELS parameter. 
 ```C++
 ezc3d::c3d c3d;
 std::vector<std::string> point_labels(c3d.parameters().group("POINT").parameter("LABELS").valuesAsString());
@@ -280,12 +277,12 @@ For more information on what you can get from the points, please refer to the do
 There are two ways to add data to the data set. 
 
 ##### Using the c3d accessor <!-- omit from toc -->
-The first and prefered way is to add a frame via the accessors method of the class `c3d`. The parameter to send is the filled frame to add/replace to the data structure. 
+The first and preferred way is to add a frame via the accessors method of the class `c3d`. The parameter to send is the filled frame to add/replace to the data structure. 
 Please note that the points and channel must have been declare to the parameters before adding them to the data set. This is so the whole c3d structure is properly harmonized. 
 Please also note, for the same reason, that POINT:RATE and ANALOG:RATE must have been declared before adding points and analogs. 
 Here is a full example that creates a new C3D, add points and analogs and print it to the console. 
 ```C++
-// Create an empyt c3d
+// Create an empy c3d
 ezc3d::c3d c3d_empty;
 
 // Declare rates
@@ -347,7 +344,7 @@ ezc3d::ParametersNS::GroupNS::Parameter analog_rate("RATE");
 analog_rate.set(1000.0);
 c3d.parameter("ANALOG", analog_rate);
 
-c3d.analog("new_analog1"); // Declare an empty channel (Note the name will be overriden)
+c3d.analog("new_analog1"); // Declare an empty channel (Note the name will be overridden)
 std::vector<ezc3d::DataNS::Frame> frames_analog;
 ezc3d::DataNS::Frame frame;
 // Fill the frame
@@ -363,11 +360,11 @@ c3d.frame(frame);
 // Print it
 c3d.print();
 ```
-Please note that this method by-passes some protections and may create invalid C3D if not used properly.
+Please note that this method bypasses some protections and may create invalid C3D if not used properly.
 
 ### Force platform filter
 The standard for force platforms in C3D is pretty lax.
-Consequently, analysing force platforms may be tricky. 
+Consequently, analyzing force platforms may be tricky. 
 
 To help the user, `ezc3d` include a force platform analyzer filter. 
 So if one is interested by extracting some process data related, they may use the filter like so:
@@ -454,10 +451,10 @@ To read a C3D file you simply to call the `ezc3dRead` with the path to c3d as th
 c3d = ezc3dRead('path_to_c3d.c3d');
 disp(c3d.parameters.POINT.USED.DATA); % Print the number of points used
 ```
-Additionnally, a default `ignoreBadFormatting` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
+Additionally, a default `ignoreBadFormatting` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
 
 ### Write a C3D
-To write a C3D to a file, you must call the `ezc3dWrite` function. This function waits for the path of the C3D to write and a valid structure. Please note that the header is actually ignore since it is fully constructed from required parameters. Hence, a valid structure may omit the header. Still, for simplicity, it is easier to send a structure created via the `ezc3dRead` function.
+To write a C3D to a file, you must call the `ezc3dWrite` function. This function waits for the path of the C3D to write and a valid structure. Please note that the header is actually ignored since it is fully constructed from required parameters. Hence, a valid structure may omit the header. Still, for simplicity, it is easier to send a structure created via the `ezc3dRead` function.
 ```MATLAB
 % Create a valid structure to work on
 c3d = ezc3dRead();
@@ -481,7 +478,7 @@ One can access the force platform if their C3D has such.
 pf_1 = all_pf(1); % Select the first platform
 ```
 
-This gives you a structure containing informations on the force platform and data of which
+This gives you a structure containing information on the force platform and its data.
 
 ```MATLAB
 % ...
@@ -503,15 +500,15 @@ pf_1.Tz                     % Moment at center of pressure data
 ```
 
 ## Octave
-The Octave binder is almost line for line based on the MATLAB binder. Therefore, eveything which is presented in the MATLAB section applies the same to the Octave binder.
+The Octave binder is almost line for line based on the MATLAB binder. Therefore, everything which is presented in the MATLAB section applies the same to the Octave binder.
 
 
 ## Python 3
-Python (https://www.python.org/) is a scripting language that has taken more and more importance over the past years. So much that now it is one of the preferred language of the scientific community. Its simplicity yet its large power to perform a large variety of tasks makes it a certainty that its popularity won't decrease for the next years.
+Python (https://www.python.org/) is a scripting language that has taken more and more importance over the past years. So much that now it is one of the preferred language of the scientific community. Its simplicity yet its large power to perform a large variety of tasks makes it a certainty that its popularity won't decrease for the next few years.
 
-To interface the C++ code with Python, SWIG is a great tool. It creates very rapidly an interface in the target language with minimal code to write. However, the resulting code in the target language can be far from being easy to use. In effect, it gives a mixed-API not far from the original C++ language, which may not comply to best practices of the target language. When this is useful to rapidly create an interface, it lacks of user-friendliness. EZC3D interfaces the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organized the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to used this python interface. 
+To interface the C++ code with Python, SWIG is a great tool. It very rapidly creates an interface in the target language with minimal code to write. However, the resulting code in the target language can be far from being easy to use. In effect, it gives a mixed-API not far from the original C++ language, which may not comply to best practices of the target language. Whilst this is useful to rapidly create an interface, it lacks user friendliness. EZC3D interfaces the C++ code using SWIG, but add a more pythonic layer on top of it. This top layer is not mandatory for the user (it is possible to call directly the SWIG interface via `ezc3d.ezc3d` instead of `ezc3d.c3d`), but the time lost to organize the data into a dictionary is insignificant compared to the ease of use this interface provides. I therefore strongly suggest to use this python interface. 
 
-Please note, to navigate the c3d struture provided by the interface, the easiest way is to use the attribute (using the autocompletion if your IDE allows it). As an alternative, you can access all the properties using the dictionary notation and get the keys using the `keys()` method since. 
+Please note, to navigate the c3d structure provided by the interface, the easiest way is to use the attribute (using the autocompletion if your IDE allows it). As an alternative, you can access all the properties using the dictionary notation and get the keys using the `keys()` method since. 
 
 ### Create an empty yet valid C3D structure
 To create a new valid yet empty C3D, just call the `ezc3d.c3d()` method without any argument. 
@@ -535,9 +532,9 @@ c = c3d()
 print(c['parameters']['POINT']['USED']['value'][0])
 print(c.parameters.POINT.USED['value'][0])
 ````
-The dictionnary notation better reflects the internal structure of the C3D class, which makes it more reliable. 
-However, it is less convenient to use as one need to check the existing "keys" during programming.
-The dot notation is mostly an accessor to the dictionnary notation. 
+The dictionary notation better reflects the internal structure of the C3D class, which makes it more reliable. 
+However, it is less convenient to use as one needs to check the existing "keys" during programming.
+The dot notation is mostly an accessor to the dictionary notation. 
 
 
 ### Read a C3D
@@ -554,12 +551,12 @@ analog_data = c['data']['analogs']
 > Similarly, and to be consistent with the point shape, the shape of `analog_data` are 1xNxT, where 1 is the value, N is the number of analogous data and T is the number of frames. 
 > The `meta_point` dictionary contains information about the residuals as provided from the data acquisition system: `residuals` are the mean error of the point (a negative value meaning that the point is invalid, usually because of occlusion) and `camera_masks` being a collection of flags if the cameras had seen the point or not (unless specified in the parameter section, the cameras are the seven first, this collection of flags is limited to 7 boolean values). The dimensions of the former are 1xNxT and the dimensions of the latter are 7xNxT.
 
-Additionnally, a default `c3d(..., ignore_bad_formatting=False)` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in segmentation fault, depending on the reason the formatting is bad.
+Additionally, a default `c3d(..., ignore_bad_formatting=False)` flag can be set to `true` so files with bad formatting are read even though they are not formatted properly. This must be used with caution as it can result in a segmentation fault, depending on the reason the formatting is bad.
 
 ### Write a C3D
-To write a C3D to a file, you must call the `write` method of a c3d dictionnary. This method waits for the path of the C3D to write. Please note that the header is actually ignore since it is fully constructed from required parameters. 
+To write a C3D to a file, you must call the `write` method of a c3d dictionary. This method waits for the path of the C3D to write. Please note that the header is actually ignored since it is fully constructed from required parameters. 
 
-The example that follows contructs a new C3D from scratch, adding data and adding a custom parameter.
+The example that follows constructs a new C3D from scratch, adding data and adding a custom parameter.
 ```python3
 import numpy as np
 
@@ -632,7 +629,7 @@ pf_0['Tz']                  # Moment at center of pressure data
 ```
 
 # How to contribute
-You are very welcome to contribute to the project! There are to main ways to contribute. 
+You are very welcome to contribute to the project! There are two main ways to contribute. 
 
 The first way is to actually code new features for EZC3D. The easiest way to do so is to fork the project, make the modifications and then open a pull request to the main project. Don't forget to add your name to the contributor in the documentation of the page if you do so!
 
@@ -650,9 +647,9 @@ TEST(NameOfTestStructure, NameOfTest) {
 }
 ```
 
-You are invited to write tests for true positive, false positive, true negative and false negative using different combinations of `EXPECT_EQ` (or `EXPECT_FLOAT_EQ` if you compare float-precision numbers), `EXPECT_NE`, `ASSERT_TRUE`, `EXPECT_THROW` and `EXPECT_NO_THROW`. For a complete explaination of the google test suite, please refer to one of the numerous tutorial on the web.
+You are invited to write tests for true positive, false positive, true negative and false negative using different combinations of `EXPECT_EQ` (or `EXPECT_FLOAT_EQ` if you compare float-precision numbers), `EXPECT_NE`, `ASSERT_TRUE`, `EXPECT_THROW` and `EXPECT_NO_THROW`. For a complete explanation of the google test suite, please refer to one of the numerous tutorials on the web.
 
-I also implemented some useful function such as `compareHeader(myFirstC3d, mySecondC3d)` and `compareData(myFirstC3d, mySecondC3d)` which strickly compares header and data respectively. If you expect differences though, these function are for no use and you should copy-paste the content of them in your test (and change whatever is expected to be different). It is also possible to create a fully filled structure using the `fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs)` function and it can be tested with the `defaultHeaderTest` and `defaultParametersTest` function. Again, if you expect differences with the default setting, you should not use these default testing functions, but copy the relevant part in you extra test. 
+I also implemented some useful functions such as `compareHeader(myFirstC3d, mySecondC3d)` and `compareData(myFirstC3d, mySecondC3d)` which strictly compares header and data respectively. If you expect differences though, these function are no use and you should copy-paste the content of them in your test (and change whatever is expected to be different). It is also possible to create a fully filled structure using the `fillC3D(c3dTestStruct& c3dStruc, bool withPoints, bool withAnalogs)` function and it can be tested with the `defaultHeaderTest` and `defaultParametersTest` function. Again, if you expect differences with the default setting, you should not use these default testing functions, but copy the relevant part in you extra test. 
 
 ## Running the tests
 To run the test, navigate to the `test` folder in your build folder and run the `ezc3d_test` binary. Please note that if you are on Windows, you will have to copy all the necessary dll next to this binary. 
@@ -671,7 +668,7 @@ The software companies have loosely implemented the C3D standard proposed by htt
 
 # Documentation
 ## EZC3D
-The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d` or by direcly accessing it (https://pyomeca.github.io/Documentation/ezc3d/index.html). 
+The documentation is automatically generated using Doxygen (http://www.doxygen.org/). You can compile it yourself if you want (by setting `BUILD_DOC` to `ON`). Otherwise, you can access a copy of it that I try to keep up-to-date in the Documentation project of pyomeca (https://pyomeca.github.io/Documentation/) by selecting `ezc3d` or by directly accessing it (https://pyomeca.github.io/Documentation/ezc3d/index.html). 
 
 ## C3D format
 The C3D format is maintained by http://c3d.org. They provide recommendation on how to implement reader/writer for the format. There is a copy of the documentation PDF in the `doc` folder. You are also welcome to have a look at a newer version if they ever create an update. 
@@ -680,7 +677,7 @@ The C3D format is maintained by http://c3d.org. They provide recommendation on h
 Despite my efforts to make a bug-free library, EZC3D may fails sometimes. If it does, please refer to the section below to know what to do. 
 
 ## Report issues
-In the event you are experiencing problems with EZC3D, please have a look in the [known issues](#seek-support-and-known-issues). If it doesn't help, you are probably experiencing a new bug, you are therefore very welcomed to report it. The prefered way is to open an issue in the GitHub repository (https://github.com/pyomeca/ezc3d/issues). Please report the OS you are working on, the version of EZC3D you are using (if you have compiled yourself EZC3D, you will find the version number in the CMakeList.txt file, otherwise it is the version number of the binary you downloaded), and a precise description of what the problem is. Usually, the best description is to provide a non-working c3d file with the piece of code that fails and a copy of the error message. It may happen, for privacy reasons, that the c3d cannot be distributed. If it is the case, just state it as such, and I will reach out to you so we can find a solution. 
+In the event you are experiencing problems with EZC3D, please have a look in the [known issues](#seek-support-and-known-issues). If it doesn't help, you are probably experiencing a new bug, you are therefore very welcome to report it. The preferred way is to open an issue in the GitHub repository (https://github.com/pyomeca/ezc3d/issues). Please report the OS you are working on, the version of EZC3D you are using (if you have compiled yourself EZC3D, you will find the version number in the CMakeList.txt file, otherwise it is the version number of the binary you downloaded), and a precise description of what the problem is. Usually, the best description is to provide a non-working c3d file with the piece of code that fails and a copy of the error message. It may happen, for privacy reasons, that the c3d cannot be distributed. If it is the case, just state it as such, and I will reach out to you so we can find a solution. 
 
 ## Known issues
 This section reports some issues that are likely to occur. I will fill it over time. Please have a look here before reporting, as it may help you fix your problem much faster.
@@ -688,14 +685,14 @@ This section reports some issues that are likely to occur. I will fill it over t
 ### Slow C3D opening
 If you experience a slow C3D opening (more than 10 seconds), even for a huge C3D file. You may be in one of two cases. 
 
-First, make sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formated implies back and fourth memory allocations between points and analogs. If the optimization are turned off, it may take a little while to perform. 
+First, make sure you are using EZC3D compiled with optimizations (RelWithDebInfo or Release). Indeed, the way C3D files are formatted implies back and fourth memory allocations between points and analogs. If the optimizations are turned off, it may take a little while to perform. 
 
-If you actually are using a released level of optimization, you may actually experiencing a bug. You are therefore welcomed to send me the long to open C3D file so I can optimize few things by myself. Everyone will benefit!
+If you actually are using a released level of optimization, you may actually be experiencing a bug. You are therefore welcome to send me the long-to-open C3D file so I can optimize few things by myself. Everyone will benefit!
 
 ### Non-working C3D
-The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. While it may have make sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working  C3D. I will make my best to add the feature ASAP. 
+The C3D format allows for some pretty old and probably useless stuff. For example, you are allowed to store the points in the form of integers instead of floating points that you would scale afterwards. While it may have made sense many years ago, it is very unlikely anyone would need this nowadays. Hence, and because I did not have any examples of such C3D to test, I decided to ignore these features (you would know easily since the code raises a `not implemented exception`). However, at some point, for some reason, you may need these features. If so, you are welcomed to open an issue and to provide me with the non-working C3D. I will make my best to add the feature ASAP. 
 
-Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which it kind of strange, the least to say. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exception are not implemented yet. If you encounter such files (the exception raised may be from any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
+Moreover, as stated before, some (all?) companies were pretty loose in their implementation of the C3D standard. Actually, the standard itself states how much you don't need to follow it, which is kind of strange, to say the least. Because of that, entire sections that are supposed to be mandatory may be missing, or checksum may have the wrong value (these are real omissions...), or anything which hasn't happened yet may occurs. There is no way for me, of course, to know that in advance, hence these exceptions are not implemented yet. If you encounter such files (the exception raised may be of any nature, but the most probable is segmentation fault), again do not hesitate to open an issue and to provide me with the non-working C3D. 
 
 # Cite
 If you use EZC3D, we would be grateful if you could cite it as follows:
