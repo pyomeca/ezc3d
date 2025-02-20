@@ -41,6 +41,7 @@ So, without further ado, let's begin C3Ding!
     - [Read a C3D](#read-a-c3d-2)
     - [Write a C3D](#write-a-c3d-2)
     - [Force platform filter](#force-platform-filter-2)
+  - [R](#r)  
 - [How to contribute](#how-to-contribute)
   - [Using the test suite](#using-the-test-suite)
   - [Running the tests](#running-the-tests)
@@ -627,6 +628,11 @@ pf_0['Tz']                  # Moment at center of pressure data
 
 # ...
 ```
+
+## R
+R (<https://www.r-project.org/about.html>) is a programming language popular for statistical analyses and data visualization.
+
+The `c3dr` package (<https://github.com/smnnlt/ezc3d>) provides an R interface for EZC3D. For more details visit the package repository.
 
 # How to contribute
 You are very welcome to contribute to the project! There are two main ways to contribute. 
