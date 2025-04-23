@@ -32,7 +32,6 @@ ezc3d::DataNS::AnalogsNS::Info::Info(const ezc3d::c3d &c3d)
   if (c3d.parameters().isGroup("SHADOW")) {
     // The SHADOW company did not respect the standard and put these values in
     // the ANALOG group So we have to assume some default values
-    size_t nbAnalogs = c3d.header().nbAnalogs();
     if (_scaleFactors.empty()) {
       for (size_t i = 0; i < c3d.header().nbAnalogs(); ++i)
         _scaleFactors.push_back(1.0);
