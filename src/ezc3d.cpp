@@ -134,11 +134,13 @@ void ezc3d::c3d::readFile(std::fstream &file, unsigned int nByteToRead,
 
 unsigned int ezc3d::c3d::hex2uint(const std::vector<char> &val,
                                   unsigned int len) {
-  int ret(0);
-  for (unsigned int i = 0; i < len; i++)
-    ret |= static_cast<int>(static_cast<unsigned char>(val[i])) *
-           static_cast<int>(pow(0x100, i));
-  return static_cast<unsigned int>(ret);
+  unsigned int ret(0);
+  // Discard any extra bytes to avoid overflow of int
+  unsigned int max_bytes = std::min(len, 4u);
+  for (unsigned int i = 0; i < max_bytes; ++i)
+    ret |= static_cast<unsigned int>(
+      static_cast<unsigned char>(val[i])) << (8 * i);
+  return ret;
 }
 
 int ezc3d::c3d::hex2int(const std::vector<char> &val, unsigned int len) {
@@ -146,9 +148,11 @@ int ezc3d::c3d::hex2int(const std::vector<char> &val, unsigned int len) {
 
   // convert to signed int
   // Find max int value
+  // Discard any extra bytes to avoid overflow of int
   unsigned int max(0);
-  for (unsigned int i = 0; i < len; ++i)
-    max |= 0xFF * static_cast<unsigned int>(pow(0x100, i));
+  unsigned int max_bytes = std::min(len, 4u);
+  for (unsigned int i = 0; i < max_bytes; ++i)
+    max |= 0xFFu << (8 * i);
 
   // If the value is over uint_max / 2 then it is a negative number
   int out;
