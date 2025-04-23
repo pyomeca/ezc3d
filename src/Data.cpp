@@ -101,7 +101,7 @@ size_t ezc3d::DataNS::Data::nbFrames() const { return _frames.size(); }
 const ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx) const {
   try {
     return _frames.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Data::frame method is trying to access the frame " +
         std::to_string(idx) + " while the maximum number of frame is " +
@@ -112,7 +112,7 @@ const ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx) const {
 ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx) {
   try {
     return _frames.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Data::frame method is trying to access the frame " +
         std::to_string(idx) + " while the maximum number of frames is " +

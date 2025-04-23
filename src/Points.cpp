@@ -49,7 +49,7 @@ const ezc3d::DataNS::Points3dNS::Point &
 ezc3d::DataNS::Points3dNS::Points::point(size_t idx) const {
   try {
     return _points.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Points::point method is trying to access the point " +
         std::to_string(idx) + " while the maximum number of points is " +
@@ -61,7 +61,7 @@ ezc3d::DataNS::Points3dNS::Point &
 ezc3d::DataNS::Points3dNS::Points::point(size_t idx) {
   try {
     return _points.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Points::point method is trying to access the point " +
         std::to_string(idx) + " while the maximum number of points is " +

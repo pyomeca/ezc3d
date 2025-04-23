@@ -52,7 +52,7 @@ const ezc3d::DataNS::AnalogsNS::Channel &
 ezc3d::DataNS::AnalogsNS::SubFrame::channel(size_t idx) const {
   try {
     return _channels.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Subframe::channel method is trying to access the channel " +
         std::to_string(idx) + " while the maximum number of channels is " +
@@ -64,7 +64,7 @@ ezc3d::DataNS::AnalogsNS::Channel &
 ezc3d::DataNS::AnalogsNS::SubFrame::channel(size_t idx) {
   try {
     return _channels.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Subframe::channel method is trying to access the channel " +
         std::to_string(idx) + " while the maximum number of channels is " +
