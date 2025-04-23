@@ -148,7 +148,7 @@ bool ezc3d::ParametersNS::GroupNS::Group::isParameter(
   try {
     parameterIdx(parameterName);
     return true;
-  } catch (std::invalid_argument) {
+  } catch (const std::invalid_argument&) {
     return false;
   }
 }
@@ -166,7 +166,7 @@ const ezc3d::ParametersNS::GroupNS::Parameter &
 ezc3d::ParametersNS::GroupNS::Group::parameter(size_t idx) const {
   try {
     return _parameters.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Groups::parameter method is trying "
         "to access the parameter " +
@@ -179,7 +179,7 @@ ezc3d::ParametersNS::GroupNS::Parameter &
 ezc3d::ParametersNS::GroupNS::Group::parameter(size_t idx) {
   try {
     return _parameters.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Groups::parameter method is trying "
         "to access the parameter " +

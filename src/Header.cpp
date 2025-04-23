@@ -345,7 +345,7 @@ const std::vector<float> &ezc3d::Header::eventsTime() const {
 float ezc3d::Header::eventsTime(size_t idx) const {
   try {
     return _eventsTime.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Header::eventsTime method is trying to access the event " +
         std::to_string(idx) + " while the maximum number of events is " +
@@ -360,7 +360,7 @@ std::vector<size_t> ezc3d::Header::eventsDisplay() const {
 size_t ezc3d::Header::eventsDisplay(size_t idx) const {
   try {
     return _eventsDisplay.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range("Header::eventsDisplay method is trying "
                             "to access the event " +
                             std::to_string(idx) +
@@ -376,7 +376,7 @@ const std::vector<std::string> &ezc3d::Header::eventsLabel() const {
 const std::string &ezc3d::Header::eventsLabel(size_t idx) const {
   try {
     return _eventsLabel.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Header::eventsLabel method is trying to access the event " +
         std::to_string(idx) + " while the maximum number of events is " +

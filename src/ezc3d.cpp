@@ -484,7 +484,7 @@ void ezc3d::c3d::setGroupMetadata(const std::string &groupName,
   size_t idx;
   try {
     idx = parameters().groupIdx(groupName);
-  } catch (std::invalid_argument) {
+  } catch (const std::invalid_argument&) {
     _parameters->group(ezc3d::ParametersNS::GroupNS::Group(groupName));
     idx = parameters().groupIdx(groupName);
   }
@@ -506,7 +506,7 @@ void ezc3d::c3d::parameter(const std::string &groupName,
   size_t idx;
   try {
     idx = parameters().groupIdx(groupName);
-  } catch (std::invalid_argument) {
+  } catch (const std::invalid_argument&) {
     _parameters->group(ezc3d::ParametersNS::GroupNS::Group(groupName));
     idx = parameters().groupIdx(groupName);
   }
@@ -573,7 +573,7 @@ void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx,
         }
       }
     }
-  } catch (std::invalid_argument) {
+  } catch (const std::invalid_argument&) {
     throw std::invalid_argument("All the points in the frame must appear "
                                 "in the POINT:LABELS parameter");
   }

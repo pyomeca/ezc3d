@@ -54,7 +54,7 @@ const ezc3d::DataNS::RotationNS::Rotation &
 ezc3d::DataNS::RotationNS::SubFrame::rotation(size_t idx) const {
   try {
     return _rotations.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Subframe::rotation method is trying to access the rotation " +
         std::to_string(idx) + " while the maximum number of rotations is " +
@@ -66,7 +66,7 @@ ezc3d::DataNS::RotationNS::Rotation &
 ezc3d::DataNS::RotationNS::SubFrame::rotation(size_t idx) {
   try {
     return _rotations.at(idx);
-  } catch (std::out_of_range) {
+  } catch (const std::out_of_range&) {
     throw std::out_of_range(
         "Subframe::rotation method is trying to access the rotation " +
         std::to_string(idx) + " while the maximum number of rotations is " +
