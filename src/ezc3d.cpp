@@ -610,7 +610,7 @@ void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx,
 void ezc3d::c3d::frames(const std::vector<ezc3d::DataNS::Frame> frames,
                         size_t firstFrameidx) {
 
-  for (int i = 0; i < frames.size(); i++) {
+  for (size_t i = 0; i < frames.size(); i++) {
     // Only performs internal updates on the first and last frames
     bool skipInternalUpdates = i > 0 && i < frames.size() - 1;
     frame(frames[i], firstFrameidx == SIZE_MAX ? SIZE_MAX : firstFrameidx + i,
