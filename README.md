@@ -632,7 +632,7 @@ pf_0['Tz']                  # Moment at center of pressure data
 ## R
 R (<https://www.r-project.org/about.html>) is a programming language popular for statistical analyses and data visualization.
 
-The `c3dr` package (<https://github.com/smnnlt/ezc3d>) provides an R interface for EZC3D. For more details visit the package repository.
+The `c3dr` package (<https://github.com/ropensci/c3dr>) provides an R interface for EZC3D. For more details visit the package repository.
 
 # How to contribute
 You are very welcome to contribute to the project! There are two main ways to contribute. 
