@@ -9,6 +9,7 @@
 ///
 
 #include "ezc3d/Point.h"
+#include <cstdint>
 
 ///
 /// \brief Points holder for C3D data 3D points data

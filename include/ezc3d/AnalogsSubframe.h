@@ -10,6 +10,7 @@
 
 #include "ezc3d/Channel.h"
 #include <vector>
+#include <cstdint>
 
 ///
 /// \brief Subframe for the analogous data
