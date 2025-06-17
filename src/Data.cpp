@@ -51,10 +51,15 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file) {
   if (c3d.header().hasRotationalData()) {
     // Prepare the reading
 
+    // If data start is not provided, use current position and hope for the best
+    size_t targetPos =
+        (rotationsInfo.dataStart() == -1)
+            ? static_cast<size_t>(file.tellg())
+            : static_cast<int>(rotationsInfo.dataStart() - 1) * 512;
+
     // If the max length of the file is smaller than the data start, then there
     // is no data
     std::streampos fileSize = file.seekg(0, std::ios::end).tellg();
-    int targetPos(static_cast<int>(rotationsInfo.dataStart() - 1) * 512);
     if (fileSize < targetPos) {
       return;
     }
@@ -101,7 +106,7 @@ size_t ezc3d::DataNS::Data::nbFrames() const { return _frames.size(); }
 const ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx) const {
   try {
     return _frames.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Data::frame method is trying to access the frame " +
         std::to_string(idx) + " while the maximum number of frame is " +
@@ -112,7 +117,7 @@ const ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx) const {
 ezc3d::DataNS::Frame &ezc3d::DataNS::Data::frame(size_t idx) {
   try {
     return _frames.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Data::frame method is trying to access the frame " +
         std::to_string(idx) + " while the maximum number of frames is " +

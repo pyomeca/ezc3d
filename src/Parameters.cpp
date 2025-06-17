@@ -195,6 +195,12 @@ void ezc3d::ParametersNS::Parameters::setMandatoryParameters() {
       p.set(0);
       p.lock();
       grp.parameter(p);
+    } else {
+      // Make sure the value is actually a positive integer
+      auto frames = grp.parameter("FRAMES").valuesAsInt();
+      if (frames.size() > 1 || frames[0] < 0) {
+        grp.parameter("FRAMES").set(static_cast<uint16_t>(frames[0]));
+      }
     }
   }
   {
@@ -503,7 +509,7 @@ bool ezc3d::ParametersNS::Parameters::isGroup(
   try {
     groupIdx(groupName);
     return true;
-  } catch (const std::invalid_argument&) {
+  } catch (const std::invalid_argument &) {
     return false;
   }
 }
@@ -521,7 +527,7 @@ const ezc3d::ParametersNS::GroupNS::Group &
 ezc3d::ParametersNS::Parameters::group(size_t idx) const {
   try {
     return _groups.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Parameters::group method is trying to access the group " +
         std::to_string(idx) + " while the maximum number of groups is " +
@@ -533,7 +539,7 @@ ezc3d::ParametersNS::GroupNS::Group &
 ezc3d::ParametersNS::Parameters::group(size_t idx) {
   try {
     return _groups.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Parameters::group method is trying to access the group " +
         std::to_string(idx) + " while the maximum number of groups is " +

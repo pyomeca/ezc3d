@@ -24,10 +24,12 @@ ezc3d::DataNS::RotationNS::Info::Info(const ezc3d::c3d &c3d)
       c3d.parameters().group("ROTATION");
 
   // Do a sanity check before accessing
-  if (!group.isParameter("DATA_START")) {
-    throw std::runtime_error("DATA_START is not present in ROTATION.");
+  if (group.isParameter("DATA_START")) {
+    // Set the data start at what is provided by the manufacturer. If it is not
+    // provided, dataStart is left at -1 and the data will be read hopefully
+    // correctly (assuming they are right after the analog data).
+    _dataStart = group.parameter("DATA_START").valuesAsInt()[0];
   }
-  _dataStart = group.parameter("DATA_START").valuesAsInt()[0];
 
   if (!group.isParameter("USED")) {
     throw std::runtime_error("USED is not present in ROTATION.");

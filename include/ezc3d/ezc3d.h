@@ -41,9 +41,9 @@
 ///
 
 // Includes for standard library
+#include <cstdint>
 #include <fstream>
 #include <vector>
-#include <cstdint>
 
 #include "ezc3d/ezc3dConfig.h"
 #include "ezc3d/ezc3dNamespace.h"
