@@ -138,8 +138,8 @@ unsigned int ezc3d::c3d::hex2uint(const std::vector<char> &val,
   // Discard any extra bytes to avoid overflow of int
   unsigned int max_bytes = std::min(len, 4u);
   for (unsigned int i = 0; i < max_bytes; ++i)
-    ret |= static_cast<unsigned int>(
-      static_cast<unsigned char>(val[i])) << (8 * i);
+    ret |= static_cast<unsigned int>(static_cast<unsigned char>(val[i]))
+           << (8 * i);
   return ret;
 }
 
@@ -484,7 +484,7 @@ void ezc3d::c3d::setGroupMetadata(const std::string &groupName,
   size_t idx;
   try {
     idx = parameters().groupIdx(groupName);
-  } catch (const std::invalid_argument&) {
+  } catch (const std::invalid_argument &) {
     _parameters->group(ezc3d::ParametersNS::GroupNS::Group(groupName));
     idx = parameters().groupIdx(groupName);
   }
@@ -506,7 +506,7 @@ void ezc3d::c3d::parameter(const std::string &groupName,
   size_t idx;
   try {
     idx = parameters().groupIdx(groupName);
-  } catch (const std::invalid_argument&) {
+  } catch (const std::invalid_argument &) {
     _parameters->group(ezc3d::ParametersNS::GroupNS::Group(groupName));
     idx = parameters().groupIdx(groupName);
   }
@@ -573,7 +573,7 @@ void ezc3d::c3d::frame(const ezc3d::DataNS::Frame &f, size_t idx,
         }
       }
     }
-  } catch (const std::invalid_argument&) {
+  } catch (const std::invalid_argument &) {
     throw std::invalid_argument("All the points in the frame must appear "
                                 "in the POINT:LABELS parameter");
   }
