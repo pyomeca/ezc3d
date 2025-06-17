@@ -51,15 +51,10 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file) {
   if (c3d.header().hasRotationalData()) {
     // Prepare the reading
 
-    // If data start is not provided, use current position and hope for the best
-    size_t targetPos =
-        (rotationsInfo.dataStart() == -1)
-            ? static_cast<size_t>(file.tellg())
-            : static_cast<int>(rotationsInfo.dataStart() - 1) * 512;
-
     // If the max length of the file is smaller than the data start, then there
     // is no data
     std::streampos fileSize = file.seekg(0, std::ios::end).tellg();
+    int targetPos(static_cast<int>(rotationsInfo.dataStart() - 1) * 512);
     if (fileSize < targetPos) {
       return;
     }

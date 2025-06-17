@@ -24,20 +24,27 @@ ezc3d::DataNS::RotationNS::Info::Info(const ezc3d::c3d &c3d)
       c3d.parameters().group("ROTATION");
 
   // Do a sanity check before accessing
-  if (group.isParameter("DATA_START")) {
-    // Set the data start at what is provided by the manufacturer. If it is not
-    // provided, dataStart is left at -1 and the data will be read hopefully
-    // correctly (assuming they are right after the analog data).
-    _dataStart = group.parameter("DATA_START").valuesAsInt()[0];
+  if (!group.isParameter("DATA_START")) {
+    throw std::runtime_error(
+        "DATA_START is not present in ROTATION. This is probably due to a bad "
+        "formatting of the c3d file. Please contact the manufacturer of the "
+        "software that generated this c3d file.");
   }
+  _dataStart = group.parameter("DATA_START").valuesAsInt()[0];
 
   if (!group.isParameter("USED")) {
-    throw std::runtime_error("USED is not present in ROTATION.");
+    throw std::runtime_error(
+        "USED is not present in ROTATION. This is probably due to a bad "
+        "formatting of the c3d file. Please contact the manufacturer of the "
+        "software that generated this c3d file.");
   }
   _used = group.parameter("USED").valuesAsInt()[0];
 
   if (!group.isParameter("RATIO") && !group.isParameter("RATE")) {
-    throw std::runtime_error("RATIO or RATE must be present in ROTATION.");
+    throw std::runtime_error(
+        "RATIO or RATE must be present in ROTATION. This is probably due to a "
+        "bad formatting of the c3d file. Please contact the manufacturer of "
+        "the software that generated this c3d file.");
   }
   _ratio = static_cast<size_t>(
       group.isParameter("RATIO") ? group.parameter("RATIO").valuesAsInt()[0]
