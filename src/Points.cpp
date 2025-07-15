@@ -22,6 +22,7 @@ ezc3d::DataNS::Points3dNS::Points::Points(size_t nbPoints) {
 ezc3d::DataNS::Points3dNS::Points::Points(
     ezc3d::c3d &c3d, std::fstream &file,
     const ezc3d::DataNS::Points3dNS::Info &info) {
+  _points.resize(c3d.header().nb3dPoints());
   for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i) {
     ezc3d::DataNS::Points3dNS::Point pt(c3d, file, info);
     point(pt, i);
