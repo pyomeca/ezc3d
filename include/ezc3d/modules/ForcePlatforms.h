@@ -1,5 +1,5 @@
-#ifndef MODULES__FORCE_PLATFORM_H
-#define MODULES__FORCE_PLATFORM_H
+#ifndef EZC3D_MODULES__FORCE_PLATFORM_H
+#define EZC3D_MODULES__FORCE_PLATFORM_H
 ///
 /// \file ForcePlatform.h
 /// \brief Analyses of the analogous data in order to extract the platform

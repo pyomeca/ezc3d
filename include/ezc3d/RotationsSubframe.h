@@ -1,5 +1,5 @@
-#ifndef ROTATIONS_SUBFRAME_H
-#define ROTATIONS_SUBFRAME_H
+#ifndef EZC3D_ROTATIONS_SUBFRAME_H
+#define EZC3D_ROTATIONS_SUBFRAME_H
 ///
 /// \file RotationsSubframe.h
 /// \brief Declaration of Subframe class

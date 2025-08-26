@@ -1,5 +1,5 @@
-#ifndef CHANNEL_H
-#define CHANNEL_H
+#ifndef EZC3D_CHANNEL_H
+#define EZC3D_CHANNEL_H
 ///
 /// \file Channel.h
 /// \brief Declaration of Channel class

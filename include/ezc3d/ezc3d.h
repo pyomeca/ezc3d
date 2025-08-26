@@ -248,10 +248,11 @@ public:
 
   ///
   /// \brief Read a matrix of string of dimensions dimension with the first
-  /// dimension being the length of the strings \param file opened file stream
-  /// to be read \param dimension The dimensions of the matrix up to
-  /// 7-dimensions. The first dimension is the length of the strings \param
-  /// param_data The output of the function
+  /// dimension being the length of the strings
+  /// \param file opened file stream to be read
+  /// \param dimension The dimensions of the matrix up to 7-dimensions. The
+  /// first dimension is the length of the strings
+  /// \param param_data The output of the function
   ///
   EZC3D_API void readParam(std::fstream &file,
                            const std::vector<size_t> &dimension,

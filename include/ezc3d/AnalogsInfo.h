@@ -1,5 +1,5 @@
-#ifndef ANALOGS_INFO_H
-#define ANALOGS_INFO_H
+#ifndef EZC3D_ANALOGS_INFO_H
+#define EZC3D_ANALOGS_INFO_H
 ///
 /// \file AnalogInfo.cpp
 /// \brief Implementation of AnalogInfo class

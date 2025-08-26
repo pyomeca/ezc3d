@@ -1,5 +1,5 @@
-#ifndef HEADER_H
-#define HEADER_H
+#ifndef EZC3D_HEADER_H
+#define EZC3D_HEADER_H
 ///
 /// \file Header.h
 /// \brief Declaration of Header class

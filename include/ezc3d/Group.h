@@ -1,5 +1,5 @@
-#ifndef GROUP_H
-#define GROUP_H
+#ifndef EZC3D_GROUP_H
+#define EZC3D_GROUP_H
 ///
 /// \file Group.h
 /// \brief Declaration of Group class
@@ -192,7 +192,7 @@ public:
   /// \param params Reference to a valid parameter
   /// \param file The file stream already opened with read access
   /// \param nbCharInName The number of character of the parameter name
-  /// \return
+  /// \return The index of the next Group/Parameter in the file
   ///
   EZC3D_API int parameter(c3d &c3d, const Parameters &params,
                           std::fstream &file, int nbCharInName);

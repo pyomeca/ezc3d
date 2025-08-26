@@ -1,5 +1,5 @@
-#ifndef ANALOGS_H
-#define ANALOGS_H
+#ifndef EZC3D_ANALOGS_H
+#define EZC3D_ANALOGS_H
 ///
 /// \file Analogs.h
 /// \brief Declaration of Analogs class

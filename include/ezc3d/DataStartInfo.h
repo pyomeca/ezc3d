@@ -1,5 +1,5 @@
-#ifndef DATA_START_INFO_H
-#define DATA_START_INFO_H
+#ifndef EZC3D_DATA_START_INFO_H
+#define EZC3D_DATA_START_INFO_H
 ///
 /// \file DataStartInfo.h
 /// \brief Declaration of DataStartInfo class

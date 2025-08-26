@@ -1,5 +1,5 @@
-#ifndef PARAMETERS_H
-#define PARAMETERS_H
+#ifndef EZC3D_PARAMETERS_H
+#define EZC3D_PARAMETERS_H
 ///
 /// \file Parameters.h
 /// \brief Declaration of Parameters class
