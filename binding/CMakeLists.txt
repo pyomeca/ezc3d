@@ -6,7 +6,3 @@ endif()
 if (BINDER_MATLAB)
     add_subdirectory(matlab)
 endif()
-
-if (BINDER_OCTAVE)
-    add_subdirectory(octave)
-endif()
