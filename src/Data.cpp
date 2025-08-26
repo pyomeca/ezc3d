@@ -30,7 +30,17 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file) {
   ezc3d::DataNS::AnalogsNS::Info analogsInfo(c3d);
   ezc3d::DataNS::RotationNS::Info rotationsInfo(c3d);
 
-  for (size_t j = 0; j < c3d.header().nbFrames(); ++j) {
+  size_t nbFrames = c3d.header().nbFrames();
+  if (nbFrames == 0xFFFF && !c3d.header().hasRotationalData()) {
+    // This is a special case to account for Vicon files which don't provide the
+    // actual number of frames in the header nor in the parameters when the
+    // number of frames is larger than 65535. We need to make sure the
+    // rotational data are not present in the file after the points and analogs
+    // data in order to use "all-of-file" (nbFrames = -1) reading
+    nbFrames = -1;
+  }
+
+  for (size_t j = 0; j < nbFrames; ++j) {
     ezc3d::DataNS::Frame f;
     // Read point 3d
     f.add(ezc3d::DataNS::Points3dNS::Points(c3d, file, pointsInfo));
