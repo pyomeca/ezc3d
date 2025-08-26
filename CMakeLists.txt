@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.15)
 project(ezc3d VERSION 1.5.19)
 
 option(BUILD_SHARED_LIBS "Choose if build should be a dynamic or static library" ON)
@@ -13,7 +13,6 @@ option(GET_OFFICIAL_DOCUMENTATION "Automatically download the C3D documentation"
 option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
 option(BINDER_PYTHON3 "Build Python SWIG module" OFF)
 option(BINDER_MATLAB "Build Matlab module" OFF)
-option(BINDER_OCTAVE "Build Octave module" OFF)
 
 set(EZC3D_NAME ${PROJECT_NAME})
 set(EZC3D_ROOT_FOLDER ${PROJECT_SOURCE_DIR})
@@ -71,7 +70,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     VISIBILITY_INLINES_HIDDEN ON
 )
 
-if(NOT BUILD_SHARED_LIBS AND (BINDER_PYTHON3 OR BINDER_MATLAB OR BINDER_OCTAVE))
+if(NOT BUILD_SHARED_LIBS AND (BINDER_PYTHON3 OR BINDER_MATLAB))
     # static ezc3d must be PIC for bindings (always shared)
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
