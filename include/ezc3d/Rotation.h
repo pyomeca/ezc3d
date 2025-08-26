@@ -1,5 +1,5 @@
-#ifndef ROTATION_H
-#define ROTATION_H
+#ifndef EZC3D_ROTATION_H
+#define EZC3D_ROTATION_H
 ///
 /// \file Rotation.cpp
 /// \brief Implementation of Rotation class

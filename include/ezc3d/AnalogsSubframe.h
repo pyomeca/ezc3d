@@ -1,5 +1,5 @@
-#ifndef ANALOGS_SUBFRAME_H
-#define ANALOGS_SUBFRAME_H
+#ifndef EZC3D_ANALOGS_SUBFRAME_H
+#define EZC3D_ANALOGS_SUBFRAME_H
 ///
 /// \file AnalogsSubframe.h
 /// \brief Declaration of Subframe class
@@ -9,8 +9,8 @@
 ///
 
 #include "ezc3d/Channel.h"
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 ///
 /// \brief Subframe for the analogous data

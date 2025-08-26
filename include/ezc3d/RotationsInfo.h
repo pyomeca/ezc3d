@@ -1,5 +1,5 @@
-#ifndef ROTATIONS_INFO_H
-#define ROTATIONS_INFO_H
+#ifndef EZC3D_ROTATIONS_INFO_H
+#define EZC3D_ROTATIONS_INFO_H
 ///
 /// \file RotationsInfo.cpp
 /// \brief Implementation of RotationsInfo class

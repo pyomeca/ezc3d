@@ -316,8 +316,9 @@ void ezc3d::c3d::readParam(std::fstream &file,
   if (dimension.size() == 1) {
     if (dimension[0] != 0) {
       std::string tp;
-      for (size_t j = 0; j < dimension[0]; ++j)
+      for (size_t j = 0; j < dimension[0]; ++j) {
         tp += param_data_string_tp[j];
+      }
       ezc3d::removeTrailingSpaces(tp);
       param_data_string.push_back(tp);
     }

@@ -1,5 +1,5 @@
-#ifndef POINTS_INFO_H
-#define POINTS_INFO_H
+#ifndef EZC3D_POINTS_INFO_H
+#define EZC3D_POINTS_INFO_H
 ///
 /// \file PointsInfo.cpp
 /// \brief Implementation of PointsInfo class

@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef EZC3D_DATA_H
+#define EZC3D_DATA_H
 ///
 /// \file Data.h
 /// \brief Declaration of data class

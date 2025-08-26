@@ -1,5 +1,5 @@
-#ifndef POINTS_H
-#define POINTS_H
+#ifndef EZC3D_POINTS_H
+#define EZC3D_POINTS_H
 ///
 /// \file Points.h
 /// \brief Declaration of Points class

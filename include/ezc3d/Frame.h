@@ -1,5 +1,5 @@
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef EZC3D_FRAME_H
+#define EZC3D_FRAME_H
 ///
 /// \file Frame.h
 /// \brief Declaration of Frame class
