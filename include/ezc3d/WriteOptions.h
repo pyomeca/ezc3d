@@ -16,14 +16,16 @@ public:
   /// \brief Constructor with default options
   ///
   EZC3D_API
-  WriteOptions(bool optimizeC3dFileSize = true,
+  WriteOptions(bool collapseStringMatrices = true,
                bool forceZeroBasedOnFrameCount = false)
-      : _optimizeC3dFileSize(optimizeC3dFileSize),
+      : _collapseStringMatrices(collapseStringMatrices),
         _forceZeroBasedOnFrameCount(forceZeroBasedOnFrameCount) {}
 
   ///
-  /// \brief Whether to optimize C3D file size
-  EZC3D_API bool getOptimizeC3dFileSize() const { return _optimizeC3dFileSize; }
+  /// \brief Whether to collapse the string matrices to vector
+  EZC3D_API bool getCollapseStringMatrices() const {
+    return _collapseStringMatrices;
+  }
 
   ///
   /// \brief According to the standard, the first and
@@ -34,7 +36,8 @@ public:
   }
 
 protected:
-  bool _optimizeC3dFileSize; ///< Whether to optimize C3D file size
+  bool _collapseStringMatrices; ///< Whether to collapse the string matrices to
+                                ///< vector
 
   bool _forceZeroBasedOnFrameCount; ///< Whether the first frame is zero-based
                                     ///< or one-based

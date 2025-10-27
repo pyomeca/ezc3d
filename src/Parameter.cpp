@@ -71,7 +71,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
     dimension[0] = longestElement();
 
     // Remove unnecessary dimension
-    if (writeOptions.getOptimizeC3dFileSize() && dimension.size() == 2 &&
+    if (writeOptions.getCollapseStringMatrices() && dimension.size() == 2 &&
         dimension[1] == 1) {
       dimension = {dimension[0]};
     }

@@ -617,6 +617,39 @@ TEST(optionsForC3D, KeepingTrailingSpaces) {
   }
 }
 
+TEST(writingOptionsForC3D, OptimizeFileSize) {
+  c3dTestStruct new_c3d;
+  fillC3D(new_c3d, true, false);
+  std::string savePath("temporary.c3d");
+
+  ezc3d::ParametersNS::GroupNS::Parameter p("SizedParameter");
+  p.set(std::vector<std::string>() = {"123456"});
+  new_c3d.c3d.parameter("NEW_GROUP", p);
+
+  // Save the file optimizing the file size
+  {
+    // This should collapse the 6x1 matrix to a 6d vector
+    new_c3d.c3d.write(savePath);
+    ezc3d::c3d file(savePath);
+    auto &param =
+        file.parameters().group("NEW_GROUP").parameter("SizedParameter");
+    EXPECT_EQ(param.dimension().size(), 1);
+    EXPECT_EQ(param.dimension()[0], 6);
+  }
+
+  // Save the file without optimizing the file size
+  {
+    // This should collapse the 6x1 matrix to a 6d vector
+    new_c3d.c3d.write(savePath, ezc3d::WriteOptions(false));
+    ezc3d::c3d file(savePath);
+    auto &param =
+        file.parameters().group("NEW_GROUP").parameter("SizedParameter");
+    EXPECT_EQ(param.dimension().size(), 2);
+    EXPECT_EQ(param.dimension()[0], 6);
+    EXPECT_EQ(param.dimension()[1], 1);
+  }
+}
+
 TEST(wrongC3D, wrongChecksumHeader) {
   // Create an empty c3d
   ezc3d::c3d new_c3d;
