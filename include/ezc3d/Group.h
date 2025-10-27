@@ -33,13 +33,16 @@ public:
 
   ///
   /// \brief Write the group to an opened file by calling the write method of
-  /// all the parameters \param f Already opened fstream file with write access
+  /// all the parameters
+  /// \param writeOptions The options to write the data
+  /// \param f Already opened fstream file with write access
   /// \param groupIdx Index of the group that this particular parameter is in
   /// \param dataStartPositionToFill The position in the file where the data
   /// start (special case for POINT:DATA_START and ROTATION:DATA_START
   /// parameters)
   ///
-  EZC3D_API void write(std::fstream &f, int groupIdx,
+  EZC3D_API void write(const WriteOptions &writeOptions, std::fstream &f,
+                       int groupIdx,
                        ezc3d::DataStartInfo &dataStartPositionToFill) const;
 
   ///

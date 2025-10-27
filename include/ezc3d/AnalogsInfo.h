@@ -12,7 +12,7 @@
 #include <vector>
 
 ///
-/// \brief 3D rotation data
+/// \brief Information about analog data
 ///
 class EZC3D_VISIBILITY ezc3d::DataNS::AnalogsNS::Info {
   //---- CONSTRUCTORS ----//
@@ -23,7 +23,6 @@ public:
   ///
   EZC3D_API Info(const ezc3d::c3d &c3d);
 
-  //---- DATA ----//
 protected:
   PROCESSOR_TYPE _processorType; ///< The type of processor formatting
 

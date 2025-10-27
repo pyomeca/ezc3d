@@ -45,6 +45,8 @@
 #include <fstream>
 #include <vector>
 
+#include "ezc3d/Options.h"
+#include "ezc3d/WriteOptions.h"
 #include "ezc3d/ezc3dConfig.h"
 #include "ezc3d/ezc3dNamespace.h"
 
@@ -67,11 +69,11 @@ public:
 
   ///
   /// \brief Read and store a C3D
-  /// \param filePath The file path of the C3D file
-  /// \param ignoreBadFormatting If bad formatting of the c3d should be ignored,
-  /// use with caution as it can results in a segmentation fault
+  /// \param filePath The file path of the C3D
+  /// \param options Options to customize the reading of the C3D file
   ///
-  EZC3D_API c3d(const std::string &filePath, bool ignoreBadFormatting = false);
+  EZC3D_API c3d(const std::string &filePath,
+                const Options &options = Options());
 
   //---- STREAM ----//
 public:
@@ -82,29 +84,16 @@ public:
 
   ///
   /// \brief Write the C3D to an opened file by calling write method of header,
-  /// parameter and data \param filePath Already opened fstream file with write
-  /// access \param format What order should the file has
-  ///
-  EZC3D_API void
-  write(const std::string &filePath,
-        const WRITE_FORMAT &format = WRITE_FORMAT::DEFAULT) const;
-
-  ///
-  /// \brief Write the C3D to an opened file by calling write method of header,
-  /// parameter and data. The default parametrization will produce a valid and
-  /// standard c3d. However, changing these value will definitely produce a
-  /// non-standard c3d which may or may not work on another software.
-  ///
+  /// parameter and data
   /// \param filePath Already opened fstream file with write access
   /// \param format What order should the file has
-  /// \param forceZeroBasedOnFrameCount According to the standard, the first and
-  /// last frame are stored as a one-based value. But some software requires it
-  /// to be zero. Leave the user the capability to do so.
   ///
-  EZC3D_API void
-  parametrizedWrite(const std::string &filePath,
-                    const WRITE_FORMAT &format = WRITE_FORMAT::DEFAULT,
-                    bool forceZeroBasedOnFrameCount = false) const;
+  EZC3D_API void write(const std::string &filePath,
+                       const WriteOptions &writeOptions = WriteOptions()) const;
+
+public:
+  Options options; ///< Options of the c3d file. Changing this does not
+                   ///< retroactively changes the preloaded elements
 
 protected:
   // Internal reading and writting function
@@ -132,10 +121,12 @@ protected:
 
   ///
   /// \brief The function that reads the file, it returns the value into a
-  /// generic char pointer that must be pre-allocate \param file opened file
-  /// stream to be read \param nByteToRead The number of bytes to read \param c
-  /// The output char \param nByteFromPrevious The number of byte to skip from
-  /// current position \param pos The position to start from
+  /// generic char pointer that must be pre-allocate
+  /// \param file opened file stream to be read
+  /// \param nByteToRead The number of bytes to read
+  /// \param c The output char
+  /// \param nByteFromPrevious The number of byte to skip from current position
+  /// \param pos The position to start from
   ///
   void readFile(std::fstream &file, unsigned int nByteToRead,
                 std::vector<char> &c, int nByteFromPrevious = 0,
@@ -168,12 +159,14 @@ protected:
 public:
   ///
   /// \brief Read an integer of nByteToRead bytes at the position current +
-  /// nByteFromPrevious from a file \param processorType Convension processor
-  /// type the file is following \param file opened file stream to be read
+  /// nByteFromPrevious from a file
+  /// \param processorType Convension processor type the file is following
+  /// \param file opened file stream to be read
   /// \param nByteToRead The number of byte to read to be converted into integer
   /// \param nByteFromPrevious The number of bytes to skip from the current
-  /// cursor position \param pos Where to reposition the cursor \return The
-  /// integer value
+  /// cursor position
+  /// \param pos Where to reposition the cursor
+  /// \return The integer value
   ///
   EZC3D_API int readInt(PROCESSOR_TYPE processorType, std::fstream &file,
                         unsigned int nByteToRead, int nByteFromPrevious = 0,
@@ -181,11 +174,14 @@ public:
 
   ///
   /// \brief Read a unsigned integer of nByteToRead bytes at the position
-  /// current + nByteFromPrevious from a file \param processorType Convension
-  /// processor type the file is following \param file opened file stream to be
-  /// read \param nByteToRead The number of byte to read to be converted into
-  /// unsigned integer \param nByteFromPrevious The number of bytes to skip from
-  /// the current cursor position \param pos Where to reposition the cursor
+  /// current + nByteFromPrevious from a file
+  /// \param processorType Convension processor type the file is following
+  /// \param file opened file stream to be read
+  /// \param nByteToRead The number of byte to read to be converted into
+  /// unsigned integer
+  /// \param nByteFromPrevious The number of bytes to skip from the current
+  /// cursor position
+  /// \param pos Where to reposition the cursor
   /// \return The unsigned integer value
   ///
   EZC3D_API size_t readUint(PROCESSOR_TYPE processorType, std::fstream &file,
@@ -194,11 +190,13 @@ public:
 
   ///
   /// \brief Read a float at the position current + nByteFromPrevious from a
-  /// file \param processorType Convension processor type the file is following
+  /// file
+  /// \param processorType Convension processor type the file is following
   /// \param file opened file stream to be read
   /// \param nByteFromPrevious The number of bytes to skip from the current
-  /// cursor position \param pos Where to reposition the cursor \return The
-  /// float value
+  /// cursor position
+  /// \param pos Where to reposition the cursor
+  /// \return The float value
   ///
   EZC3D_API float readFloat(PROCESSOR_TYPE processorType, std::fstream &file,
                             int nByteFromPrevious = 0,
@@ -206,11 +204,13 @@ public:
 
   ///
   /// \brief Read a string (array of char of nByteToRead bytes) at the position
-  /// current + nByteFromPrevious from a file \param file opened file stream to
-  /// be read \param nByteToRead The number of byte to read to be converted into
-  /// float \param nByteFromPrevious The number of bytes to skip from the
-  /// current cursor position \param pos Where to reposition the cursor \return
-  /// The float value
+  /// current + nByteFromPrevious from a file
+  /// \param file opened file stream to be read
+  /// \param nByteToRead The number of byte to read to be converted into float
+  /// \param nByteFromPrevious The number of bytes to skip from the current
+  /// cursor position
+  /// \param pos Where to reposition the cursor
+  /// \return The float value
   ///
   EZC3D_API std::string
   readString(std::fstream &file, unsigned int nByteToRead,
@@ -219,10 +219,12 @@ public:
 
   ///
   /// \brief Read a matrix of integer parameters of dimensions dimension with
-  /// each integer of length dataLengthInByte \param processorType Convension
-  /// processor type the file is following \param file opened file stream to be
-  /// read \param dataLenghtInBytes The number of bytes to read to be converted
-  /// to int \param dimension The dimensions of the matrix up to 7-dimensions
+  /// each integer of length dataLengthInByte
+  /// \param processorType The type convention format the data follows
+  /// \param file opened file stream to be read
+  /// \param dataLenghtInBytes The number of bytes to read to be converted to
+  /// int
+  /// \param dimension The dimensions of the matrix up to 7-dimensions
   /// \param param_data The output of the function
   /// \param currentIdx Internal tracker of where the function is in the flow of
   /// the recursive calls
@@ -234,7 +236,7 @@ public:
 
   ///
   /// \brief Read a matrix of float parameters of dimensions dimension
-  /// \param processorType Convension processor type the file is following
+  /// \param processorType The type convention format the data follows
   /// \param file opened file stream to be read
   /// \param dimension The dimensions of the matrix up to 7-dimensions
   /// \param param_data The output of the function
@@ -625,6 +627,8 @@ protected:
 
   ///
   /// \brief Update parameters according to the data
+  /// \param keepTrailingSpaces If we should keep trailing spaces in the
+  /// parameter names
   /// \param newPoints The names of the new poits
   /// \param newAnalogs The names of the new analogs
   ///

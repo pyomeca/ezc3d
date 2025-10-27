@@ -539,7 +539,7 @@ TEST(initialize, noC3D) {
   EXPECT_THROW(ezc3d::c3d("ThereIsNoC3dThere.c3d"), std::ios_base::failure);
 }
 
-TEST(parametrizedC3d, zeroAndOneBasedFirstFrameValue) {
+TEST(nonStandardC3d, zeroAndOneBasedFirstFrameValue) {
   c3dTestStruct new_c3d;
   fillC3D(new_c3d, true, false);
   std::string savePath("temporary.c3d");
@@ -548,8 +548,7 @@ TEST(parametrizedC3d, zeroAndOneBasedFirstFrameValue) {
 
   // First frame is 1 (standard C3D)
   {
-    new_c3d.c3d.parametrizedWrite(savePath.c_str(),
-                                  ezc3d::WRITE_FORMAT::DEFAULT, false);
+    new_c3d.c3d.write(savePath.c_str(), ezc3d::WriteOptions(true, false));
 
     // Check the byte corresponding to the first frame to make sure it is a one
     std::fstream c3d_file(savePath.c_str(), std::ofstream::in);
@@ -566,8 +565,7 @@ TEST(parametrizedC3d, zeroAndOneBasedFirstFrameValue) {
 
   // First frame is 0 (non-standard C3D)
   {
-    new_c3d.c3d.parametrizedWrite(savePath.c_str(),
-                                  ezc3d::WRITE_FORMAT::DEFAULT, true);
+    new_c3d.c3d.write(savePath.c_str(), ezc3d::WriteOptions(true, true));
 
     // Check the byte corresponding to the first frame to make sure it is a one
     std::fstream c3d_file(savePath.c_str(), std::ofstream::in);
@@ -580,6 +578,42 @@ TEST(parametrizedC3d, zeroAndOneBasedFirstFrameValue) {
     c3d_file.close();
     EXPECT_EQ(firstFrame, 0);
     EXPECT_EQ(lastFrame, 9);
+  }
+}
+
+TEST(optionsForC3D, KeepingTrailingSpaces) {
+  c3dTestStruct new_c3d;
+  fillC3D(new_c3d, true, false);
+  std::string savePath("temporary.c3d");
+
+  new_c3d.c3d.options = ezc3d::Options(false, true);
+  new_c3d.c3d.point("PointNameWithSpaceAtTheEndKept ");
+  new_c3d.nPoints += 1;
+  new_c3d.pointNames.push_back("PointNameWithSpaceAtTheEndKept ");
+
+  // Writing as is
+  new_c3d.c3d.write(savePath.c_str());
+
+  // Reading while keeping trailing spaces
+  {
+    ezc3d::c3d c3d_file(savePath, ezc3d::Options(false, true));
+    EXPECT_STREQ(c3d_file.parameters()
+                     .group("POINT")
+                     .parameter("LABELS")
+                     .valuesAsString()[new_c3d.nPoints - 1]
+                     .c_str(),
+                 "PointNameWithSpaceAtTheEndKept ");
+  }
+
+  // Reading while removing trailing spaces
+  {
+    ezc3d::c3d c3d_file(savePath);
+    EXPECT_STREQ(c3d_file.parameters()
+                     .group("POINT")
+                     .parameter("LABELS")
+                     .valuesAsString()[new_c3d.nPoints - 1]
+                     .c_str(),
+                 "PointNameWithSpaceAtTheEndKept");
   }
 }
 
@@ -752,7 +786,7 @@ TEST(c3dModifier, specificParameters) {
 
   // Get an erroneous parameter
   EXPECT_THROW(new_c3d.c3d.parameters().group("POINT").parameter(
-                   "ThisIsNotARealParamter"),
+                   "ThisIsNotARealParameter"),
                std::invalid_argument);
 
   // Create a new group

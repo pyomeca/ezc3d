@@ -15,7 +15,6 @@ So, without further ado, let's begin C3Ding!
 # Table of Contents  
 - [EZC3D](#ezc3d)
 - [Table of Contents](#table-of-contents)
-  - [Headers](#headers)
 - [How to install](#how-to-install)
   - [Pip (For Python users on Windows, Linux and Mac)](#pip-for-python-users-on-windows-linux-and-mac)
   - [Anaconda (For Python users on Windows, Linux and Mac)](#anaconda-for-python-users-on-windows-linux-and-mac)
@@ -41,12 +40,12 @@ So, without further ado, let's begin C3Ding!
     - [Read a C3D](#read-a-c3d-2)
     - [Write a C3D](#write-a-c3d-2)
     - [Force platform filter](#force-platform-filter-2)
-  - [R](#r)  
+  - [R](#r)
 - [How to contribute](#how-to-contribute)
   - [Using the test suite](#using-the-test-suite)
   - [Running the tests](#running-the-tests)
   - [Tests for the binders](#tests-for-the-binders)
-    - [Matlab](#matlab)
+    - [Matlab](#matlab-1)
     - [Python](#python)
 - [Supported generated C3D](#supported-generated-c3d)
 - [Documentation](#documentation)
@@ -202,7 +201,7 @@ ezc3d::c3d c3d;
 c3d.write("path_to_c3d.c3d")
 ```
 
-Please note that there is a `parametrizedWrite` method as well which allows for non-standard `c3d` to be written. This must be used with care as the resulting `c3d` may or may not be readable by a third-party software. That said, some software expect non-standard `c3d`.
+Please note that one can pass extra parameters to the write method that allows for non-standard `c3d` to be written. This must be used with care as the resulting `c3d` may or may not be readable by a third-party software. That said, some software expect non-standard `c3d`.
 
 ### Navigating through the C3D class
 The C3D class mimics the C3D structures as defined by the standard, that is separated into a `header`, a `parameters` and a `data` class. You can get a const-reference to these classes by simply calling their names (see below for more specific examples)

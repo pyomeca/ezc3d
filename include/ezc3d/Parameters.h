@@ -9,6 +9,7 @@
 ///
 
 #include "ezc3d/Group.h"
+#include "ezc3d/ezc3dNamespace.h"
 
 ///
 /// \brief Group holder of C3D parameters
@@ -26,11 +27,8 @@ public:
   /// \brief Construct group holder from a C3D file
   /// \param c3d C3D reference to copy the data in
   /// \param file Already opened fstream file with read access
-  /// \param ignoreBadFormatting If bad formatting of the c3d should be ignored,
-  /// use with caution as it can results in a segmentation fault
   ///
-  EZC3D_API Parameters(c3d &c3d, std::fstream &file,
-                       bool ignoreBadFormatting = false);
+  EZC3D_API Parameters(c3d &c3d, std::fstream &file);
 
 public:
   ///
@@ -70,27 +68,26 @@ public:
 
   ///
   /// \brief Write the groups to an opened file by calling the write method of
-  /// all the groups \param f Already opened fstream file with write access
+  /// all the groups
+  /// \param writeOptions The options to write the data with
+  /// \param f Already opened fstream file with write access
   /// \param dataStartPositionToFill Returns the byte where to put the data
-  /// start parameter \param header A reference to the header section \param
-  /// format What order should the file has
+  /// start parameter
+  /// \param header A reference to the header section
   ///
   EZC3D_API ezc3d::ParametersNS::Parameters
-  write(std::fstream &f, ezc3d::DataStartInfo &dataStartPositionToFill,
-        const ezc3d::Header &header,
-        const ezc3d::WRITE_FORMAT &format = ezc3d::WRITE_FORMAT::DEFAULT) const;
+  write(const WriteOptions &writeOptions, std::fstream &f,
+        ezc3d::DataStartInfo &dataStartPositionToFill,
+        const ezc3d::Header &header) const;
 
   //---- PARAMETER METADATA ----//
 protected:
   ///
   /// \brief Prepare a copy of all parameters that will be used to write
   /// \param header A reference to the header section
-  /// \param format What order should the file has
   /// \return
   ///
-  Parameters prepareCopyForWriting(
-      const ezc3d::Header &header,
-      const ezc3d::WRITE_FORMAT &format = ezc3d::WRITE_FORMAT::DEFAULT) const;
+  Parameters prepareCopyForWriting(const ezc3d::Header &header) const;
 
   // Read the Parameters Header
   size_t

@@ -38,6 +38,7 @@ public:
 
   ///
   /// \brief Write the parameter to an opened file
+  /// \param writeOptions
   /// \param f Already opened fstream file with write access
   /// \param groupIdx Index of the group that this particular parameter is in
   /// \param dataStartPositionToFill The position in the file where the data
@@ -47,7 +48,8 @@ public:
   ///
   /// Write the parameter and its values to a file
   ///
-  EZC3D_API void write(std::fstream &f, int groupIdx,
+  EZC3D_API void write(const WriteOptions &writeOptions, std::fstream &f,
+                       int groupIdx,
                        ezc3d::DataStartInfo &dataStartPositionToFill,
                        int dataStartType) const;
 
