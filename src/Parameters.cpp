@@ -20,8 +20,7 @@ ezc3d::ParametersNS::Parameters::Parameters()
   setMandatoryParameters();
 }
 
-ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file,
-                                            bool ignoreBadFormatting)
+ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
     : _parametersStart(1), _checksum(0x50), _nbParamBlock(0),
       _processorType(PROCESSOR_TYPE::NO_PROCESSOR_TYPE) {
 
@@ -69,7 +68,8 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file,
   while (nextParamByteInFile) {
     // Check if we spontaneously got to the next parameter.
     // Otherwise c3d is messed up
-    if (!ignoreBadFormatting && file.tellg() != nextParamByteInFile) {
+    if (!c3d.options.getIgnoreBadFormatting() &&
+        file.tellg() != nextParamByteInFile) {
       throw std::ios_base::failure(
           "The format is not standard. If you want to ignore this error, set "
           "ignoreBadFormatting to true");
@@ -361,9 +361,10 @@ void ezc3d::ParametersNS::Parameters::print() const {
 }
 
 ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
-    std::fstream &f, ezc3d::DataStartInfo &dataStartPositionToFill,
-    const ezc3d::Header &header, const ezc3d::WRITE_FORMAT &format) const {
-  ezc3d::ParametersNS::Parameters p(prepareCopyForWriting(header, format));
+    const WriteOptions &writeOptions, std::fstream &f,
+    ezc3d::DataStartInfo &dataStartPositionToFill,
+    const ezc3d::Header &header) const {
+  ezc3d::ParametersNS::Parameters p(prepareCopyForWriting(header));
 
   // Write the header of parameters
   f.write(reinterpret_cast<const char *>(&p._parametersStart), ezc3d::BYTE);
@@ -381,7 +382,8 @@ ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
   for (size_t i = 0; i < p.nbGroups(); ++i) {
     const ezc3d::ParametersNS::GroupNS::Group &currentGroup(p.group(i));
     if (!currentGroup.isEmpty())
-      currentGroup.write(f, -static_cast<int>(i + 1), dataStartPositionToFill);
+      currentGroup.write(writeOptions, f, -static_cast<int>(i + 1),
+                         dataStartPositionToFill);
   }
 
   // Move the cursor to a beginning of a block
@@ -404,7 +406,7 @@ ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::write(
 
 ezc3d::ParametersNS::Parameters
 ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
-    const ezc3d::Header &header, const ezc3d::WRITE_FORMAT &format) const {
+    const ezc3d::Header &header) const {
   // A copy must be done since modifications are made to some parameters
   ezc3d::ParametersNS::Parameters params(*this);
 
@@ -480,9 +482,6 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
   contact.set(EZC3D_CONTACT);
   params.group("EZC3D").parameter(contact);
 
-  if (format == WRITE_FORMAT::NEXUS) {
-    // Do some stuff related to Nexus
-  }
   return params;
 }
 

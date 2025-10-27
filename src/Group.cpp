@@ -29,7 +29,7 @@ void ezc3d::ParametersNS::GroupNS::Group::print() const {
 }
 
 void ezc3d::ParametersNS::GroupNS::Group::write(
-    std::fstream &f, int groupIdx,
+    const WriteOptions &writeOptions, std::fstream &f, int groupIdx,
     ezc3d::DataStartInfo &dataStartPositionToFill) const {
   int nCharName(static_cast<int>(name().size()));
   if (isLocked())
@@ -68,7 +68,7 @@ void ezc3d::ParametersNS::GroupNS::Group::write(
       tagForDataStartFilling = 0;
     else if (!name().compare("ROTATION"))
       tagForDataStartFilling = 1;
-    parameter(i).write(f, -groupIdx, dataStartPositionToFill,
+    parameter(i).write(writeOptions, f, -groupIdx, dataStartPositionToFill,
                        tagForDataStartFilling);
   }
 }

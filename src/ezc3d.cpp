@@ -11,6 +11,7 @@
 #include "ezc3d/Data.h"
 #include "ezc3d/DataStartInfo.h"
 #include "ezc3d/Header.h"
+#include "ezc3d/Options.h"
 #include "ezc3d/Parameters.h"
 #include <algorithm>
 #include <cmath>
@@ -32,7 +33,8 @@ std::string ezc3d::toUpper(const std::string &str) {
 }
 
 ezc3d::c3d::c3d()
-    : _filePath(""), m_nByteToRead_float(4 * ezc3d::DATA_TYPE::BYTE),
+    : options(Options()), _filePath(""),
+      m_nByteToRead_float(4 * ezc3d::DATA_TYPE::BYTE),
       m_nByteToReadMax_int(100) {
   c_float = std::vector<char>(m_nByteToRead_float + 1);
   c_float_tp = std::vector<char>(m_nByteToRead_float + 1);
@@ -45,8 +47,9 @@ ezc3d::c3d::c3d()
   _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
 }
 
-ezc3d::c3d::c3d(const std::string &filePath, bool ignoreBadFormatting)
-    : _filePath(filePath), m_nByteToRead_float(4 * ezc3d::DATA_TYPE::BYTE),
+ezc3d::c3d::c3d(const std::string &filePath, const Options &options)
+    : options(options), _filePath(filePath),
+      m_nByteToRead_float(4 * ezc3d::DATA_TYPE::BYTE),
       m_nByteToReadMax_int(100) {
   std::fstream stream(_filePath, std::ios::in | std::ios::binary);
   c_float = std::vector<char>(m_nByteToRead_float + 1);
@@ -61,7 +64,7 @@ ezc3d::c3d::c3d(const std::string &filePath, bool ignoreBadFormatting)
   // Read all the section
   _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this, stream));
   _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
-      new ezc3d::ParametersNS::Parameters(*this, stream, ignoreBadFormatting));
+      new ezc3d::ParametersNS::Parameters(*this, stream));
 
   // header may be inconsistent with the parameters, so it must be
   // update to make sure sizes are consistent
@@ -86,24 +89,18 @@ void ezc3d::c3d::print() const {
 }
 
 void ezc3d::c3d::write(const std::string &filePath,
-                       const WRITE_FORMAT &format) const {
-  parametrizedWrite(filePath, format);
-}
-
-void ezc3d::c3d::parametrizedWrite(const std::string &filePath,
-                                   const WRITE_FORMAT &format,
-                                   bool forceZeroBasedOnFrameCount) const {
+                       const WriteOptions &writeOptions) const {
 
   std::fstream f(filePath, std::ios::out | std::ios::binary);
 
   ezc3d::DataStartInfo dataStartInfoToFill;
 
   // Write the header
-  header().write(f, dataStartInfoToFill, forceZeroBasedOnFrameCount);
+  header().write(writeOptions, f, dataStartInfoToFill);
 
   // Write the parameters
   ezc3d::ParametersNS::Parameters p(
-      parameters().write(f, dataStartInfoToFill, header(), format));
+      parameters().write(writeOptions, f, dataStartInfoToFill, header()));
 
   // Write the data (Should the scales be taken from p?)
   std::vector<double> pointScaleFactor(pointScales());
@@ -319,7 +316,8 @@ void ezc3d::c3d::readParam(std::fstream &file,
       for (size_t j = 0; j < dimension[0]; ++j) {
         tp += param_data_string_tp[j];
       }
-      ezc3d::removeTrailingSpaces(tp);
+      if (!options.getKeepParametersTrailingSpaces())
+        ezc3d::removeTrailingSpaces(tp);
       param_data_string.push_back(tp);
     }
   } else
@@ -348,7 +346,8 @@ ezc3d::c3d::_dispatchMatrix(const std::vector<size_t> &dimension,
         tp += param_data_in[idxInParam];
         ++idxInParam;
       }
-      ezc3d::removeTrailingSpaces(tp);
+      if (!options.getKeepParametersTrailingSpaces())
+        ezc3d::removeTrailingSpaces(tp);
       param_data_out.push_back(tp);
     } else
       idxInParam = _dispatchMatrix(dimension, param_data_in, param_data_out,
@@ -867,7 +866,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints,
           name = newPoints[i - oldPointUsed];
       } else {
         name = ptsNames[i];
-        removeTrailingSpaces(name);
+        if (!options.getKeepParametersTrailingSpaces())
+          removeTrailingSpaces(name);
       }
       newLabels.push_back(name);
       newDescriptions.push_back("");
@@ -967,7 +967,8 @@ void ezc3d::c3d::updateParameters(const std::vector<std::string> &newPoints,
             name = newAnalogs[i - oldAnalogUsed];
         } else {
           name = chanNames[i];
-          removeTrailingSpaces(name);
+          if (!options.getKeepParametersTrailingSpaces())
+            removeTrailingSpaces(name);
         }
         newLabels.push_back(name);
         newDescriptions.push_back("");

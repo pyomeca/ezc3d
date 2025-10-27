@@ -10,6 +10,7 @@
 #include "ezc3d/Parameter.h"
 #include "ezc3d/DataStartInfo.h"
 #include "ezc3d/Parameters.h"
+#include "ezc3d/WriteOptions.h"
 #include "ezc3d/ezc3d.h"
 #include <iostream>
 #include <stdexcept>
@@ -43,7 +44,7 @@ void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
 }
 
 void ezc3d::ParametersNS::GroupNS::Parameter::write(
-    std::fstream &f, int groupIdx,
+    const WriteOptions &writeOptions, std::fstream &f, int groupIdx,
     ezc3d::DataStartInfo &dataStartPositionToFill, int dataStartType) const {
   int nCharName(static_cast<int>(name().size()));
   if (isLocked())
@@ -65,12 +66,13 @@ void ezc3d::ParametersNS::GroupNS::Parameter::write(
   // Recalculate the dimension of the values
   std::vector<size_t> dimension(_dimension);
   if (_data_type == DATA_TYPE::CHAR) {
-    // Assusimng dimension[0] is the number of characters
+    // Assuming dimension[0] is the number of characters
     // and dimension[1] is the number of string
     dimension[0] = longestElement();
 
-    // Remove unecessary dimension
-    if (dimension.size() == 2 && dimension[1] == 1) {
+    // Remove unnecessary dimension
+    if (writeOptions.getOptimizeC3dFileSize() && dimension.size() == 2 &&
+        dimension[1] == 1) {
       dimension = {dimension[0]};
     }
   }

@@ -67,9 +67,8 @@ void ezc3d::Header::print() const {
   std::cout << "\n";
 }
 
-void ezc3d::Header::write(std::fstream &f,
-                          ezc3d::DataStartInfo &dataStartPositionToFill,
-                          bool forceZeroBasedOnFrameCount) const {
+void ezc3d::Header::write(const WriteOptions &writeOptions, std::fstream &f,
+                          ezc3d::DataStartInfo &dataStartPositionToFill) const {
   // write the checksum byte and the start point of header
   int parameterAddessDefault(2);
   f.write(reinterpret_cast<const char *>(&parameterAddessDefault), ezc3d::BYTE);
@@ -83,10 +82,9 @@ void ezc3d::Header::write(std::fstream &f,
           1 * ezc3d::DATA_TYPE::WORD);
 
   // Idx of first and last frame
-  size_t firstFrame(_firstFrame +
-                    (forceZeroBasedOnFrameCount ? 0 : 1)); // 1-based!
-  size_t lastFrame(_lastFrame +
-                   (forceZeroBasedOnFrameCount ? 0 : 1)); // 1-based!
+  bool forceZeroBased = writeOptions.getForceZeroBasedOnFrameCount();
+  size_t firstFrame(_firstFrame + (forceZeroBased ? 0 : 1)); // 1-based!
+  size_t lastFrame(_lastFrame + (forceZeroBased ? 0 : 1));   // 1-based!
   if (lastFrame > 0xFFFF)
     // Combine this with group("POINT").parameter("FRAMES") = -1
     lastFrame = 0xFFFF;
@@ -345,7 +343,7 @@ const std::vector<float> &ezc3d::Header::eventsTime() const {
 float ezc3d::Header::eventsTime(size_t idx) const {
   try {
     return _eventsTime.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Header::eventsTime method is trying to access the event " +
         std::to_string(idx) + " while the maximum number of events is " +
@@ -360,7 +358,7 @@ std::vector<size_t> ezc3d::Header::eventsDisplay() const {
 size_t ezc3d::Header::eventsDisplay(size_t idx) const {
   try {
     return _eventsDisplay.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range("Header::eventsDisplay method is trying "
                             "to access the event " +
                             std::to_string(idx) +
@@ -376,7 +374,7 @@ const std::vector<std::string> &ezc3d::Header::eventsLabel() const {
 const std::string &ezc3d::Header::eventsLabel(size_t idx) const {
   try {
     return _eventsLabel.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Header::eventsLabel method is trying to access the event " +
         std::to_string(idx) + " while the maximum number of events is " +

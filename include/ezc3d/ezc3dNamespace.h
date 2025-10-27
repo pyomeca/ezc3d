@@ -98,6 +98,8 @@ EZC3D_VISIBILITY EZC3D_API std::string toUpper(const std::string &str);
 
 // ---- FORWARD DECLARATION OF THE WHOLE PROJECT STRUCTURE ----//
 class c3d;
+class Options;
+class WriteOptions;
 class Matrix;
 class Matrix33;
 class Matrix44;

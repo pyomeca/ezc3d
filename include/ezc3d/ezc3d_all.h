@@ -10,7 +10,9 @@
 
 #include "ezc3d/Data.h"
 #include "ezc3d/Header.h"
+#include "ezc3d/Options.h"
 #include "ezc3d/Parameters.h"
+#include "ezc3d/WriteOptions.h"
 #include "ezc3d/ezc3d.h"
 #include "ezc3d/ezc3dNamespace.h"
 #include "ezc3d/math/ezc3dMath.h"
