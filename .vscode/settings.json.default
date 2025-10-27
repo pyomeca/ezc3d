@@ -4,5 +4,10 @@
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-vscode.cpptools",
     },
-    "C_Cpp.clang_format_fallbackStyle": "LLVM"
+    "C_Cpp.clang_format_fallbackStyle": "LLVM",
+    "[python]" : {
+        "editor.rulers": [120],
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
 }

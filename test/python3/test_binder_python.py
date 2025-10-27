@@ -1,6 +1,7 @@
 """
 Test for file IO
 """
+
 from pathlib import Path
 from copy import deepcopy
 
@@ -155,6 +156,42 @@ def test_deepcopy():
         c3d["data"]["points"][:3, :, :] - c3d_loaded["data"]["points"][:3, :, :], c3d["data"]["points"][:3, :, :]
     )
     np.testing.assert_almost_equal(c3d["data"]["points"][3, :, :], c3d_loaded["data"]["points"][3, :, :])
+
+
+def test_non_standard_load_and_write():
+    # Load an empty c3d structure
+    c3d = ezc3d.c3d()
+
+    # Fill it with point names that includes trailing spaces, and random data
+    point_names = ("point1 ", "point2 ", "point3 ", "point4 ", "point5 ")
+    point_frame_rate = 100
+    n_second = 2
+    points = np.random.rand(4, len(point_names), point_frame_rate * n_second)
+    points[3, :, :] = 1
+
+    c3d["parameters"]["POINT"]["RATE"]["value"] = [100]
+    c3d["parameters"]["POINT"]["LABELS"]["value"] = point_names
+    c3d["data"]["points"] = points
+
+    # Add a custom parameter a new group
+    c3d.add_parameter("NewGroup", "newGroupParam", ["MyParam1 ", "MyParam2 "])
+    c3d.add_parameter("NewGroup", "toCollapse", ["MyParam3"])
+
+    # Check the collapsing did not collapse
+    c3d.write("temporary.c3d", keep_trailing_spaces=True, collapse_string_matrices_to_vector=False)
+    non_collapsed_c3d = ezc3d.c3d("temporary.c3d")
+    assert non_collapsed_c3d.c3d_swig.parameters().group("NewGroup").parameter("toCollapse").dimension() == (8, 1)
+
+    # Check the collapsing did collapse
+    c3d.write("temporary.c3d", keep_trailing_spaces=True, collapse_string_matrices_to_vector=True)
+    collapsed_c3d = ezc3d.c3d("temporary.c3d")
+    assert collapsed_c3d.c3d_swig.parameters().group("NewGroup").parameter("toCollapse").dimension() == (8,)
+
+    # Check that keep trailing spaces works
+    c3d_with_trailing_spaces = ezc3d.c3d("temporary.c3d", keep_trailing_spaces=True)
+    assert c3d_with_trailing_spaces["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam1 ", "MyParam2 "]
+    c3d_without_trailing_spaces = ezc3d.c3d("temporary.c3d", keep_trailing_spaces=False)
+    assert c3d_without_trailing_spaces["parameters"]["NewGroup"]["newGroupParam"]["value"] == ["MyParam1", "MyParam2"]
 
 
 def test_create_and_read_c3d():
@@ -540,20 +577,34 @@ def test_parse_and_rebuild_parameters(c3d_build_rebuild_reduced):
                 continue
 
             try:
-                if orig.parameters[group_key][param_key]['type'] != rebuilt.parameters[group_key][param_key]['type']:
+                if orig.parameters[group_key][param_key]["type"] != rebuilt.parameters[group_key][param_key]["type"]:
                     print(f"Type mismatch for {group_key} - {param_key} ")
-                    
-                assert orig.parameters[group_key][param_key]['type'] == rebuilt.parameters[group_key][param_key]['type']
+
+                assert orig.parameters[group_key][param_key]["type"] == rebuilt.parameters[group_key][param_key]["type"]
             except:
                 # Type may differ for empty values
-                if orig.parameters[group_key][param_key]['value'].any() == rebuilt.parameters[group_key][param_key]['value'].any() == False:
+                if (
+                    orig.parameters[group_key][param_key]["value"].any()
+                    == rebuilt.parameters[group_key][param_key]["value"].any()
+                    == False
+                ):
                     pass
                 else:
-                    assert orig.parameters[group_key][param_key]['type'] == rebuilt.parameters[group_key][param_key]['type']
-            assert orig.parameters[group_key][param_key]['description'] == rebuilt.parameters[group_key][param_key]['description']
-            assert orig.parameters[group_key][param_key]['is_locked'] == rebuilt.parameters[group_key][param_key]['is_locked']
-            assert np.all(orig.parameters[group_key][param_key]['value'] == rebuilt.parameters[group_key][param_key]['value'])
-    
+                    assert (
+                        orig.parameters[group_key][param_key]["type"]
+                        == rebuilt.parameters[group_key][param_key]["type"]
+                    )
+            assert (
+                orig.parameters[group_key][param_key]["description"]
+                == rebuilt.parameters[group_key][param_key]["description"]
+            )
+            assert (
+                orig.parameters[group_key][param_key]["is_locked"]
+                == rebuilt.parameters[group_key][param_key]["is_locked"]
+            )
+            assert np.all(
+                orig.parameters[group_key][param_key]["value"] == rebuilt.parameters[group_key][param_key]["value"]
+            )
 
 
 def test_parse_and_rebuild_data(c3d_build_rebuild_all):

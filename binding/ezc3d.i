@@ -60,6 +60,8 @@ namespace std {
 %include "ezc3dConfig.h"
 %include "ezc3dNamespace.h"
 %include "ezc3d.h"
+%include "Options.h"
+%include "WriteOptions.h"
 %include "math/Matrix.h"
 %include "math/Matrix33.h"
 %include "math/Matrix44.h"

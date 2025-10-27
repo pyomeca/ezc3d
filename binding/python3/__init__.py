@@ -124,14 +124,18 @@ class C3dMutableMapper(C3dMapper):
 
 
 class c3d(C3dMapper):
-    def __init__(self, path="", extract_forceplat_data=False, ignore_bad_formatting=False):
+    def __init__(self, path="", extract_forceplat_data=False, ignore_bad_formatting=False, keep_trailing_spaces=False):
         super(c3d, self).__init__()
 
         # Interface to swig pointers
-        if path == "":
-            self.c3d_swig = ezc3d.c3d()
+        options = ezc3d.Options(
+            keepParametersTrailingSpaces=keep_trailing_spaces, ignoreBadFormatting=ignore_bad_formatting
+        )
+        if path:
+            self.c3d_swig = ezc3d.c3d(path, options)
         else:
-            self.c3d_swig = ezc3d.c3d(path, ignore_bad_formatting)
+            self.c3d_swig = ezc3d.c3d()
+            self.c3d_swig.options = options
 
         rotations_info = ezc3d.RotationsInfo(self.c3d_swig)
 
@@ -140,15 +144,15 @@ class c3d(C3dMapper):
         self._storage["parameters"] = c3d.Parameters(self.c3d_swig.parameters())
         self._storage["data"] = c3d.Data(self.c3d_swig, self.extract_forceplat_data)
         return
-    
+
     @property
     def header(self):
         return self._storage["header"]
-    
+
     @property
     def parameters(self):
         return self._storage["parameters"]
-    
+
     @property
     def data(self):
         return self._storage["data"]
@@ -222,9 +226,9 @@ class c3d(C3dMapper):
                 self._storage[group_name]["__METADATA__"]["DESCRIPTION"] = group.description()
                 self._storage[group_name]["__METADATA__"]["IS_LOCKED"] = group.isLocked()
 
-                # Add easy accessor to the group 
+                # Add easy accessor to the group
                 setattr(self, group_name, _GroupParameter(self._storage[group_name]))
-  
+
                 for parameter in group.parameters():
                     self.add_parameter(group_name, parameter)
 
@@ -320,19 +324,19 @@ class c3d(C3dMapper):
                     all_pf.append(c3d.PlatForm(pf))
                 self._storage["platform"] = all_pf
             return
-        
+
         @property
         def points(self):
             return self._storage["points"]
-        
+
         @property
         def meta_points(self):
             return self._storage["meta_points"]
-        
+
         @property
         def analogs(self):
             return self._storage["analogs"]
-        
+
         @property
         def rotations(self):
             return self._storage["rotations"]
@@ -429,7 +433,14 @@ class c3d(C3dMapper):
         self.add_parameter("EVENT", "ICON_IDS", icon_ids)
         self.add_parameter("EVENT", "GENERIC_FLAGS", generic_flags)
 
-    def write(self, path: str, *, first_frame_as_zero: bool = False):
+    def write(
+        self,
+        path: str,
+        *,
+        first_frame_as_zero: bool = False,
+        collapse_string_matrices_to_vector: bool = True,
+        keep_trailing_spaces: bool = False,
+    ):
         """
         Write a new C3D at path. If any extra parameter is provided, then the non-standard writer is called.
         Please note the resulting C3D may or may not work with third parties
@@ -437,6 +448,8 @@ class c3d(C3dMapper):
         :param path: The path where to write the file
         :param first_frame_as_zero: If the first frame should be flaged
          as 1 (False, default and starndard) or 0 (True, non-standard)
+        :param collapse_string_matrices_to_vector: If string matrices should be collapsed to vector
+        :param keep_trailing_spaces: If trailing spaces should be kept
         """
 
         # Make sure path is a valid path
@@ -527,7 +540,7 @@ class c3d(C3dMapper):
             else:
                 if ~np.isclose(
                     nb_analog_frames * self._storage["parameters"]["POINT"]["RATE"]["value"][0],
-                    nb_point_frames * self._storage["parameters"]["ANALOG"]["RATE"]["value"][0]
+                    nb_point_frames * self._storage["parameters"]["ANALOG"]["RATE"]["value"][0],
                 ):
                     raise ValueError("Number of frames in the data set must match the analog rate X point frame")
 
@@ -556,7 +569,9 @@ class c3d(C3dMapper):
             if len(data_rotations.shape) != 4:
                 raise TypeError("Rotations should be a numpy with exactly 4 dimensions (4 x 4 x nRotations x nFrames)")
             if data_rotations.shape[0] != 4 or data_rotations.shape[1] != 4:
-                raise TypeError("Rotations should be a numpy with first and second dimension exactly equals to 4 element")
+                raise TypeError(
+                    "Rotations should be a numpy with first and second dimension exactly equals to 4 element"
+                )
             nb_rotations = data_rotations.shape[2]
             nb_rotations_frames = data_rotations.shape[3]
 
@@ -567,6 +582,7 @@ class c3d(C3dMapper):
 
         # Start from a fresh c3d
         new_c3d = ezc3d.c3d()
+        new_c3d.options = ezc3d.Options(False, keepParametersTrailingSpaces=keep_trailing_spaces)
 
         # Fill the header
         new_c3d.header().firstFrame(self._storage["header"]["points"]["first_frame"])
@@ -673,9 +689,11 @@ class c3d(C3dMapper):
         )
 
         # Write the file
-        if first_frame_as_zero:
-            # As soon as at least one non-standard parameter is provided, use the parametrized write
-            new_c3d.parametrizedWrite(path, ezc3d.DEFAULT, first_frame_as_zero)
-        else:
-            new_c3d.write(path)
+        new_c3d.write(
+            path,
+            ezc3d.WriteOptions(
+                collapseStringMatrices=collapse_string_matrices_to_vector,
+                forceZeroBasedOnFrameCount=first_frame_as_zero,
+            ),
+        )
         return
