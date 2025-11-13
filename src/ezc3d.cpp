@@ -62,7 +62,7 @@ ezc3d::c3d::c3d(const std::string &filePath, const Options &options)
 
   // Read all the section
   _header = std::make_shared<ezc3d::Header>(*this, stream);
-  _parameters = std::make_shared<ezc3d::ParametersNS::Parameters>(*this, stream, ignoreBadFormatting);
+  _parameters = std::make_shared<ezc3d::ParametersNS::Parameters>(*this, stream);
 
   // header may be inconsistent with the parameters, so it must be
   // update to make sure sizes are consistent
