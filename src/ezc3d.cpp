@@ -41,10 +41,9 @@ ezc3d::c3d::c3d()
   c_int = std::vector<char>(m_nByteToReadMax_int + 1);
   c_int_tp = std::vector<char>(m_nByteToReadMax_int + 1);
 
-  _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header());
-  _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
-      new ezc3d::ParametersNS::Parameters());
-  _data = std::shared_ptr<ezc3d::DataNS::Data>(new ezc3d::DataNS::Data());
+  _header = std::make_shared<ezc3d::Header>();
+  _parameters = std::make_shared<ezc3d::ParametersNS::Parameters>();
+  _data = std::make_shared<ezc3d::DataNS::Data>();
 }
 
 ezc3d::c3d::c3d(const std::string &filePath, const Options &options)
@@ -62,17 +61,15 @@ ezc3d::c3d::c3d(const std::string &filePath, const Options &options)
         "The c3d file could not be opened, please verify the path");
 
   // Read all the section
-  _header = std::shared_ptr<ezc3d::Header>(new ezc3d::Header(*this, stream));
-  _parameters = std::shared_ptr<ezc3d::ParametersNS::Parameters>(
-      new ezc3d::ParametersNS::Parameters(*this, stream));
+  _header = std::make_shared<ezc3d::Header>(*this, stream);
+  _parameters = std::make_shared<ezc3d::ParametersNS::Parameters>(*this, stream, ignoreBadFormatting);
 
   // header may be inconsistent with the parameters, so it must be
   // update to make sure sizes are consistent
   updateHeader();
 
   // Now read the data
-  _data = std::shared_ptr<ezc3d::DataNS::Data>(
-      new ezc3d::DataNS::Data(*this, stream));
+  _data = std::make_shared<ezc3d::DataNS::Data>(*this, stream);
 
   // Parameters and header may be inconsistent with data,
   // so reprocess them if needed

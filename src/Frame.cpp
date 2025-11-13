@@ -12,12 +12,9 @@
 #include <stdexcept>
 
 ezc3d::DataNS::Frame::Frame() {
-  _points = std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>(
-      new ezc3d::DataNS::Points3dNS::Points());
-  _analogs = std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs>(
-      new ezc3d::DataNS::AnalogsNS::Analogs());
-  _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
-      new ezc3d::DataNS::RotationNS::Rotations());
+  _points = std::make_shared<ezc3d::DataNS::Points3dNS::Points>();
+  _analogs = std::make_shared<ezc3d::DataNS::AnalogsNS::Analogs>();
+  _rotations = std::make_shared<ezc3d::DataNS::RotationNS::Rotations>();
 }
 
 void ezc3d::DataNS::Frame::print() const {
@@ -71,20 +68,17 @@ void ezc3d::DataNS::Frame::add(const ezc3d::DataNS::Frame &frame) {
 
 void ezc3d::DataNS::Frame::add(
     const ezc3d::DataNS::Points3dNS::Points &point3d_frame) {
-  _points = std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>(
-      new ezc3d::DataNS::Points3dNS::Points(point3d_frame));
+  _points = std::make_shared<ezc3d::DataNS::Points3dNS::Points>(point3d_frame);
 }
 
 void ezc3d::DataNS::Frame::add(
     const ezc3d::DataNS::AnalogsNS::Analogs &analogs_frame) {
-  _analogs = std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs>(
-      new ezc3d::DataNS::AnalogsNS::Analogs(analogs_frame));
+  _analogs = std::make_shared<ezc3d::DataNS::AnalogsNS::Analogs>(analogs_frame);
 }
 
 void ezc3d::DataNS::Frame::add(
     const ezc3d::DataNS::RotationNS::Rotations &rotations) {
-  _rotations = std::shared_ptr<ezc3d::DataNS::RotationNS::Rotations>(
-      new ezc3d::DataNS::RotationNS::Rotations(rotations));
+  _rotations = std::make_shared<ezc3d::DataNS::RotationNS::Rotations>(rotations);
 }
 
 void ezc3d::DataNS::Frame::add(
