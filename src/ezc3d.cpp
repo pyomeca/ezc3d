@@ -792,26 +792,21 @@ void ezc3d::c3d::updateHeader() {
       data().frame(0).analogs().nbSubframes() != 0) {
     if (data().frame(0).analogs().nbSubframes() != header().nbAnalogByFrame())
       _header->nbAnalogByFrame(data().frame(0).analogs().nbSubframes());
-  } else {
-    if (static_cast<size_t>(pointRate) == 0) {
-      if (header().nbAnalogByFrame() != 1)
-        _header->nbAnalogByFrame(1);
-    } else {
-      if (static_cast<size_t>(analog.parameter("RATE").valuesAsDouble()[0] /
-                              pointRate) != header().nbAnalogByFrame()) {
-        if (header().nbAnalogByFrame() == 1 && parameters().isGroup("SHADOW")) {
-          // The SHADOW company is not following the standard so they did not
-          // set analog rate ezc3d automatically sets it to zero which results
-          // in a discrepancy
-          ezc3d::ParametersNS::GroupNS::Parameter &analogNonConst =
-              _parameters->group("ANALOG").parameter("RATE");
-          analogNonConst.set(static_cast<float>(header().nbAnalogByFrame()));
-        } else {
-          _header->nbAnalogByFrame(static_cast<size_t>(
-              analog.parameter("RATE").valuesAsDouble()[0] / pointRate));
-        }
+  } else if (
+      static_cast<size_t>(pointRate) != 0
+       && static_cast<size_t>(analog.parameter("RATE").valuesAsDouble()[0] / pointRate) != header().nbAnalogByFrame()
+    ) {
+      if (header().nbAnalogByFrame() == 1 && parameters().isGroup("SHADOW")) {
+        // The SHADOW company is not following the standard so they did not
+        // set analog rate ezc3d automatically sets it to zero which results
+        // in a discrepancy
+        ezc3d::ParametersNS::GroupNS::Parameter &analogNonConst =
+            _parameters->group("ANALOG").parameter("RATE");
+        analogNonConst.set(static_cast<float>(header().nbAnalogByFrame()));
+      } else {
+        _header->nbAnalogByFrame(static_cast<size_t>(
+            analog.parameter("RATE").valuesAsDouble()[0] / pointRate));
       }
-    }
   }
 
   if (static_cast<size_t>(analog.parameter("USED").valuesAsInt()[0]) !=

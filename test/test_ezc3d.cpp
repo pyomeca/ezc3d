@@ -3764,8 +3764,8 @@ TEST(c3dFileIO, readKistlerC3D) {
   EXPECT_FLOAT_EQ(Optotrak.header().frameRate(), 0);
 
   // Analog stuff
-  EXPECT_EQ(Optotrak.header().nbAnalogsMeasurement(), 16);
-  EXPECT_EQ(Optotrak.header().nbAnalogByFrame(), 1);
+  EXPECT_EQ(Optotrak.header().nbAnalogsMeasurement(), 160);
+  EXPECT_EQ(Optotrak.header().nbAnalogByFrame(), 10);
   EXPECT_EQ(Optotrak.header().nbAnalogs(), 16);
 
   // Event stuff
