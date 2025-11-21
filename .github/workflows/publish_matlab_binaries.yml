@@ -11,14 +11,14 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
         include:
           - os: ubuntu-latest
             label: linux-64
             prefix: /usr/share/miniconda3/envs/ezc3d
-          # - os: macos-latest
-          #   label: osx-arm64
-          #   prefix: /Users/runner/miniconda3/envs/ezc3d
+          - os: macos-latest
+            label: osx-arm64
+            prefix: /Users/runner/miniconda3/envs/ezc3d
           - os: macos-13
             label: osx-intel
             prefix: /Users/runner/miniconda3/envs/ezc3d
@@ -54,19 +54,11 @@ jobs:
           conda list
           git submodule update --init --recursive
 
-      - name: Install MATLAB on WINDOWS, LINUX and MACOS-Intel
+      - name: Install MATLAB
         uses: matlab-actions/setup-matlab@v2
         with: 
           cache: true
         if: matrix.label != 'osx-arm64' 
-
-      - name: Install MATLAB on MACOS-Arm64
-        uses: matlab-actions/setup-matlab@v2
-        with:
-          # The version of MATLAB of R2024a does not contain MX_LIBRARY
-          release: R2023a
-          cache: true
-        if: matrix.label == 'osx-arm64'
 
       - name: Build ezc3d on UNIX
         run: |
