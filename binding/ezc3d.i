@@ -56,6 +56,12 @@ namespace std {
 %rename(RotationsSubframe) ezc3d::DataNS::RotationNS::SubFrame;
 %rename(RotationsInfo) ezc3d::DataNS::RotationNS::Info;
 
+// Ignore duplicate overloaded visibility attributes
+%ignore ezc3d::ParametersNS::GroupNS::Parameter::set(std::vector<int> const &);
+%ignore ezc3d::ParametersNS::GroupNS::Parameter::set(std::vector<int> const &, const std::vector<size_t> &);
+%ignore ezc3d::ParametersNS::GroupNS::Parameter::set(std::vector<std::string> const &);
+%ignore ezc3d::ParametersNS::GroupNS::Parameter::set(std::vector<std::string> const &, const std::vector<size_t> &);
+
 #define __attribute__(x)
 %include "ezc3dConfig.h"
 %include "ezc3dNamespace.h"

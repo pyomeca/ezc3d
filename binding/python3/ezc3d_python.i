@@ -1,17 +1,21 @@
 // File : ezc3d_python.i
 %{
 #define SWIG_FILE_WITH_INIT
-#include "ezc3d.h"
-#include "Header.h"
-#include "Data.h"
-#include "Parameters.h"
-#include "RotationsInfo.h"
+#include "ezc3d/ezc3d.h"
+#include "ezc3d/Header.h"
+#include "ezc3d/Data.h"
+#include "ezc3d/Parameters.h"
+#include "ezc3d/RotationsInfo.h"
 %}
 
 %include "numpy.i"
 %fragment("NumPy_Fragments");
 %init %{
-    import_array();
+#ifdef SWIGPYTHON3
+  import_array1(-1);  // only for int-returning functions
+#else
+  import_array();     // for PyObject*-returning functions
+#endif
 %}
 %include <std_vector.i>
 
