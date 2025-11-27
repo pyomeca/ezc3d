@@ -6,6 +6,8 @@
 #include "ezc3d/Data.h"
 #include "ezc3d/Parameters.h"
 #include "ezc3d/RotationsInfo.h"
+
+#include <numpy/arrayobject.h>
 %}
 
 %include "numpy.i"
