@@ -1,6 +1,10 @@
 // File : ezc3d_python.i
 %{
 #define SWIG_FILE_WITH_INIT
+
+// Use modern NumPy C API (suppresses deprecation warnings)
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
 #include "ezc3d/ezc3d.h"
 #include "ezc3d/Header.h"
 #include "ezc3d/Data.h"
