@@ -17,7 +17,11 @@
 %include "numpy.i"
 %fragment("NumPy_Fragments");
 %init %{
-import_array1(NULL);  // safe for PyObject* returning init functions
+#ifdef SWIGPYTHON3
+  import_array1(NULL);  // safe for PyObject* returning init functions
+#else
+  import_array1(0);    // safe for int-returning init functions
+#endif
 %}
 %include <std_vector.i>
 
