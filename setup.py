@@ -2,13 +2,15 @@ from skbuild import setup
 from pathlib import Path
 import re
 import os
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 try:
     import pypandoc
+
     long_description = pypandoc.convert("README.md", "r")
-except(IOError, ImportError):
+except (IOError, ImportError):
     long_description = open("README.md").read()
 
 with open(f"{dir_path}/CMakeLists.txt") as file:
@@ -30,9 +32,8 @@ setup(
     author="Michaud, Benjamin and Begon, Mickaël",
     description="Easy to use C3D reader/writer for C++, Python and Matlab",
     long_description=long_description,
-    long_description_content_type= "text/markdown",
-    url = "https://github.com/pyomeca/ezc3d",
-    license="MIT",
+    long_description_content_type="text/markdown",
+    url="https://github.com/pyomeca/ezc3d",
     packages=["ezc3d"],
     cmake_args=[
         "-DBUILD_EXAMPLE:BOOL=OFF",
