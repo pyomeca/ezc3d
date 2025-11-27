@@ -18,9 +18,9 @@
 %fragment("NumPy_Fragments");
 %init %{
 #ifdef SWIGPYTHON3
-  import_array1(-1);  // only for int-returning functions
+  import_array1(NULL);  // safe for PyObject* returning init functions
 #else
-  import_array();     // for PyObject*-returning functions
+  import_array1(-1);    // safe for int-returning init functions
 #endif
 %}
 %include <std_vector.i>
