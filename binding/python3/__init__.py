@@ -104,7 +104,10 @@ class C3dMapper(Mapping):
                 ):
                     return False
             else:
-                if dict1[key] != dict2[key]:
+                if isinstance(dict1[key], np.ndarray) and isinstance(dict2[key], np.ndarray):
+                    if not np.array_equal(dict1[key], dict2[key]):
+                        return False
+                elif dict1[key] != dict2[key]:
                     return False
         return True
 
