@@ -100,6 +100,44 @@ def test_create_c3d():
     assert c3d["data"]["analogs"].shape == (1, 0, 0)
 
 
+def test_eq():
+    # Create two identical c3d objects
+    c3d1 = ezc3d.c3d()
+    c3d2 = ezc3d.c3d()
+    assert c3d1 == c3d2
+
+    # Fill both with the same data
+    point_names = ("point1", "point2")
+    points = np.random.rand(4, len(point_names), 100)
+    points[3, :, :] = 1
+
+    analog_names = ("analog1", "analog2")
+    analogs = np.random.rand(1, len(analog_names), 1000)
+
+    for c in (c3d1, c3d2):
+        c["parameters"]["POINT"]["RATE"]["value"] = [100]
+        c["parameters"]["POINT"]["LABELS"]["value"] = point_names
+        c["data"]["points"] = points.copy()
+        c["parameters"]["ANALOG"]["RATE"]["value"] = [1000]
+        c["parameters"]["ANALOG"]["LABELS"]["value"] = analog_names
+        c["data"]["analogs"] = analogs.copy()
+
+    assert c3d1 == c3d2
+
+    # Deepcopy should also be equal
+    c3d3 = deepcopy(c3d1)
+    assert c3d1 == c3d3
+
+    # Modify only analogs (not points) — verifies all data keys are compared
+    c3d3["data"]["analogs"][0, 0, 0] += 999
+    assert not (c3d1 == c3d3)
+
+    # Modify only parameters (not header) — verifies all top-level keys are compared
+    c3d4 = deepcopy(c3d1)
+    c3d4["parameters"]["POINT"]["RATE"]["value"] = [200]
+    assert not (c3d1 == c3d4)
+
+
 def test_deepcopy():
     # Load an empty c3d structure
     c3d = ezc3d.c3d()
