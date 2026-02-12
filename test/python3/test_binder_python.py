@@ -101,6 +101,8 @@ def test_create_c3d():
 
 
 def test_eq():
+    rng = np.random.default_rng(42)
+
     # Create two identical c3d objects
     c3d1 = ezc3d.c3d()
     c3d2 = ezc3d.c3d()
@@ -108,11 +110,11 @@ def test_eq():
 
     # Fill both with the same data
     point_names = ("point1", "point2")
-    points = np.random.rand(4, len(point_names), 100)
+    points = rng.random((4, len(point_names), 100))
     points[3, :, :] = 1
 
     analog_names = ("analog1", "analog2")
-    analogs = np.random.rand(1, len(analog_names), 1000)
+    analogs = rng.random((1, len(analog_names), 1000))
 
     for c in (c3d1, c3d2):
         c["parameters"]["POINT"]["RATE"]["value"] = [100]
