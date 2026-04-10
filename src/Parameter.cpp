@@ -332,6 +332,32 @@ ezc3d::DATA_TYPE ezc3d::ParametersNS::GroupNS::Parameter::type() const {
   return _data_type;
 }
 
+void ezc3d::ParametersNS::GroupNS::Parameter::staticCastType(
+    ezc3d::DATA_TYPE newType) {
+  if (newType == _data_type)
+    return;
+
+  if ((newType != DATA_TYPE::INT && newType != DATA_TYPE::FLOAT) ||
+      (_data_type != DATA_TYPE::INT && _data_type != DATA_TYPE::FLOAT)) {
+    throw std::invalid_argument(
+        "staticCastType can only be used to switch between INT and FLOAT");
+  }
+
+  if (newType == DATA_TYPE::INT) {
+    _data_type = newType;
+    _param_data_int.clear();
+    for (unsigned int i = 0; i < _param_data_double.size(); ++i)
+      _param_data_int.push_back(static_cast<int>(_param_data_double[i]));
+    _param_data_double.clear();
+  } else if (newType == DATA_TYPE::FLOAT) {
+    _data_type = newType;
+    _param_data_double.clear();
+    for (unsigned int i = 0; i < _param_data_int.size(); ++i)
+      _param_data_double.push_back(static_cast<double>(_param_data_int[i]));
+    _param_data_int.clear();
+  }
+}
+
 void ezc3d::ParametersNS::GroupNS::Parameter::set(int data) {
   set(std::vector<int>() = {data});
 }
