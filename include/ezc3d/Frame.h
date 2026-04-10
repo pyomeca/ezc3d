@@ -37,16 +37,17 @@ public:
   ///
   /// \brief Write a frame to an opened file
   /// \param f Already opened fstream file with write access
-  /// \param pointScaleFactor The factor to scale the point data with
-  /// \param analogScaleFactors The factor to scale the analog data with
+  /// \param pointsInfo The points info to write the data with
+  /// \param analogsInfo The analogs info to write the data with
   /// \param dataTypeToWrite The type of data block (0 points/analogs, 1
   /// rotations)
   ///
   /// Write the frame to a file by calling sequentially the write method for
   /// points and analogs
   ///
-  EZC3D_API void write(std::fstream &f, std::vector<double> pointScaleFactor,
-                       std::vector<double> analogScaleFactors,
+  EZC3D_API void write(std::fstream &f,
+                       const ezc3d::DataNS::Points3dNS::Info &pointsInfo,
+                       const ezc3d::DataNS::AnalogsNS::Info &analogsInfo,
                        int dataTypeToWrite) const;
 
   //---- POINTS ----//

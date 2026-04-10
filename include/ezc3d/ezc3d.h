@@ -329,12 +329,6 @@ public:
   EZC3D_API const std::vector<std::string> pointNames() const;
 
   ///
-  /// \brief Get a copy of the scales of the points
-  /// \return The reference to the scales of the points
-  ///
-  EZC3D_API const std::vector<double> pointScales() const;
-
-  ///
   /// \brief Get the index of a point in the points holder
   /// \param pointName Name of the point
   /// \return The index of the point
@@ -351,12 +345,6 @@ public:
   /// \return The names of the analog channels
   ///
   EZC3D_API const std::vector<std::string> channelNames() const;
-
-  ///
-  /// \brief Get a copy of the scales of the channels
-  /// \return The reference to the scales of the channels
-  ///
-  EZC3D_API const std::vector<double> channelScales() const;
 
   ///
   /// \brief Get a copy of the offsets of the channels

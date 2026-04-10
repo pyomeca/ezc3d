@@ -32,9 +32,9 @@ void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
 }
 
 void ezc3d::DataNS::AnalogsNS::Analogs::write(
-    std::fstream &f, std::vector<double> scaleFactors) const {
+    std::fstream &f, const ezc3d::DataNS::AnalogsNS::Info &analogsInfo) const {
   for (size_t i = 0; i < nbSubframes(); ++i) {
-    subframe(i).write(f, scaleFactors);
+    subframe(i).write(f, analogsInfo);
   }
 }
 
@@ -50,7 +50,7 @@ const ezc3d::DataNS::AnalogsNS::SubFrame &
 ezc3d::DataNS::AnalogsNS::Analogs::subframe(size_t idx) const {
   try {
     return _subframe.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Analogs::subframe method is trying to access the subframe " +
         std::to_string(idx) + " while the maximum number of subframes is " +
@@ -62,7 +62,7 @@ ezc3d::DataNS::AnalogsNS::SubFrame &
 ezc3d::DataNS::AnalogsNS::Analogs::subframe(size_t idx) {
   try {
     return _subframe.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Analogs::subframe method is trying to access the subframe " +
         std::to_string(idx) + " while the maximum number of subframes is " +

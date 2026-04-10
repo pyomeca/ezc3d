@@ -51,12 +51,13 @@ public:
   ///
   /// \brief Write points to an opened file
   /// \param f Already opened fstream file with write access
-  /// \param scaleFactor The factor to scale the data with
+  /// \param pointsInfo The points info to write the data with
   ///
   /// Write all the points to a file by calling sequentially the write method of
   /// each point
   ///
-  EZC3D_API void write(std::fstream &f, std::vector<double> scaleFactor) const;
+  EZC3D_API void write(std::fstream &f,
+                       const ezc3d::DataNS::Points3dNS::Info &pointsInfo) const;
 
   //---- POINT ----//
 protected:

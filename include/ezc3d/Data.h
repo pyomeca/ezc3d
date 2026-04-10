@@ -46,16 +46,16 @@ public:
   /// \brief Write all the data to an opened file
   /// \param The header of a c3d
   /// \param f Already opened fstream file with write access
-  /// \param pointScaleFactor The factor to scale the point data with
-  /// \param analogScaleFactors The factors to scale the analog data with
+  /// \param pointsInfo The points info to write the data with
+  /// \param analogsInfo The analogs info to write the data with
   /// \param dataStartInfoToFill The start position to fill
   ///
   /// Write all the data to a file by calling sequentially all the write method
   /// for all the frames
   ///
   EZC3D_API void write(const ezc3d::Header &header, std::fstream &f,
-                       std::vector<double> pointScaleFactor,
-                       std::vector<double> analogScaleFactors,
+                       const ezc3d::DataNS::Points3dNS::Info &pointsInfo,
+                       const ezc3d::DataNS::AnalogsNS::Info &analogsInfo,
                        ezc3d::DataStartInfo &dataStartInfoToFill) const;
 
   //---- FRAME ----//

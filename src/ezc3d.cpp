@@ -8,11 +8,13 @@
 ///
 
 #include "ezc3d/ezc3d.h"
+#include "ezc3d/AnalogsInfo.h"
 #include "ezc3d/Data.h"
 #include "ezc3d/DataStartInfo.h"
 #include "ezc3d/Header.h"
 #include "ezc3d/Options.h"
 #include "ezc3d/Parameters.h"
+#include "ezc3d/PointsInfo.h"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -101,10 +103,9 @@ void ezc3d::c3d::write(const std::string &filePath,
       parameters().write(writeOptions, f, dataStartInfoToFill, header()));
 
   // Write the data (Should the scales be taken from p?)
-  std::vector<double> pointScaleFactor(pointScales());
-  std::vector<double> pointAnalogFactors(channelScales());
-  data().write(header(), f, pointScaleFactor, pointAnalogFactors,
-               dataStartInfoToFill);
+  ezc3d::DataNS::Points3dNS::Info pointsInfo(*this);
+  ezc3d::DataNS::AnalogsNS::Info analogsInfo(*this);
+  data().write(header(), f, pointsInfo, analogsInfo, dataStartInfoToFill);
 
   // Go back and write all the required data start
   writeDataStart(f, dataStartInfoToFill);
@@ -389,21 +390,6 @@ const std::vector<std::string> ezc3d::c3d::pointNames() const {
   return labels;
 }
 
-const std::vector<double> ezc3d::c3d::pointScales() const {
-  std::vector<double> scales =
-      parameters().group("POINT").parameter("SCALE").valuesAsDouble();
-  int i = 2;
-  while (parameters().group("POINT").isParameter("SCALE" + std::to_string(i))) {
-    const auto &scales_tp = parameters()
-                                .group("POINT")
-                                .parameter("SCALE" + std::to_string(i))
-                                .valuesAsDouble();
-    scales.insert(scales.end(), scales_tp.begin(), scales_tp.end());
-    ++i;
-  }
-  return scales;
-}
-
 size_t ezc3d::c3d::pointIdx(const std::string &pointName) const {
   const std::vector<std::string> &currentNames(pointNames());
   for (size_t i = 0; i < currentNames.size(); ++i)
@@ -429,22 +415,6 @@ const std::vector<std::string> ezc3d::c3d::channelNames() const {
     ++i;
   }
   return labels;
-}
-
-const std::vector<double> ezc3d::c3d::channelScales() const {
-  std::vector<double> scales =
-      parameters().group("ANALOG").parameter("SCALE").valuesAsDouble();
-  int i = 2;
-  while (
-      parameters().group("ANALOG").isParameter("SCALE" + std::to_string(i))) {
-    const auto &scales_tp = parameters()
-                                .group("ANALOG")
-                                .parameter("SCALE" + std::to_string(i))
-                                .valuesAsDouble();
-    scales.insert(scales.end(), scales_tp.begin(), scales_tp.end());
-    ++i;
-  }
-  return scales;
 }
 
 const std::vector<int> ezc3d::c3d::channelOffsets() const {

@@ -19,7 +19,8 @@ ezc3d::DataNS::AnalogsNS::Info::Info(const ezc3d::c3d &c3d)
   _processorType = c3d.parameters().processorType();
 
   if (c3d.header().nbAnalogs())
-    _scaleFactors = c3d.channelScales();
+    _scaleFactors = scaleFactorsFromC3d(c3d);
+
   _generalFactor = c3d.parameters()
                        .group("ANALOG")
                        .parameter("GEN_SCALE")
@@ -41,6 +42,23 @@ ezc3d::DataNS::AnalogsNS::Info::Info(const ezc3d::c3d &c3d)
         _zeroOffset.push_back(0);
     }
   }
+}
+
+std::vector<double> ezc3d::DataNS::AnalogsNS::Info::scaleFactorsFromC3d(
+    const ezc3d::c3d &c3d) const {
+  std::vector<double> scaleFactors =
+      c3d.parameters().group("ANALOG").parameter("SCALE").valuesAsDouble();
+  int i = 2;
+  while (c3d.parameters().group("ANALOG").isParameter("SCALE" +
+                                                      std::to_string(i))) {
+    const auto &scales_tp = c3d.parameters()
+                                .group("ANALOG")
+                                .parameter("SCALE" + std::to_string(i))
+                                .valuesAsDouble();
+    scaleFactors.insert(scaleFactors.end(), scales_tp.begin(), scales_tp.end());
+    ++i;
+  }
+  return scaleFactors;
 }
 
 ezc3d::PROCESSOR_TYPE ezc3d::DataNS::AnalogsNS::Info::processorType() const {
