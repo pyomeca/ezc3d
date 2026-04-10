@@ -562,14 +562,23 @@ def c3d_build_rebuild_all(request):
     base_folder = Path("test/c3dTestFiles")
     orig_file = Path(base_folder / (request.param + ".c3d"))
     rebuild_file = Path(base_folder / (request.param + "_after.c3d"))
+    rerebuild_file = Path(base_folder / (request.param + "_after_after.c3d"))
+    rererebuild_file = Path(base_folder / (request.param + "_after_after_after.c3d"))
 
     original = ezc3d.c3d(orig_file.as_posix())
     original.write(rebuild_file.as_posix())
     rebuilt = ezc3d.c3d(rebuild_file.as_posix())
 
-    yield (original, rebuilt)
+    rebuilt.write(rerebuild_file.as_posix())
+    rerebuilt = ezc3d.c3d(rerebuild_file.as_posix())
+
+    rerebuilt.write(rererebuild_file.as_posix())
+    rererebuilt = ezc3d.c3d(rererebuild_file.as_posix())
+
+    yield (original, rebuilt, rerebuilt, rererebuilt)
 
     Path.unlink(rebuild_file)
+    Path.unlink(rerebuild_file)
 
 
 @pytest.fixture(scope="module", params=["BTS", "Optotrak", "Qualisys", "Vicon", "C3DRotationExample"])
@@ -592,12 +601,15 @@ def c3d_build_rebuild_reduced(request):
 def test_parse_and_rebuild(c3d_build_rebuild_all):
     for i in c3d_build_rebuild_all:
         assert isinstance(i, ezc3d.c3d)
-    orig, rebuilt = c3d_build_rebuild_all
-    assert orig == rebuilt
+
+    # We must compare the rerebuilt because internal elements are corrected from the original
+    _, _, rerebuilt, rererebuilt = c3d_build_rebuild_all
+
+    assert rerebuilt == rererebuilt
 
 
 def test_parse_and_rebuild_header(c3d_build_rebuild_all):
-    orig, rebuilt = c3d_build_rebuild_all
+    orig, rebuilt, _ = c3d_build_rebuild_all
     assert orig["header"] == rebuilt["header"]
 
 
@@ -648,5 +660,6 @@ def test_parse_and_rebuild_parameters(c3d_build_rebuild_reduced):
 
 
 def test_parse_and_rebuild_data(c3d_build_rebuild_all):
-    orig, rebuilt = c3d_build_rebuild_all
+    orig, rebuilt, _ = c3d_build_rebuild_all
+    print(orig["data"])
     assert orig["data"] == rebuilt["data"]
