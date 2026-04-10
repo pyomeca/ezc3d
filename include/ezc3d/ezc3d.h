@@ -347,12 +347,6 @@ public:
   EZC3D_API const std::vector<std::string> channelNames() const;
 
   ///
-  /// \brief Get a copy of the offsets of the channels
-  /// \return The reference to the offsets of the channels
-  ///
-  EZC3D_API const std::vector<int> channelOffsets() const;
-
-  ///
   /// \brief Get the index of a analog channel in the subframe
   /// \param channelName Name of the analog channel
   /// \return The index of the analog channel
