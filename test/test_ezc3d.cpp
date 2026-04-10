@@ -788,6 +788,86 @@ TEST(parameters, getParametersAsDouble) {
   }
 }
 
+TEST(parameters, switchType) {
+  // Do nothing cases
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<int>({1, 2, 3}));
+    EXPECT_EQ(p.type(), ezc3d::INT);
+    p.staticCastType(ezc3d::INT);
+    EXPECT_EQ(p.type(), ezc3d::INT);
+    for (size_t i = 0; i < 3; ++i)
+      EXPECT_EQ(p.valuesAsInt()[i], static_cast<int>((i + 1)));
+  }
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<double>({1.1, 2.2, 3.3}));
+    EXPECT_EQ(p.type(), ezc3d::FLOAT);
+    p.staticCastType(ezc3d::FLOAT);
+    EXPECT_EQ(p.type(), ezc3d::FLOAT);
+    for (size_t i = 0; i < 3; ++i)
+      EXPECT_DOUBLE_AS_FLOAT_EQ(p.valuesAsDouble()[i],
+                                static_cast<double>(i + 1) * 1.1);
+  }
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<std::string>({"a", "b", "c"}));
+    EXPECT_EQ(p.type(), ezc3d::CHAR);
+    p.staticCastType(ezc3d::CHAR);
+    EXPECT_EQ(p.type(), ezc3d::CHAR);
+    for (size_t i = 0; i < 3; ++i)
+      EXPECT_STREQ(p.valuesAsString()[i].c_str(),
+                   std::string(1, static_cast<char>('a' + i)).c_str());
+  }
+
+  // To FLOAT
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<int>({1, 2, 3}));
+    EXPECT_EQ(p.type(), ezc3d::INT);
+    p.staticCastType(ezc3d::FLOAT);
+    EXPECT_EQ(p.type(), ezc3d::FLOAT);
+    for (size_t i = 0; i < 3; ++i)
+      EXPECT_EQ(p.valuesAsDouble()[i], static_cast<int>((i + 1)));
+  }
+
+  // To INT
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<double>({1.1, 2.2, 3.3}));
+    EXPECT_EQ(p.type(), ezc3d::FLOAT);
+    p.staticCastType(ezc3d::INT);
+    EXPECT_EQ(p.type(), ezc3d::INT);
+    for (size_t i = 0; i < 3; ++i)
+      EXPECT_EQ(p.valuesAsInt()[i], static_cast<int>((i + 1)));
+  }
+
+  // Trying to switch to other types should throw an error
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<int>({1, 2, 3}));
+    EXPECT_THROW(p.staticCastType(ezc3d::CHAR), std::invalid_argument);
+    EXPECT_THROW(p.staticCastType(ezc3d::BYTE), std::invalid_argument);
+    EXPECT_THROW(p.staticCastType(ezc3d::NO_DATA_TYPE), std::invalid_argument);
+  }
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<double>({1.1, 2.2, 3.3}));
+    EXPECT_THROW(p.staticCastType(ezc3d::CHAR), std::invalid_argument);
+    EXPECT_THROW(p.staticCastType(ezc3d::BYTE), std::invalid_argument);
+    EXPECT_THROW(p.staticCastType(ezc3d::NO_DATA_TYPE), std::invalid_argument);
+  }
+
+  // Trying to switch from other types should throw an error
+  {
+    ezc3d::ParametersNS::GroupNS::Parameter p;
+    p.set(std::vector<std::string>({"a", "b", "c"}));
+    EXPECT_EQ(p.type(), ezc3d::CHAR);
+    EXPECT_THROW(p.staticCastType(ezc3d::INT), std::invalid_argument);
+    EXPECT_THROW(p.staticCastType(ezc3d::FLOAT), std::invalid_argument);
+  }
+}
+
 TEST(c3dModifier, specificParameters) {
   // Create an empty c3d
   c3dTestStruct new_c3d;
