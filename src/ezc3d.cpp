@@ -417,22 +417,6 @@ const std::vector<std::string> ezc3d::c3d::channelNames() const {
   return labels;
 }
 
-const std::vector<int> ezc3d::c3d::channelOffsets() const {
-  std::vector<int> offsets =
-      parameters().group("ANALOG").parameter("OFFSET").valuesAsInt();
-  int i = 2;
-  while (
-      parameters().group("ANALOG").isParameter("OFFSET" + std::to_string(i))) {
-    const auto &offsets_tp = parameters()
-                                 .group("ANALOG")
-                                 .parameter("OFFSET" + std::to_string(i))
-                                 .valuesAsInt();
-    offsets.insert(offsets.end(), offsets_tp.begin(), offsets_tp.end());
-    ++i;
-  }
-  return offsets;
-}
-
 size_t ezc3d::c3d::channelIdx(const std::string &channelName) const {
   const std::vector<std::string> &currentNames(channelNames());
   for (size_t i = 0; i < currentNames.size(); ++i)

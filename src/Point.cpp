@@ -37,6 +37,10 @@ ezc3d::DataNS::Points3dNS::Point::Point(
                            : info.scaleFactors()[pointIndex];
 
   if (scaleFactor < 0) { // if it is float
+    // As described in the official documentation, a negative scale factor means
+    // it is already scaled float, but the scaling value is conserved in the
+    // event one wants to write it as integer format again. Moreover, it is
+    // still used to compute the residuals
     x(c3d.readFloat(info.processorType(), file));
     y(c3d.readFloat(info.processorType(), file));
     z(c3d.readFloat(info.processorType(), file));

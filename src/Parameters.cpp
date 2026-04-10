@@ -449,25 +449,23 @@ ezc3d::ParametersNS::Parameters::prepareCopyForWriting(
   analogScaleFactorParam.set(analogScaleFactor);
   params.group("ANALOG").parameter(analogScaleFactorParam);
 
-  // Use Intel floating with no extra scaling
-  ezc3d::ParametersNS::GroupNS::Parameter genScale(
-      params.group("ANALOG").parameter("GEN_SCALE"));
-  genScale.set(1.0);
-  params.group("ANALOG").parameter(genScale);
-
   size_t cmp = 1;
   std::string mod = "";
-  do {
-    auto offset(params.group("ANALOG").parameter("OFFSET" + mod));
-    std::vector<int> offsetValues(offset.valuesAsInt().size());
-    for (size_t i = 0; i < offsetValues.size(); ++i) {
-      offsetValues[i] = 0;
-    }
-    offset.set(offsetValues);
-    params.group("ANALOG").parameter(offset);
-    ++cmp;
-    mod = std::to_string(cmp);
-  } while (params.group("ANALOG").isParameter("OFFSET" + mod));
+  bool offsetIsEmpty =
+      params.group("ANALOG").parameter("OFFSET").valuesAsInt().size() == 0;
+  if (offsetIsEmpty) {
+    do {
+      auto offset(params.group("ANALOG").parameter("OFFSET" + mod));
+      std::vector<int> offsetValues(offset.valuesAsInt().size());
+      for (size_t i = 0; i < offsetValues.size(); ++i) {
+        offsetValues[i] = 0;
+      }
+      offset.set(offsetValues);
+      params.group("ANALOG").parameter(offset);
+      ++cmp;
+      mod = std::to_string(cmp);
+    } while (params.group("ANALOG").isParameter("OFFSET" + mod));
+  }
 
   // Add the parameter EZC3D:VERSION and EZC3D:CONTACT
   if (!params.isGroup("EZC3D")) {

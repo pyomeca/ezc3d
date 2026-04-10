@@ -38,6 +38,7 @@ protected:
 
   ///
   /// \brief Returns the scale factors by channel from a c3d structure
+  /// \param c3d The c3d structure to read the values from
   /// \return The scale factors by channel
   ///
   EZC3D_API std::vector<double>
@@ -62,6 +63,13 @@ public:
 
 protected:
   std::vector<int> _zeroOffset; ///< The offset of the analogs
+
+  ///
+  /// \brief Returns the zero offset from a c3d structure
+  /// \param c3d The c3d structure to read the values from
+  /// \return The zero offset
+  ///
+  EZC3D_API std::vector<int> channelOffsetsFromC3d(const ezc3d::c3d &c3d) const;
 
 public:
   ///
