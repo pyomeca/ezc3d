@@ -37,8 +37,14 @@ void ezc3d::DataNS::AnalogsNS::Channel::print() const {
   std::cout << "Analog = " << data() << "\n";
 }
 
-void ezc3d::DataNS::AnalogsNS::Channel::write(std::fstream &f,
-                                              double scaleFactor) const {
+void ezc3d::DataNS::AnalogsNS::Channel::write(
+    std::fstream &f, const ezc3d::DataNS::AnalogsNS::Info &analogsInfo,
+    int channelIndex) const {
+
+  double scaleFactor = analogsInfo.scaleFactors().size() < channelIndex + 1
+                           ? analogsInfo.scaleFactors()[0]
+                           : analogsInfo.scaleFactors()[channelIndex];
+
   float data(static_cast<float>(_data / scaleFactor));
   f.write(reinterpret_cast<const char *>(&data), ezc3d::DATA_TYPE::FLOAT);
 }

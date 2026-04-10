@@ -29,10 +29,14 @@ ezc3d::DataNS::Points3dNS::Point::Point(
 
 ezc3d::DataNS::Points3dNS::Point::Point(
     ezc3d::c3d &c3d, std::fstream &file,
-    const ezc3d::DataNS::Points3dNS::Info &info)
+    const ezc3d::DataNS::Points3dNS::Info &info, int pointIndex)
     : ezc3d::Vector3d(), _residual(-1) {
   _cameraMasks.resize(7, false);
-  if (info.scaleFactor() < 0) { // if it is float
+  double scaleFactor = info.scaleFactors().size() < pointIndex + 1
+                           ? info.scaleFactors()[0]
+                           : info.scaleFactors()[pointIndex];
+
+  if (scaleFactor < 0) { // if it is float
     x(c3d.readFloat(info.processorType(), file));
     y(c3d.readFloat(info.processorType(), file));
     z(c3d.readFloat(info.processorType(), file));
@@ -41,11 +45,11 @@ ezc3d::DataNS::Points3dNS::Point::Point(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD));
       residual(static_cast<float>(c3d.readInt(info.processorType(), file,
                                               ezc3d::DATA_TYPE::WORD)) *
-               -info.scaleFactor());
+               -scaleFactor);
     } else if (info.processorType() == PROCESSOR_TYPE::DEC) {
       residual(static_cast<float>(c3d.readInt(info.processorType(), file,
                                               ezc3d::DATA_TYPE::WORD)) *
-               -info.scaleFactor());
+               -scaleFactor);
       cameraMask(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD));
     } else if (info.processorType() == PROCESSOR_TYPE::MIPS) {
@@ -56,25 +60,25 @@ ezc3d::DataNS::Points3dNS::Point::Point(
   } else {
     x(static_cast<float>(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD)) *
-      info.scaleFactor());
+      scaleFactor);
     y(static_cast<float>(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD)) *
-      info.scaleFactor());
+      scaleFactor);
     z(static_cast<float>(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD)) *
-      info.scaleFactor());
+      scaleFactor);
     if (info.processorType() == PROCESSOR_TYPE::INTEL) {
       cameraMask(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::BYTE));
       residual(static_cast<float>(c3d.readInt(info.processorType(), file,
                                               ezc3d::DATA_TYPE::BYTE)) *
-               info.scaleFactor());
+               scaleFactor);
     } else if (info.processorType() == PROCESSOR_TYPE::DEC) {
       cameraMask(
           c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::BYTE));
       residual(static_cast<float>(c3d.readInt(info.processorType(), file,
                                               ezc3d::DATA_TYPE::BYTE)) *
-               info.scaleFactor());
+               scaleFactor);
     } else if (info.processorType() == PROCESSOR_TYPE::MIPS) {
       throw std::runtime_error(
           "MIPS processor type not supported yet, please open a "
@@ -98,8 +102,13 @@ void ezc3d::DataNS::Points3dNS::Point::print() const {
   std::cout << "\n";
 }
 
-void ezc3d::DataNS::Points3dNS::Point::write(std::fstream &f,
-                                             float scaleFactor) const {
+void ezc3d::DataNS::Points3dNS::Point::write(
+    std::fstream &f, const ezc3d::DataNS::Points3dNS::Info &pointsInfo,
+    int pointIndex) const {
+
+  double scaleFactor = pointsInfo.scaleFactors().size() < pointIndex + 1
+                           ? pointsInfo.scaleFactors()[0]
+                           : pointsInfo.scaleFactors()[pointIndex];
   if (residual() >= 0) {
     for (size_t i = 0; i < size(); ++i) {
       float data(static_cast<float>(_data[i]));

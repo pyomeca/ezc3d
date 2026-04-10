@@ -24,7 +24,7 @@ ezc3d::DataNS::Points3dNS::Points::Points(
     const ezc3d::DataNS::Points3dNS::Info &info) {
   _points.resize(c3d.header().nb3dPoints());
   for (size_t i = 0; i < c3d.header().nb3dPoints(); ++i) {
-    ezc3d::DataNS::Points3dNS::Point pt(c3d, file, info);
+    ezc3d::DataNS::Points3dNS::Point pt(c3d, file, info, i);
     point(pt, i);
   }
 }
@@ -35,11 +35,9 @@ void ezc3d::DataNS::Points3dNS::Points::print() const {
 }
 
 void ezc3d::DataNS::Points3dNS::Points::write(
-    std::fstream &f, std::vector<double> scaleFactor) const {
+    std::fstream &f, const ezc3d::DataNS::Points3dNS::Info &pointsInfo) const {
   for (size_t i = 0; i < nbPoints(); ++i)
-    point(i).write(f, static_cast<float>(scaleFactor.size() == 1
-                                             ? scaleFactor[0]
-                                             : scaleFactor[i]));
+    point(i).write(f, pointsInfo, i);
 }
 
 size_t ezc3d::DataNS::Points3dNS::Points::nbPoints() const {
@@ -50,7 +48,7 @@ const ezc3d::DataNS::Points3dNS::Point &
 ezc3d::DataNS::Points3dNS::Points::point(size_t idx) const {
   try {
     return _points.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Points::point method is trying to access the point " +
         std::to_string(idx) + " while the maximum number of points is " +
@@ -62,7 +60,7 @@ ezc3d::DataNS::Points3dNS::Point &
 ezc3d::DataNS::Points3dNS::Points::point(size_t idx) {
   try {
     return _points.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Points::point method is trying to access the point " +
         std::to_string(idx) + " while the maximum number of points is " +

@@ -46,12 +46,13 @@ public:
   ///
   /// \brief Write the subframe to an opened file
   /// \param f Already opened fstream file with write access
-  /// \param scaleFactors The factor to scale the data with
+  /// \param analogsInfo The information about the analogs
   ///
   /// Write the subframe to a file by calling sequentially the write method of
   /// all of the analog channels
   ///
-  EZC3D_API void write(std::fstream &f, std::vector<double> scaleFactors) const;
+  EZC3D_API void write(std::fstream &f,
+                       const ezc3d::DataNS::AnalogsNS::Info &analogsInfo) const;
 
   //---- CHANNELS ----//
 protected:
