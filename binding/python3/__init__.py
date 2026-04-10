@@ -61,7 +61,7 @@ class C3dMapper(Mapping):
                 if not self.__eq_param__(key, self._storage[key], other._storage[key]):
                     return False
             elif isinstance(self._storage[key], np.ndarray) and isinstance(other._storage[key], np.ndarray):
-                if not np.array_equal(self._storage[key], other._storage[key]):
+                if not np.array_equal(self._storage[key], other._storage[key], equal_nan=True):
                     return False
             else:
                 # Otherwise it is unknown data, therefore assume they are different
@@ -105,7 +105,7 @@ class C3dMapper(Mapping):
                     return False
             else:
                 if isinstance(dict1[key], np.ndarray) and isinstance(dict2[key], np.ndarray):
-                    if not np.array_equal(dict1[key], dict2[key]):
+                    if not np.array_equal(dict1[key], dict2[key], equal_nan=True):
                         return False
                 elif dict1[key] != dict2[key]:
                     return False

@@ -572,10 +572,10 @@ def c3d_build_rebuild_all(request):
     rebuilt.write(rerebuild_file.as_posix())
     rerebuilt = ezc3d.c3d(rerebuild_file.as_posix())
 
+    # We must write as it updates some internal values that will be compared
     rerebuilt.write(rererebuild_file.as_posix())
-    rererebuilt = ezc3d.c3d(rererebuild_file.as_posix())
 
-    yield (original, rebuilt, rerebuilt, rererebuilt)
+    yield (original, rebuilt, rerebuilt)
 
     Path.unlink(rebuild_file)
     Path.unlink(rerebuild_file)
@@ -602,10 +602,13 @@ def test_parse_and_rebuild(c3d_build_rebuild_all):
     for i in c3d_build_rebuild_all:
         assert isinstance(i, ezc3d.c3d)
 
-    # We must compare the rerebuilt because internal elements are corrected from the original
-    _, _, rerebuilt, rererebuilt = c3d_build_rebuild_all
+    # We must compare the rebuilt to the rerebuilt because internal elements are corrected from the original twice
+    orig, rebuilt, rerebuilt = c3d_build_rebuild_all
 
-    assert rerebuilt == rererebuilt
+    # But make sure they are as close as possible (parameters are the only updated elements)
+    assert orig["header"] == rebuilt["header"] == rerebuilt["header"]
+    assert orig["data"] == rebuilt["data"] == rerebuilt["data"]
+    assert rebuilt == rerebuilt
 
 
 def test_parse_and_rebuild_header(c3d_build_rebuild_all):
