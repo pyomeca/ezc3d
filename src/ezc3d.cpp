@@ -82,6 +82,17 @@ ezc3d::c3d::c3d(const std::string &filePath, const Options &options)
   stream.close();
 }
 
+ezc3d::c3d ezc3d::c3d::clone() const {
+  c3d copy;
+  copy._filePath = _filePath;
+  copy.options = options.clone();
+  copy._header = std::make_shared<ezc3d::Header>(_header->clone());
+  copy._parameters =
+      std::make_shared<ezc3d::ParametersNS::Parameters>(_parameters->clone());
+  copy._data = std::make_shared<ezc3d::DataNS::Data>(_data->clone());
+  return copy;
+}
+
 void ezc3d::c3d::print() const {
   header().print();
   parameters().print();

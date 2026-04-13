@@ -61,6 +61,12 @@ public:
   ///
   EZC3D_API Rotation(const ezc3d::DataNS::RotationNS::Rotation &rotation);
 
+  ///
+  /// \brief Create a deep copy of a Rotation
+  /// \return A deep copy of the Rotation
+  ///
+  EZC3D_API Rotation clone() const;
+
   //---- STREAM ----//
 public:
   ///

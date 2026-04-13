@@ -40,6 +40,38 @@ ezc3d::Header::Header(ezc3d::c3d &c3d, std::fstream &file)
   read(c3d, file);
 }
 
+ezc3d::Header ezc3d::Header::clone() const {
+  Header copy;
+  copy._nbOfZerosBeforeHeader = _nbOfZerosBeforeHeader;
+  copy._parametersAddress = _parametersAddress;
+  copy._checksum = _checksum;
+  copy._nb3dPoints = _nb3dPoints;
+  copy._nbAnalogsMeasurement = _nbAnalogsMeasurement;
+  copy._hasRotationalData = _hasRotationalData;
+  copy._firstFrame = _firstFrame;
+  copy._lastFrame = _lastFrame;
+  copy._nbMaxInterpGap = _nbMaxInterpGap;
+  copy._scaleFactor = _scaleFactor;
+  copy._dataStart = _dataStart;
+  copy._nbAnalogByFrame = _nbAnalogByFrame;
+  copy._frameRate = _frameRate;
+  copy._emptyBlock1 = _emptyBlock1;
+  copy._emptyBlock2 = _emptyBlock2;
+  copy._emptyBlock3 = _emptyBlock3;
+  copy._emptyBlock4 = _emptyBlock4;
+  copy._keyLabelPresent = _keyLabelPresent;
+  copy._firstBlockKeyLabel = _firstBlockKeyLabel;
+  copy._fourCharPresent = _fourCharPresent;
+  copy._nbEvents = _nbEvents;
+  for (size_t i = 0; i < _eventsTime.size(); ++i)
+    copy._eventsTime[i] = _eventsTime[i];
+  for (size_t i = 0; i < _eventsDisplay.size(); ++i)
+    copy._eventsDisplay[i] = _eventsDisplay[i];
+  for (size_t i = 0; i < _eventsLabel.size(); ++i)
+    copy._eventsLabel[i] = _eventsLabel[i];
+  return copy;
+}
+
 void ezc3d::Header::print() const {
   std::cout << "HEADER" << "\n";
   std::cout << "nb3dPoints = " << nb3dPoints() << "\n";

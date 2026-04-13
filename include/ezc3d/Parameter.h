@@ -29,6 +29,12 @@ public:
   EZC3D_API Parameter(const std::string &name = "",
                       const std::string &description = "");
 
+  ///
+  /// \brief Create a deep copy of a parameter
+  /// \return A deep copy of the parameter
+  ///
+  EZC3D_API Parameter clone() const;
+
   //---- STREAM ----//
 public:
   ///

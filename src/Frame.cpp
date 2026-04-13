@@ -17,6 +17,17 @@ ezc3d::DataNS::Frame::Frame() {
   _rotations = std::make_shared<ezc3d::DataNS::RotationNS::Rotations>();
 }
 
+ezc3d::DataNS::Frame ezc3d::DataNS::Frame::clone() const {
+  Frame copy;
+  copy._points =
+      std::make_shared<ezc3d::DataNS::Points3dNS::Points>(_points->clone());
+  copy._analogs =
+      std::make_shared<ezc3d::DataNS::AnalogsNS::Analogs>(_analogs->clone());
+  copy._rotations = std::make_shared<ezc3d::DataNS::RotationNS::Rotations>(
+      _rotations->clone());
+  return copy;
+}
+
 void ezc3d::DataNS::Frame::print() const {
   points().print();
   analogs().print();

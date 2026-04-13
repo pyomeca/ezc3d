@@ -29,6 +29,12 @@ public:
   ///
   EZC3D_API Header(c3d &c3d, std::fstream &file);
 
+  ///
+  /// \brief Create a deep copy of a header
+  /// \return A deep copy of the header
+  ///
+  EZC3D_API Header clone() const;
+
   //---- STREAM ----//
 public:
   ///

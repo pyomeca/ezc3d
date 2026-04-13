@@ -75,6 +75,12 @@ public:
   EZC3D_API c3d(const std::string &filePath,
                 const Options &options = Options());
 
+  ///
+  /// \brief Create a deep copy of a C3D
+  /// \return A deep copy of the C3D
+  ///
+  EZC3D_API c3d clone() const;
+
   //---- STREAM ----//
 public:
   ///

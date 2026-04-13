@@ -24,6 +24,12 @@ public:
   EZC3D_API Group(const std::string &name = "",
                   const std::string &description = "");
 
+  ///
+  /// \brief Create a deep copy of a group of parameter
+  /// \return A deep copy of a group of parameter
+  ///
+  EZC3D_API Group clone() const;
+
   //---- STREAM ----//
 public:
   ///

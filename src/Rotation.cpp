@@ -59,6 +59,11 @@ ezc3d::DataNS::RotationNS::Rotation::Rotation(
   reliability(r.reliability());
 }
 
+ezc3d::DataNS::RotationNS::Rotation
+ezc3d::DataNS::RotationNS::Rotation::clone() const {
+  return Rotation(*this);
+}
+
 void ezc3d::DataNS::RotationNS::Rotation::print() const {
   for (size_t i = 0; i < _nbRows; ++i) {
     for (size_t j = 0; j < _nbCols; ++j) {

@@ -80,6 +80,13 @@ ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file) {
   }
 }
 
+ezc3d::DataNS::Data ezc3d::DataNS::Data::clone() const {
+  Data copy;
+  for (const auto &frame : _frames)
+    copy._frames.push_back(frame.clone());
+  return copy;
+}
+
 void ezc3d::DataNS::Data::print() const {
   for (size_t i = 0; i < nbFrames(); ++i) {
     std::cout << "Frame " << i << "\n";

@@ -23,6 +23,14 @@ ezc3d::DataNS::AnalogsNS::SubFrame::SubFrame(
   }
 }
 
+ezc3d::DataNS::AnalogsNS::SubFrame
+ezc3d::DataNS::AnalogsNS::SubFrame::clone() const {
+  SubFrame copy;
+  for (const auto &channel : _channels)
+    copy._channels.push_back(channel.clone());
+  return copy;
+}
+
 void ezc3d::DataNS::AnalogsNS::SubFrame::print() const {
   for (size_t i = 0; i < nbChannels(); ++i) {
     channel(i).print();

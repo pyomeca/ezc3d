@@ -31,6 +31,12 @@ public:
   ///
   EZC3D_API Data(ezc3d::c3d &c3d, std::fstream &file);
 
+  ///
+  /// \brief Create a deep copy of a Data
+  /// \return A deep copy of the Data
+  ///
+  EZC3D_API Data clone() const;
+
   //---- STREAM ----//
 public:
   ///

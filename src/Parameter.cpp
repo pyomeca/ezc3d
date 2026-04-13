@@ -20,6 +20,19 @@ ezc3d::ParametersNS::GroupNS::Parameter::Parameter(
     : _name(name), _description(description), _isLocked(false),
       _data_type(ezc3d::DATA_TYPE::NO_DATA_TYPE), _isEmpty(true) {}
 
+ezc3d::ParametersNS::GroupNS::Parameter
+ezc3d::ParametersNS::GroupNS::Parameter::clone() const {
+  Parameter copy(_name, _description);
+  copy._isLocked = _isLocked;
+  copy._data_type = _data_type;
+  copy._dimension = _dimension;
+  copy._isEmpty = _isEmpty;
+  copy._param_data_int = _param_data_int;
+  copy._param_data_double = _param_data_double;
+  copy._param_data_string = _param_data_string;
+  return copy;
+}
+
 void ezc3d::ParametersNS::GroupNS::Parameter::print() const {
   std::cout << "parameterName = " << name() << "\n";
   std::cout << "isLocked = " << isLocked() << "\n";

@@ -103,6 +103,21 @@ ezc3d::ParametersNS::Parameters::Parameters(ezc3d::c3d &c3d, std::fstream &file)
   setMandatoryParameters();
 }
 
+ezc3d::ParametersNS::Parameters ezc3d::ParametersNS::Parameters::clone() const {
+  Parameters copy;
+  copy._parametersStart = _parametersStart;
+  copy._checksum = _checksum;
+  copy._nbParamBlock = _nbParamBlock;
+  copy._processorType = _processorType;
+
+  // Remove the mandatory groups that are automatically added by the constructor
+  copy._groups.clear();
+  for (const auto &grp : _groups) {
+    copy._groups.push_back(grp.clone());
+  }
+  return copy;
+}
+
 bool ezc3d::ParametersNS::Parameters::isMandatory(
     const std::string &groupName) {
   if (!groupName.compare("POINT") || !groupName.compare("ANALOG") ||

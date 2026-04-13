@@ -23,6 +23,14 @@ ezc3d::DataNS::AnalogsNS::Analogs::Analogs(ezc3d::c3d &c3d, std::fstream &file,
   }
 }
 
+ezc3d::DataNS::AnalogsNS::Analogs
+ezc3d::DataNS::AnalogsNS::Analogs::clone() const {
+  Analogs copy;
+  for (const auto &subframe : _subframe)
+    copy._subframe.push_back(subframe.clone());
+  return copy;
+}
+
 void ezc3d::DataNS::AnalogsNS::Analogs::print() const {
   for (size_t i = 0; i < nbSubframes(); ++i) {
     std::cout << "Subframe = " << i << "\n";

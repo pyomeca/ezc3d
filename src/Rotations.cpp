@@ -31,6 +31,14 @@ ezc3d::DataNS::RotationNS::Rotations::Rotations(
   }
 }
 
+ezc3d::DataNS::RotationNS::Rotations
+ezc3d::DataNS::RotationNS::Rotations::clone() const {
+  Rotations copy;
+  for (const auto &subframe : _subframe)
+    copy._subframe.push_back(subframe);
+  return copy;
+}
+
 void ezc3d::DataNS::RotationNS::Rotations::print() const {
   for (size_t i = 0; i < nbSubframes(); ++i) {
     std::cout << "Subframe = " << i << "\n";
@@ -57,7 +65,7 @@ const ezc3d::DataNS::RotationNS::SubFrame &
 ezc3d::DataNS::RotationNS::Rotations::subframe(size_t idx) const {
   try {
     return _subframe.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Analogs::subframe method is trying to access the subframe " +
         std::to_string(idx) + " while the maximum number of subframes is " +
@@ -69,7 +77,7 @@ ezc3d::DataNS::RotationNS::SubFrame &
 ezc3d::DataNS::RotationNS::Rotations::subframe(size_t idx) {
   try {
     return _subframe.at(idx);
-  } catch (const std::out_of_range&) {
+  } catch (const std::out_of_range &) {
     throw std::out_of_range(
         "Analogs::subframe method is trying to access the subframe " +
         std::to_string(idx) + " while the maximum number of subframes is " +

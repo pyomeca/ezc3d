@@ -30,6 +30,12 @@ public:
   EZC3D_API Analogs(ezc3d::c3d &c3d, std::fstream &file,
                     const AnalogsNS::Info &info);
 
+  ///
+  /// \brief Create a deep copy of an Analogs class
+  /// \return A deep copy of the Analogs class
+  ///
+  EZC3D_API Analogs clone() const;
+
   //---- STREAM ----//
 public:
   ///

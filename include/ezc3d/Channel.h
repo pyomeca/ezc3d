@@ -37,6 +37,12 @@ public:
   EZC3D_API Channel(ezc3d::c3d &c3d, std::fstream &file,
                     const AnalogsNS::Info &info, size_t channelIndex);
 
+  ///
+  /// \brief Create a deep copy of a channel
+  /// \return A deep copy of the channel
+  ///
+  EZC3D_API Channel clone() const;
+
   //---- STREAM ----//
 public:
   ///
