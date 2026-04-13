@@ -44,7 +44,7 @@ void ezc3d::DataNS::AnalogsNS::Channel::print() const {
 
 void ezc3d::DataNS::AnalogsNS::Channel::write(
     std::fstream &f, const ezc3d::DataNS::AnalogsNS::Info &analogsInfo,
-    int channelIndex) const {
+    size_t channelIndex) const {
 
   double scaleFactor = analogsInfo.scaleFactors().size() < channelIndex + 1
                            ? analogsInfo.scaleFactors()[0]

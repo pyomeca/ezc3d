@@ -514,7 +514,5 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
     };
 }
 
+%module ezc3d
 %include ../ezc3d.i
-
-
-

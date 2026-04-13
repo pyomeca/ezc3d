@@ -76,6 +76,7 @@ public:
   ///
   EZC3D_API void nbRotations(size_t nRotations);
 
+#ifndef SWIG
   ///
   /// \brief Get a particular rotation of index idx from the rotations data
   /// \param idx The index of the rotation
@@ -86,6 +87,7 @@ public:
   ///
   EZC3D_API const ezc3d::DataNS::RotationNS::Rotation &
   rotation(size_t idx) const;
+#endif
 
   ///
   /// \brief Get a particular rotation of index idx from the rotations data

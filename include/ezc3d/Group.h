@@ -145,6 +145,7 @@ public:
   ///
   EZC3D_API size_t parameterIdx(const std::string &parameterName) const;
 
+#ifndef SWIG
   ///
   /// \brief Get a particular parameter of index idx from the group
   /// \param idx The index of the parameter
@@ -157,6 +158,7 @@ public:
   ///
   EZC3D_API const ezc3d::ParametersNS::GroupNS::Parameter &
   parameter(size_t idx) const;
+#endif
 
   ///
   /// \brief Get a particular parameter of index idx from the group in order to
@@ -172,6 +174,7 @@ public:
   ///
   EZC3D_API ezc3d::ParametersNS::GroupNS::Parameter &parameter(size_t idx);
 
+#ifndef SWIG
   ///
   /// \brief Get a particular parameter with the name parameterName from the
   /// group \param parameterName The name of the parameter \return The parameter
@@ -180,6 +183,7 @@ public:
   ///
   EZC3D_API const ezc3d::ParametersNS::GroupNS::Parameter &
   parameter(const std::string &parameterName) const;
+#endif
 
   ///
   /// \brief Get a particular parameter with the name parameterName from the

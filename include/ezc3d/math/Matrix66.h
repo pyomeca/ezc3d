@@ -52,6 +52,7 @@ public:
   ///
   EZC3D_API void resize(size_t, size_t) override;
 
+#ifndef SWIG
   //---- OPERATIONS ----//
 public:
   ///
@@ -60,6 +61,7 @@ public:
   /// \return The vector multiplied
   ///
   EZC3D_API virtual ezc3d::Vector6d operator*(const ezc3d::Vector6d &other);
+#endif
 };
 
 #endif

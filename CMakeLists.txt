@@ -11,8 +11,9 @@ option(BUILD_EXAMPLE "Build a C++ example" ON)
 option(BUILD_DOC "Build documentation" OFF)
 option(GET_OFFICIAL_DOCUMENTATION "Automatically download the C3D documentation" OFF)
 option(BUILD_TESTS "Build all tests." OFF) # Makes boolean 'test' available.
-option(BINDER_PYTHON3 "Build Python SWIG module" OFF)
+option(BINDER_CSHARP "Build CSharp SWIG module" OFF)
 option(BINDER_MATLAB "Build Matlab module" OFF)
+option(BINDER_PYTHON3 "Build Python SWIG module" OFF)
 
 set(EZC3D_NAME ${PROJECT_NAME})
 set(EZC3D_ROOT_FOLDER ${PROJECT_SOURCE_DIR})
@@ -155,6 +156,9 @@ add_subdirectory(binding)
 # Examples
 if (BUILD_EXAMPLE)
     add_subdirectory(examples)
+    if (BINDER_CSHARP)
+        add_subdirectory(examples/csharp)
+    endif()
 endif()
 
 

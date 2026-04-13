@@ -36,7 +36,7 @@ public:
   /// \param pointIndex The index of the point currently created
   ///
   EZC3D_API Point(ezc3d::c3d &c3d, std::fstream &file,
-                  const Points3dNS::Info &pointsInfo, int pointIndex);
+                  const Points3dNS::Info &pointsInfo, size_t pointIndex);
 
   ///
   /// \brief Create a deep copy of a Point class
@@ -65,7 +65,7 @@ public:
   ///
   EZC3D_API void write(std::fstream &f,
                        const ezc3d::DataNS::Points3dNS::Info &pointsInfo,
-                       int pointIndex) const;
+                       size_t pointIndex) const;
 
   //---- DATA ----//
 protected:

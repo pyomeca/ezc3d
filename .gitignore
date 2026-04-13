@@ -54,3 +54,8 @@ doc/*.pdf
 
 
 .vscode/settings.json
+
+# C# example
+examples/csharp/ezc3d_csharp_wrapper/
+examples/csharp/obj/
+examples/csharp/ezc3d_CSharp.*

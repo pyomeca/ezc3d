@@ -1,5 +1,4 @@
 // File : ezc3d.i
-%module ezc3d
 %{
 #include "ezc3d_all.h"
 #include "modules/ForcePlatforms.h"
@@ -8,7 +7,6 @@
 // Instantiate from standard library
 %include <std_vector.i>
 %include <std_string.i>
-%include <std_iostream.i>
 %include <std_except.i>
 
 // Instantiate templates

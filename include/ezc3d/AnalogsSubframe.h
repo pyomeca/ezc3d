@@ -79,6 +79,7 @@ public:
   ///
   EZC3D_API void nbChannels(size_t nChannels);
 
+#ifndef SWIG
   ///
   /// \brief Get a particular analog channel of index idx from the analogous
   /// data \param idx Index of the analog channel \return The analog channel
@@ -89,6 +90,7 @@ public:
   /// channels
   ///
   EZC3D_API const ezc3d::DataNS::AnalogsNS::Channel &channel(size_t idx) const;
+#endif
 
   ///
   /// \brief Get a particular analog channel of index idx from the analogous

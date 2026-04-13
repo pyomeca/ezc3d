@@ -61,11 +61,13 @@ protected:
   std::shared_ptr<ezc3d::DataNS::Points3dNS::Points>
       _points; ///< All the points for this frame
 public:
+#ifndef SWIG
   ///
   /// \brief Return a reference to all the points
   /// \return Reference to all the points
   ///
   EZC3D_API const ezc3d::DataNS::Points3dNS::Points &points() const;
+#endif
 
   ///
   /// \brief Return a reference to all the points in order to be modified by the
@@ -82,11 +84,13 @@ protected:
   std::shared_ptr<ezc3d::DataNS::AnalogsNS::Analogs>
       _analogs; ///< All the subframes for all the analogs
 public:
+#ifndef SWIG
   ///
   /// \brief Return a reference to all the analogs
   /// \return Reference to all the analogs
   ///
   EZC3D_API const ezc3d::DataNS::AnalogsNS::Analogs &analogs() const;
+#endif
 
   ///
   /// \brief Return a reference to all the analogs in order to be modified by
@@ -104,11 +108,13 @@ protected:
       _rotations; ///< All the rotations for this frame
 
 public:
+#ifndef SWIG
   ///
   /// \brief Return a reference to all the rotations
   /// \return Reference to all the rotations
   ///
   EZC3D_API const ezc3d::DataNS::RotationNS::Rotations &rotations() const;
+#endif
 
   ///
   /// \brief Return a reference to all the rotations in order to be modified by

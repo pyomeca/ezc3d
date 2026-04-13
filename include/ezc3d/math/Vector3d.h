@@ -112,13 +112,13 @@ public:
   /// \param row The index
   ///
   EZC3D_API virtual double operator()(size_t row) const;
-#endif
 
   ///
   /// \brief Get a reference to a specific value of the vector
   /// \param row The index
   ///
   EZC3D_API virtual double &operator()(size_t row);
+#endif
 
   ///
   /// \brief Returns the dot-product of two vectors
