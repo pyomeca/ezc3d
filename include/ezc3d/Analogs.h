@@ -76,6 +76,7 @@ public:
   ///
   EZC3D_API void nbSubframes(size_t nbSubframes);
 
+#ifndef SWIG
   ///
   /// \brief Get a particular subframe of index idx from the analogous data set
   /// \param idx The index of the subframe
@@ -88,6 +89,7 @@ public:
   ///
   EZC3D_API const ezc3d::DataNS::AnalogsNS::SubFrame &
   subframe(size_t idx) const;
+#endif
 
   ///
   /// \brief Get a particular subframe of index idx from the analogous data set

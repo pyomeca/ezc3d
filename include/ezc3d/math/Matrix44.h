@@ -105,6 +105,7 @@ public:
 
   //---- OPERATIONS ----//
 public:
+#ifndef SWIG
   ///
   /// \brief Defining matrix multiplication with a Vector3d
   /// \param other The vector to multiply with
@@ -118,6 +119,7 @@ public:
   /// \return The matrix multiplied
   ///
   EZC3D_API virtual ezc3d::Matrix44 operator*(const ezc3d::Matrix44 &other);
+#endif
 };
 
 #endif

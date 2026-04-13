@@ -63,7 +63,7 @@ public:
   ///
   EZC3D_API void write(std::fstream &f,
                        const ezc3d::DataNS::AnalogsNS::Info &analogsInfo,
-                       int channelIndex) const;
+                       size_t channelIndex) const;
 
   //---- DATA ----//
 protected:

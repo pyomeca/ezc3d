@@ -174,6 +174,7 @@ public:
   ///
   EZC3D_API size_t groupIdx(const std::string &groupName) const;
 
+#ifndef SWIG
   ///
   /// \brief Get a particular group of index idx from the group holder
   /// \param idx The index of the group
@@ -185,6 +186,7 @@ public:
   /// groups
   ///
   EZC3D_API const ezc3d::ParametersNS::GroupNS::Group &group(size_t idx) const;
+#endif
 
   ///
   /// \brief Get a particular group of index idx from the group holder in order
@@ -200,6 +202,7 @@ public:
   ///
   EZC3D_API ezc3d::ParametersNS::GroupNS::Group &group(size_t idx);
 
+#ifndef SWIG
   ///
   /// \brief Get a particular group with the name groupName from the group
   /// holder \param groupName The name of the group \return The group
@@ -208,6 +211,7 @@ public:
   ///
   EZC3D_API const ezc3d::ParametersNS::GroupNS::Group &
   group(const std::string &groupName) const;
+#endif
 
   ///
   /// \brief Get a particular group with the name groupName from the group

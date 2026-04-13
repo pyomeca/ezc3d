@@ -123,6 +123,12 @@ public:
 
   //---- OPERATIONS ----//
 public:
+  ///
+  /// \brief Defining matrix transpose
+  /// \return The matrix transposed
+  ///
+  EZC3D_API virtual ezc3d::Matrix T() const;
+
 #ifndef SWIG
   ///
   /// \brief Get a specific value of the matrix
@@ -130,7 +136,6 @@ public:
   /// \param col The column index
   ///
   EZC3D_API virtual double operator()(size_t row, size_t col) const;
-#endif
 
   ///
   /// \brief Get a reference to a specific value of the matrix
@@ -138,12 +143,6 @@ public:
   /// \param col The column index
   ///
   EZC3D_API virtual double &operator()(size_t row, size_t col);
-
-  ///
-  /// \brief Defining matrix transpose
-  /// \return The matrix transposed
-  ///
-  EZC3D_API virtual ezc3d::Matrix T() const;
 
   ///
   /// \brief Defining the addition with a scalar
@@ -235,6 +234,7 @@ public:
   /// \return The matrix divided
   ///
   EZC3D_API virtual ezc3d::Matrix &operator/=(double scalar);
+#endif
 };
 
 #ifndef SWIG

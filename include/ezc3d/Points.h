@@ -77,6 +77,7 @@ public:
   ///
   EZC3D_API size_t nbPoints() const;
 
+#ifndef SWIG
   ///
   /// \brief Get a particular point of index idx from the 3D points data
   /// \param idx The index of the point
@@ -86,6 +87,7 @@ public:
   /// frames
   ///
   EZC3D_API const ezc3d::DataNS::Points3dNS::Point &point(size_t idx) const;
+#endif
 
   ///
   /// \brief Get a particular point of index idx from the 3D points data in

@@ -29,7 +29,7 @@ ezc3d::DataNS::Points3dNS::Point::Point(
 
 ezc3d::DataNS::Points3dNS::Point::Point(
     ezc3d::c3d &c3d, std::fstream &file,
-    const ezc3d::DataNS::Points3dNS::Info &info, int pointIndex)
+    const ezc3d::DataNS::Points3dNS::Info &info, size_t pointIndex)
     : ezc3d::Vector3d(), _residual(-1) {
   _cameraMasks.resize(7, false);
   double scaleFactor = info.scaleFactors().size() < pointIndex + 1
@@ -113,7 +113,7 @@ void ezc3d::DataNS::Points3dNS::Point::print() const {
 
 void ezc3d::DataNS::Points3dNS::Point::write(
     std::fstream &f, const ezc3d::DataNS::Points3dNS::Info &pointsInfo,
-    int pointIndex) const {
+    size_t pointIndex) const {
 
   double scaleFactor = pointsInfo.scaleFactors().size() < pointIndex + 1
                            ? pointsInfo.scaleFactors()[0]
@@ -135,7 +135,7 @@ void ezc3d::DataNS::Points3dNS::Point::write(
     size_t cameraMasks(cameraMasksBits.to_ulong());
     f.write(reinterpret_cast<const char *>(&cameraMasks),
             ezc3d::DATA_TYPE::WORD);
-    int residual(static_cast<int>(_residual / fabsf(scaleFactor)));
+    int residual(static_cast<int>(_residual / fabs(scaleFactor)));
     f.write(reinterpret_cast<const char *>(&residual), ezc3d::DATA_TYPE::WORD);
   } else {
     float zero(0);
