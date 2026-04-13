@@ -33,6 +33,11 @@ ezc3d::DataNS::AnalogsNS::Channel::Channel(
          info.scaleFactors()[channelIndex] * info.generalFactor());
 }
 
+ezc3d::DataNS::AnalogsNS::Channel
+ezc3d::DataNS::AnalogsNS::Channel::clone() const {
+  return Channel(*this);
+}
+
 void ezc3d::DataNS::AnalogsNS::Channel::print() const {
   std::cout << "Analog = " << data() << "\n";
 }

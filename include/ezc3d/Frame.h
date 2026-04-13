@@ -23,6 +23,12 @@ public:
   ///
   EZC3D_API Frame();
 
+  ///
+  /// \brief Create a deep copy of a frame
+  /// \param frame The frame to copy
+  ///
+  EZC3D_API Frame clone() const;
+
   //---- STREAM ----//
 public:
   ///

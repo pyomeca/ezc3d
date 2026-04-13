@@ -31,6 +31,12 @@ public:
   EZC3D_API Rotations(ezc3d::c3d &c3d, std::fstream &file,
                       const RotationNS::Info &info);
 
+  ///
+  /// \brief Create a deep copy of a Rotations
+  /// \return A deep copy of the Rotations
+  ///
+  EZC3D_API Rotations clone() const;
+
   //---- STREAM ----//
 public:
   ///

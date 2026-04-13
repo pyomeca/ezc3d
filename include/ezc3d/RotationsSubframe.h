@@ -31,6 +31,13 @@ public:
   EZC3D_API SubFrame(ezc3d::c3d &c3d, std::fstream &file,
                      const RotationNS::Info &info);
 
+  ///
+  /// \brief Create a deep copy of a SubFrame
+  /// \param subframe The SubFrame to copy
+  /// \return A deep copy of the SubFrame
+  ///
+  EZC3D_API SubFrame clone() const;
+
   //---- STREAM ----//
 public:
   ///

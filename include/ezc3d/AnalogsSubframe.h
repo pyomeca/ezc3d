@@ -32,6 +32,13 @@ public:
   EZC3D_API SubFrame(ezc3d::c3d &c3d, std::fstream &file,
                      const AnalogsNS::Info &info);
 
+  ///
+  /// \brief Create a deep copy of a subframe
+  /// \param subframe The subframe to copy
+  /// \return A deep copy of the subframe
+  ///
+  EZC3D_API SubFrame clone() const;
+
   //---- STREAM ----//
 public:
   ///

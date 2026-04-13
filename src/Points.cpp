@@ -29,6 +29,14 @@ ezc3d::DataNS::Points3dNS::Points::Points(
   }
 }
 
+ezc3d::DataNS::Points3dNS::Points
+ezc3d::DataNS::Points3dNS::Points::clone() const {
+  Points copy;
+  for (const auto &point : _points)
+    copy._points.push_back(point.clone());
+  return copy;
+}
+
 void ezc3d::DataNS::Points3dNS::Points::print() const {
   for (size_t i = 0; i < nbPoints(); ++i)
     point(i).print();

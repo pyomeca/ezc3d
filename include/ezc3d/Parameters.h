@@ -30,6 +30,12 @@ public:
   ///
   EZC3D_API Parameters(c3d &c3d, std::fstream &file);
 
+  ///
+  /// \brief Create a deep copy of a group holder
+  /// \return A deep copy of a group holder
+  ///
+  EZC3D_API Parameters clone() const;
+
 public:
   ///
   /// \brief Test if a given group is mandatory or not

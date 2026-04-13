@@ -28,6 +28,15 @@ void ezc3d::ParametersNS::GroupNS::Group::print() const {
   }
 }
 
+ezc3d::ParametersNS::GroupNS::Group
+ezc3d::ParametersNS::GroupNS::Group::clone() const {
+  Group copy(_name, _description);
+  copy._isLocked = _isLocked;
+  for (const auto &param : _parameters)
+    copy._parameters.push_back(param.clone());
+  return copy;
+}
+
 void ezc3d::ParametersNS::GroupNS::Group::write(
     const WriteOptions &writeOptions, std::fstream &f, int groupIdx,
     ezc3d::DataStartInfo &dataStartPositionToFill) const {

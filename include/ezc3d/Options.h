@@ -23,12 +23,24 @@ public:
 
   ///
   /// \brief Whether to ignore bad formatting when reading C3D files
+  /// \return Whether to ignore bad formatting when reading C3D files
+  ///
   EZC3D_API bool getIgnoreBadFormatting() const { return _ignoreBadFormatting; }
 
   ///
   /// \brief Whether to keep trailing spaces when reading strings
+  /// \return Whether to keep trailing spaces when reading strings
+  ///
   EZC3D_API bool getKeepParametersTrailingSpaces() const {
     return _keepParametersTrailingSpaces;
+  }
+
+  ///
+  /// \brief Create a deep copy of the options
+  /// \return A deep copy of the options
+  ///
+  EZC3D_API Options clone() const {
+    return Options(_ignoreBadFormatting, _keepParametersTrailingSpaces);
   }
 
 protected:

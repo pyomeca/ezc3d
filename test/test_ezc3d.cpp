@@ -202,6 +202,37 @@ void compareHeader(const ezc3d::c3d &c3d1, const ezc3d::c3d &c3d2) {
   }
 }
 
+void compareParameters(const ezc3d::c3d &c3d1, const ezc3d::c3d &c3d2) {
+  EXPECT_EQ(c3d1.parameters().nbGroups(), c3d2.parameters().nbGroups());
+  for (size_t g = 0; g < c3d1.parameters().nbGroups(); ++g) {
+    EXPECT_STREQ(c3d1.parameters().group(g).name().c_str(),
+                 c3d2.parameters().group(g).name().c_str());
+    EXPECT_EQ(c3d1.parameters().group(g).nbParameters(),
+              c3d2.parameters().group(g).nbParameters());
+    for (size_t p = 0; p < c3d1.parameters().group(g).nbParameters(); ++p) {
+      EXPECT_STREQ(c3d1.parameters().group(g).parameter(p).name().c_str(),
+                   c3d2.parameters().group(g).parameter(p).name().c_str());
+      EXPECT_EQ(c3d1.parameters().group(g).parameter(p).type(),
+                c3d2.parameters().group(g).parameter(p).type());
+      if (c3d1.parameters().group(g).parameter(p).type() == ezc3d::CHAR) {
+        EXPECT_EQ(
+            c3d1.parameters().group(g).parameter(p).valuesAsString().size(),
+            c3d2.parameters().group(g).parameter(p).valuesAsString().size());
+      } else if (c3d1.parameters().group(g).parameter(p).type() == ezc3d::INT) {
+        EXPECT_EQ(c3d1.parameters().group(g).parameter(p).valuesAsInt().size(),
+                  c3d2.parameters().group(g).parameter(p).valuesAsInt().size());
+      } else if (c3d1.parameters().group(g).parameter(p).type() ==
+                 ezc3d::FLOAT) {
+        EXPECT_EQ(
+            c3d1.parameters().group(g).parameter(p).valuesAsDouble().size(),
+            c3d2.parameters().group(g).parameter(p).valuesAsDouble().size());
+      } else {
+        FAIL() << "Unknown parameter type";
+      }
+    }
+  }
+}
+
 void compareData(const ezc3d::c3d &c3d1, const ezc3d::c3d &c3d2,
                  bool skipResidual = false) {
   // All the data should be the same
@@ -239,7 +270,7 @@ void compareData(const ezc3d::c3d &c3d1, const ezc3d::c3d &c3d2,
     }
     for (size_t sf = 0; sf < c3d1.data().frame(f).analogs().nbSubframes();
          ++sf) {
-      for (size_t c = 0; c < c3d1.header().nbAnalogByFrame(); ++c) {
+      for (size_t c = 0; c < c3d1.header().nbAnalogs(); ++c) {
         EXPECT_DOUBLE_AS_FLOAT_EQ(
             c3d1.data().frame(f).analogs().subframe(sf).channel(c).data(),
             c3d2.data().frame(f).analogs().subframe(sf).channel(c).data());
@@ -2518,6 +2549,46 @@ TEST(c3dModifier, specificFrames) {
       }
     }
   }
+}
+
+TEST(c3dDeepCopy, copy) {
+  // Create an empty c3d
+  c3dTestStruct new_c3d;
+  fillC3D(new_c3d, true, true);
+
+  // Create a copy of the c3d
+  ezc3d::c3d copy_c3d(new_c3d.c3d.clone());
+
+  // Test that the copy is the same as the original
+  compareHeader(new_c3d.c3d, copy_c3d);
+  compareParameters(new_c3d.c3d, copy_c3d);
+  compareData(new_c3d.c3d, copy_c3d);
+
+  // Modify the copy and test that the original is not modified
+  copy_c3d.setFirstFrame(10);
+  EXPECT_EQ(new_c3d.c3d.header().firstFrame(), 0);
+  EXPECT_EQ(copy_c3d.header().firstFrame(), 10);
+
+  ezc3d::ParametersNS::GroupNS::Parameter p;
+  p.name("MyNewParameter");
+  p.set("ThisisEmpty");
+  copy_c3d.parameter("MyNewGroup", p);
+  EXPECT_FALSE(new_c3d.c3d.parameters().isGroup("MyNewGroup"));
+  EXPECT_TRUE(copy_c3d.parameters().isGroup("MyNewGroup"));
+
+  p.name("RATE");
+  p.set(std::vector<double>() = {10.});
+  copy_c3d.parameter("POINT", p);
+  EXPECT_DOUBLE_AS_FLOAT_EQ(new_c3d.c3d.parameters()
+                                .group("POINT")
+                                .parameter("RATE")
+                                .valuesAsDouble()[0],
+                            100.0);
+  EXPECT_DOUBLE_AS_FLOAT_EQ(copy_c3d.parameters()
+                                .group("POINT")
+                                .parameter("RATE")
+                                .valuesAsDouble()[0],
+                            10.);
 }
 
 TEST(c3dFileIO, CreateWriteAndReadBack) {

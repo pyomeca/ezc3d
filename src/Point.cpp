@@ -94,6 +94,11 @@ ezc3d::DataNS::Points3dNS::Point::Point(
   }
 }
 
+ezc3d::DataNS::Points3dNS::Point
+ezc3d::DataNS::Points3dNS::Point::clone() const {
+  return Point(*this);
+}
+
 void ezc3d::DataNS::Points3dNS::Point::print() const {
   ezc3d::Vector3d::print();
   std::cout << "Residual = " << residual() << "; Masks = [";

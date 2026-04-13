@@ -38,6 +38,13 @@ public:
   EZC3D_API Point(ezc3d::c3d &c3d, std::fstream &file,
                   const Points3dNS::Info &pointsInfo, int pointIndex);
 
+  ///
+  /// \brief Create a deep copy of a Point class
+  /// \param point The Point class to copy
+  /// \return A deep copy of the Point class
+  ///
+  EZC3D_API Point clone() const;
+
   //---- STREAM ----//
 public:
   ///
