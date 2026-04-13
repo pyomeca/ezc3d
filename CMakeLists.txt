@@ -179,4 +179,7 @@ endif()
 # Testing
 if (BUILD_TESTS)
     add_subdirectory(test)
+    if (BINDER_CSHARP)
+        add_subdirectory(test/csharp)
+    endif()
 endif()

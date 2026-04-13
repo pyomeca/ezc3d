@@ -59,3 +59,7 @@ doc/*.pdf
 examples/csharp/ezc3d_csharp_wrapper/
 examples/csharp/obj/
 examples/csharp/ezc3d_CSharp.*
+
+# C# tests
+test/csharp/libs/
+test/csharp/obj/
