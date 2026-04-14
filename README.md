@@ -68,7 +68,7 @@ pip install ezc3d
 ```
 assuming pip is installed and, voilà! 
 
-## Anaconda (For Python users on Windows, Linux and Mac)
+## Anaconda (For Python and C++ users on Windows, Linux and Mac)
 For Python users, the second easiest way to install EZC3D is to download the binaries from anaconda (https://anaconda.org/) repositories (while binaries are available for Python3). The project is hosted on the conda-forge channel (https://anaconda.org/conda-forge/ezc3d).
 
 After having installed properly an anaconda client [my suggestion would be Miniconda (https://conda.io/miniconda.html)] and loaded the desired environment to install EZC3D in, just type the following command for installing the Python3 binaries:
@@ -83,15 +83,17 @@ The current building status for Anaconda release is as follow.
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-ezc3d-green.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/ezc3d.svg)](https://anaconda.org/conda-forge/ezc3d) |
 
-## Download binaries (For MATLAB users on Windows, Linux and Mac)
+## Download binaries (For MATLAB and C++ users on Windows, Linux and Mac)
 The MATLAB users can download the binaries directly from the Release page of `ezc3d` at this URL: [https://github.com/pyomeca/ezc3d/releases/latest](https://github.com/pyomeca/ezc3d/releases/latest). 
 
 Once the folder is downloaded, you simply unzip it, add it to the MATLAB's path, and enjoy ezc3d!
 
 https://github.com/user-attachments/assets/9abf62db-f750-41de-80a9-b421daad2dfa
 
-## Compiling (For Windows, Linux and Mac)
+## Compiling (For C# and C++ users on Windows, Linux and Mac)
 The main drawback with downloading the pre-compiled version from Anaconda is that it may be out-of-date. Moreover, since it is already compiled, it doesn't allow you to modify EZC3D if you need it. Therefore, a more versatile way to enjoy EZC3D is to compile it by yourself.
+
+Moreover, this is currently the only way to get the C# binder, as it is not yet available on NuGet.
 
 The building status for the current EZC3D branches is as follow
 
@@ -115,6 +117,11 @@ conda install -c conda-forge numpy swig
 ```
 For the MATLAB binder, the only additional dependency is MATLAB (https://www.mathworks.com/) itself.
 
+For the C# binder, the only additional dependency is the Dotnet SDK (https://dotnet.microsoft.com/en-us/download). It can be installed from the official website or by Anaconda using the following command:
+```bash
+conda install -c conda-forge dotnet
+```
+
 ### CMake <!-- omit from toc -->
 EZC3D comes in the form of a CMake (https://cmake.org/) project. If you don't know how to use CMake, you will find many examples on Internet. For the Windows user, a quick video was made to show how to compile for the MATLAB binder [here](https://youtu.be/gWno_NXrITA). Please note that the video is made from a french computer. This should not impair the workflow, but may be a bit confusing for some english folks!
 
@@ -133,6 +140,8 @@ The cmake variables to set are:
 > `BUILD_TESTS` If you want `ON` or not `OFF` to build the tests of the project. Please note that this will automatically download gtest (https://github.com/google/googletest). Default is `OFF`.
 > 
 > `BUILD_DOC` If you want (`ON`) or not (`OFF`) to build the documentation of the project. Default is `OFF`.
+>
+> `BINDER_CSHARP` If you want (`ON`) or not (`OFF`) to build the C# binder. Default is `OFF`.
 > 
 > `BINDER_PYTHON3` If you want (`ON`) or not (`OFF`) to build the Python binder. Default is `OFF`.
 >
@@ -174,7 +183,7 @@ python install .
 # How to use
 The aim of EZC3D is to be, indeed, easy to use. Still, it is a C++ library and therefore requires some time to adapt. This section aims to help you level up as fast as possible, in order to enjoy EZC3D as fast as possible. 
 
-There are example codes for C++, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
+There are example codes for C++, C#, Python3 and MATLAB in the folder `example` that can be used as template to perform all the day-to-day tasks. Moreover, the test files in the tests folder can also be very useful.
 
 ## The C++ API
 The core code is written in C++, meaning that you can fully create from scratch, read and write C3D from C++. 
@@ -411,6 +420,21 @@ Warning: Something important to remember is that there is no easy way to detect 
 Consequently, `ezc3d` has to assume one. 
 The most common being Z-axis pointing upward, this is what is assume.
 If one has a C3D with the Y-axis pointing upward, they must transform their data accordingly in order to use the force platform filter.
+
+## C#
+The C# binder is still in early development and is currently almost a one-to-one copy of the C++ API (because it uses SWIG to create the wrapper). Therefore, the C# API is pretty much the same as the C++ API. 
+
+So most of the information provided in the [C++ API](#the-c-api) section applies to the C# API as well. We just provide a quick example of how to read a C3D file in C#. For the rest, please refer to the [C++ API section](#the-c-api).
+
+### Read a C3D
+To read a C3D file you simply have to call the `c3d` class with a path
+```C#
+var file = new c3d("path_to_c3d.c3d");
+
+// Showcasing how to get header information
+Console.WriteLine("Header information:");
+Console.WriteLine("- Number of points: " + file.header().nb3dPoints());
+```
 
 ## MATLAB
 MATLAB (https://www.mathworks.com/) is a prototyping language largely used in industry and fairly used by the biomechanical scientific community. Despite the existence of Octave as an open-source and very similar language or the growing popularity of Python as a free and open-source alternative, MATLAB remains an important player as a programming languages. Therefore EZC3D comes with a binder for MATLAB (that can theoretically be used with Octave as well with some changes to the CMakeLists.txt file see the (Octave seciton)[#octave]).
