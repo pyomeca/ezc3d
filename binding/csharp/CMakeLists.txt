@@ -11,6 +11,11 @@ endif()
 project(${EZC3D_NAME}_CSharp)
 set(CSHARP_PROJECT_NAME "${PROJECT_NAME}" CACHE INTERNAL "Name of the C# swig interface project")
 
+# Prevent from using dynamic library as the toolchain is not properly set for it
+if (BUILD_SHARED_LIBS)
+    message(FATAL_ERROR "Building shared libraries is not supported for the C# binding. Please set BUILD_SHARED_LIBS to OFF.")
+endif()
+
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 

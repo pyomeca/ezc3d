@@ -1,8 +1,11 @@
 ﻿using System;
 
+// This example shows how to use ezc3d in C#. It reads a c3d file and prints some information about it.
+// It therefore assumes that the c3d files were extracted
+
 class Ezc3dExample {
     static void Main() {
-        var file = new c3d("../../test/c3dFiles/ezc3d-testFiles-master/ezc3d-testFiles-master/Vicon.c3d");
+        var file = new c3d("../c3dFiles/ezc3d-testFiles-master/ezc3d-testFiles-master/Vicon.c3d");
         
         // Showcasing how to get header information
         Console.WriteLine("Header information:");
