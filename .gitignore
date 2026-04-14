@@ -56,10 +56,13 @@ doc/*.pdf
 .vscode/settings.json
 
 # C# example
-examples/csharp/ezc3d_csharp_wrapper/
+examples/csharp/bin/
 examples/csharp/obj/
-examples/csharp/ezc3d_CSharp.*
+examples/csharp/ezc3d_csharp_wrapper/
+examples/csharp/*ezc3d_CSharp.*
 
 # C# tests
-test/csharp/libs/
+test/csharp/bin/
 test/csharp/obj/
+test/csharp/ezc3d_csharp_wrapper/
+test/csharp/*ezc3d_CSharp.*

@@ -1,36 +1,35 @@
-﻿namespace Ezc3d.Tests;
+﻿using System;
+using Xunit;
 
 public class Ezc3dTests
 {
-    [SetUp]
-    public void Setup()
+    [Fact]
+    public void CanLoadFile_AndAccessBasicData()
     {
-    }
+        // Arrange
+        var path = "test/c3dTestFiles/Vicon.c3d";
 
-    [Test]
-    public void Test1()
-    {
-        var file = new c3d("test/c3dTestFiles/Vicon.c3d");
+        // Act
+        var file = new c3d(path);
 
-        // Showcasing how to get header information
-        Console.WriteLine("Header information:");
-        Console.WriteLine("- Number of points: " + file.header().nb3dPoints());
+        // Assert - Header
+        Assert.True(file.header().nb3dPoints() > 0);
 
-        // Showcasing how to get parameters
-        Console.WriteLine("Available parameters:");
-        for (uint i = 0; i < file.parameters().nbGroups(); i++) {
-            Console.WriteLine("- " + file.parameters().group(i).name());
-        }
+        // Assert - Parameters
+        var used = file.parameters()
+                       .group("POINT")
+                       .parameter("USED")
+                       .valuesAsInt();
 
-        var used = file.parameters().group("POINT").parameter("USED").valuesAsInt();
-        Console.WriteLine("Number of points: " + used[0]);
+        Assert.True(used.Count > 0);
+        Assert.True(used[0] > 0);
 
-        // Showcasing how to get data
-        Console.WriteLine("First point of the first frame:");
-        var point = file.data().frame(0).points().point(0);
-        Console.WriteLine("- X: " + point.x());
-        Console.WriteLine("- Y: " + point.y());
-        Console.WriteLine("- Z: " + point.z());
-    
+        // Assert - Data
+        var point = file.data()
+                        .frame(0)
+                        .points()
+                        .point(0);
+
+        Assert.False(double.IsNaN(point.x()));
     }
 }
