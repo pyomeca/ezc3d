@@ -20,7 +20,7 @@ find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
 # Add swig module
-set(CMAKE_SWIG_FLAGS "")
+set(CMAKE_SWIG_FLAGS -namespace Ezc3d)
 set(I_SOURCE_FILE "${EZC3D_NAME}_csharp.i")
 
 set_property(SOURCE "${I_SOURCE_FILE}"

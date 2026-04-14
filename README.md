@@ -17,9 +17,9 @@ So, without further ado, let's begin C3Ding!
 - [Table of Contents](#table-of-contents)
 - [How to install](#how-to-install)
   - [Pip (For Python users on Windows, Linux and Mac)](#pip-for-python-users-on-windows-linux-and-mac)
-  - [Anaconda (For Python users on Windows, Linux and Mac)](#anaconda-for-python-users-on-windows-linux-and-mac)
-  - [Download binaries (For MATLAB users on Windows, Linux and Mac)](#download-binaries-for-matlab-users-on-windows-linux-and-mac)
-  - [Compiling (For Windows, Linux and Mac)](#compiling-for-windows-linux-and-mac)
+  - [Anaconda (For Python and C++ users on Windows, Linux and Mac)](#anaconda-for-python-and-c-users-on-windows-linux-and-mac)
+  - [Download binaries (For MATLAB and C++ users on Windows, Linux and Mac)](#download-binaries-for-matlab-and-c-users-on-windows-linux-and-mac)
+  - [Compiling (For C# and C++ users on Windows, Linux and Mac)](#compiling-for-c-and-c-users-on-windows-linux-and-mac)
   - [Compile via `setup.py`](#compile-via-setuppy)
 - [How to use](#how-to-use)
   - [The C++ API](#the-c-api)
@@ -29,15 +29,17 @@ So, without further ado, let's begin C3Ding!
     - [Navigating through the C3D class](#navigating-through-the-c3d-class)
     - [Copying the C3D class](#copying-the-c3d-class)
     - [Force platform filter](#force-platform-filter)
+  - [C#](#c)
+    - [Read a C3D](#read-a-c3d-1)
   - [MATLAB](#matlab)
     - [Create an empty yet valid C3D structure](#create-an-empty-yet-valid-c3d-structure-1)
-    - [Read a C3D](#read-a-c3d-1)
+    - [Read a C3D](#read-a-c3d-2)
     - [Write a C3D](#write-a-c3d-1)
     - [Force platform filter](#force-platform-filter-1)
   - [Octave](#octave)
   - [Python 3](#python-3)
     - [Create an empty yet valid C3D structure](#create-an-empty-yet-valid-c3d-structure-2)
-    - [Read a C3D](#read-a-c3d-2)
+    - [Read a C3D](#read-a-c3d-3)
     - [Write a C3D](#write-a-c3d-2)
     - [Force platform filter](#force-platform-filter-2)
   - [R](#r)
@@ -429,11 +431,18 @@ So most of the information provided in the [C++ API](#the-c-api) section applies
 ### Read a C3D
 To read a C3D file you simply have to call the `c3d` class with a path
 ```C#
-var file = new c3d("path_to_c3d.c3d");
+using System;
+using ezc3d;
 
-// Showcasing how to get header information
-Console.WriteLine("Header information:");
-Console.WriteLine("- Number of points: " + file.header().nb3dPoints());
+class Ezc3dExample {
+    static void Main() {
+        var file = new c3d("path_to_c3d.c3d");
+
+        // Showcasing how to get header information
+        Console.WriteLine("Header information:");
+        Console.WriteLine("- Number of points: " + file.header().nb3dPoints());
+    }
+}
 ```
 
 ## MATLAB
