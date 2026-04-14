@@ -57,12 +57,12 @@ if (NOT EXISTS "${CSPROJ_PATH}")
     file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/Program.cs")
 endif()
     
-# Copy the core library to the test directory
-add_custom_command(TARGET CopyCSharpTestFiles
+# Copy the core library to the example directory
+add_custom_command(TARGET CopyCSharpExampleFiles
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${LIBRARY_OUTPUT_DIR}/${LIB_PREFIX}${EZC3D_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        "${CSHARP_TEST_OUTPUT_DIR}"
-    COMMENT "Copying compiled library to test directory..."
+        "${CSHARP_EXAMPLE_OUTPUT_DIR}"
+    COMMENT "Copying compiled library to example directory..."
 )
 
 # Copy generated C# files
