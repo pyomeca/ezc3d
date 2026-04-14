@@ -54,16 +54,14 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '8.0.x'
           
-      - name: Build dynamic ezc3d UNIX
+      - name: Build ezc3d UNIX
         run: |
           MAIN_FOLDER=`pwd`
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
           cd $MAIN_FOLDER/$BUILD_FOLDER
-          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON -DBINDER_CSHARP=OFF ..
+          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON -DBINDER_CSHARP=ON ..
           make install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
         if: matrix.label != 'win-64'
@@ -76,13 +74,13 @@ jobs:
           cd $MAIN_FOLDER
         if: matrix.label != 'win-64'
 
-      - name: Build dynamic ezc3d WINDOWS
+      - name: Build ezc3d WINDOWS
         run: |
           MAIN_FOLDER=`pwd`
           CONDA_ENV_PATH=$CONDA/envs/ezc3d
           mkdir -p $BUILD_FOLDER
           cd $BUILD_FOLDER
-          cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON -DBINDER_CSHARP=OFF ..
+          cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=ON -DBINDER_CSHARP=ON ..
           cmake --build . --config Release --target install -j${{ steps.cpu-cores.outputs.count }}
           cd $MAIN_FOLDER
         if: matrix.label == 'win-64'
@@ -104,28 +102,6 @@ jobs:
           cd $MAIN_FOLDER/$BUILD_FOLDER
           pytest -v --color=yes $MAIN_FOLDER/test/python3
           cd $MAIN_FOLDER
-
-      - name: Build static ezc3d UNIX
-        run: |
-          MAIN_FOLDER=`pwd`
-          CONDA_ENV_PATH=$CONDA/envs/ezc3d
-          mkdir -p $MAIN_FOLDER/$BUILD_FOLDER
-          cd $MAIN_FOLDER/$BUILD_FOLDER
-          cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=OFF -DBINDER_CSHARP=ON ..
-          make install -j${{ steps.cpu-cores.outputs.count }}
-          cd $MAIN_FOLDER
-        if: matrix.label != 'win-64'
-       
-      - name: Build static ezc3d WINDOWS
-        run: |
-          MAIN_FOLDER=`pwd`
-          CONDA_ENV_PATH=$CONDA/envs/ezc3d
-          mkdir -p $BUILD_FOLDER
-          cd $BUILD_FOLDER
-          cmake -G"Visual Studio 17 2022" -Ax64 -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=ON -DBUILD_DOC=OFF -DBUILD_EXAMPLE=ON -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=OFF -DBINDER_CSHARP=ON ..
-          cmake --build . --config Release --target install -j${{ steps.cpu-cores.outputs.count }}
-          cd $MAIN_FOLDER
-        if: matrix.label == 'win-64'
 
       - name: Run C# binder tests
         run: |
