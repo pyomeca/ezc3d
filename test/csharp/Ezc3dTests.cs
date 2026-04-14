@@ -1,5 +1,6 @@
 ﻿using System;
 using Xunit;
+using Ezc3d;
 
 public class Ezc3dTests
 {
