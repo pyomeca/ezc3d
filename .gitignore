@@ -58,11 +58,15 @@ doc/*.pdf
 # C# example
 examples/csharp/bin/
 examples/csharp/obj/
+examples/csharp/*.so
+examples/csharp/*.dll
 examples/csharp/ezc3d_csharp_wrapper/
 examples/csharp/*ezc3d_CSharp.*
 
 # C# tests
 test/csharp/bin/
 test/csharp/obj/
+test/csharp/*.so
+test/csharp/*.dll
 test/csharp/ezc3d_csharp_wrapper/
 test/csharp/*ezc3d_CSharp.*

@@ -8,8 +8,10 @@ add_custom_target(
 
 # Paths
 if (WIN32 AND MSVC)
+    set(LIBRARY_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIG>")
     set(SWIG_LIBRARY_OUTPUT_DIR "${CSHARP_BUILD_DIR}/$<CONFIG>")
 else()
+    set(LIBRARY_OUTPUT_DIR "${CMAKE_BINARY_DIR}")
     set(SWIG_LIBRARY_OUTPUT_DIR "${CSHARP_BUILD_DIR}")
 endif()
 set(SWIG_GENERATED_OUTPUT_DIR "${CSHARP_BUILD_DIR}/${CSHARP_GENERATED_FOLDER_NAME}")
@@ -54,6 +56,13 @@ if (NOT EXISTS "${CSPROJ_PATH}")
     file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/UnitTest1.cs")
 endif()
     
+# Copy the core library to the test directory
+add_custom_command(TARGET CopyCSharpTestFiles
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${LIBRARY_OUTPUT_DIR}/${LIB_PREFIX}${EZC3D_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        "${CSHARP_TEST_OUTPUT_DIR}"
+    COMMENT "Copying compiled library to test directory..."
+)
 
 # Copy generated C# files
 add_custom_command(TARGET CopyCSharpTestFiles POST_BUILD
