@@ -24,11 +24,12 @@ else()
     set(LIB_PREFIX "")
 endif()
 
-set(CSPROJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${CSHARP_PROJECT_NAME}.csproj")
+set(CSPROJ_NAME "ezc3dExample")
+set(CSPROJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${CSPROJ_NAME}.csproj")
 if (NOT EXISTS "${CSPROJ_PATH}")
     # Generate a project
     execute_process(
-        COMMAND dotnet new console -o "${CMAKE_CURRENT_SOURCE_DIR}" --name "${CSHARP_PROJECT_NAME}"
+        COMMAND dotnet new console -o "${CMAKE_CURRENT_SOURCE_DIR}" --name "${CSPROJ_NAME}"
         WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
         RESULT_VARIABLE DOTNET_NEW_RESULT
         OUTPUT_VARIABLE DOTNET_NEW_OUTPUT
