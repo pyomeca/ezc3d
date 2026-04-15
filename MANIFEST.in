@@ -16,11 +16,11 @@ recursive-include ezc3d *.py
 
 # Exclude source and development files
 include CMakeLists.txt *.cmake.in
-recursive-include binding/*
-recursive-include include/*
-recursive-include modules/*
-recursive-include share/*
-recursive-include src/*
+recursive-include binding *
+recursive-include include *
+recursive-include modules *
+recursive-include share *
+recursive-include src *
 exclude .github/*
 exclude logo/*
 exclude external/*
