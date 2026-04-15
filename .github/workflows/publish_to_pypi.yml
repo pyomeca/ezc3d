@@ -32,7 +32,7 @@ jobs:
         
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1
@@ -54,10 +54,10 @@ jobs:
         run: | 
           conda install python pip -cconda-forge
           conda list
-          pip install build cibuildwheel==2.21.3
+          pip install build cibuildwheel==3.4.1
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21.3
+        uses: pypa/cibuildwheel@v3.4.1
         with:
           config-file: "pyproject.toml"
         env:
