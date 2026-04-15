@@ -58,12 +58,14 @@ if (NOT EXISTS "${CSPROJ_PATH}")
 endif()
     
 # Copy the core library to the test directory
-add_custom_command(TARGET CopyCSharpTestFiles
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${LIBRARY_OUTPUT_DIR}/${LIB_PREFIX}${EZC3D_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        "${CSHARP_TEST_OUTPUT_DIR}"
-    COMMENT "Copying compiled library to test directory..."
-)
+if (EZC3D_SHARED)
+    add_custom_command(TARGET CopyCSharpTestFiles
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${LIBRARY_OUTPUT_DIR}/${LIB_PREFIX}${EZC3D_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            "${CSHARP_TEST_OUTPUT_DIR}"
+        COMMENT "Copying compiled library to test directory..."
+    )
+endif()
 
 # Copy generated C# files
 add_custom_command(TARGET CopyCSharpTestFiles POST_BUILD
