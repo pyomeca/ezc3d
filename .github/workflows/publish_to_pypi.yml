@@ -18,8 +18,8 @@ jobs:
           - os: macos-latest
             label: osx-64
             prefix: /Users/runner/miniconda3/envs/ezc3d
-          - os: macos-13
-            label: osx-32
+          - os: macos-26-intel
+            label: osx-intel
             prefix: /Users/runner/miniconda3/envs/ezc3d
           - os: windows-latest
             label: win-64
