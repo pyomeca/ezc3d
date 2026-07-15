@@ -86,9 +86,11 @@ protected:
   std::vector<ezc3d::Vector3d>
       _F; ///< Force vectors for all instants (including subframes) in global
           ///< reference frame
+  std::vector<ezc3d::Vector3d> _F_Raw;
   std::vector<ezc3d::Vector3d>
       _M; ///< Moment vectors for all instants (including subframes) in global
           ///< reference frame
+  std::vector<ezc3d::Vector3d> _M_Raw;
   std::vector<ezc3d::Vector3d>
       _CoP; ///< Center of Pressure vectors for all instants (including
             ///< subframes) in global reference frame
@@ -142,6 +144,7 @@ public:
   /// frame
   ///
   EZC3D_API const std::vector<ezc3d::Vector3d> &forces() const;
+  EZC3D_API const std::vector<ezc3d::Vector3d> &forcesRaw() const;
 
   ///
   /// \brief Returns the moment vectors at each frame in the global reference
@@ -149,7 +152,7 @@ public:
   /// reference frame at origin
   ///
   EZC3D_API const std::vector<ezc3d::Vector3d> &moments() const;
-
+  EZC3D_API const std::vector<ezc3d::Vector3d> &momentsRaw() const;
   ///
   /// \brief Returns the center of pressure at each frame in the global
   /// reference frame \return The center of pressure at each frame in the global

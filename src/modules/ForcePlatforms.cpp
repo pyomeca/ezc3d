@@ -94,8 +94,18 @@ ezc3d::Modules::ForcePlatform::forces() const {
 }
 
 const std::vector<ezc3d::Vector3d> &
+ezc3d::Modules::ForcePlatform::forcesRaw() const {
+  return _F_Raw;
+}
+
+const std::vector<ezc3d::Vector3d> &
 ezc3d::Modules::ForcePlatform::moments() const {
   return _M;
+}
+
+const std::vector<ezc3d::Vector3d> &
+ezc3d::Modules::ForcePlatform::momentsRaw() const {
+  return _M_Raw;
 }
 
 const std::vector<ezc3d::Vector3d> &ezc3d::Modules::ForcePlatform::CoP() const {
@@ -316,7 +326,9 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
   // Get the force and moment from these channel in global reference frame
   size_t nFramesTotal(c3d.header().nbFrames() * c3d.header().nbAnalogByFrame());
   _F.resize(nFramesTotal);
+  _F_Raw.resize(nFramesTotal);
   _M.resize(nFramesTotal);
+  _M_Raw.resize(nFramesTotal);
   _CoP.resize(nFramesTotal);
   _Tz.resize(nFramesTotal);
   size_t cmp(0);
@@ -348,7 +360,8 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
         ++cmp;
       } else if (_type == 2 || _type == 3 || _type == 4) {
         ezc3d::Vector3d force_raw;
-        ezc3d::Vector3d moment_raw;
+        ezc3d::Vector3d _moment_raw;
+        ezc3d::Vector3d moment;
         if (_type == 3) {
           for (size_t j = 0; j < 8; ++j) {
             ch[j] = subframe.channel(channel_idx[j]).data();
@@ -358,12 +371,13 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
           force_raw(0) = ch[0] + ch[1];
           force_raw(1) = ch[2] + ch[3];
           force_raw(2) = ch[4] + ch[5] + ch[6] + ch[7];
-
-          moment_raw(0) = _origin(1) * (ch[4] + ch[5] - ch[6] - ch[7]);
-          moment_raw(1) = _origin(0) * (ch[5] + ch[6] - ch[4] - ch[7]);
-          moment_raw(2) =
-              _origin(1) * (ch[1] - ch[0]) + _origin(0) * (ch[2] - ch[3]);
-          moment_raw += force_raw.cross(ezc3d::Vector3d(0, 0, _origin(2)));
+          _moment_raw(0) = (ch[4] + ch[5] - ch[6] - ch[7]);
+          _moment_raw(1) = (ch[5] + ch[6] - ch[4] - ch[7]);
+          _moment_raw(2) = (ch[1] - ch[0]) + _origin(0) * (ch[2] - ch[3]);
+          moment(0) = _origin(1) * _moment_raw(0);
+          moment(1) = _origin(0) * _moment_raw(1);
+          moment(2) = _origin(1) * _moment_raw(2);
+          moment += force_raw.cross(ezc3d::Vector3d(0, 0, _origin(2)));
         } else {
           ezc3d::Vector6d data_raw;
           for (size_t j = 0; j < 3; ++j) {
@@ -375,15 +389,18 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
           }
           for (size_t j = 0; j < 3; ++j) {
             force_raw(j) = data_raw(j);
-            moment_raw(j) = data_raw(j + 3);
+            _moment_raw(j) = data_raw(j + 3);
+            moment(j) = _moment_raw(j);
           }
-          moment_raw += force_raw.cross(_origin);
+          moment += force_raw.cross(_origin);
         }
         _F[cmp] = _refFrame * force_raw;
-        _M[cmp] = _refFrame * moment_raw;
+        _F_Raw[cmp] = force_raw;
+        _M[cmp] = _refFrame * moment;
+        _M_Raw[cmp] = _moment_raw;
 
-        ezc3d::Vector3d CoP_raw(-moment_raw(1) / force_raw(2),
-                                moment_raw(0) / force_raw(2), 0);
+        ezc3d::Vector3d CoP_raw(-moment(1) / force_raw(2),
+                                moment(0) / force_raw(2), 0);
         if (_type == 3) {
           // The following is based on
           // https://nbviewer.org/github/BMClab/BMC/blob/master/notebooks/KistlerForcePlateCalculation.ipynb
@@ -410,7 +427,7 @@ void ezc3d::Modules::ForcePlatform::extractData(size_t idx,
         }
         _CoP[cmp] = _refFrame * CoP_raw + _meanCorners;
         _Tz[cmp] = _refFrame * static_cast<Vector3d>(
-                                   moment_raw - force_raw.cross(-1 * CoP_raw));
+                                   moment - force_raw.cross(-1 * CoP_raw));
         ++cmp;
       }
     }
