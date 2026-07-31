@@ -56,6 +56,14 @@ jobs:
         uses: matlab-actions/setup-matlab@v3
         with: 
           cache: true
+        if: matrix.label != 'macos-26-intel'
+      
+      - name: Install MATLAB on macOS 26 Intel
+        uses: matlab-actions/setup-matlab@v3
+        with: 
+          cache: true
+          release: R2025b
+        if: matrix.label == 'macos-26-intel'
         
       - name: Build ezc3d on UNIX
         run: |
