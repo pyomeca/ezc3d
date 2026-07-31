@@ -55,7 +55,7 @@ jobs:
           git submodule update --init --recursive
 
       - name: Install MATLAB
-        uses: matlab-actions/setup-matlab@v2
+        uses: matlab-actions/setup-matlab@v3
         with: 
           cache: true
 
