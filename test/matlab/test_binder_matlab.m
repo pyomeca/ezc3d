@@ -251,6 +251,10 @@ c3dToCompare = ezc3dRead('temporary.c3d');
 assert(sum(size(c3dToCompare.data.rotations) == [4, 4, 21, 340]) == 4)
 assert(sum(sum(c3dToCompare.data.rotations(:, :, 15, 256) - comparisonValue)) < 1e-8);
 
+% Test both string types (char array and strings)
+ezc3dRead('temporary.c3d');
+ezc3dRead("temporary.c3d");
+
 % All done!
 delete('temporary.c3d');
 fprintf('\nMatlab tests successfully completed!\n')
