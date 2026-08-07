@@ -9,19 +9,60 @@ else()
 endif()
 
 # Set up swig
+if(DEFINED SWIG_EXECUTABLE AND NOT EXISTS "${SWIG_EXECUTABLE}")
+    unset(SWIG_EXECUTABLE CACHE)
+endif()
+if(DEFINED SWIG_DIR AND NOT EXISTS "${SWIG_DIR}")
+    unset(SWIG_DIR CACHE)
+endif()
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
 # include python
+set(Python3_FIND_VIRTUALENV FIRST)
+set(Python3_FIND_STRATEGY LOCATION)
+if(DEFINED ENV{CONDA_PREFIX} AND NOT DEFINED Python3_ROOT_DIR)
+    set(Python3_ROOT_DIR "$ENV{CONDA_PREFIX}")
+endif()
+if(DEFINED ENV{CONDA_PREFIX} AND EXISTS "$ENV{CONDA_PREFIX}/bin/python" AND NOT DEFINED Python3_EXECUTABLE)
+    set(Python3_EXECUTABLE "$ENV{CONDA_PREFIX}/bin/python")
+endif()
+
 if(SKBUILD)
-    find_package(NumPy REQUIRED)
-    include_directories(${PYTHON_INCLUDE_DIR})
-    include_directories(${NumPy_INCLUDE_DIRS})
+    # Newer CMake versions handle NumPy through FindPython3.
+    # Keep a fallback to legacy FindNumPy for older toolchains.
+    find_package(Python3 QUIET COMPONENTS Interpreter Development NumPy)
+    if(Python3_Interpreter_FOUND AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
+        include_directories(${Python3_INCLUDE_DIRS})
+        include_directories(${Python3_NumPy_INCLUDE_DIRS})
+    else()
+        find_package(NumPy REQUIRED)
+        include_directories(${PYTHON_INCLUDE_DIR})
+        include_directories(${NumPy_INCLUDE_DIRS})
+    endif()
 else()
+    # On some recent CMake + Python toolchains (notably free-threaded builds),
+    # Development may be reported missing even when NumPy is available.
     find_package(Python3 REQUIRED
-        COMPONENTS Interpreter Development NumPy
+        COMPONENTS Interpreter NumPy
     )
-    include_directories(${Python3_INCLUDE_DIRS})
+    find_package(Python3 QUIET COMPONENTS Development)
+
+    if(Python3_Development_FOUND)
+        include_directories(${Python3_INCLUDE_DIRS})
+    else()
+        execute_process(
+            COMMAND "${Python3_EXECUTABLE}" -c "import sysconfig; print(sysconfig.get_path('include'))"
+            OUTPUT_VARIABLE PYTHON3_INCLUDE_DIR_FROM_INTERPRETER
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if(PYTHON3_INCLUDE_DIR_FROM_INTERPRETER)
+            include_directories(${PYTHON3_INCLUDE_DIR_FROM_INTERPRETER})
+        else()
+            message(FATAL_ERROR "Could not determine Python include directory. Install Python development headers or use a Python environment with dev files.")
+        endif()
+    endif()
+
     include_directories(${Python3_NumPy_INCLUDE_DIRS})
 endif()
 
@@ -46,15 +87,16 @@ SWIG_ADD_LIBRARY(${PROJECT_NAME}
     LANGUAGE "python"
     SOURCES "${I_SOURCE_FILE}"
 )
-swig_link_libraries(${PROJECT_NAME}
+if(TARGET ${PROJECT_NAME})
+    set(PYTHON_PROJECT_NAME ${PROJECT_NAME})
+elseif(TARGET _${PROJECT_NAME})
+    set(PYTHON_PROJECT_NAME _${PROJECT_NAME})
+else()
+    message(FATAL_ERROR "Could not find generated SWIG target for ${PROJECT_NAME}")
+endif()
+target_link_libraries(${PYTHON_PROJECT_NAME} PRIVATE
     "${EZC3D_NAME}"
 )
-
-if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.13")
-    set(PYTHON_PROJECT_NAME ${PROJECT_NAME})
-else()
-    set(PYTHON_PROJECT_NAME _${PROJECT_NAME})
-endif()
 
 # Add headers
 set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
