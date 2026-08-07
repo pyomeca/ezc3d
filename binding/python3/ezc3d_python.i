@@ -282,8 +282,8 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 
                 std::vector<bool> cameraMask;
                 for(size_t j = 0; j < 7; ++j){
-                    const int cam = *static_cast<int*>(PyArray_GETPTR3(cameraMasksData, j, i, f));
-                    cameraMask.push_back(cam != 0);
+                    const double cam = *static_cast<double*>(PyArray_GETPTR3(cameraMasksData, j, i, f));
+                    cameraMask.push_back(cam != 0.0);
                 }   
 
                 pt.cameraMask(cameraMask);
@@ -516,3 +516,4 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
 
 %module ezc3d
 %include ../ezc3d.i
+
