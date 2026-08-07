@@ -13,6 +13,7 @@
 #include "ezc3d/ezc3d.h"
 #include <bitset>
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 #include <stdexcept>
 
@@ -44,18 +45,21 @@ ezc3d::DataNS::Points3dNS::Point::Point(
     x(c3d.readFloat(info.processorType(), file));
     y(c3d.readFloat(info.processorType(), file));
     z(c3d.readFloat(info.processorType(), file));
-    if (info.processorType() == PROCESSOR_TYPE::INTEL) {
-      cameraMask(
-          c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD));
-      residual(static_cast<float>(c3d.readInt(info.processorType(), file,
-                                              ezc3d::DATA_TYPE::WORD)) *
-               -scaleFactor);
-    } else if (info.processorType() == PROCESSOR_TYPE::DEC) {
-      residual(static_cast<float>(c3d.readInt(info.processorType(), file,
-                                              ezc3d::DATA_TYPE::WORD)) *
-               -scaleFactor);
-      cameraMask(
-          c3d.readInt(info.processorType(), file, ezc3d::DATA_TYPE::WORD));
+    if (info.processorType() == PROCESSOR_TYPE::INTEL ||
+        info.processorType() == PROCESSOR_TYPE::DEC) {
+      // In floating-point C3D, the 4th value is a packed float metadata:
+      // residual*256 + cameraMask. A negative value marks an invalid point.
+      const float packedMetaFloat = c3d.readFloat(info.processorType(), file);
+      if (packedMetaFloat < 0) {
+        // Negative packed metadata is a sentinel (typically -1.0f) for
+        // invalid/missing points, therefore no camera mask is encoded.
+        residual(packedMetaFloat);
+      } else {
+        const uint32_t packedMeta =
+            static_cast<uint32_t>(std::lround(packedMetaFloat));
+        cameraMask(static_cast<int>(packedMeta & 0xFFu));
+        residual(static_cast<float>((packedMeta >> 8) & 0xFFu) * -scaleFactor);
+      }
     } else if (info.processorType() == PROCESSOR_TYPE::MIPS) {
       throw std::runtime_error(
           "MIPS processor type not supported yet, please open a "
@@ -132,20 +136,22 @@ void ezc3d::DataNS::Points3dNS::Point::write(
       }
     }
     cameraMasksBits[7] = 0;
-    size_t cameraMasks(cameraMasksBits.to_ulong());
-    f.write(reinterpret_cast<const char *>(&cameraMasks),
-            ezc3d::DATA_TYPE::WORD);
-    int residual(static_cast<int>(_residual / fabs(scaleFactor)));
-    f.write(reinterpret_cast<const char *>(&residual), ezc3d::DATA_TYPE::WORD);
+    const uint32_t cameraMasksPacked =
+        static_cast<uint32_t>(cameraMasksBits.to_ulong()) & 0xFFu;
+    const uint32_t residualPacked =
+        static_cast<uint32_t>(_residual / fabs(scaleFactor)) & 0xFFu;
+    const float packedMeta =
+        static_cast<float>((residualPacked << 8) | cameraMasksPacked);
+    f.write(reinterpret_cast<const char *>(&packedMeta),
+            ezc3d::DATA_TYPE::FLOAT);
   } else {
     float zero(0);
-    int minusOne(-16512); // 0xbf80 - 0xFFFF - 1   This is the Qualisys and
-                          // Vicon value for missing marker);
+    float minusOne(-1.f); // This is the Qualisys and Vicon value for
+                          // missing marker in floating-point format.
     f.write(reinterpret_cast<const char *>(&zero), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char *>(&zero), ezc3d::DATA_TYPE::FLOAT);
     f.write(reinterpret_cast<const char *>(&zero), ezc3d::DATA_TYPE::FLOAT);
-    f.write(reinterpret_cast<const char *>(&zero), ezc3d::DATA_TYPE::WORD);
-    f.write(reinterpret_cast<const char *>(&minusOne), ezc3d::DATA_TYPE::WORD);
+    f.write(reinterpret_cast<const char *>(&minusOne), ezc3d::DATA_TYPE::FLOAT);
   }
 }
 

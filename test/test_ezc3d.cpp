@@ -4295,9 +4295,9 @@ TEST(c3dFileIO, comparedIdenticalFilesSample1) {
   compareHeader(c3d_pr, c3d_vi);
 
   // All the data should be the same
-  compareData(c3d_pr, c3d_pi, true);
-  compareData(c3d_pr, c3d_vr, true);
-  compareData(c3d_pr, c3d_vi, true);
+  compareData(c3d_pr, c3d_pi);
+  compareData(c3d_pr, c3d_vr);
+  compareData(c3d_pr, c3d_vi);
 }
 
 TEST(c3dFileIO, comparedIdenticalFilesSample2) {
@@ -4317,7 +4317,7 @@ TEST(c3dFileIO, comparedIdenticalFilesSample2) {
 
   // All the data should be the same
   // compareData(c3d_pr, c3d_pi); // Data are actually sligthly different
-  compareData(c3d_pr, c3d_vr, true);
+  compareData(c3d_pr, c3d_vr);
   compareData(c3d_pr, c3d_vi, true);
 }
 
