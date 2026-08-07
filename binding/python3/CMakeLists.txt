@@ -28,6 +28,13 @@ if(DEFINED ENV{CONDA_PREFIX} AND EXISTS "$ENV{CONDA_PREFIX}/bin/python" AND NOT 
     set(Python3_EXECUTABLE "$ENV{CONDA_PREFIX}/bin/python")
 endif()
 
+# Detect whether the selected interpreter is a free-threaded (no-GIL) build.
+execute_process(
+    COMMAND "${Python3_EXECUTABLE}" -c "import sysconfig; print(1 if sysconfig.get_config_var('Py_GIL_DISABLED') else 0)"
+    OUTPUT_VARIABLE PYTHON3_GIL_DISABLED
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 if(SKBUILD)
     # Newer CMake versions handle NumPy through FindPython3.
     # Keep a fallback to legacy FindNumPy for older toolchains.
@@ -97,6 +104,10 @@ endif()
 target_link_libraries(${PYTHON_PROJECT_NAME} PRIVATE
     "${EZC3D_NAME}"
 )
+
+if(PYTHON3_GIL_DISABLED STREQUAL "1")
+    target_compile_definitions(${PYTHON_PROJECT_NAME} PRIVATE SWIGPYTHON_NOGIL)
+endif()
 
 # Add headers
 set_target_properties(${PYTHON_PROJECT_NAME} PROPERTIES
