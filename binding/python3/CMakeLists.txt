@@ -38,8 +38,8 @@ execute_process(
 if(SKBUILD)
     # Newer CMake versions handle NumPy through FindPython3.
     # Keep a fallback to legacy FindNumPy for older toolchains.
-    find_package(Python3 QUIET COMPONENTS Interpreter Development NumPy)
-    if(Python3_Interpreter_FOUND AND Python3_Development_FOUND AND Python3_NumPy_FOUND)
+    find_package(Python3 QUIET COMPONENTS Interpreter Development.Module NumPy)
+    if(Python3_Interpreter_FOUND AND Python3_Development.Module_FOUND AND Python3_NumPy_FOUND)
         include_directories(${Python3_INCLUDE_DIRS})
         include_directories(${Python3_NumPy_INCLUDE_DIRS})
     else()
@@ -51,11 +51,11 @@ else()
     # On some recent CMake + Python toolchains (notably free-threaded builds),
     # Development may be reported missing even when NumPy is available.
     find_package(Python3 REQUIRED
-        COMPONENTS Interpreter NumPy
+        COMPONENTS Interpreter Development.Module NumPy
     )
-    find_package(Python3 QUIET COMPONENTS Development)
+    find_package(Python3 QUIET COMPONENTS Development.Module)
 
-    if(Python3_Development_FOUND)
+    if(Python3_Development.Module_FOUND)
         include_directories(${Python3_INCLUDE_DIRS})
     else()
         execute_process(
@@ -101,9 +101,23 @@ elseif(TARGET _${PROJECT_NAME})
 else()
     message(FATAL_ERROR "Could not find generated SWIG target for ${PROJECT_NAME}")
 endif()
+set(PYTHON3_EXTENSION_LINK_TARGET "")
+if(TARGET Python3::Module)
+    set(PYTHON3_EXTENSION_LINK_TARGET Python3::Module)
+elseif(TARGET Python3::Python)
+    set(PYTHON3_EXTENSION_LINK_TARGET Python3::Python)
+elseif(Python3_LIBRARY)
+    set(PYTHON3_EXTENSION_LINK_TARGET "${Python3_LIBRARY}")
+elseif(Python3_LIBRARIES)
+    set(PYTHON3_EXTENSION_LINK_TARGET "${Python3_LIBRARIES}")
+endif()
+
 target_link_libraries(${PYTHON_PROJECT_NAME} PRIVATE
     "${EZC3D_NAME}"
 )
+if(PYTHON3_EXTENSION_LINK_TARGET)
+    target_link_libraries(${PYTHON_PROJECT_NAME} PRIVATE ${PYTHON3_EXTENSION_LINK_TARGET})
+endif()
 
 if(PYTHON3_GIL_DISABLED STREQUAL "1")
     target_compile_definitions(${PYTHON_PROJECT_NAME} PRIVATE SWIGPYTHON_NOGIL)
