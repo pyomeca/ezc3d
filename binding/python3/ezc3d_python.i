@@ -210,7 +210,7 @@ PyObject * _get_rotations(
 %}
 
 %inline %{
-PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
+PyArrayObject *helper_getPyArrayObject( PyObject *input, int type, int *conversion_done) {
   PyArrayObject *obj;
 
   if (PyArray_Check( input )) {
@@ -220,8 +220,7 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
       PyErr_SetString( PyExc_TypeError, "not algned or not in machine byte order" );
       return NULL;
     }
-    int conversion_done = 0;
-    obj = (PyArrayObject *) obj_to_array_allow_conversion( input, type, &conversion_done );
+    obj = (PyArrayObject *) obj_to_array_allow_conversion( input, type, conversion_done );
     if (!obj) return NULL;
   } else {
     PyErr_SetString( PyExc_TypeError, "not an array" );
@@ -353,14 +352,26 @@ PyArrayObject *helper_getPyArrayObject( PyObject *input, int type) {
             PyObject *analogData,
             PyObject *rotationsData
         ){
-        PyArrayObject *pointsDataArr = helper_getPyArrayObject(pointsData, NPY_DOUBLE);
-        PyArrayObject *residualsDataArr = helper_getPyArrayObject(residualsData, NPY_DOUBLE);
-        PyArrayObject *cameraMasksDataArr = helper_getPyArrayObject(cameraMasksData, NPY_DOUBLE);
-        PyArrayObject *analogDataArr = helper_getPyArrayObject(analogData, NPY_DOUBLE);
+        int converted[5] = {0,0,0,0,0};
+        PyArrayObject *pointsDataArr = helper_getPyArrayObject(pointsData, NPY_DOUBLE, &converted[0]);
+        PyArrayObject *residualsDataArr = helper_getPyArrayObject(residualsData, NPY_DOUBLE, &converted[1]);
+        PyArrayObject *cameraMasksDataArr = helper_getPyArrayObject(cameraMasksData, NPY_DOUBLE, &converted[2]);
+        PyArrayObject *analogDataArr = helper_getPyArrayObject(analogData, NPY_DOUBLE, &converted[3]);
         PyArrayObject *rotationDataArr = nullptr;
         if (rotationsData != Py_None)
-            rotationDataArr = helper_getPyArrayObject(rotationsData, NPY_DOUBLE);
+            rotationDataArr = helper_getPyArrayObject(rotationsData, NPY_DOUBLE, &converted[4]);
+
         _import_numpy_data(self, pointsDataArr, residualsDataArr, cameraMasksDataArr, analogDataArr, rotationDataArr);
+
+        // converted -> copied to new array; need to decrement ref counter
+        if (converted[0]) Py_DECREF(pointsDataArr);
+        if (converted[1]) Py_DECREF(residualsDataArr);
+        if (converted[2]) Py_DECREF(cameraMasksDataArr);
+        if (converted[3]) Py_DECREF(analogDataArr);
+        if (rotationsData != Py_None)
+        {
+            if (converted[4]) Py_DECREF(rotationDataArr);
+        }
     }
 
     // Extend c3d class to get an easy accessor to data points
