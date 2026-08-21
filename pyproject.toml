@@ -1,14 +1,10 @@
 [build-system]
 requires = [
-    "setuptools>=61.0",
-    "wheel",
-    "scikit-build",
-    "cmake",
-    "ninja",
+    "scikit-build-core>=0.10",
     "swig",
     "numpy",
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "scikit_build_core.build"
 
 [project]
 name = "ezc3d"
@@ -25,6 +21,21 @@ authors = [
 license-files = ["LICENSE"]
 urls = { "Homepage" = "https://github.com/pyomeca/ezc3d" }
 requires-python = ">=3.10"
+
+[[tool.dynamic-metadata]]
+provider = "scikit_build_core.metadata.regex"
+field = "version"
+input = "CMakeLists.txt"
+regex = "project\\(ezc3d VERSION (?P<value>\\d+\\.\\d+\\.\\d+)\\)"
+
+[tool.scikit-build]
+cmake.args = [
+    "-DBUILD_EXAMPLE:BOOL=OFF",
+    "-DBINDER_PYTHON3:BOOL=ON",
+    "-DCMAKE_INSTALL_BINDIR=ezc3d",
+    "-DCMAKE_INSTALL_LIBDIR=ezc3d",
+]
+wheel.packages = ["ezc3d"]
 
 [tool.cibuildwheel]
 build-frontend = "build"
