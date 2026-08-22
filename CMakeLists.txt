@@ -103,13 +103,13 @@ install(TARGETS ${PROJECT_NAME} EXPORT ezc3dTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
 )
-# install(DIRECTORY include/ezc3d DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-#     # Exclude ezc3dConfig.h.in.
-#     PATTERN "*.h.in" EXCLUDE
-# )
-# install(FILES "${EZC3D_BINARY_DIR}/include/ezc3d/ezc3dConfig.h"
-#     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
-# )
+install(DIRECTORY include/ezc3d DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    # Exclude ezc3dConfig.h.in.
+    PATTERN "*.h.in" EXCLUDE
+)
+install(FILES "${EZC3D_BINARY_DIR}/include/ezc3d/ezc3dConfig.h"
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
+)
 
 # Prepare share
 include(CMakePackageConfigHelpers)
