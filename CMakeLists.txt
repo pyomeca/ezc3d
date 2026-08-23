@@ -104,13 +104,11 @@ install(TARGETS ${PROJECT_NAME} EXPORT ezc3dTargets
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
 )
 install(DIRECTORY include/ezc3d DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    COMPONENT development
     # Exclude ezc3dConfig.h.in.
     PATTERN "*.h.in" EXCLUDE
 )
 install(FILES "${EZC3D_BINARY_DIR}/include/ezc3d/ezc3dConfig.h"
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ezc3d
-    COMPONENT development
 )
 
 # Prepare share
@@ -133,14 +131,12 @@ install(
     EXPORT ezc3dTargets
     FILE ezc3dTargets.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ezc3d
-    COMPONENT development
 )
 install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/ezc3dConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/ezc3dConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ezc3d
-    COMPONENT development
 )
 
 # uninstall target
