@@ -36,6 +36,7 @@ cmake.args = [
     "-DCMAKE_INSTALL_LIBDIR=ezc3d",
 ]
 wheel.packages = ["ezc3d"]
+install.components = ["Unspecified"]
 
 [tool.cibuildwheel]
 build-frontend = "build"
