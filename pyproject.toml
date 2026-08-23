@@ -39,7 +39,7 @@ wheel.packages = ["ezc3d"]
 wheel.exclude = ["include/**"]
 
 [tool.scikit-build.wheel.force-include]
-"include/ezc3d" = "${SKBUILD_HEADERS_DIR}"
+"include/ezc3d" = "${SKBUILD_DATA_DIR}/Include/ezc3d"
 
 [tool.cibuildwheel]
 build-frontend = "build"
