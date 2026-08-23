@@ -34,7 +34,6 @@ cmake.args = [
     "-DBINDER_PYTHON3:BOOL=ON",
     "-DCMAKE_INSTALL_BINDIR=ezc3d",
     "-DCMAKE_INSTALL_LIBDIR=ezc3d",
-    "-DCMAKE_INSTALL_INCLUDEDIR=ezc3d",
 ]
 wheel.packages = ["ezc3d"]
 
