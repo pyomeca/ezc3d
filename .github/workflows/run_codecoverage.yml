@@ -2,33 +2,30 @@ name: Code coverage
 
 on: [pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   BUILD_FOLDER: build
-  EXAMPLES_FOLDER: examples
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            label: linux-64
-            prefix: /usr/share/miniconda3/envs/biorbd_eigen
-    name: ${{ matrix.label }}
-    runs-on: ${{ matrix.os }}
+    name: linux-64
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash -l {0}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
-      
+        uses: actions/checkout@v7
+
       - name: Get number of CPU cores
-        uses: SimenB/github-actions-cpu-cores@v1
+        uses: SimenB/github-actions-cpu-cores@v3
         id: cpu-cores
 
       - name: Setup environment
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniforge-version: latest
           activate-environment: ezc3d
@@ -52,9 +49,14 @@ jobs:
           mkdir -p $BUILD_FOLDER
           cd $BUILD_FOLDER
           cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF -DBUILD_DOC=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=OFF ..
+          # The coverage target runs the tests and produces coverage.info (see modules/CodeCoverage.cmake)
           make ezc3d_coverage -j${{ steps.cpu-cores.outputs.count }}
-          lcov --directory . --capture --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' --output-file coverage.info
           lcov --list coverage.info
-          bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
-          cd $MAIN_FOLDER
+          cd $BIORBD_FOLDER
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          files: ${{ env.BUILD_FOLDER }}/coverage.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
