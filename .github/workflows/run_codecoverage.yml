@@ -51,7 +51,7 @@ jobs:
           cmake -DCMAKE_INSTALL_PREFIX=$CONDA_ENV_PATH -DCMAKE_BUILD_TYPE=Coverage -DBUILD_TESTS=ON -DBUILD_EXAMPLE=OFF -DBUILD_DOC=OFF -DUSE_MATRIX_FAST_ACCESSOR=OFF -DBINDER_PYTHON3=OFF ..
           # The coverage target runs the tests and produces coverage.info (see modules/CodeCoverage.cmake)
           make ezc3d_coverage -j${{ steps.cpu-cores.outputs.count }}
-          lcov --list coverage.info
+          lcov --list coverage.info --ignore-errors inconsistent,mismatch
           cd $BIORBD_FOLDER
 
       - name: Upload coverage to Codecov
